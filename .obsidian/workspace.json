@@ -168,8 +168,8 @@
             "state": {
               "type": "review-queue-list-view",
               "state": {},
-              "icon": "lucide-ghost",
-              "title": "review-queue-list-view"
+              "icon": "SpacedRepIcon",
+              "title": "Fronta poznámek k revizi"
             }
           },
           {
@@ -212,11 +212,22 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "cde147cfa84cb9e4",
+  "active": "3e6d3bb488cdb65c",
   "lastOpenFiles": [
+    "web/build/sitemap.xml",
+    "web/build/index.html",
+    "web/build/404.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/key-value-databaze-redis.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/pokrocile-aspekty-grafovych-databazi.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/obsah-predmetu-databaze-2.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/mapreduce-a-hadoop.html",
+    "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
     "Assets/Spongebob.png",
     "README.md",
-    "Assets",
     "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
     "Softwarové Inženýrství/Databáze 2/Obsah předmětu Databáze 2.md",
     "Bez názvu.canvas",
@@ -231,15 +242,6 @@
     "Softwarové Inženýrství/Databáze 2/Key-Value databáze (Redis).md",
     "Softwarové Inženýrství/Databáze 2/Principy distribuovaných systémů a NoSQL.md",
     "Softwarové Inženýrství/Databáze 2/Formáty dat.md",
-    "Bez názvu.base",
-    "Softwarové Inženýrství",
-    "Společné předměty",
-    "Vítejte.md",
-    "Softwarové Inženýrství/Bezpečnost Systémů",
-    "Softwarové Inženýrství/Paralelní Algoritmy",
-    "Společné předměty/Kombinatorická Optimalizace",
-    "Společné předměty/Teorie Algoritmů",
-    "Softwarové Inženýrství/Zajištění Kvality Software",
-    "Společné předměty/Pokročilá Algoritmizace"
+    "Vítejte.md"
   ]
 }

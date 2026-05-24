@@ -1,0 +1,23 @@
+{
+  "name": "cvut-oi-notes-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "generate-docs": "node scripts/generate-docs.mjs",
+    "prestart": "npm run generate-docs",
+    "start": "docusaurus start --host 0.0.0.0",
+    "prebuild": "npm run generate-docs",
+    "build": "docusaurus build",
+    "serve": "docusaurus serve --host 0.0.0.0",
+    "clear": "docusaurus clear"
+  },
+  "dependencies": {
+    "@docusaurus/core": "^3.10.1",
+    "@docusaurus/preset-classic": "^3.10.1",
+    "@mdx-js/react": "^3.1.0",
+    "clsx": "^2.1.1",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}
