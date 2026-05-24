@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Úvod do Big Data a NoSQL databází"
+              "title": "README"
             }
           }
         ]
@@ -214,9 +214,9 @@
   },
   "active": "eda55ebfaa2d7b21",
   "lastOpenFiles": [
+    "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
     "Softwarové Inženýrství/Databáze 2/Obsah předmětu Databáze 2.md",
     "Bez názvu.canvas",
-    "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
     "Big Data.md",
     "Softwarové Inženýrství/Databáze 2/MapReduce a Hadoop.md",
     "Softwarové Inženýrství/Databáze 2/Grafové databáze (Neo4j).md",

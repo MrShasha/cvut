@@ -1,3 +1,9 @@
 # ČVUT OI výpisky
 
- ☺
+ Pravidla:
+ Pracujte kvalitně s odkazy. Kouzlo Obsidianu je ta provázanost a rychlost psaní a hledání informací. Vyhněte se LLM dumpům velkých textů, ve kterých se relevantní informace nalézá "někde uvnitř". Also obrázky vydají za tisíc slov.
+
+Jak na to:
+`[[Odkaz na markdown soubor]]`
+`[[Odkaz na markdown soubor#Nadpis uvnitř souboru]]`
+`[[Nějaký odkaz|Label co se zobrazí reálně v textu]]`
