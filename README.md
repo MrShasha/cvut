@@ -1,6 +1,6 @@
 # ČVUT OI výpisky
 
-![[Spongebob.png]]
+![[Assets/Spongebob.png]]
 
  Pravidla:
  Pracujte kvalitně s odkazy. Kouzlo Obsidianu je ta provázanost a rychlost psaní a hledání informací. Vyhněte se LLM dumpům velkých textů, ve kterých se relevantní informace nalézá "někde uvnitř". Also obrázky vydají za tisíc slov. Pravidelně fetchujte a zálohujte na git.
