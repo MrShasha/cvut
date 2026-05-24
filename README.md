@@ -1,6 +1,7 @@
 # ČVUT OI výpisky
 
 ![Spongebob|493](Assets/Spongebob.png)
+This repository contains study materials for the final exams at CTU FEE OI. If this doesn’t ring a bell, then this repo probably won’t be very helpful for you. Also, it is entirely in Czech ☺.
 
 Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 ## Obsah
