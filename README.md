@@ -1,22 +1,24 @@
 # ČVUT OI výpisky
 
 ![Spongebob|493](Assets/Spongebob.png)
+
+Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 ## Obsah
-Dokončené předměty:
-- Zatím nic :(
-Rozpracované předměty:
-- Databáze 2 - Jirka
-Nerozpracované předměty:
-- Společné
-	- Kombinatorická optimalizace
-	- Pokročilá algoritmizace
-	- Teorie algoritmů
-- Softwarové inženýrství
-	- Bezpečnosti systémů
-	- Efektivní software
-	- Paralelní algoritmy
-	- Softwarové architektury
-	- Zajištění kvality software
+- Dokončené předměty:
+	- Zatím nic :(
+- Rozpracované předměty:
+	- Databáze 2 - Jirka
+- Nerozpracované předměty:
+	- Společné
+		- Kombinatorická optimalizace
+		- Pokročilá algoritmizace
+		- Teorie algoritmů
+	- Softwarové inženýrství
+		- Bezpečnosti systémů
+		- Efektivní software
+		- Paralelní algoritmy
+		- Softwarové architektury
+		- Zajištění kvality software
 
 
 ## Pravidla
