@@ -25,13 +25,21 @@ znamená 5 klíčových vlastností popisujících big data. Patří mezi ně:
 	- Strukturovaná: Tradiční tabulky a SQL databáze.
 	- Semistrukturovaná: JSON, XML, CSV.
 	- Nestrukturovaná: Textové dokumenty, video, audio, obrázky.
+	**Trendy:**
+	- **Data Lakehouse:** Tento koncept spojuje flexibilitu datových jezer (Data Lakes, ukládající syrová, nestrukturovaná data) s transakčními vlastnostmi a strukturou tradičních datových skladů (Data Warehouses).
+	- **Vektorové databáze:** S nástupem LLM (Large Language Models) a generativní AI vznikla obrovská potřeba ukládat nestrukturovaná data jako vektorové embedingy, což umožňuje rychlé sémantické vyhledávání napříč texty a multimédii.
+	
 - **Veracity (Věrohodnost / Pravdivost)**
 	- Čistota, kvalita a důvěryhodnost dat. Vzhledem k různorodosti zdrojů obsahují Big Data často šum, chybějící hodnoty nebo anomálie.
+	**Trendy:**
+	- **Data Observability:** Implementují se automatizované systémy, které monitorují zdraví celých datových pipeline. Automaticky detekují anomálie, výpadky ve schématech, zpoždění dat (data freshness) nebo neočekávané změny v distribuci hodnot.
+	- **Data Contracts:** Zásadní posun v inženýrských týmech. Producenti dat (např. vývojáři backendu) podepisují s konzumenty dat (datovými analytiky) technické "smlouvy" o struktuře a kvalitě dat, které nesmí breaknout nasazením nové verze aplikace.
+	
 - **Value (Hodnota)**
 	- Nejdůležitější byznysová vlastnost. Samotný objem dat nemá smysl, pokud z něj nedokážeme analytickými nástroji, machine learningem nebo pokročilým dotazováním extrahovat užitečné insighty, které optimalizují procesy nebo predikují budoucí stav.
-
-### Aktuální trendy
-
+	**Trendy:**
+	- **Operacionalizace AI (MLOps):** Hodnota se dnes tvoří nasazením prediktivních a generativních modelů přímo do produkce. Místo statických dashboardů se budují systémy, které na základě dat dělají automatická rozhodnutí (např. automatické škálování serverů, detekce anomálií v roji senzorů, realtime personalizace).
+	- **Data Mesh:** Decentralizace vlastnictví dat. Místo jednoho centrálního datového týmu, který tvoří úzké hrdlo, se vlastnictví analytických dat přesouvá zpět do doménových (produktových) týmů, které dané komponenty vyvíjejí.
 
 # Relační databáze
 
