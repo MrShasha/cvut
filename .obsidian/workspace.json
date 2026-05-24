@@ -168,17 +168,36 @@
             "state": {
               "type": "review-queue-list-view",
               "state": {},
+              "icon": "lucide-ghost",
+              "title": "review-queue-list-view"
+            }
+          },
+          {
+            "id": "ad370f97e1798e22",
+            "type": "leaf",
+            "state": {
+              "type": "review-queue-list-view",
+              "state": {},
               "icon": "SpacedRepIcon",
               "title": "Fronta poznámek k revizi"
             }
+          },
+          {
+            "id": "3e6d3bb488cdb65c",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
           }
         ],
-        "currentTab": 5
+        "currentTab": 7
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -189,10 +208,11 @@
       "templates:Vložit šablonu": false,
       "command-palette:Otevřít paletu příkazů": false,
       "bases:Vytvořit novou základnu": false,
-      "obsidian-spaced-repetition:Poznámek k revizi": false
+      "obsidian-spaced-repetition:Poznámek k revizi": false,
+      "obsidian-git:Open Git source control": false
     }
   },
-  "active": "40c94f375a61020b",
+  "active": "eda55ebfaa2d7b21",
   "lastOpenFiles": [
     "Bez názvu.canvas",
     "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
