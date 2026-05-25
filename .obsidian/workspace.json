@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
+                "file": "Softwarové Inženýrství/Databáze 2/Formáty dat.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Úvod do Big Data a NoSQL databází"
+              "title": "Formáty dat"
             }
           }
         ]
@@ -214,8 +214,10 @@
   },
   "active": "2b8ea3f9709c869d",
   "lastOpenFiles": [
-    "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
     "Softwarové Inženýrství/Databáze 2/Obsah předmětu Databáze 2.md",
+    "Softwarové Inženýrství/Databáze 2/Formáty dat.md",
+    "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
+    "Softwarové Inženýrství/Databáze 2/MapReduce a Hadoop.md",
     "README.md",
     "web/build/sitemap.xml",
     "web/build/index.html",
@@ -231,7 +233,6 @@
     "Assets/Spongebob.png",
     "Bez názvu.canvas",
     "Big Data.md",
-    "Softwarové Inženýrství/Databáze 2/MapReduce a Hadoop.md",
     "Softwarové Inženýrství/Databáze 2/Grafové databáze (Neo4j).md",
     "Softwarové Inženýrství/Databáze 2/Dokumentové databáze (MongoDB).md",
     "Softwarové Inženýrství/Efektivní Software/Bez názvu.md",
@@ -240,7 +241,6 @@
     "Softwarové Inženýrství/Databáze 2/Wide Column Stores (Cassandra).md",
     "Softwarové Inženýrství/Databáze 2/Key-Value databáze (Redis).md",
     "Softwarové Inženýrství/Databáze 2/Principy distribuovaných systémů a NoSQL.md",
-    "Softwarové Inženýrství/Databáze 2/Formáty dat.md",
     "Vítejte.md"
   ]
 }

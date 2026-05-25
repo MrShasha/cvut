@@ -1,0 +1,163 @@
+- **[[Formáty dat#XML|XML]]:** konstrukty (element, atribut, text), obsahové modely, entity, well-formedness, dokumentově a datově orientované XML.
+- **[[Formáty dat#JSON a BSON|JSON a BSON]]:** konstrukty (objekt, pole, hodnota), datové typy, chybějící vs. null položky, vnitřní struktura BSON dokumentu.
+- **[[Formáty dat#RDF|RDF]]:** datový model (zdroje, hodnoty), trojice (subjekt, predikát, objekt), blank nodes, IRI identifikátory, literály (typy, jazykové tagy), N-Triples a Turtle notace.
+- **[[Formáty dat#CSV|CSV]]:** konstrukty (dokument, hlavička, záznam, pole).
+
+# XML
+Zatímco HTML bylo navrženo pro _zobrazování_ dat, XML bylo zkonstruováno (W3C) striktně pro strukturovaný **přenos a ukládání dat**. Je to jazyk postavený na hierarchickém stromečku (DOM - Document Object Model).
+
+**Konstrukty XML:**
+
+- **Element (Prvek):** Základní stavební blok ohraničený tagy `<kniha>...</kniha>`. Tvoří hierarchii (strom).
+- **Atribut:** Doplňková informace vložená přímo do zahajovacího tagu elementu (např. `<kniha isbn="1234">`). Atributy nesmí obsahovat složité struktury (jen prosté hodnoty).
+- **Text (PCDATA/CDATA):** Samotný obsah uvnitř elementu.
+
+**Příklad XML:**
+
+```xml
+<knihovna>
+    <!-- Toto je element kniha s atributem isbn -->
+    <kniha isbn="978-80-200-2465-4">
+        <nazev>NoSQL for Dummies</nazev>
+        <autor>Jan Novák</autor>
+        <cena>500</cena>
+    </kniha>
+</knihovna>
+```
+
+**Obsahové modely a vlastnosti:**
+
+- **Well-formedness (Správné utvoření):** XML dokument _musí_ splňovat základní syntaktická pravidla (právě jeden kořenový element, správné zanoření a párování tagů `<a><b></b></a>`, hodnoty atributů v uvozovkách). Pokud toto nesplňuje, z pohledu parseru _to není XML_.
+- **Validity (Validita):** Dobře utvořené XML může být i tzv. _validní_. To znamená, že jeho struktura (jaké elementy a atributy jsou dovoleny) odpovídá předem definovanému slovníku / schématu (např. DTD - Document Type Definition nebo XML Schema/XSD).
+- **Entity:** Způsob, jak zapsat speciální znaky, které by narušily strukturu tagů (např. `&lt;` pro `<`, `&amp;` pro `&`). Nebo jak používat makra pro opakující se bloky dat.
+
+**Dokumentově vs. Datově orientované XML:**
+
+- **Dokumentově orientované (Data-Centric):** Má velmi striktní strukturu. Pořadí elementů je často nedůležité (zda je první autor nebo název). Je to vhodné strojové zpracování (např. import/export produktů, komunikace B2B).
+- **Datově orientované (Document-Centric):** Struktura je velmi volná (často se objevuje tz. _mixed content_, kdy se text střídá s vnořenými elementy). Typicky jde o lidsky čitelné texty (články, knihy – např. DocBook), kde záleží na formátování textu, nikoliv na strojové agregaci.
+### XPath (XML Path Language)
+
+XPath umožňuje adresovat uzly (elementy, atributy, texty) v XML stromu pomocí cestovních výrazů, které se velmi podobají zápisu cest v souborovém systému.
+
+#### 1. Základní syntaxe a navigace
+
+XPath využívá tzv. **osové cesty (axes)**. Nejpoužívanější jsou:
+
+- **Absolutní cesta:** Začíná lomítkem `/`. Vždy startuje od kořenového elementu (např. `/knihovna/kniha`).
+    
+- **Relativní cesta:** Začíná dvěma lomítky `//`. Vyhledá element kdekoli v dokumentu, bez ohledu na jeho hloubku vnoření.
+    
+- **Výběr uzlů:**
+    
+    - `nodename`: Vybere všechny uzly se zadaným jménem.
+        
+    - `@attribute`: Vybere atribut (např. `@isbn`).
+        
+    - `.`: Aktuální uzel.
+        
+    - `..`: Nadřazený uzel (parent).
+        
+
+#### 2. Predikáty (Filtrování)
+
+Predikáty se píší do hranatých závorek `[]` a slouží k výběru konkrétních uzlů na základě podmínek.
+
+- `//kniha[1]`: Vybere první knihu v dokumentu.
+    
+- `//kniha[cena > 400]`: Vybere všechny knihy, které mají element `cena` s hodnotou vyšší než 400.
+    
+- `//kniha[@isbn]`: Vybere všechny knihy, které mají nastavený atribut `isbn` (hodnota atributu není důležitá, existence ano).
+    
+- `//kniha[autor='Jan Novák']`: Vybere knihu, kde autor je přesně Jan Novák.
+    
+
+#### 3. Funkce a operátory
+
+XPath je bohatý na vestavěné funkce, které umožňují pokročilé dotazování:
+
+- **Aritmetické operátory:** `+`, `-`, `*`, `div`, `mod`.
+    
+- **Logické operátory:** `and`, `or`, `not()`.
+    
+- **Textové funkce:**
+    
+    - `text()`: Vrátí textový obsah uzlu.
+        
+    - `contains(string, pattern)`: Vrátí true, pokud `string` obsahuje `pattern`.
+        
+    - `starts-with(string, pattern)`: Vrátí true, pokud `string` začíná na `pattern`.
+        
+- **Početní funkce:** `count()` – např. `//knihovna[count(kniha) > 5]` (knihovny s více než 5 knihami).
+# JSON a BSON
+JSON se stal defacto králem moderního přenosu dat a API, protože má menší overhead než XML (nepotřebuje ukončovací tagy) a skvěle se s ním programuje. Zároveň je formátem dotazovacího jazyka v MongoDB. Je schemaless.
+
+**Konstrukty a Datové typy:**
+
+- **Objekt:** Neuspořádaná množina dvojic _klíč-hodnota_ uzavřená ve složených závorkách `{}`. Klíč (String v uvozovkách) jednoznačně identifikuje hodnotu.
+- **Pole (Array):** Uspořádaná kolekce hodnot uzavřená v hranatých závorkách `[]`.
+- **Hodnota:** Může nabývat následujících typů: `string`, `number` (číslice), `boolean` (true/false), `null` (záměrně prázdná hodnota), zanořený `objekt`, nebo zanořené `pole`. V JSON _nejsou_ datumy ani binární formáty.
+
+**Příklad JSON:**
+
+```json
+{
+  "zakaznik_id": 123,
+  "jmeno": "Jiří",
+  "v_depresi_ze_statnic": true,
+  "historie_objednavek": [
+      { "polozka": "Klávesnice", "cena": 1500 }
+  ],
+  "druhe_jmeno": null
+}
+```
+
+**Chybějící vs. Null položky:**
+
+V NoSQL databázích (jako MongoDB) je velký rozdíl, jestli pole vůbec neexistuje (chybějící položka, šetří to paměť i diskový prostor – viz _schemaless_ flexibilita), a tím, když pole existuje a má výslovně přiřazenou hodnotu `null` (tzn. víme, že záznam může mít druhé jméno, ale u tohoto konkrétního zákazníka je explicitně prázdné).
+
+**Vnitřní struktura BSON (Binary JSON):**
+
+BSON je binární reprezentace formátu JSON, navržená společností MongoDB.
+
+- **Proč BSON vznikl:** JSON je textový formát. Parsovat gigabajty textu (hledání uvozovek a závorek) je procesorově extrémně drahé.
+    
+- **Jak funguje BSON:** Není lidsky čitelný. Obsahuje na začátku záznamu informaci o velikosti (délce) bloku a typech jednotlivých prvků. Tím umožňuje databázovému enginu přeskočit (tzv. scan-skipping) ty elementy nebo pole, která právě nepotřebuje, aniž by musel načítat jejich obsah do operační paměti. BSON také rozšiřuje datové typy o nativní podporu pro _Date_ a surová _binární data_.
+
+
+# RDF
+(Resource Description Framework)
+Zatímco JSON ukládá stromovou strukturu agregátů, RDF modeluje svět jako **síť vztahů (graf)**. Je to základní stavební kámen Sémantického webu.
+
+**Datový model:**
+
+- Veškeré informace v RDF jsou definovány jako tzv. **Trojice (Triples)**: `Subjekt -> Predikát -> Objekt` (např. `Praha -> leží v -> Česko`).
+
+**Složky trojice:**
+
+- **Subjekt (Resource):** Zdroj, o kterém mluvíme. Z definice to **vždy musí být IRI** (Internationalized Resource Identifier) – např. odkaz na entitu Prahy ve wikidatech `[http://wikidata.org/entity/Q1085](http://wikidata.org/entity/Q1085)`. Výjimečně to může být blank node.
+- **Predikát (Vlastnost):** Popisuje vztah mezi subjektem a objektem. **Vždy musí být IRI** – určuje sémantický význam (např. `[http://schema.org/isPartOf](http://schema.org/isPartOf)`).
+- **Objekt (Hodnota):** To, na co vztah ukazuje. Může to být buď další **zdroj (IRI)**, nebo **literál (číslo, string)**. Výjimečně blank node.
+
+**Literály (Literals) a Blank Nodes:**
+
+- **Blank nodes (Prázdné uzly):** Reprezentují uzly v grafu, které existují (pomáhají propojovat informace), ale nemají žádný globální IRI identifikátor. Mají platnost jen v rámci daného RDF souboru. Často se používají k zápisu složitějších struktur (např. "adresa" rozdělená na ulici a PSČ).
+- **Literály:** Konstanta. Mohou mít přiřazen svůj datový typ (XSD - např. `^^xsd:integer`) nebo v případě textových řetězců **jazykový tag** (např. `"Prague"@en`, `"Prag"@de`).
+
+**Notace RDF zápisu:**
+
+- **N-Triples:** Nejelementárnější formát. Co řádek, to jedna trojice ukončená tečkou. IRI se uzavírají do ostrých závorek `<>`. Formát je extrémně upovídaný a náročný pro lidi.
+    
+    `[http://example.org/Jiri](http://example.org/Jiri) [http://schema.org/knows](http://schema.org/knows) [http://example.org/Jan](http://example.org/Jan) .`
+    
+- **Turtle:** Optimalizovaná a "lidsky příjemná" notace. Umožňuje zavedení `PREFIXů` (obdoba XML namespaces), řetězení vlastností za stejným subjektem pomocí středníku `;` (nemusíme ho neustále opakovat) a spojování objektů se stejným subjektem i vlastností pomocí čárky `,`.
+
+# CSV
+(Comma-Separated Values)
+Nejzákladnější plošný (flat) tabulkový formát. Nepodporuje hierarchii, vztahy ani agregáty. Jde jen o serializaci tabulky.
+
+**Konstrukty:**
+
+- **Dokument:** Celý soubor obsahující tabulková data. Každý řádek v souboru je obvykle oddělen znakem nového řádku (CRLF).
+- **Hlavička (Header):** První řádek souboru (volitelně, i když velmi běžně). Definuje jména sloupců.
+- **Záznam (Row / Record):** Samostatný řádek odpovídající jednomu entitnímu záznamu.
+- **Pole (Field):** Jednotlivé buňky v záznamu, typicky oddělené čárkou `,` (často také středníkem `;` v Evropě kvůli kolizi s desetinnou čárkou). Pokud buňka obsahuje samotný oddělovač (čárku), musí být celá hodnota pole escapována pomocí textových uvozovek `" "`. Datový typ v CSV neexistuje (všechno je v podstatě text), typování se musí definovat externě.
