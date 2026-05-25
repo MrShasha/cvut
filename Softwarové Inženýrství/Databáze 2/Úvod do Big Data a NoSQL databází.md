@@ -47,7 +47,7 @@ Relační databáze jsou například PostgreSQL, MySQL, MS SQL Server a podobně
 
 ### Příklady relačních databází
 
-| **Vlastnost**      | <font color="#9bbb59">**PostgreSQL**</font>                     | *<font color="#c0504d">*MySQL**</font>                     | <font color="#4bacc6">**MS SQL Server**</font>                   |
+| **Vlastnost**      | <font color="#9bbb59">**PostgreSQL**</font>                     | <font color="#c0504d">**MySQL**</font>                     | <font color="#4bacc6">**MS SQL Server**</font>                   |
 | ------------------ | --------------------------------------------------------------- | ---------------------------------------------------------- | ---------------------------------------------------------------- |
 | **Zaměření**       | <font color="#9bbb59">Komplexní dotazy, přísné standardy</font> | <font color="#c0504d">Rychlé čtení, webové aplikace</font> | <font color="#4bacc6">Podnikové řešení, silný ekosystém</font>   |
 | **Architektura**   | <font color="#9bbb59">Multi-process (procesy)</font>            | <font color="#c0504d">Thread-based (vlákna)</font>         | <font color="#4bacc6">Thread-based (řízeno přes SQLOS)</font>    |

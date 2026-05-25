@@ -1,0 +1,18 @@
+**[[Principy distribuovaných systémů a NoSQL#Škálování|Škálování]]:** vertikální vs. horizontální škálování (výhody, nevýhody, limity), network fallacies, architektura clusteru.
+- **[[Principy distribuovaných systémů a NoSQL#Distribuce dat (Sharding)|Distribuce dat (Sharding)]]:** motivace, cíle (vyvážení zátěže), strategie, problémy a výzvy (rebalancing, hotspoty, změny struktury, network partitioning).
+- **[[Principy distribuovaných systémů a NoSQL#Replikace dat|Replikace dat]]:** replikační faktor, architektury (master-slave, peer-to-peer), obsluha požadavků čtení/zápisu, řešení výpadků, strategie umisťování replik.
+- **[[Principy distribuovaných systémů a NoSQL#Teorémy a garance|Teorémy a garance]]:** CAP teorém (Consistency, Availability, Partition tolerance), důsledky (systémy CA, CP, AP), ACID vs. BASE vlastnosti.
+- **[[Principy distribuovaných systémů a NoSQL#Konzistence|Konzistence]]:** silná (strong) vs. případná (eventual) konzistence, laditelná konzistence (tunable consistency), read a write quora, konflikty, idempotence.
+- **[[Principy distribuovaných systémů a NoSQL#Ladění výkonu|Ladění výkonu]]:** Amdahlův zákon, Littleův zákon, message cost model, čtení plánů dotazů (EXPLAIN/PROFILE).
+
+
+# Distribuce dat (Sharding)
+
+# Replikace dat
+
+# Teorémy a garance
+
+# Konzistence
+
+# Ladění výkonu
+

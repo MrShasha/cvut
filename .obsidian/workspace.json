@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Softwarové Inženýrství/Databáze 2/Formáty dat.md",
+                "file": "Softwarové Inženýrství/Databáze 2/Principy distribuovaných systémů a NoSQL.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Formáty dat"
+              "title": "Principy distribuovaných systémů a NoSQL"
             }
           }
         ]
@@ -214,6 +214,10 @@
   },
   "active": "2b8ea3f9709c869d",
   "lastOpenFiles": [
+    "web/build/assets/js/29ef6e4d.e6058a48.js",
+    "web/build/assets/js/runtime~main.d7704d5f.js",
+    "web/build/__server/server.bundle.js",
+    "web/build/__server",
     "Softwarové Inženýrství/Databáze 2/Obsah předmětu Databáze 2.md",
     "Softwarové Inženýrství/Databáze 2/Formáty dat.md",
     "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
@@ -226,9 +230,6 @@
     "web/build/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql.html",
-    "web/build/softwarove-inzenyrstvi/databaze-2/key-value-databaze-redis.html",
-    "web/build/softwarove-inzenyrstvi/databaze-2/pokrocile-aspekty-grafovych-databazi.html",
-    "web/build/softwarove-inzenyrstvi/databaze-2/obsah-predmetu-databaze-2.html",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
     "Assets/Spongebob.png",
     "Bez názvu.canvas",
