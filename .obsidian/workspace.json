@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "a8a2043774870886",
+        "id": "e2552bda70391196",
         "type": "tabs",
         "children": [
           {
-            "id": "5c2ff462c850c427",
+            "id": "2b8ea3f9709c869d",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -212,8 +212,9 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "5c2ff462c850c427",
+  "active": "2b8ea3f9709c869d",
   "lastOpenFiles": [
+    "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
     "Softwarové Inženýrství/Databáze 2/Obsah předmětu Databáze 2.md",
     "README.md",
     "web/build/sitemap.xml",
@@ -228,7 +229,6 @@
     "web/build/softwarove-inzenyrstvi/databaze-2/obsah-predmetu-databaze-2.html",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
     "Assets/Spongebob.png",
-    "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
     "Bez názvu.canvas",
     "Big Data.md",
     "Softwarové Inženýrství/Databáze 2/MapReduce a Hadoop.md",

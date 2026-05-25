@@ -42,7 +42,6 @@ znamená 5 klíčových vlastností popisujících big data. Patří mezi ně:
 	- **Data Mesh:** Decentralizace vlastnictví dat. Místo jednoho centrálního datového týmu, který tvoří úzké hrdlo, se vlastnictví analytických dat přesouvá zpět do doménových (produktových) týmů, které dané komponenty vyvíjejí.
 
 
-
 # Relační databáze
 Relační databáze jsou například PostgreSQL, MySQL, MS SQL Server a podobně. Ukládají data do tabulek s přísným schématem. Řeší se funkční závislosti, normální formy, ACID, transakce, ...
 
@@ -140,4 +139,73 @@ Aby byla transakce spolehlivá, musí relační databáze garantovat vlastnosti 
 
 
 # NoSQL databáze
+### Proč vlastně NoSQL vzniklo?
+
+Relační databáze vládly světu desítky let, ale s nástupem webových gigantů (Google, Amazon, Facebook) a fenoménu **Big Data** narazily na své limity. Hlavní motivace pro NoSQL byla:
+
+- **Horizontální škálování (Scale-out):** Relační databáze se tradičně škálují vertikálně (koupíte silnější a dražší server). To má ale fyzikální a finanční limity. NoSQL systémy byly od začátku navrženy tak, aby běžely na clusteru stovek běžných, levných serverů.
+    
+- **Těžkopádnost schématu a JOINů:** V distribuovaném prostředí je spojování dat (JOIN) ze dvou různých tabulek, které mohou ležet na jiných serverech na opačném konci světa, extrémně pomalé.
+    
+- **Změna charakteru dat:** Data už nejsou jen strukturované záznamy zaměstnanců, ale i polostrukturované logy, JSONy z API, senzory (IoT), a sociální sítě.
+### Společné vlastnosti NoSQL databází
+
+Většina NoSQL systémů sdílí následující filozofii, která je v přímém kontrastu s relačním modelem:
+
+- **Agregáty (Aggregate-Orientation):** V relační databázi data roztříštíme (normalizujeme) do mnoha tabulek, abychom zamezili duplicitě. V NoSQL (zejména u klíč-hodnota, dokumentových a sloupcových databází) naopak **související data shlukujeme do jednoho celku (agregátu)**. _Příklad:_ Uživatel, jeho adresy a jeho historie objednávek se uloží jako jeden velký "dokument". Výhoda? Načtení profilu uživatele znamená přečtení jednoho agregátu (z jednoho disku na jednom serveru), žádné složité distribuované JOINy.
+    
+- **Schemalessness (Bez schématu) a Flexibilita:** Relační databáze vyžadují předem definovanou strukturu (Schema on Write). NoSQL systémy jsou typicky _schemaless_. Můžete do nich vložit záznam o uživateli, který má atribut "věk", a hned vedle záznam, který ho nemá a má navíc atribut "twitter_handle". Zodpovědnost za to, jak data vypadají, se přesouvá z databáze na aplikační kód (tzv. Schema on Read). Umožňuje to agilní vývoj.
+    
+- **Automatická údržba a distribuovanost:** Dělení dat (Sharding) a jejich zálohování na další uzly (Replikace) není v NoSQL chápáno jako externí modul pro administrátory, ale je to základní stavební kámen, o který se systém stará automaticky na pozadí.
+### Čtyři hlavní typy NoSQL systémů
+
+NoSQL není jedna technologie, je to rodina čtyř odlišných přístupů. Zde je jejich obecný přehled:
+
+1. **Key-Value (Klíč-Hodnota):** Nejjednodušší a nejrychlejší. Data jsou uložena pod unikátním klíčem. Samotná "hodnota" je pro databázi černá skříňka (neprohledává ji, nerozumí jí). Slouží pro extrémně rychlé čtení/zápis (např. session uživatele, nákupní košík).
+    
+2. **Document (Dokumentové):** Evoluce Key-Value. Hodnota už není černá skříňka, ale semistrukturovaný dokument (např. JSON). Databáze "vidí dovnitř" a dokáže se dotazovat na specifická pole v dokumentu (např. "najdi všechny dokumenty, kde _vek > 18_").
+    
+3. **Wide Column (Širokosloupcové / Column-family):** Vypadá jako tabulka, ale je dimenzovaná jinak. Každý řádek může mít jiný počet sloupců a sloupce se organizují do tzv. "rodin". Skvělé pro masivní zápisy (např. časové řady z IoT senzorů). Data, která se čtou společně, se ukládají fyzicky blízko sebe na disk.
+    
+4. **Graph (Grafové):** "Černá ovce" NoSQL rodiny, protože **nepoužívá agregáty**. Grafové databáze jsou o _vztazích_. Data jsou uzly (lidé, města) a vztahy jsou hrany (přátelí se, žije v). Jsou optimalizované na to, aby procházení vztahů bylo bleskové (sociální sítě, doporučovací systémy).
+
 # Návrh databází
+### Query-driven modelování (Návrh řízený přístupovými vzory)
+
+**Definice:** Přístup k návrhu databáze, kde primárním určujícím faktorem pro strukturu uložených dat nejsou entity a jejich vzájemné vztahy, ale **konkrétní dotazy (queries)** a přístupové vzory (access patterns), které bude aplikace nad daty provádět.
+
+**Jak to funguje pod kapotou a kontext:**
+
+V tradičním SQL světě děláme tzv. _Data-driven modelování_. Zkoumáme data, vytvoříme ER diagram, provedeme normalizaci do 3NF a data rozsekáme do tabulek. Až následně nad tím píšeme SQL dotazy.
+
+V distribuovaném NoSQL prostředí by tento přístup vedl k obrovskému výkonnostnímu problému. Provádět složité JOINy napříč uzly (servery) v clusteru znamená síťovou komunikaci (network hops) a obrovskou latenci. Proto se návrh otáčí o 180 stupňů:
+
+- **Analýza přístupových vzorů:** Než navrhnete jedinou "tabulku" či kolekci, musíte naprosto přesně znát aplikační požadavky (např. "budu načítat profil uživatele a zároveň jeho 5 posledních objednávek").
+    
+- **Denormalizace a duplikace:** Data uložíte přesně v takovém tvaru, v jakém se budou číst. Cílem je načíst výsledek jedním sekvenčním čtením z disku na jednom uzlu. Nevadí nám datová redundance (úložný prostor je levný), vadí nám procesorový a síťový čas potřebný na spojování dat.
+    
+- **Fixní struktura dotazů:** Z pohledu system designu to znamená jednu zásadní věc – NoSQL databáze (zejména Wide-Column systémy typu Cassandra) jsou extrémně nepružné vůči _změně_ analytických dotazů. Pokud si po roce vymyslíte nový dotaz, pro který nemáte optimalizovanou strukturu, musíte obvykle vytvořit úplně novou denormalizovanou kolekci a data do ní asynchronně zkopírovat. Je to tvrdý trade-off za extrémní rychlost čtení v obrovském měřítku.
+    
+
+### 2. Polyglot Persistence
+
+**Definice:** Architektonický návrhový vzor spočívající ve využití více různých databázových technologií v rámci jednoho uceleného softwarového systému, přičemž každá technologie se používá na tu část domény, pro kterou je nativně optimalizována.
+
+**Jak to funguje pod kapotou a kontext:**
+
+Historicky panoval v korporátním vývoji "monolitický" přístup. Koupila se masivní centrální relační databáze a úplně _všechna_ data se donutila napasovat do tabulek – od finančních transakcí, přes fulltextové vyhledávání až po logování eventů. 
+
+Moderní system design a mikroslužby (microservices) umožňují, aby si každá služba spravovala svá data sama, a to v optimálním úložišti.
+
+**Typický produkční příklad Polyglot Persistence v e-shopu:**
+
+- **PostgreSQL (Relační RDBMS):** Zpracovává fakturace, stavy skladů a finanční platby. Zde chceme absolutní striktnost, ACID transakce a konzistenci.
+    
+- **MongoDB (Dokumentová NoSQL):** Ukládá produktový katalog. Každý produkt má naprosto jiné parametry (procesor u notebooku vs. velikost u trička), zde naplno využijeme flexibilitu bez pevných schémat.
+    
+- **Redis (Key-Value NoSQL):** Drží nákupní košíky aktivních uživatelů a stav přihlášení (sessions). Data musí bleskurychle létat z operační paměti a po čase automaticky expirovat.
+    
+- **Neo4j (Grafová NoSQL):** Počítá doporučovací systém ("Zákazníci, co si koupili tuto knihu, si koupili i tuto"). Analýza sítě vztahů je zde matematicky přirozená a neporovnatelně rychlejší než rekurzivní SQL JOINy.
+    
+- **Elasticsearch (Search Engine):** Zajišťuje bleskové fulltextové vyhledávání přes miliony produktů s podporou překlepů a synonym.
+    
