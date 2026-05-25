@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "e2552bda70391196",
+        "id": "8af765166577fb8d",
         "type": "tabs",
         "children": [
           {
-            "id": "2b8ea3f9709c869d",
+            "id": "69173391f03eeecc",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -212,25 +212,38 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "2b8ea3f9709c869d",
+  "active": "69173391f03eeecc",
   "lastOpenFiles": [
-    "Softwarové Inženýrství/Databáze 2/2. Formáty dat.md",
-    "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
-    "Softwarové Inženýrství/Databáze 2/0. Obsah předmětu Databáze 2.md",
-    "web/build/assets/js/29ef6e4d.e6058a48.js",
-    "web/build/assets/js/runtime~main.d7704d5f.js",
-    "web/build/__server/server.bundle.js",
-    "web/build/__server",
-    "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
-    "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
-    "README.md",
     "web/build/sitemap.xml",
     "web/build/index.html",
     "web/build/404.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/key-value-databaze-redis.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/pokrocile-aspekty-grafovych-databazi.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/obsah-predmetu-databaze-2.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/mapreduce-a-hadoop.html",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
+    "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+    "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
+    "Softwarové Inženýrství/Databáze 2/5. Key-Value databáze (Redis).md",
+    "Softwarové Inženýrství/Databáze 2/0. Obsah předmětu Databáze 2.md",
+    "Softwarové Inženýrství/Databáze 2/2. Formáty dat.md",
+    "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
+    "README.md",
     "Assets/Spongebob.png",
     "Bez názvu.canvas",
     "Big Data.md",
@@ -239,8 +252,6 @@
     "Softwarové Inženýrství/Efektivní Software/Bez názvu.md",
     "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
     "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
-    "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md",
-    "Softwarové Inženýrství/Databáze 2/5. Key-Value databáze (Redis).md",
-    "Vítejte.md"
+    "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md"
   ]
 }
