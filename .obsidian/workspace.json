@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Softwarové Inženýrství/Databáze 2/Principy distribuovaných systémů a NoSQL.md",
+                "file": "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Principy distribuovaných systémů a NoSQL"
+              "title": "3. Principy distribuovaných systémů a NoSQL"
             }
           }
         ]
@@ -214,14 +214,15 @@
   },
   "active": "2b8ea3f9709c869d",
   "lastOpenFiles": [
+    "Softwarové Inženýrství/Databáze 2/2. Formáty dat.md",
+    "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
+    "Softwarové Inženýrství/Databáze 2/0. Obsah předmětu Databáze 2.md",
     "web/build/assets/js/29ef6e4d.e6058a48.js",
     "web/build/assets/js/runtime~main.d7704d5f.js",
     "web/build/__server/server.bundle.js",
     "web/build/__server",
-    "Softwarové Inženýrství/Databáze 2/Obsah předmětu Databáze 2.md",
-    "Softwarové Inženýrství/Databáze 2/Formáty dat.md",
-    "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
-    "Softwarové Inženýrství/Databáze 2/MapReduce a Hadoop.md",
+    "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
+    "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
     "README.md",
     "web/build/sitemap.xml",
     "web/build/index.html",
@@ -229,19 +230,17 @@
     "web/build/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql.html",
-    "web/build/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql.html",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
     "Assets/Spongebob.png",
     "Bez názvu.canvas",
     "Big Data.md",
-    "Softwarové Inženýrství/Databáze 2/Grafové databáze (Neo4j).md",
-    "Softwarové Inženýrství/Databáze 2/Dokumentové databáze (MongoDB).md",
+    "Softwarové Inženýrství/Databáze 2/8. Grafové databáze (Neo4j).md",
+    "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
     "Softwarové Inženýrství/Efektivní Software/Bez názvu.md",
-    "Softwarové Inženýrství/Databáze 2/Pokročilé aspekty grafových databází.md",
-    "Softwarové Inženýrství/Databáze 2/RDF Stores a Sémantický web (SPARQL).md",
-    "Softwarové Inženýrství/Databáze 2/Wide Column Stores (Cassandra).md",
-    "Softwarové Inženýrství/Databáze 2/Key-Value databáze (Redis).md",
-    "Softwarové Inženýrství/Databáze 2/Principy distribuovaných systémů a NoSQL.md",
+    "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
+    "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
+    "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md",
+    "Softwarové Inženýrství/Databáze 2/5. Key-Value databáze (Redis).md",
     "Vítejte.md"
   ]
 }
