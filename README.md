@@ -9,10 +9,10 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 	- Zatím nic :(
 - Rozpracované předměty:
 	- Databáze 2 - Jirka
+	- Pokročilá algoritmizace - Matěj
 - Nerozpracované předměty:
 	- Společné
 		- Kombinatorická optimalizace
-		- Pokročilá algoritmizace
 		- Teorie algoritmů
 	- Softwarové inženýrství
 		- Bezpečnosti systémů
@@ -20,6 +20,13 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 		- Paralelní algoritmy
 		- Softwarové architektury
 		- Zajištění kvality software
+	- Počítačová grafika
+		- Algoritmy počítačové grafiky
+		- Datové struktury počítačové grafiky
+		- Multimédia a počítačová animace
+		- Výpočetní geometrie
+		- Vizualizace
+		- Geometrie počítačového vidění a grafiky
 
 
 ## Pravidla
