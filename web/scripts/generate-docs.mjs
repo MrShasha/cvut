@@ -354,11 +354,94 @@ const protectMarkdownCode = (content, transform) => {
   );
 };
 
+const calloutTypeMap = new Map([
+  ['note', 'note'],
+  ['abstract', 'note'],
+  ['summary', 'note'],
+  ['tldr', 'note'],
+
+  ['info', 'info'],
+  ['todo', 'info'],
+
+  ['tip', 'tip'],
+  ['hint', 'tip'],
+  ['important', 'tip'],
+
+  ['success', 'tip'],
+  ['check', 'tip'],
+  ['done', 'tip'],
+
+  ['question', 'info'],
+  ['help', 'info'],
+  ['faq', 'info'],
+
+  ['warning', 'warning'],
+  ['caution', 'warning'],
+  ['attention', 'warning'],
+
+  ['failure', 'danger'],
+  ['fail', 'danger'],
+  ['missing', 'danger'],
+  ['danger', 'danger'],
+  ['error', 'danger'],
+  ['bug', 'danger'],
+
+  ['example', 'note'],
+  ['quote', 'note'],
+  ['cite', 'note'],
+]);
+
+const escapeAdmonitionTitle = (value) => value.replace(/]/g, '\\]');
+
+const convertObsidianCallouts = (content) => {
+  const lines = content.split(/\r?\n/);
+  const convertedLines = [];
+  let index = 0;
+
+  while (index < lines.length) {
+    const calloutStart = lines[index].match(/^>\s*\[!([a-z]+)\][+-]?\s*(.*)$/i);
+
+    if (!calloutStart) {
+      convertedLines.push(lines[index]);
+      index += 1;
+      continue;
+    }
+
+    const obsidianType = calloutStart[1].toLowerCase();
+    const docusaurusType = calloutTypeMap.get(obsidianType) ?? 'note';
+    const title = calloutStart[2].trim();
+
+    convertedLines.push(
+      title
+        ? `:::${docusaurusType}[${escapeAdmonitionTitle(title)}]`
+        : `:::${docusaurusType}`
+    );
+
+    index += 1;
+
+    while (index < lines.length) {
+      const quotedLine = lines[index].match(/^>\s?(.*)$/);
+
+      if (!quotedLine) {
+        break;
+      }
+
+      convertedLines.push(quotedLine[1]);
+      index += 1;
+    }
+
+    convertedLines.push(':::');
+  }
+
+  return convertedLines.join('\n');
+};
+
 const convertContent = (source, note, noteIndex, assetIndex) =>
   protectMarkdownCode(source, (content) => {
     let converted = convertMarkdownAssetLinks(content, note, assetIndex);
     converted = convertWikiEmbeds(converted, note, assetIndex);
     converted = convertWikiLinks(converted, note, noteIndex);
+    converted = convertObsidianCallouts(converted);
 
     if (note.sourceRel.toLowerCase() !== 'readme.md') {
       converted = demoteTopLevelHeadings(converted);
