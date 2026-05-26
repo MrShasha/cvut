@@ -214,6 +214,8 @@
   },
   "active": "69173391f03eeecc",
   "lastOpenFiles": [
+    "Assets/littles-law.png",
+    "Assets/Amdahl-law.png",
     "Assets/database-acid.png",
     "Assets/database-cap.png",
     "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
@@ -236,7 +238,6 @@
     "web/build/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/key-value-databaze-redis.html",
-    "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
     "web/generated/docs/softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
     "web/generated/docs/softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
     "web/generated/docs/softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
