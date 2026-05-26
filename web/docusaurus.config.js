@@ -41,6 +41,23 @@ module.exports = async function createConfig() {
         },
       ],
     ],
+    themes: [
+      [
+        '@easyops-cn/docusaurus-search-local',
+        {
+          docsRouteBasePath: '/',
+          docsDir: 'generated/docs',
+          hashed: true,
+          indexBlog: false,
+          indexPages: false,
+          removeDefaultStemmer: true,
+          removeDefaultStopWordFilter: true,
+          searchResultLimits: 10,
+          searchResultContextMaxLength: 80,
+          explicitSearchResultPath: true,
+        },
+      ],
+    ],
     themeConfig: {
       navbar: {
         title: 'ČVUT OI výpisky',
@@ -50,6 +67,10 @@ module.exports = async function createConfig() {
             sidebarId: 'docsSidebar',
             position: 'left',
             label: 'Předměty',
+          },
+          {
+            type: 'search',
+            position: 'right',
           },
           {
             href: 'https://github.com/MrShasha/cvut',
