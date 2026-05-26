@@ -169,6 +169,20 @@
       "degree": 5
     },
     {
+      "id": "doc:spolecne/kombinatoricka-optimalizace/0-obsah-predmetu-ko.md",
+      "title": "0. Obsah předmětu KO",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Kombinatorická Optimalizace",
+      "url": "/spolecne/kombinatoricka-optimalizace/obsah-predmetu-ko",
+      "sourceRel": "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
+      "generatedRel": "spolecne/kombinatoricka-optimalizace/0-obsah-predmetu-ko.md",
+      "summary": "",
+      "incoming": 0,
+      "outgoing": 0,
+      "degree": 0
+    },
+    {
       "id": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
       "title": "0. Obsah PAL",
       "type": "document",
@@ -1880,7 +1894,7 @@
     }
   ],
   "stats": {
-    "documents": 14,
+    "documents": 15,
     "headings": 48,
     "missing": 0,
     "links": 144

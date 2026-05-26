@@ -23,11 +23,6 @@
   background: var(--ifm-background-surface-color);
 }
 
-.toolbar > .selectBox,
-.toolbar > .toggle {
-  display: none;
-}
-
 .searchBox,
 .selectBox {
   display: grid;
@@ -111,6 +106,29 @@
   text-transform: uppercase;
 }
 
+.segmentControl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.segmentControl button {
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 6px;
+  background: var(--ifm-background-color);
+  color: var(--ifm-color-emphasis-800);
+  padding: 0.45rem 0.65rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.segmentControl button[aria-pressed="true"] {
+  border-color: var(--ifm-color-primary);
+  background: var(--ifm-color-primary);
+  color: #fff;
+}
+
 .rangeControl {
   display: grid;
   grid-template-columns: minmax(92px, 0.7fr) minmax(120px, 1fr) 3.2rem;
@@ -151,13 +169,17 @@
 .graphShell {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
-  min-height: calc(100vh - var(--ifm-navbar-height) - 73px);
+  height: calc(100vh - var(--ifm-navbar-height) - 73px);
+  min-height: 520px;
+  overflow: hidden;
 }
 
 .canvasWrap {
   position: relative;
-  min-height: calc(100vh - var(--ifm-navbar-height) - 73px);
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
+  overscroll-behavior: contain;
   background:
     radial-gradient(circle at 20% 20%, rgba(22, 163, 74, 0.16), transparent 34%),
     radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.12), transparent 36%),
@@ -183,6 +205,7 @@
   width: 100%;
   height: 100%;
   cursor: grab;
+  overscroll-behavior: contain;
   touch-action: none;
 }
 
@@ -345,9 +368,12 @@
 
   .graphShell {
     grid-template-columns: 1fr;
+    height: auto;
+    overflow: visible;
   }
 
   .canvasWrap {
+    height: auto;
     min-height: 68vh;
   }
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import Layout from '@theme/Layout';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import BrowserOnly from '@docusaurus/BrowserOnly';
@@ -148,7 +148,7 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
   const containerRef = useRef(null);
   const simulationRef = useRef({nodes: [], links: []});
   const transformRef = useRef({x: 0, y: 0, k: 1});
-  const pointerRef = useRef({mode: null, node: null, x: 0, y: 0, moved: false});
+  const pointerRef = useRef({mode: null, node: null, x: 0, y: 0, startX: 0, startY: 0, moved: false});
   const [hoverNodeId, setHoverNodeId] = useState(null);
 
   const searchNeedle = useMemo(() => normalizeText(searchTerm.trim()), [searchTerm]);
@@ -170,7 +170,7 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
     const previous = new Map(simulationRef.current.nodes.map((node) => [node.id, node]));
     const width = containerRef.current?.clientWidth || 1200;
     const height = containerRef.current?.clientHeight || 720;
-    const groups = [...new Set(graph.nodes.map((node) => node.group))];
+    const groups = Array.from(new Set(graph.nodes.map((node) => node.group)));
 
     const nodes = graph.nodes.map((node, index) => {
       const existing = previous.get(node.id);
@@ -397,6 +397,8 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
       node,
       x: event.clientX,
       y: event.clientY,
+      startX: event.clientX,
+      startY: event.clientY,
       graphX: point.x,
       graphY: point.y,
       moved: false,
@@ -405,9 +407,10 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
     if (node) {
       node.fx = true;
       node.fy = true;
-      onSelectNode(node.id);
     }
 
+    event.preventDefault();
+    event.stopPropagation();
     event.currentTarget.setPointerCapture(event.pointerId);
   };
 
@@ -417,23 +420,30 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
     const dy = event.clientY - pointer.y;
 
     if (pointer.mode) {
-      if (Math.abs(dx) + Math.abs(dy) > 3) {
+      const totalDx = event.clientX - pointer.startX;
+      const totalDy = event.clientY - pointer.startY;
+
+      if (!pointer.moved && Math.abs(totalDx) + Math.abs(totalDy) > 5) {
         pointer.moved = true;
       }
 
-      if (pointer.mode === 'pan') {
-        transformRef.current.x += dx;
-        transformRef.current.y += dy;
-      } else if (pointer.node) {
-        const point = screenToGraph(event.clientX, event.clientY);
-        pointer.node.x = point.x;
-        pointer.node.y = point.y;
-        pointer.node.vx = 0;
-        pointer.node.vy = 0;
+      if (pointer.moved) {
+        if (pointer.mode === 'pan') {
+          transformRef.current.x += dx;
+          transformRef.current.y += dy;
+        } else if (pointer.node) {
+          const point = screenToGraph(event.clientX, event.clientY);
+          pointer.node.x = point.x;
+          pointer.node.y = point.y;
+          pointer.node.vx = 0;
+          pointer.node.vy = 0;
+        }
       }
 
       pointer.x = event.clientX;
       pointer.y = event.clientY;
+      event.preventDefault();
+      event.stopPropagation();
       return;
     }
 
@@ -453,12 +463,13 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
       }
     }
 
-    pointerRef.current = {mode: null, node: null, x: 0, y: 0, moved: false};
+    pointerRef.current = {mode: null, node: null, x: 0, y: 0, startX: 0, startY: 0, moved: false};
     event.currentTarget.releasePointerCapture(event.pointerId);
   };
 
-  const handleWheel = (event) => {
+  const handleWheel = useCallback((event) => {
     event.preventDefault();
+    event.stopPropagation();
     const rect = canvasRef.current.getBoundingClientRect();
     const transform = transformRef.current;
     const pointerX = event.clientX - rect.left;
@@ -470,7 +481,17 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
     transform.x = pointerX - graphX * nextScale;
     transform.y = pointerY - graphY * nextScale;
     transform.k = nextScale;
-  };
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+
+    if (!canvas) return undefined;
+
+    canvas.addEventListener('wheel', handleWheel, {passive: false});
+
+    return () => canvas.removeEventListener('wheel', handleWheel);
+  }, [handleWheel]);
 
   const resetView = () => {
     transformRef.current = {x: 0, y: 0, k: 1};
@@ -485,7 +506,6 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={() => setHoverNodeId(null)}
-        onWheel={handleWheel}
       />
       <button type="button" className={styles.resetButton} onClick={resetView}>
         Reset
@@ -511,10 +531,10 @@ function GraphContent() {
   const [chargeScale, setChargeScale] = useState(1);
   const [gravityScale, setGravityScale] = useState(1);
 
-  const groups = useMemo(
-    () => ['all', ...new Set(graphData.nodes.map((node) => node.group))],
-    [],
-  );
+  const groups = useMemo(() => {
+    const uniqueGroups = Array.from(new Set(graphData.nodes.map((node) => node.group)));
+    return ['all', ...uniqueGroups];
+  }, []);
 
   const viewGraph = useGraphViewData({showHeadings, showMissing, selectedGroup});
   const graphSettings = useMemo(() => ({
@@ -576,27 +596,6 @@ function GraphContent() {
           Nastavení
         </button>
 
-        <div className={styles.selectBox}>
-          <label htmlFor="graph-group">Okruh</label>
-          <select id="graph-group" value={selectedGroup} onChange={(event) => setSelectedGroup(event.target.value)}>
-            {groups.map((group) => (
-              <option key={group} value={group}>
-                {group === 'all' ? 'Vše' : group}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <label className={styles.toggle}>
-          <input type="checkbox" checked={showHeadings} onChange={(event) => setShowHeadings(event.target.checked)} />
-          Nadpisy
-        </label>
-
-        <label className={styles.toggle}>
-          <input type="checkbox" checked={showMissing} onChange={(event) => setShowMissing(event.target.checked)} />
-          Chybějící odkazy
-        </label>
-
         <div className={styles.stats}>
           <span>{viewGraph.nodes.length} uzlů</span>
           <span>{viewGraph.links.length} hran</span>
@@ -607,15 +606,17 @@ function GraphContent() {
         <section id="graph-settings" className={styles.settingsPanel} aria-label="Nastavení grafu">
           <div className={styles.settingsGroup}>
             <h2>Data</h2>
-            <div className={styles.selectBox}>
-              <label htmlFor="graph-settings-group">Okruh</label>
-              <select id="graph-settings-group" value={selectedGroup} onChange={(event) => setSelectedGroup(event.target.value)}>
-                {groups.map((group) => (
-                  <option key={group} value={group}>
-                    {group === 'all' ? 'Vše' : group}
-                  </option>
-                ))}
-              </select>
+            <div className={styles.segmentControl} aria-label="Okruh">
+              {groups.map((group) => (
+                <button
+                  key={group}
+                  type="button"
+                  aria-pressed={selectedGroup === group}
+                  onClick={() => setSelectedGroup(group)}
+                >
+                  {group === 'all' ? 'Vše' : group}
+                </button>
+              ))}
             </div>
             <label className={styles.toggle}>
               <input type="checkbox" checked={showHeadings} onChange={(event) => setShowHeadings(event.target.checked)} />

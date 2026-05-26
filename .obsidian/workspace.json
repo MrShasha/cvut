@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "0. Obsah předmětu KO"
             }
           }
         ]
@@ -154,13 +154,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "README.md",
+                "file": "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Přehled README"
+              "title": "Přehled 0. Obsah předmětu KO"
             }
           },
           {
@@ -213,31 +213,33 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "3e6d3bb488cdb65c",
+  "active": "c2abdaf069bd4115",
   "lastOpenFiles": [
     "web/build/search-index.json",
     "web/build/sitemap.xml",
     "web/build/index.html",
-    "web/build/404.html",
     "web/build/search.html",
     "web/build/graph.html",
+    "web/build/404.html",
     "web/build/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.html",
     "web/build/spolecne/pokrocila-algoritmizace/obsah-pal.html",
+    "web/build/spolecne/kombinatoricka-optimalizace/obsah-predmetu-ko.html",
     "web/build/spolecne/pokrocila-algoritmizace",
-    "web/build/spolecne",
-    "web/build/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra.html",
-    "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
-    "README.md",
-    "web/build/graph-verification.png",
+    "web/build/spolecne/kombinatoricka-optimalizace",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
     "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
     "web/build/assets/images/path-9bf0005281844cedce92e73ed508fe93.png",
     "web/build/assets/images/mapreduce-521f6b4d501002ba5dac0c70fd6410cb.png",
-    "web/build/assets/images/LaplacMatrix-fd315fbf7dffb8cfdaa7f6eea77c015c.png",
     "web/build/assets/images/littles-law-1af1c367b42af5df782797d3864a45c2.png",
-    "web/build/assets/images/Directory-based-sharding-698c80c875b5c796be84f009032332bd.png",
+    "web/build/assets/images/LaplacMatrix-fd315fbf7dffb8cfdaa7f6eea77c015c.png",
     "web/build/assets/images/IncMatrix-0dd0bd141182fcb1fd894f0046d46551.png",
+    "web/build/assets/images/Directory-based-sharding-698c80c875b5c796be84f009032332bd.png",
     "web/build/assets/images/degree2-145fb6daad387389e37428883e46b4aa.png",
+    "web/build/assets/images/degree-71cb6a8645ec3bc08d6129b57b718e8b.png",
+    "web/generated/docs/spolecne/kombinatoricka-optimalizace/0-obsah-predmetu-ko.md",
+    "README.md",
+    "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
+    "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
     "web/node_modules/micromark-extension-math/node_modules/katex/dist/README.md",
     "web/generated/docs/spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
     "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
@@ -259,8 +261,6 @@
     "web/node_modules/bezier-js/README.md",
     "web/node_modules/bezier-js/FUNDING.md",
     "web/node_modules/internmap/README.md",
-    "web/node_modules/force-graph/README.md",
-    "web/node_modules/tinycolor2/README.md",
     "Bez názvu.canvas"
   ]
 }
