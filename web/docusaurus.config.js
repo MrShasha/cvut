@@ -87,5 +87,15 @@ module.exports = async function createConfig() {
         additionalLanguages: ['bash', 'json', 'sql'],
       },
     },
+    plugins: [
+    [
+      'docusaurus-plugin-graph-view',
+      {
+        paths: ['generated'],         // Directories to scan for .md/.mdx files
+        routePath: '/cvut/graph',     // Route where the graph page will be accessible
+        title: 'Knowledge Graph', // Page title
+      },
+    ],
+  ],
   };
 };
