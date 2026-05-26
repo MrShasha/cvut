@@ -9,7 +9,7 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 	- Zatím nic :(
 - Rozpracované předměty:
 	- Databáze 2 - Jirka
-	- Pokročilá algoritmizace - Matěj
+	- Pokročilá algoritmizace - Matěj (0%)
 - Nerozpracované předměty:
 	- Společné
 		- Kombinatorická optimalizace
@@ -39,3 +39,5 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 `[[Odkaz na markdown soubor#Nadpis uvnitř souboru]]`
 
 `[[Nějaký odkaz|Label co se zobrazí reálně v textu]]`
+
+https://obsidian.md/help/syntax
