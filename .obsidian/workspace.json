@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "f10e4ce4048591de",
+        "id": "93bc6b3ac653776f",
         "type": "tabs",
         "children": [
           {
-            "id": "dbefe192efc975cf",
+            "id": "047b645ab5885cf4",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nová karta"
+              "title": "1. Úvod do kombinatorické optimalizace"
             }
           }
         ]
@@ -150,12 +154,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Přehled"
+              "title": "Přehled 1. Úvod do kombinatorické optimalizace"
             }
           },
           {
@@ -208,16 +213,22 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "dbefe192efc975cf",
+  "active": "047b645ab5885cf4",
   "lastOpenFiles": [
-    "Společné/Kombinatorická Optimalizace/8. Constraint Satisfaction Problem.md",
+    "web/node_modules/unist-util-find-after/lib/index.d.ts",
+    "web/node_modules/unist-util-find-after/lib/index.js",
+    "web/node_modules/unist-util-find-after/lib",
     "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
+    "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
+    "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
+    "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
+    "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+    "Společné/Kombinatorická Optimalizace/8. Constraint Satisfaction Problem.md",
     "Společné/Kombinatorická Optimalizace/7. Rozvrhování.md",
     "Společné/Kombinatorická Optimalizace/6. Problém obchodního cestujícího.md",
     "Společné/Kombinatorická Optimalizace/5. Problém batohu.md",
     "Společné/Kombinatorická Optimalizace/4. Toky v sítích a párování.md",
     "Společné/Kombinatorická Optimalizace/3. Nejkratší cesty.md",
-    "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
     "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
     "Softwarové Inženýrství/Databáze 2/0. Obsah předmětu Databáze 2.md",
     "web/build/search-index.json",
@@ -228,8 +239,6 @@
     "web/build/404.html",
     "web/build/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.html",
     "web/build/spolecne/pokrocila-algoritmizace/obsah-pal.html",
-    "web/build/spolecne/kombinatoricka-optimalizace/uvod-do-kombinatoricke-optimalizace.html",
-    "web/build/spolecne/kombinatoricka-optimalizace/toky-v-sitich-a-parovani.html",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
     "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
     "web/build/assets/images/path-9bf0005281844cedce92e73ed508fe93.png",
@@ -252,10 +261,6 @@
     "README.md",
     "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
     "web/node_modules/micromark-extension-math/node_modules/katex/dist/README.md",
-    "web/generated/docs/spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
-    "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
-    "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
-    "web/node_modules/index-array-by/README.md",
     "Bez názvu.canvas"
   ]
 }
