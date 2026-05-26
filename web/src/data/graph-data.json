@@ -177,7 +177,7 @@
       "url": "/spolecne/kombinatoricka-optimalizace/obsah-predmetu-ko",
       "sourceRel": "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/0-obsah-predmetu-ko.md",
-      "summary": "Kombinatorická optimalizace Tahle stránka je rozcestník pro přípravu na státnicový okruh Combinatorial optimization problems - formulation, complexity analysis, algorithms and example applications. Struktura vychází z př",
+      "summary": "Kapitoly 1. Úvod do kombinatorické optimalizace1. Úvod do kombinatorické optimalizace - Co je kombinatorická optimalizace1. Úvod do kombinatorické optimalizace - Formulace optimalizační úlohy1. Úvod do kombinatorické opt",
       "incoming": 0,
       "outgoing": 70,
       "degree": 70
@@ -191,10 +191,10 @@
       "url": "/spolecne/kombinatoricka-optimalizace/uvod-do-kombinatoricke-optimalizace",
       "sourceRel": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
-      "summary": "Úvod do kombinatorické optimalizace Obsah kapitoly - Co je kombinatorická optimalizace1. Úvod do kombinatorické optimalizace - Formulace optimalizační úlohy1. Úvod do kombinatorické optimalizace - Rozhodovací a optimaliz",
+      "summary": "- Co je kombinatorická optimalizace1. Úvod do kombinatorické optimalizace: definice, vztah k diskrétní matematice a operačnímu výzkumu, motivace a typické aplikační oblasti. - Formulace optimalizační úlohy1. Úvod do komb",
       "incoming": 1,
-      "outgoing": 14,
-      "degree": 15
+      "outgoing": 19,
+      "degree": 20
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
@@ -205,10 +205,10 @@
       "url": "/spolecne/kombinatoricka-optimalizace/celociselne-linearni-programovani",
       "sourceRel": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
-      "summary": "Celočíselné lineární programování Obsah kapitoly - ILP, LP a MILP2. Celočíselné lineární programování - Formulace úloh pomocí ILP2. Celočíselné lineární programování - Enumerativní metody2. Celočíselné lineární programov",
-      "incoming": 1,
+      "summary": "- ILP, LP a MILP2. Celočíselné lineární programování: definice celočíselného lineárního programování, srovnání s LP (spojitá relaxace, zaokrouhlení, konvexita), MILP. - Formulace úloh pomocí ILP2. Celočíselné lineární pr",
+      "incoming": 2,
       "outgoing": 14,
-      "degree": 15
+      "degree": 16
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
@@ -219,10 +219,10 @@
       "url": "/spolecne/kombinatoricka-optimalizace/nejkratsi-cesty",
       "sourceRel": "Společné/Kombinatorická Optimalizace/3. Nejkratší cesty.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "summary": "Nejkratší cesty Obsah kapitoly - Definice úlohy nejkratší cesty3. Nejkratší cesty - Záporné hrany a záporné cykly3. Nejkratší cesty - Dijkstrův algoritmus3. Nejkratší cesty - Bellmanův-Fordův algoritmus3. Nejkratší cesty",
-      "incoming": 1,
-      "outgoing": 18,
-      "degree": 19
+      "summary": "Definice úlohy nejkratší cesty Záporné hrany a záporné cykly Dijkstrův algoritmus Bellmanův-Fordův algoritmus Dynamickoprogramovací pohled Nejkratší cesty v DAG Floydův-Warshallův algoritmus Modelování úloh pomocí nejkra",
+      "incoming": 2,
+      "outgoing": 7,
+      "degree": 9
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
@@ -233,10 +233,10 @@
       "url": "/spolecne/kombinatoricka-optimalizace/toky-v-sitich-a-parovani",
       "sourceRel": "Společné/Kombinatorická Optimalizace/4. Toky v sítích a párování.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "summary": "Toky v sítích a párování Obsah kapitoly - Toková síť a přípustný tok4. Toky v sítích a párování - Maximální tok4. Toky v sítích a párování - Fordův-Fulkersonův algoritmus4. Toky v sítích a párování - Minimální řez4. Toky",
-      "incoming": 1,
-      "outgoing": 26,
-      "degree": 27
+      "summary": "Toková síť a přípustný tok Maximální tok Fordův-Fulkersonův algoritmus Minimální řez Integrita toků Toky s bilancemi Hledání počátečního přípustného toku Tok s minimální cenou Cycle-canceling algoritmus Vícekomoditní tok",
+      "incoming": 2,
+      "outgoing": 10,
+      "degree": 12
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
@@ -247,10 +247,10 @@
       "url": "/spolecne/kombinatoricka-optimalizace/problem-batohu",
       "sourceRel": "Společné/Kombinatorická Optimalizace/5. Problém batohu.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "summary": "Problém batohu Obsah kapitoly - Formulace problému batohu5. Problém batohu - Frakční batoh5. Problém batohu - 0-1 batoh5. Problém batohu - Aproximační algoritmus pro 0-1 batoh5. Problém batohu - Dynamické programování5. ",
-      "incoming": 1,
-      "outgoing": 16,
-      "degree": 17
+      "summary": "Formulace problému batohu Frakční batoh 0-1 batoh Aproximační algoritmus pro 0-1 batoh Dynamické programování Aproximační schéma Složitost a pseudo-polynomiální algoritmy Shrnutí variant problému",
+      "incoming": 3,
+      "outgoing": 6,
+      "degree": 9
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
@@ -261,10 +261,10 @@
       "url": "/spolecne/kombinatoricka-optimalizace/problem-obchodniho-cestujiciho",
       "sourceRel": "Společné/Kombinatorická Optimalizace/6. Problém obchodního cestujícího.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "summary": "Problém obchodního cestujícího Obsah kapitoly - Obecný TSP6. Problém obchodního cestujícího - Složitost a neaproximovatelnost obecného TSP6. Problém obchodního cestujícího - Metrický TSP6. Problém obchodního cestujícího ",
-      "incoming": 1,
-      "outgoing": 16,
-      "degree": 17
+      "summary": "Obecný TSP Složitost a neaproximovatelnost obecného TSP Metrický TSP Double-tree algoritmus Christofidův algoritmus Lokální hledání a k-OPT ILP formulace TSP Srovnání přesných, aproximačních a heuristických přístupů",
+      "incoming": 3,
+      "outgoing": 7,
+      "degree": 10
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
@@ -275,10 +275,10 @@
       "url": "/spolecne/kombinatoricka-optimalizace/rozvrhovani",
       "sourceRel": "Společné/Kombinatorická Optimalizace/7. Rozvrhování.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "summary": "Rozvrhování Obsah kapitoly - Základní pojmy a značení rozvrhování7. Rozvrhování - Rozvrhování na jednom zdroji7. Rozvrhování - Minimalizace Cmax7. Rozvrhování - Bratleyho algoritmus7. Rozvrhování - Minimalizace váženého ",
-      "incoming": 1,
-      "outgoing": 26,
-      "degree": 27
+      "summary": "Základní pojmy a značení rozvrhování Rozvrhování na jednom zdroji Minimalizace Cmax Bratleyho algoritmus Minimalizace váženého součtu dokončení Branch and Bound v rozvrhování Minimalizace Lmax Hornův algoritmus Paralelní",
+      "incoming": 2,
+      "outgoing": 10,
+      "degree": 12
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
@@ -289,10 +289,10 @@
       "url": "/spolecne/kombinatoricka-optimalizace/constraint-satisfaction-problem",
       "sourceRel": "Společné/Kombinatorická Optimalizace/8. Constraint Satisfaction Problem.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "summary": "Constraint Satisfaction Problem Obsah kapitoly - Definice CSP8. Constraint Satisfaction Problem - Proměnné, domény a omezení8. Constraint Satisfaction Problem - Propagace omezení8. Constraint Satisfaction Problem - Arc c",
-      "incoming": 1,
-      "outgoing": 28,
-      "degree": 29
+      "summary": "Definice CSP Proměnné, domény a omezení Propagace omezení Arc consistency AC-3 algoritmus Path consistency a generalized arc consistency Bounds consistency Backtracking search Branching strategie CSP metodologie a algori",
+      "incoming": 2,
+      "outgoing": 10,
+      "degree": 12
     },
     {
       "id": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
@@ -305,8 +305,8 @@
       "generatedRel": "spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
       "summary": "- 1. Standardní grafové úlohy s polynomiální složitostí řešení1. Standardní grafové úlohy s polynomiální složitostí řešení - Zápis asymptotické složitosti algoritmů1. Standardní grafové úlohy s polynomiální složitostí ře",
       "incoming": 0,
-      "outgoing": 12,
-      "degree": 12
+      "outgoing": 14,
+      "degree": 14
     },
     {
       "id": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
@@ -319,8 +319,8 @@
       "generatedRel": "spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "summary": "Zápis asymptotické složitosti algoritmů Asymptotická složitost algoritmů slouží k porovnání rychlosti růstu funkcí a zanedbává konstantní faktory. - Asymptotická horní mez $$ f(n) \\in O(g(n)) $$ - Hodnota funkce f se nac",
       "incoming": 1,
-      "outgoing": 11,
-      "degree": 12
+      "outgoing": 13,
+      "degree": 14
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#big-data",
@@ -887,7 +887,7 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
       "parentTitle": "1. Úvod do kombinatorické optimalizace",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
@@ -902,7 +902,7 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
       "parentTitle": "1. Úvod do kombinatorické optimalizace",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
@@ -917,7 +917,7 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
       "parentTitle": "1. Úvod do kombinatorické optimalizace",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
@@ -932,7 +932,7 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
       "parentTitle": "1. Úvod do kombinatorické optimalizace",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
@@ -947,7 +947,7 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
       "parentTitle": "1. Úvod do kombinatorické optimalizace",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
@@ -962,25 +962,10 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
       "parentTitle": "1. Úvod do kombinatorické optimalizace",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md#vazby-na-další-kapitoly",
-      "title": "Vazby na další kapitoly",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/uvod-do-kombinatoricke-optimalizace#vazby-na-další-kapitoly",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
-      "parentTitle": "1. Úvod do kombinatorické optimalizace",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md#ilp-lp-a-milp",
@@ -992,7 +977,7 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
       "parentTitle": "2. Celočíselné lineární programování",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
@@ -1007,7 +992,7 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
       "parentTitle": "2. Celočíselné lineární programování",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
@@ -1022,7 +1007,7 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
       "parentTitle": "2. Celočíselné lineární programování",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
@@ -1037,7 +1022,7 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
       "parentTitle": "2. Celočíselné lineární programování",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
@@ -1052,7 +1037,7 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
       "parentTitle": "2. Celočíselné lineární programování",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
@@ -1067,25 +1052,10 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
       "parentTitle": "2. Celočíselné lineární programování",
-      "level": 2,
+      "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md#modelovací-příklady",
-      "title": "Modelovací příklady",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/celociselne-linearni-programovani#modelovací-příklady",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
-      "parentTitle": "2. Celočíselné lineární programování",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#definice-úlohy-nejkratší-cesty",
@@ -1098,9 +1068,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "parentTitle": "3. Nejkratší cesty",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#záporné-hrany-a-záporné-cykly",
@@ -1113,9 +1083,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "parentTitle": "3. Nejkratší cesty",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#dijkstrův-algoritmus",
@@ -1128,9 +1098,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "parentTitle": "3. Nejkratší cesty",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#bellmanův-fordův-algoritmus",
@@ -1139,21 +1109,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/nejkratsi-cesty#bellmanův-fordův-algoritmus",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/3. Nejkratší cesty.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "parentTitle": "3. Nejkratší cesty",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#dynamickoprogramovací-pohled",
-      "title": "Dynamickoprogramovací pohled",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/nejkratsi-cesty#dynamickoprogramovací-pohled",
       "sourceRel": "Společné/Kombinatorická Optimalizace/3. Nejkratší cesty.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "parentTitle": "3. Nejkratší cesty",
@@ -1173,9 +1128,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "parentTitle": "3. Nejkratší cesty",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#floydův-warshallův-algoritmus",
@@ -1188,9 +1143,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "parentTitle": "3. Nejkratší cesty",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#modelování-úloh-pomocí-nejkratších-cest",
@@ -1199,21 +1154,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/nejkratsi-cesty#modelování-úloh-pomocí-nejkratších-cest",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/3. Nejkratší cesty.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "parentTitle": "3. Nejkratší cesty",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#srovnání-algoritmů",
-      "title": "Srovnání algoritmů",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/nejkratsi-cesty#srovnání-algoritmů",
       "sourceRel": "Společné/Kombinatorická Optimalizace/3. Nejkratší cesty.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "parentTitle": "3. Nejkratší cesty",
@@ -1233,9 +1173,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "parentTitle": "4. Toky v sítích a párování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#maximální-tok",
@@ -1248,9 +1188,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "parentTitle": "4. Toky v sítích a párování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#fordův-fulkersonův-algoritmus",
@@ -1263,9 +1203,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "parentTitle": "4. Toky v sítích a párování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#minimální-řez",
@@ -1278,9 +1218,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "parentTitle": "4. Toky v sítích a párování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#integrita-toků",
@@ -1293,9 +1233,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "parentTitle": "4. Toky v sítích a párování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#toky-s-bilancemi",
@@ -1304,21 +1244,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/toky-v-sitich-a-parovani#toky-s-bilancemi",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/4. Toky v sítích a párování.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "parentTitle": "4. Toky v sítích a párování",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#hledání-počátečního-přípustného-toku",
-      "title": "Hledání počátečního přípustného toku",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/toky-v-sitich-a-parovani#hledání-počátečního-přípustného-toku",
       "sourceRel": "Společné/Kombinatorická Optimalizace/4. Toky v sítích a párování.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "parentTitle": "4. Toky v sítích a párování",
@@ -1338,21 +1263,6 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "parentTitle": "4. Toky v sítích a párování",
       "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#cycle-canceling-algoritmus",
-      "title": "Cycle-canceling algoritmus",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/toky-v-sitich-a-parovani#cycle-canceling-algoritmus",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/4. Toky v sítích a párování.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "parentTitle": "4. Toky v sítích a párování",
-      "level": 2,
       "incoming": 2,
       "outgoing": 0,
       "degree": 2
@@ -1364,21 +1274,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/toky-v-sitich-a-parovani#vícekomoditní-tok",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/4. Toky v sítích a párování.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "parentTitle": "4. Toky v sítích a párování",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#modelování-úloh-pomocí-toků",
-      "title": "Modelování úloh pomocí toků",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/toky-v-sitich-a-parovani#modelování-úloh-pomocí-toků",
       "sourceRel": "Společné/Kombinatorická Optimalizace/4. Toky v sítích a párování.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "parentTitle": "4. Toky v sítích a párování",
@@ -1398,9 +1293,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "parentTitle": "4. Toky v sítích a párování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#maďarský-algoritmus",
@@ -1413,9 +1308,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "parentTitle": "4. Toky v sítích a párování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#formulace-problému-batohu",
@@ -1428,9 +1323,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
       "parentTitle": "5. Problém batohu",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#frakční-batoh",
@@ -1439,21 +1334,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/problem-batohu#frakční-batoh",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/5. Problém batohu.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "parentTitle": "5. Problém batohu",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#0-1-batoh",
-      "title": "0-1 batoh",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/problem-batohu#0-1-batoh",
       "sourceRel": "Společné/Kombinatorická Optimalizace/5. Problém batohu.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
       "parentTitle": "5. Problém batohu",
@@ -1473,9 +1353,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
       "parentTitle": "5. Problém batohu",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#dynamické-programování",
@@ -1488,9 +1368,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
       "parentTitle": "5. Problém batohu",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#aproximační-schéma",
@@ -1503,9 +1383,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
       "parentTitle": "5. Problém batohu",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#složitost-a-pseudo-polynomiální-algoritmy",
@@ -1514,21 +1394,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/problem-batohu#složitost-a-pseudo-polynomiální-algoritmy",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/5. Problém batohu.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "parentTitle": "5. Problém batohu",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#shrnutí-variant-problému",
-      "title": "Shrnutí variant problému",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/problem-batohu#shrnutí-variant-problému",
       "sourceRel": "Společné/Kombinatorická Optimalizace/5. Problém batohu.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
       "parentTitle": "5. Problém batohu",
@@ -1548,9 +1413,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
       "parentTitle": "6. Problém obchodního cestujícího",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#složitost-a-neaproximovatelnost-obecného-tsp",
@@ -1563,9 +1428,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
       "parentTitle": "6. Problém obchodního cestujícího",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#metrický-tsp",
@@ -1578,9 +1443,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
       "parentTitle": "6. Problém obchodního cestujícího",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#double-tree-algoritmus",
@@ -1593,9 +1458,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
       "parentTitle": "6. Problém obchodního cestujícího",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#christofidův-algoritmus",
@@ -1608,9 +1473,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
       "parentTitle": "6. Problém obchodního cestujícího",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#lokální-hledání-a-k-opt",
@@ -1623,9 +1488,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
       "parentTitle": "6. Problém obchodního cestujícího",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#ilp-formulace-tsp",
@@ -1634,21 +1499,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/problem-obchodniho-cestujiciho#ilp-formulace-tsp",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/6. Problém obchodního cestujícího.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "parentTitle": "6. Problém obchodního cestujícího",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#srovnání-přesných-aproximačních-a-heuristických-přístupů",
-      "title": "Srovnání přesných, aproximačních a heuristických přístupů",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/problem-obchodniho-cestujiciho#srovnání-přesných-aproximačních-a-heuristických-přístupů",
       "sourceRel": "Společné/Kombinatorická Optimalizace/6. Problém obchodního cestujícího.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
       "parentTitle": "6. Problém obchodního cestujícího",
@@ -1668,9 +1518,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "parentTitle": "7. Rozvrhování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#rozvrhování-na-jednom-zdroji",
@@ -1679,21 +1529,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/rozvrhovani#rozvrhování-na-jednom-zdroji",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/7. Rozvrhování.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "parentTitle": "7. Rozvrhování",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#minimalizace-cmax",
-      "title": "Minimalizace Cmax",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/rozvrhovani#minimalizace-cmax",
       "sourceRel": "Společné/Kombinatorická Optimalizace/7. Rozvrhování.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "parentTitle": "7. Rozvrhování",
@@ -1713,21 +1548,6 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "parentTitle": "7. Rozvrhování",
       "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#minimalizace-váženého-součtu-dokončení",
-      "title": "Minimalizace váženého součtu dokončení",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/rozvrhovani#minimalizace-váženého-součtu-dokončení",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/7. Rozvrhování.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "parentTitle": "7. Rozvrhování",
-      "level": 2,
       "incoming": 2,
       "outgoing": 0,
       "degree": 2
@@ -1739,21 +1559,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/rozvrhovani#branch-and-bound-v-rozvrhování",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/7. Rozvrhování.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "parentTitle": "7. Rozvrhování",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#minimalizace-lmax",
-      "title": "Minimalizace Lmax",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/rozvrhovani#minimalizace-lmax",
       "sourceRel": "Společné/Kombinatorická Optimalizace/7. Rozvrhování.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "parentTitle": "7. Rozvrhování",
@@ -1773,9 +1578,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "parentTitle": "7. Rozvrhování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#paralelní-identické-zdroje",
@@ -1788,9 +1593,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "parentTitle": "7. Rozvrhování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#list-scheduling",
@@ -1803,9 +1608,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "parentTitle": "7. Rozvrhování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#dynamické-programování-v-rozvrhování",
@@ -1818,9 +1623,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "parentTitle": "7. Rozvrhování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#projektové-rozvrhování-s-časovými-omezeními",
@@ -1833,9 +1638,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "parentTitle": "7. Rozvrhování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#ilp-formulace-rozvrhovacích-úloh",
@@ -1848,9 +1653,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "parentTitle": "7. Rozvrhování",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#definice-csp",
@@ -1863,9 +1668,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "parentTitle": "8. Constraint Satisfaction Problem",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#proměnné-domény-a-omezení",
@@ -1878,9 +1683,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "parentTitle": "8. Constraint Satisfaction Problem",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#propagace-omezení",
@@ -1893,9 +1698,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "parentTitle": "8. Constraint Satisfaction Problem",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#arc-consistency",
@@ -1908,9 +1713,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "parentTitle": "8. Constraint Satisfaction Problem",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#ac-3-algoritmus",
@@ -1923,9 +1728,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "parentTitle": "8. Constraint Satisfaction Problem",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#path-consistency-a-generalized-arc-consistency",
@@ -1934,21 +1739,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/constraint-satisfaction-problem#path-consistency-a-generalized-arc-consistency",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/8. Constraint Satisfaction Problem.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "parentTitle": "8. Constraint Satisfaction Problem",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#bounds-consistency",
-      "title": "Bounds consistency",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/constraint-satisfaction-problem#bounds-consistency",
       "sourceRel": "Společné/Kombinatorická Optimalizace/8. Constraint Satisfaction Problem.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "parentTitle": "8. Constraint Satisfaction Problem",
@@ -1968,9 +1758,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "parentTitle": "8. Constraint Satisfaction Problem",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#branching-strategie",
@@ -1979,21 +1769,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/constraint-satisfaction-problem#branching-strategie",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/8. Constraint Satisfaction Problem.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "parentTitle": "8. Constraint Satisfaction Problem",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#csp-metodologie-a-algoritmy",
-      "title": "CSP metodologie a algoritmy",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/constraint-satisfaction-problem#csp-metodologie-a-algoritmy",
       "sourceRel": "Společné/Kombinatorická Optimalizace/8. Constraint Satisfaction Problem.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "parentTitle": "8. Constraint Satisfaction Problem",
@@ -2013,9 +1788,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "parentTitle": "8. Constraint Satisfaction Problem",
       "level": 2,
-      "incoming": 3,
+      "incoming": 2,
       "outgoing": 0,
-      "degree": 3
+      "degree": 2
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#globální-omezení",
@@ -2024,36 +1799,6 @@
       "group": "Společné",
       "folder": "Společné/Kombinatorická Optimalizace",
       "url": "/spolecne/kombinatoricka-optimalizace/constraint-satisfaction-problem#globální-omezení",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/8. Constraint Satisfaction Problem.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "parentTitle": "8. Constraint Satisfaction Problem",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#alldifferent",
-      "title": "Alldifferent",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/constraint-satisfaction-problem#alldifferent",
-      "sourceRel": "Společné/Kombinatorická Optimalizace/8. Constraint Satisfaction Problem.md",
-      "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "parentTitle": "8. Constraint Satisfaction Problem",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#modelovací-příklady",
-      "title": "Modelovací příklady",
-      "type": "heading",
-      "group": "Společné",
-      "folder": "Společné/Kombinatorická Optimalizace",
-      "url": "/spolecne/kombinatoricka-optimalizace/constraint-satisfaction-problem#modelovací-příklady",
       "sourceRel": "Společné/Kombinatorická Optimalizace/8. Constraint Satisfaction Problem.md",
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "parentTitle": "8. Constraint Satisfaction Problem",
@@ -2223,6 +1968,36 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-minimální-kostru-grafu",
+      "title": "Algoritmy pro Minimální kostru grafu",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#algoritmy-pro-minimální-kostru-grafu",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#prim-jarníkův-algoritmus",
+      "title": "Prim-Jarníkův algoritmus",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#prim-jarníkův-algoritmus",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
       "incoming": 2,
       "outgoing": 0,
       "degree": 2
@@ -3351,10 +3126,52 @@
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md#vazby-na-další-kapitoly",
-      "type": "heading",
-      "label": "Vazby na další kapitoly",
-      "anchor": "#vazby-na-další-kapitoly"
+      "target": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
+      "type": "wiki",
+      "label": "4. Toky v sítích a párování",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
+      "target": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
+      "type": "wiki",
+      "label": "3. Nejkratší cesty",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
+      "target": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
+      "type": "wiki",
+      "label": "5. Problém batohu",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
+      "target": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
+      "type": "wiki",
+      "label": "6. Problém obchodního cestujícího",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
+      "target": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
+      "type": "wiki",
+      "label": "7. Rozvrhování",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
+      "target": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
+      "type": "wiki",
+      "label": "2. Celočíselné lineární programování",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
+      "target": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
+      "type": "wiki",
+      "label": "8. Constraint Satisfaction Problem",
+      "anchor": ""
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
@@ -3400,465 +3217,17 @@
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md#modelovací-příklady",
-      "type": "heading",
-      "label": "Modelovací příklady",
-      "anchor": "#modelovací-příklady"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#definice-úlohy-nejkratší-cesty",
-      "type": "heading",
-      "label": "Definice úlohy nejkratší cesty",
-      "anchor": "#definice-úlohy-nejkratší-cesty"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#záporné-hrany-a-záporné-cykly",
-      "type": "heading",
-      "label": "Záporné hrany a záporné cykly",
-      "anchor": "#záporné-hrany-a-záporné-cykly"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#dijkstrův-algoritmus",
-      "type": "heading",
-      "label": "Dijkstrův algoritmus",
-      "anchor": "#dijkstrův-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#bellmanův-fordův-algoritmus",
-      "type": "heading",
-      "label": "Bellmanův-Fordův algoritmus",
-      "anchor": "#bellmanův-fordův-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#dynamickoprogramovací-pohled",
-      "type": "heading",
-      "label": "Dynamickoprogramovací pohled",
-      "anchor": "#dynamickoprogramovací-pohled"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#nejkratší-cesty-v-dag",
-      "type": "heading",
-      "label": "Nejkratší cesty v DAG",
-      "anchor": "#nejkratší-cesty-v-dag"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#floydův-warshallův-algoritmus",
-      "type": "heading",
-      "label": "Floydův-Warshallův algoritmus",
-      "anchor": "#floydův-warshallův-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#modelování-úloh-pomocí-nejkratších-cest",
-      "type": "heading",
-      "label": "Modelování úloh pomocí nejkratších cest",
-      "anchor": "#modelování-úloh-pomocí-nejkratších-cest"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#srovnání-algoritmů",
-      "type": "heading",
-      "label": "Srovnání algoritmů",
-      "anchor": "#srovnání-algoritmů"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#toková-síť-a-přípustný-tok",
-      "type": "heading",
-      "label": "Toková síť a přípustný tok",
-      "anchor": "#toková-síť-a-přípustný-tok"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#maximální-tok",
-      "type": "heading",
-      "label": "Maximální tok",
-      "anchor": "#maximální-tok"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#fordův-fulkersonův-algoritmus",
-      "type": "heading",
-      "label": "Fordův-Fulkersonův algoritmus",
-      "anchor": "#fordův-fulkersonův-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#minimální-řez",
-      "type": "heading",
-      "label": "Minimální řez",
-      "anchor": "#minimální-řez"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#integrita-toků",
-      "type": "heading",
-      "label": "Integrita toků",
-      "anchor": "#integrita-toků"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#toky-s-bilancemi",
-      "type": "heading",
-      "label": "Toky s bilancemi",
-      "anchor": "#toky-s-bilancemi"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#hledání-počátečního-přípustného-toku",
-      "type": "heading",
-      "label": "Hledání počátečního přípustného toku",
-      "anchor": "#hledání-počátečního-přípustného-toku"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#tok-s-minimální-cenou",
-      "type": "heading",
-      "label": "Tok s minimální cenou",
-      "anchor": "#tok-s-minimální-cenou"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#cycle-canceling-algoritmus",
-      "type": "heading",
-      "label": "Cycle-canceling algoritmus",
-      "anchor": "#cycle-canceling-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#vícekomoditní-tok",
-      "type": "heading",
-      "label": "Vícekomoditní tok",
-      "anchor": "#vícekomoditní-tok"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#modelování-úloh-pomocí-toků",
-      "type": "heading",
-      "label": "Modelování úloh pomocí toků",
-      "anchor": "#modelování-úloh-pomocí-toků"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#bipartitní-párování-a-přiřazovací-problém",
-      "type": "heading",
-      "label": "Bipartitní párování a přiřazovací problém",
-      "anchor": "#bipartitní-párování-a-přiřazovací-problém"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#maďarský-algoritmus",
-      "type": "heading",
-      "label": "Maďarský algoritmus",
-      "anchor": "#maďarský-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#formulace-problému-batohu",
-      "type": "heading",
-      "label": "Formulace problému batohu",
-      "anchor": "#formulace-problému-batohu"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#frakční-batoh",
-      "type": "heading",
-      "label": "Frakční batoh",
-      "anchor": "#frakční-batoh"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#0-1-batoh",
-      "type": "heading",
-      "label": "0-1 batoh",
-      "anchor": "#0-1-batoh"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#aproximační-algoritmus-pro-0-1-batoh",
-      "type": "heading",
-      "label": "Aproximační algoritmus pro 0-1 batoh",
-      "anchor": "#aproximační-algoritmus-pro-0-1-batoh"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#dynamické-programování",
-      "type": "heading",
-      "label": "Dynamické programování",
-      "anchor": "#dynamické-programování"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#aproximační-schéma",
-      "type": "heading",
-      "label": "Aproximační schéma",
-      "anchor": "#aproximační-schéma"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#složitost-a-pseudo-polynomiální-algoritmy",
-      "type": "heading",
-      "label": "Složitost a pseudo-polynomiální algoritmy",
-      "anchor": "#složitost-a-pseudo-polynomiální-algoritmy"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#shrnutí-variant-problému",
-      "type": "heading",
-      "label": "Shrnutí variant problému",
-      "anchor": "#shrnutí-variant-problému"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#obecný-tsp",
-      "type": "heading",
-      "label": "Obecný TSP",
-      "anchor": "#obecný-tsp"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#složitost-a-neaproximovatelnost-obecného-tsp",
-      "type": "heading",
-      "label": "Složitost a neaproximovatelnost obecného TSP",
-      "anchor": "#složitost-a-neaproximovatelnost-obecného-tsp"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#metrický-tsp",
-      "type": "heading",
-      "label": "Metrický TSP",
-      "anchor": "#metrický-tsp"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#double-tree-algoritmus",
-      "type": "heading",
-      "label": "Double-tree algoritmus",
-      "anchor": "#double-tree-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#christofidův-algoritmus",
-      "type": "heading",
-      "label": "Christofidův algoritmus",
-      "anchor": "#christofidův-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#lokální-hledání-a-k-opt",
-      "type": "heading",
-      "label": "Lokální hledání a k-OPT",
-      "anchor": "#lokální-hledání-a-k-opt"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#ilp-formulace-tsp",
-      "type": "heading",
-      "label": "ILP formulace TSP",
-      "anchor": "#ilp-formulace-tsp"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#srovnání-přesných-aproximačních-a-heuristických-přístupů",
-      "type": "heading",
-      "label": "Srovnání přesných, aproximačních a heuristických přístupů",
-      "anchor": "#srovnání-přesných-aproximačních-a-heuristických-přístupů"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#základní-pojmy-a-značení-rozvrhování",
-      "type": "heading",
-      "label": "Základní pojmy a značení rozvrhování",
-      "anchor": "#základní-pojmy-a-značení-rozvrhování"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#rozvrhování-na-jednom-zdroji",
-      "type": "heading",
-      "label": "Rozvrhování na jednom zdroji",
-      "anchor": "#rozvrhování-na-jednom-zdroji"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#minimalizace-cmax",
-      "type": "heading",
-      "label": "Minimalizace Cmax",
-      "anchor": "#minimalizace-cmax"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#bratleyho-algoritmus",
-      "type": "heading",
-      "label": "Bratleyho algoritmus",
-      "anchor": "#bratleyho-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#minimalizace-váženého-součtu-dokončení",
-      "type": "heading",
-      "label": "Minimalizace váženého součtu dokončení",
-      "anchor": "#minimalizace-váženého-součtu-dokončení"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#branch-and-bound-v-rozvrhování",
-      "type": "heading",
-      "label": "Branch and Bound v rozvrhování",
-      "anchor": "#branch-and-bound-v-rozvrhování"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#minimalizace-lmax",
-      "type": "heading",
-      "label": "Minimalizace Lmax",
-      "anchor": "#minimalizace-lmax"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#hornův-algoritmus",
-      "type": "heading",
-      "label": "Hornův algoritmus",
-      "anchor": "#hornův-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#paralelní-identické-zdroje",
-      "type": "heading",
-      "label": "Paralelní identické zdroje",
-      "anchor": "#paralelní-identické-zdroje"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#list-scheduling",
-      "type": "heading",
-      "label": "List scheduling",
-      "anchor": "#list-scheduling"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#dynamické-programování-v-rozvrhování",
-      "type": "heading",
-      "label": "Dynamické programování v rozvrhování",
-      "anchor": "#dynamické-programování-v-rozvrhování"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#projektové-rozvrhování-s-časovými-omezeními",
-      "type": "heading",
-      "label": "Projektové rozvrhování s časovými omezeními",
-      "anchor": "#projektové-rozvrhování-s-časovými-omezeními"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#ilp-formulace-rozvrhovacích-úloh",
-      "type": "heading",
-      "label": "ILP formulace rozvrhovacích úloh",
-      "anchor": "#ilp-formulace-rozvrhovacích-úloh"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#definice-csp",
-      "type": "heading",
-      "label": "Definice CSP",
-      "anchor": "#definice-csp"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#proměnné-domény-a-omezení",
-      "type": "heading",
-      "label": "Proměnné, domény a omezení",
-      "anchor": "#proměnné-domény-a-omezení"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#propagace-omezení",
-      "type": "heading",
-      "label": "Propagace omezení",
-      "anchor": "#propagace-omezení"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#arc-consistency",
-      "type": "heading",
-      "label": "Arc consistency",
-      "anchor": "#arc-consistency"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#ac-3-algoritmus",
-      "type": "heading",
-      "label": "AC-3 algoritmus",
-      "anchor": "#ac-3-algoritmus"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#path-consistency-a-generalized-arc-consistency",
-      "type": "heading",
-      "label": "Path consistency a generalized arc consistency",
-      "anchor": "#path-consistency-a-generalized-arc-consistency"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#bounds-consistency",
-      "type": "heading",
-      "label": "Bounds consistency",
-      "anchor": "#bounds-consistency"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#backtracking-search",
-      "type": "heading",
-      "label": "Backtracking search",
-      "anchor": "#backtracking-search"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#branching-strategie",
-      "type": "heading",
-      "label": "Branching strategie",
-      "anchor": "#branching-strategie"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#csp-metodologie-a-algoritmy",
-      "type": "heading",
-      "label": "CSP metodologie a algoritmy",
-      "anchor": "#csp-metodologie-a-algoritmy"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#restarty-a-nogoods",
-      "type": "heading",
-      "label": "Restarty a nogoods",
-      "anchor": "#restarty-a-nogoods"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#globální-omezení",
-      "type": "heading",
-      "label": "Globální omezení",
-      "anchor": "#globální-omezení"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#alldifferent",
-      "type": "heading",
-      "label": "Alldifferent",
-      "anchor": "#alldifferent"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#modelovací-příklady",
-      "type": "heading",
-      "label": "Modelovací příklady",
-      "anchor": "#modelovací-příklady"
+      "target": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
+      "type": "wiki",
+      "label": "5. Problém batohu",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
+      "target": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
+      "type": "wiki",
+      "label": "6. Problém obchodního cestujícího",
+      "anchor": ""
     },
     {
       "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
@@ -3943,6 +3312,20 @@
       "type": "heading",
       "label": "Adjacency list representation",
       "anchor": "#adjacency-list-representation"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-minimální-kostru-grafu",
+      "type": "heading",
+      "label": "Algoritmy pro Minimální kostru grafu",
+      "anchor": "#algoritmy-pro-minimální-kostru-grafu"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#prim-jarníkův-algoritmus",
+      "type": "heading",
+      "label": "Prim-Jarníkův algoritmus",
+      "anchor": "#prim-jarníkův-algoritmus"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
@@ -4203,12 +3586,6 @@
       "label": "obsahuje nadpis"
     },
     {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md#vazby-na-další-kapitoly",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
       "source": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md#ilp-lp-a-milp",
       "type": "contains",
@@ -4245,12 +3622,6 @@
       "label": "obsahuje nadpis"
     },
     {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/2-celociselne-linearni-programovani.md#modelovací-příklady",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
       "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#definice-úlohy-nejkratší-cesty",
       "type": "contains",
@@ -4276,12 +3647,6 @@
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#dynamickoprogramovací-pohled",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#nejkratší-cesty-v-dag",
       "type": "contains",
       "label": "obsahuje nadpis"
@@ -4295,12 +3660,6 @@
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#modelování-úloh-pomocí-nejkratších-cest",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#srovnání-algoritmů",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
@@ -4342,31 +3701,13 @@
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#hledání-počátečního-přípustného-toku",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#tok-s-minimální-cenou",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#cycle-canceling-algoritmus",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#vícekomoditní-tok",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md#modelování-úloh-pomocí-toků",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
@@ -4396,12 +3737,6 @@
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#0-1-batoh",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#aproximační-algoritmus-pro-0-1-batoh",
       "type": "contains",
       "label": "obsahuje nadpis"
@@ -4421,12 +3756,6 @@
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#složitost-a-pseudo-polynomiální-algoritmy",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md#shrnutí-variant-problému",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
@@ -4473,12 +3802,6 @@
       "label": "obsahuje nadpis"
     },
     {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md#srovnání-přesných-aproximačních-a-heuristických-přístupů",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
       "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#základní-pojmy-a-značení-rozvrhování",
       "type": "contains",
@@ -4492,31 +3815,13 @@
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#minimalizace-cmax",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#bratleyho-algoritmus",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#minimalizace-váženého-součtu-dokončení",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#branch-and-bound-v-rozvrhování",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md#minimalizace-lmax",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
@@ -4594,12 +3899,6 @@
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#bounds-consistency",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#backtracking-search",
       "type": "contains",
       "label": "obsahuje nadpis"
@@ -4612,12 +3911,6 @@
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#csp-metodologie-a-algoritmy",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#restarty-a-nogoods",
       "type": "contains",
       "label": "obsahuje nadpis"
@@ -4625,18 +3918,6 @@
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#globální-omezení",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#alldifferent",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
-      "target": "heading:spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md#modelovací-příklady",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
@@ -4705,12 +3986,24 @@
       "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#adjacency-list-representation",
       "type": "contains",
       "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-minimální-kostru-grafu",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#prim-jarníkův-algoritmus",
+      "type": "contains",
+      "label": "obsahuje nadpis"
     }
   ],
   "stats": {
     "documents": 23,
-    "headings": 127,
+    "headings": 112,
     "missing": 0,
-    "links": 372
+    "links": 301
   }
 }

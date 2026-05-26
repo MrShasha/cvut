@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
+                "file": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "2. Celočíselné lineární programování"
+              "title": "1. Standardní grafové úlohy s polynomiální složitostí řešení"
             }
           }
         ]
@@ -154,13 +154,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
+                "file": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Přehled 2. Celočíselné lineární programování"
+              "title": "Přehled 1. Standardní grafové úlohy s polynomiální složitostí řešení"
             }
           },
           {
@@ -215,10 +215,29 @@
   },
   "active": "047b645ab5885cf4",
   "lastOpenFiles": [
+    "web/build/search-index.json",
+    "web/build/assets/js/runtime~main.e3dd8e98.js",
+    "web/build/assets/js/main.5add585f.js.LICENSE.txt",
+    "web/build/assets/js/main.5add585f.js",
+    "web/build/assets/js/fb2009df.ad950177.js",
+    "web/build/assets/js/ee655177.aead234a.js",
+    "web/build/assets/js/d69574b1.cb1ed9ff.js",
+    "web/build/assets/js/bc2f0b08.a29b72b4.js",
+    "web/build/assets/js/aba21aa0.f572c3f0.js",
+    "web/build/assets/js/a9ace59a.b5a2e592.js",
+    "web/build/assets/js/a94703ab.ad76f0b0.js",
+    "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
+    "web/build/assets/images/spanningTreeExp-57b90f9b861e73318bf56710897df8e4.png",
+    "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
+    "web/build/assets/images/Prim_Algorithm_6.svg-102edc52f2d68838f26261ca9e0352a3.png",
+    "web/build/assets/images/Prim_Algorithm_7.svg-f7e48fb1975a3c63191ed40501e6e6c8.png",
+    "web/build/assets/images/Prim_Algorithm_5.svg-9c3e04add84c2706b45b0b928efcf039.png",
+    "web/build/assets/images/Prim_Algorithm_4.svg-236f5a5520fc41393c2e425c5db87bdf.png",
+    "web/build/assets/images/Prim_Algorithm_3.svg-cd3c00713c8ef9699822e09db8d1aeaf.png",
+    "web/build/assets/images/Prim_Algorithm_2.svg-5335da961294872ba371341ef305aebc.png",
+    "web/build/assets/images/Prim_Algorithm_1.svg-477a644c8be49c95c486872b60aab643.png",
     "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
-    "web/node_modules/unist-util-find-after/lib/index.d.ts",
-    "web/node_modules/unist-util-find-after/lib/index.js",
-    "web/node_modules/unist-util-find-after/lib",
+    "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
     "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
     "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
     "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
@@ -229,25 +248,7 @@
     "Společné/Kombinatorická Optimalizace/5. Problém batohu.md",
     "Společné/Kombinatorická Optimalizace/4. Toky v sítích a párování.md",
     "Společné/Kombinatorická Optimalizace/3. Nejkratší cesty.md",
-    "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
     "Softwarové Inženýrství/Databáze 2/0. Obsah předmětu Databáze 2.md",
-    "web/build/search-index.json",
-    "web/build/sitemap.xml",
-    "web/build/index.html",
-    "web/build/graph.html",
-    "web/build/search.html",
-    "web/build/404.html",
-    "web/build/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.html",
-    "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
-    "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
-    "web/build/assets/images/path-9bf0005281844cedce92e73ed508fe93.png",
-    "web/build/assets/images/mapreduce-521f6b4d501002ba5dac0c70fd6410cb.png",
-    "web/build/assets/images/littles-law-1af1c367b42af5df782797d3864a45c2.png",
-    "web/build/assets/images/LaplacMatrix-fd315fbf7dffb8cfdaa7f6eea77c015c.png",
-    "web/build/assets/images/IncMatrix-0dd0bd141182fcb1fd894f0046d46551.png",
-    "web/build/assets/images/Directory-based-sharding-698c80c875b5c796be84f009032332bd.png",
-    "web/build/assets/images/degree2-145fb6daad387389e37428883e46b4aa.png",
-    "web/build/assets/images/degree-71cb6a8645ec3bc08d6129b57b718e8b.png",
     "web/generated/docs/spolecne/kombinatoricka-optimalizace/8-constraint-satisfaction-problem.md",
     "web/generated/docs/spolecne/kombinatoricka-optimalizace/7-rozvrhovani.md",
     "web/generated/docs/spolecne/kombinatoricka-optimalizace/6-problem-obchodniho-cestujiciho.md",
