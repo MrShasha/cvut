@@ -3,5 +3,7 @@ web/build/
 web/.docusaurus/
 web/generated/
 
+.obsidian/workspace.json
+
 .DS_Store
 Thumbs.db
