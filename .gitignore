@@ -2,8 +2,14 @@ web/node_modules/
 web/build/
 web/.docusaurus/
 web/generated/
+web/.env
+web/.env.local
+npm-debug.log*
 
 .obsidian/workspace.json
+.obsidian/workspace-*.json
+.obsidian/app-*.json
+.obsidian/graph-*.json
 
 .DS_Store
 Thumbs.db
