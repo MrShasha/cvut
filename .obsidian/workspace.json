@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "550534a864c2ed1d",
+        "id": "57103cd294491a40",
         "type": "tabs",
         "children": [
           {
-            "id": "777f5f3d5d00465b",
+            "id": "c2abdaf069bd4115",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -19,20 +19,6 @@
               },
               "icon": "lucide-file",
               "title": "README"
-            }
-          },
-          {
-            "id": "2907db4777a8fbdd",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "0. Obsah PAL"
             }
           }
         ]
@@ -168,13 +154,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Společné/Pokročilá algoritmizace/Standardní grafové úlohy s polynomiální složitostí řešení.md",
+                "file": "README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Přehled Standardní grafové úlohy s polynomiální složitostí řešení"
+              "title": "Přehled README"
             }
           },
           {
@@ -206,24 +192,13 @@
               "icon": "git-pull-request",
               "title": "Source Control"
             }
-          },
-          {
-            "id": "a362441427659a0c",
-            "type": "leaf",
-            "state": {
-              "type": "review-queue-list-view",
-              "state": {},
-              "icon": "SpacedRepIcon",
-              "title": "Fronta poznámek k revizi"
-            }
           }
         ],
-        "currentTab": 5
+        "currentTab": 7
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -238,53 +213,54 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "777f5f3d5d00465b",
+  "active": "3e6d3bb488cdb65c",
   "lastOpenFiles": [
-    "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
-    "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
-    "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md",
-    "Softwarové Inženýrství/Databáze 2/8. Grafové databáze (Neo4j).md",
-    "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
-    "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
-    "Assets/PALimgs/adjList.png",
-    "Assets/PALimgs/IncMatrix.png",
-    "Assets/PALimgs/LaplacMatrix.png",
-    "Assets/PALimgs/graphExample1.png",
-    "Assets/PALimgs/adjMatrix.png",
-    "README.md",
-    "Assets/PALimgs/cicle.png",
-    "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
-    "Softwarové Inženýrství/Databáze 2/5. Key-Value databáze (Redis).md",
-    "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
-    "Assets/PALimgs/path.png",
-    "Softwarové Inženýrství/Databáze 2/0. Obsah předmětu Databáze 2.md",
-    "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
-    "Assets/PALimgs/degree2.png",
-    "Assets/PALimgs/degree.png",
-    "Assets/PALimgs",
-    "Assets/Nová složka",
-    "Softwarové Inženýrství/Databáze 2/Obsah předmětu Databáze 2.md",
-    "Softwarové Inženýrství/Databáze 2/Principy distribuovaných systémů a NoSQL.md",
-    "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
-    "Softwarové Inženýrství/Databáze 2/Wide Column Stores (Cassandra).md",
-    "Softwarové Inženýrství/Databáze 2/Pokročilé aspekty grafových databází.md",
-    "Softwarové Inženýrství/Databáze 2/RDF Stores a Sémantický web (SPARQL).md",
-    "Softwarové Inženýrství/Databáze 2/MapReduce a Hadoop.md",
-    "Softwarové Inženýrství/Databáze 2/Grafové databáze (Neo4j).md",
-    "Softwarové Inženýrství/Databáze 2/Formáty dat.md",
-    "Assets/Spongebob.png",
-    "Společné/Pokročilá algoritmizace",
-    "Společné/Pokročilá algoritmizace.md",
-    "Softwarové Inženýrství/Databáze 2/Dokumentové databáze (MongoDB).md",
-    "Softwarové Inženýrství/Databáze 2/Key-Value databáze (Redis).md",
-    "Společné",
+    "web/build/search-index.json",
     "web/build/sitemap.xml",
     "web/build/index.html",
     "web/build/404.html",
+    "web/build/search.html",
+    "web/build/graph.html",
+    "web/build/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.html",
+    "web/build/spolecne/pokrocila-algoritmizace/obsah-pal.html",
+    "web/build/spolecne/pokrocila-algoritmizace",
+    "web/build/spolecne",
     "web/build/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra.html",
-    "web/build/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi.html",
-    "web/build/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql.html",
-    "Bez názvu.canvas",
-    "Big Data.md"
+    "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
+    "README.md",
+    "web/build/graph-verification.png",
+    "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
+    "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
+    "web/build/assets/images/path-9bf0005281844cedce92e73ed508fe93.png",
+    "web/build/assets/images/mapreduce-521f6b4d501002ba5dac0c70fd6410cb.png",
+    "web/build/assets/images/LaplacMatrix-fd315fbf7dffb8cfdaa7f6eea77c015c.png",
+    "web/build/assets/images/littles-law-1af1c367b42af5df782797d3864a45c2.png",
+    "web/build/assets/images/Directory-based-sharding-698c80c875b5c796be84f009032332bd.png",
+    "web/build/assets/images/IncMatrix-0dd0bd141182fcb1fd894f0046d46551.png",
+    "web/build/assets/images/degree2-145fb6daad387389e37428883e46b4aa.png",
+    "web/node_modules/micromark-extension-math/node_modules/katex/dist/README.md",
+    "web/generated/docs/spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+    "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
+    "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
+    "web/node_modules/index-array-by/README.md",
+    "web/node_modules/react-kapsule/README.md",
+    "web/node_modules/docusaurus-plugin-graph-view/README.md",
+    "web/node_modules/d3-force/README.md",
+    "web/node_modules/d3-hierarchy/README.md",
+    "web/node_modules/float-tooltip/README.md",
+    "web/node_modules/@tweenjs/tween.js/README.md",
+    "web/node_modules/d3-quadtree/README.md",
+    "web/node_modules/d3-fetch/README.md",
+    "web/node_modules/d3-geo/README.md",
+    "web/node_modules/d3-interpolate/README.md",
+    "web/node_modules/canvas-color-tracker/README.md",
+    "web/node_modules/d3-format/README.md",
+    "web/node_modules/d3-scale/README.md",
+    "web/node_modules/bezier-js/README.md",
+    "web/node_modules/bezier-js/FUNDING.md",
+    "web/node_modules/internmap/README.md",
+    "web/node_modules/force-graph/README.md",
+    "web/node_modules/tinycolor2/README.md",
+    "Bez názvu.canvas"
   ]
 }

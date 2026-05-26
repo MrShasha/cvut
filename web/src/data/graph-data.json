@@ -1,0 +1,1888 @@
+{
+  "nodes": [
+    {
+      "id": "doc:index.md",
+      "title": "Úvod",
+      "type": "document",
+      "group": "Kořen",
+      "folder": "",
+      "url": "/",
+      "sourceRel": "README.md",
+      "generatedRel": "index.md",
+      "summary": "ČVUT OI výpisky This repository contains study materials for the final exams at CTU FEE OI. If this doesn’t ring a bell, then this repo probably won’t be very helpful for you. Also, it is entirely in Czech ☺. Online verz",
+      "incoming": 0,
+      "outgoing": 0,
+      "degree": 0
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "title": "0. Obsah předmětu Databáze 2",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/obsah-predmetu-databaze-2",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/0. Obsah předmětu Databáze 2.md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "summary": "1. Úvod do Big Data a NoSQL databází - Big Data1. Úvod do Big Data a NoSQL databází: koncept, 5V charakteristiky (volume, variety, velocity, veracity, value), současné trendy a výzvy. - Relační databáze1. Úvod do Big Dat",
+      "incoming": 0,
+      "outgoing": 47,
+      "degree": 47
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "title": "1. Úvod do Big Data a NoSQL databází",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "summary": "- Big Data1. Úvod do Big Data a NoSQL databází: koncept, 5V charakteristiky (volume, variety, velocity, veracity, value), současné trendy a výzvy. - Relační databáze1. Úvod do Big Data a NoSQL databází: funkční závislost",
+      "incoming": 1,
+      "outgoing": 8,
+      "degree": 9
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "title": "2. Formáty dat",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/formaty-dat",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/2. Formáty dat.md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "summary": "- XML2. Formáty dat: konstrukty (element, atribut, text), obsahové modely, entity, well-formedness, dokumentově a datově orientované XML. - JSON a BSON2. Formáty dat: konstrukty (objekt, pole, hodnota), datové typy, chyb",
+      "incoming": 1,
+      "outgoing": 8,
+      "degree": 9
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "title": "3. Principy distribuovaných systémů a NoSQL",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "summary": "- Škálování3. Principy distribuovaných systémů a NoSQL: vertikální vs. horizontální škálování (výhody, nevýhody, limity), network fallacies, architektura clusteru. - Distribuce dat (Sharding)3. Principy distribuovaných s",
+      "incoming": 1,
+      "outgoing": 12,
+      "degree": 13
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "title": "4. MapReduce a Hadoop",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/mapreduce-a-hadoop",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "summary": "- Programovací modely4. MapReduce a Hadoop: datový paralelizmus, task paralelizmus, předávání zpráv, sdílená paměť. - MapReduce4. MapReduce a Hadoop: map a reduce funkce (vstupy, výstupy), architektura clusteru (master, ",
+      "incoming": 1,
+      "outgoing": 6,
+      "degree": 7
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "title": "5. Key-Value databáze (Redis)",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/key-value-databaze-redis",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/5. Key-Value databáze (Redis).md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "summary": "- Obecné principy5. Key-Value databáze (Redis): datový model (klíč-hodnota), správa klíčů (generované, strukturované, s předponami), základní CRUD operace, TTL. - Redis5. Key-Value databáze (Redis): in-memory vlastnosti,",
+      "incoming": 1,
+      "outgoing": 6,
+      "degree": 7
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "title": "6. Wide Column Stores (Cassandra)",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "summary": "- Obecné principy6. Wide Column Stores (Cassandra): datový model (keyspace, table/column family, row, column), návrh dle dotazů (partition key + clustering columns). - Datové typy a hodnoty6. Wide Column Stores (Cassandr",
+      "incoming": 1,
+      "outgoing": 6,
+      "degree": 7
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "title": "7. Dokumentové databáze (MongoDB)",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/dokumentove-databaze-mongodb",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "summary": "- Obecné principy7. Dokumentové databáze (MongoDB): dokumenty (JSON/BSON), hierarchická struktura, datové modelování (vnořené dokumenty vs. reference podle vzorů dotazů a ceny updatů). - Dotazování a CRUD operace7. Dokum",
+      "incoming": 1,
+      "outgoing": 10,
+      "degree": 11
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "title": "8. Grafové databáze (Neo4j)",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/grafove-databaze-neo4j",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/8. Grafové databáze (Neo4j).md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "summary": "- Obecné principy8. Grafové databáze (Neo4j): property grafy, vícekrokové (multi-hop) traverzování, vhodnost grafů vůči joinům v relačních DB. - Neo4j Datový model8. Grafové databáze (Neo4j): uzly, hrany (orientace), pro",
+      "incoming": 1,
+      "outgoing": 8,
+      "degree": 9
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "title": "9. Pokročilé aspekty grafových databází",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/pokrocile-aspekty-grafovych-databazi",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "summary": "- Grafové datové struktury9. Pokročilé aspekty grafových databází: matice sousednosti, seznam sousedů, matice incidence, Laplaceova matice. - Lokalita dat a optimalizace9. Pokročilé aspekty grafových databází: rozložení ",
+      "incoming": 1,
+      "outgoing": 6,
+      "degree": 7
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+      "title": "10. RDF Stores a Sémantický web (SPARQL)",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+      "summary": "- Linked Data10. RDF Stores a Sémantický web (SPARQL): principy publikování (identifikace přes URI/URL, propojování, formáty, otevřené licence), Linked Open Data Cloud. - SPARQL10. RDF Stores a Sémantický web (SPARQL): -",
+      "incoming": 1,
+      "outgoing": 4,
+      "degree": 5
+    },
+    {
+      "id": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "title": "0. Obsah PAL",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/obsah-pal",
+      "sourceRel": "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
+      "generatedRel": "spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "summary": "- 1. Standardní grafové úlohy s polynomiální složitostí řešení1. Standardní grafové úlohy s polynomiální složitostí řešení - Zápis asymptotické složitosti algoritmů1. Standardní grafové úlohy s polynomiální složitostí ře",
+      "incoming": 0,
+      "outgoing": 12,
+      "degree": 12
+    },
+    {
+      "id": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "title": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "generatedRel": "spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "summary": "Zápis asymptotické složitosti algoritmů Asymptotická složitost algoritmů slouží k porovnání rychlosti růstu funkcí a zanedbává konstantní faktory. - Asymptotická horní mez $$ f(n) \\in O(g(n)) $$ - Hodnota funkce f se nac",
+      "incoming": 1,
+      "outgoing": 11,
+      "degree": 12
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#big-data",
+      "title": "Big Data",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi#big-data",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "parentTitle": "1. Úvod do Big Data a NoSQL databází",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#relační-databáze",
+      "title": "Relační databáze",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi#relační-databáze",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "parentTitle": "1. Úvod do Big Data a NoSQL databází",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#nosql-databáze",
+      "title": "NoSQL databáze",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi#nosql-databáze",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "parentTitle": "1. Úvod do Big Data a NoSQL databází",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#návrh-databází",
+      "title": "Návrh databází",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi#návrh-databází",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "parentTitle": "1. Úvod do Big Data a NoSQL databází",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#xml",
+      "title": "XML",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/formaty-dat#xml",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/2. Formáty dat.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "parentTitle": "2. Formáty dat",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#json-a-bson",
+      "title": "JSON a BSON",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/formaty-dat#json-a-bson",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/2. Formáty dat.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "parentTitle": "2. Formáty dat",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#rdf",
+      "title": "RDF",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/formaty-dat#rdf",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/2. Formáty dat.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "parentTitle": "2. Formáty dat",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#csv",
+      "title": "CSV",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/formaty-dat#csv",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/2. Formáty dat.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "parentTitle": "2. Formáty dat",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#škálování",
+      "title": "Škálování",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql#škálování",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#distribuce-dat-sharding",
+      "title": "Distribuce dat (Sharding)",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql#distribuce-dat-sharding",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#replikace-dat",
+      "title": "Replikace dat",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql#replikace-dat",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#teorémy-a-garance",
+      "title": "Teorémy a garance",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql#teorémy-a-garance",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#konzistence",
+      "title": "Konzistence",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql#konzistence",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#ladění-výkonu",
+      "title": "Ladění výkonu",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql#ladění-výkonu",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#programovací-modely",
+      "title": "Programovací modely",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/mapreduce-a-hadoop#programovací-modely",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "parentTitle": "4. MapReduce a Hadoop",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#mapreduce",
+      "title": "MapReduce",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/mapreduce-a-hadoop#mapreduce",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "parentTitle": "4. MapReduce a Hadoop",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#hadoop-a-hdfs",
+      "title": "Hadoop a HDFS",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/mapreduce-a-hadoop#hadoop-a-hdfs",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "parentTitle": "4. MapReduce a Hadoop",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#obecné-principy",
+      "title": "Obecné principy",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/key-value-databaze-redis#obecné-principy",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/5. Key-Value databáze (Redis).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "parentTitle": "5. Key-Value databáze (Redis)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#redis",
+      "title": "Redis",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/key-value-databaze-redis#redis",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/5. Key-Value databáze (Redis).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "parentTitle": "5. Key-Value databáze (Redis)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#operace-a-příkazy",
+      "title": "Operace a příkazy",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/key-value-databaze-redis#operace-a-příkazy",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/5. Key-Value databáze (Redis).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "parentTitle": "5. Key-Value databáze (Redis)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#obecné-principy",
+      "title": "Obecné principy",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra#obecné-principy",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "parentTitle": "6. Wide Column Stores (Cassandra)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#datové-typy-a-hodnoty",
+      "title": "Datové typy a hodnoty",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra#datové-typy-a-hodnoty",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "parentTitle": "6. Wide Column Stores (Cassandra)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#cassandra-query-language-cql",
+      "title": "Cassandra Query Language (CQL)",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra#cassandra-query-language-cql",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "parentTitle": "6. Wide Column Stores (Cassandra)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#obecné-principy",
+      "title": "Obecné principy",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/dokumentove-databaze-mongodb#obecné-principy",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "parentTitle": "7. Dokumentové databáze (MongoDB)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#dotazování-a-crud-operace",
+      "title": "Dotazování a CRUD operace",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/dokumentove-databaze-mongodb#dotazování-a-crud-operace",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "parentTitle": "7. Dokumentové databáze (MongoDB)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#operátory",
+      "title": "Operátory",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/dokumentove-databaze-mongodb#operátory",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "parentTitle": "7. Dokumentové databáze (MongoDB)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#aggregační-framework",
+      "title": "Aggregační framework",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/dokumentove-databaze-mongodb#aggregační-framework",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "parentTitle": "7. Dokumentové databáze (MongoDB)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#indexování",
+      "title": "Indexování",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/dokumentove-databaze-mongodb#indexování",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "parentTitle": "7. Dokumentové databáze (MongoDB)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#obecné-principy",
+      "title": "Obecné principy",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/grafove-databaze-neo4j#obecné-principy",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/8. Grafové databáze (Neo4j).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "parentTitle": "8. Grafové databáze (Neo4j)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#neo4j-datový-model",
+      "title": "Neo4j Datový model",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/grafove-databaze-neo4j#neo4j-datový-model",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/8. Grafové databáze (Neo4j).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "parentTitle": "8. Grafové databáze (Neo4j)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#traversal-framework",
+      "title": "Traversal framework",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/grafove-databaze-neo4j#traversal-framework",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/8. Grafové databáze (Neo4j).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "parentTitle": "8. Grafové databáze (Neo4j)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#cypher-query-language",
+      "title": "Cypher Query Language",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/grafove-databaze-neo4j#cypher-query-language",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/8. Grafové databáze (Neo4j).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "parentTitle": "8. Grafové databáze (Neo4j)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#grafové-datové-struktury",
+      "title": "Grafové datové struktury",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/pokrocile-aspekty-grafovych-databazi#grafové-datové-struktury",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "parentTitle": "9. Pokročilé aspekty grafových databází",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#lokalita-dat-a-optimalizace",
+      "title": "Lokalita dat a optimalizace",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/pokrocile-aspekty-grafovych-databazi#lokalita-dat-a-optimalizace",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "parentTitle": "9. Pokročilé aspekty grafových databází",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#zpracování-velkých-grafů",
+      "title": "Zpracování velkých grafů",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/pokrocile-aspekty-grafovych-databazi#zpracování-velkých-grafů",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "parentTitle": "9. Pokročilé aspekty grafových databází",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#linked-data",
+      "title": "Linked Data",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql#linked-data",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+      "parentTitle": "10. RDF Stores a Sémantický web (SPARQL)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#sparql",
+      "title": "SPARQL",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql#sparql",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
+      "parentId": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+      "parentTitle": "10. RDF Stores a Sémantický web (SPARQL)",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#zápis-asymptotické-složitosti-algoritmů",
+      "title": "Zápis asymptotické složitosti algoritmů",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#zápis-asymptotické-složitosti-algoritmů",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#základní-grafové-pojmy-stupeň-cesta-tah-kružnicecyklus",
+      "title": "Základní grafové pojmy: stupeň, cesta, tah, kružnice/cyklus",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#základní-grafové-pojmy-stupeň-cesta-tah-kružnicecyklus",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#stupeň-vrcholu",
+      "title": "Stupeň vrcholu",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#stupeň-vrcholu",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#cesta",
+      "title": "Cesta",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#cesta",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#cyklus",
+      "title": "Cyklus",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#cyklus",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#reprezentace-grafů",
+      "title": "Reprezentace grafů",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#reprezentace-grafů",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#matice-sousednosti",
+      "title": "Matice sousednosti",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#matice-sousednosti",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#matice-vzdáleností",
+      "title": "Matice vzdáleností",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#matice-vzdáleností",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#laplaceova-matice",
+      "title": "Laplaceova matice",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#laplaceova-matice",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#incidenční-matice",
+      "title": "Incidenční matice",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#incidenční-matice",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#adjacency-list-representation",
+      "title": "Adjacency list representation",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#adjacency-list-representation",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    }
+  ],
+  "links": [
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "type": "wiki",
+      "label": "1. Úvod do Big Data a NoSQL databází",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#big-data",
+      "type": "heading",
+      "label": "Big Data",
+      "anchor": "#big-data"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#relační-databáze",
+      "type": "heading",
+      "label": "Relační databáze",
+      "anchor": "#relační-databáze"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#nosql-databáze",
+      "type": "heading",
+      "label": "NoSQL databáze",
+      "anchor": "#nosql-databáze"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#návrh-databází",
+      "type": "heading",
+      "label": "Návrh databází",
+      "anchor": "#návrh-databází"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "type": "wiki",
+      "label": "2. Formáty dat",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#xml",
+      "type": "heading",
+      "label": "XML",
+      "anchor": "#xml"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#json-a-bson",
+      "type": "heading",
+      "label": "JSON a BSON",
+      "anchor": "#json-a-bson"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#rdf",
+      "type": "heading",
+      "label": "RDF",
+      "anchor": "#rdf"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#csv",
+      "type": "heading",
+      "label": "CSV",
+      "anchor": "#csv"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "type": "wiki",
+      "label": "3. Principy distribuovaných systémů a NoSQL",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#škálování",
+      "type": "heading",
+      "label": "Škálování",
+      "anchor": "#škálování"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#distribuce-dat-sharding",
+      "type": "heading",
+      "label": "Distribuce dat (Sharding)",
+      "anchor": "#distribuce-dat-sharding"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#replikace-dat",
+      "type": "heading",
+      "label": "Replikace dat",
+      "anchor": "#replikace-dat"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#teorémy-a-garance",
+      "type": "heading",
+      "label": "Teorémy a garance",
+      "anchor": "#teorémy-a-garance"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#konzistence",
+      "type": "heading",
+      "label": "Konzistence",
+      "anchor": "#konzistence"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#ladění-výkonu",
+      "type": "heading",
+      "label": "Ladění výkonu",
+      "anchor": "#ladění-výkonu"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "type": "wiki",
+      "label": "4. MapReduce a Hadoop",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#programovací-modely",
+      "type": "heading",
+      "label": "Programovací modely",
+      "anchor": "#programovací-modely"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#mapreduce",
+      "type": "heading",
+      "label": "MapReduce",
+      "anchor": "#mapreduce"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#hadoop-a-hdfs",
+      "type": "heading",
+      "label": "Hadoop a HDFS",
+      "anchor": "#hadoop-a-hdfs"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "type": "wiki",
+      "label": "5. Key-Value databáze (Redis)",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#obecné-principy",
+      "type": "heading",
+      "label": "Obecné principy",
+      "anchor": "#obecné-principy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#redis",
+      "type": "heading",
+      "label": "Redis",
+      "anchor": "#redis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#operace-a-příkazy",
+      "type": "heading",
+      "label": "Operace a příkazy",
+      "anchor": "#operace-a-příkazy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "type": "wiki",
+      "label": "6. Wide Column Stores (Cassandra)",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#obecné-principy",
+      "type": "heading",
+      "label": "Obecné principy",
+      "anchor": "#obecné-principy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#datové-typy-a-hodnoty",
+      "type": "heading",
+      "label": "Datové typy a hodnoty",
+      "anchor": "#datové-typy-a-hodnoty"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#cassandra-query-language-cql",
+      "type": "heading",
+      "label": "Cassandra Query Language (CQL)",
+      "anchor": "#cassandra-query-language-cql"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "type": "wiki",
+      "label": "7. Dokumentové databáze (MongoDB)",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#obecné-principy",
+      "type": "heading",
+      "label": "Obecné principy",
+      "anchor": "#obecné-principy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#dotazování-a-crud-operace",
+      "type": "heading",
+      "label": "Dotazování a CRUD operace",
+      "anchor": "#dotazování-a-crud-operace"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#operátory",
+      "type": "heading",
+      "label": "Operátory",
+      "anchor": "#operátory"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#aggregační-framework",
+      "type": "heading",
+      "label": "Aggregační framework",
+      "anchor": "#aggregační-framework"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#indexování",
+      "type": "heading",
+      "label": "Indexování",
+      "anchor": "#indexování"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "type": "wiki",
+      "label": "8. Grafové databáze (Neo4j)",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#obecné-principy",
+      "type": "heading",
+      "label": "Obecné principy",
+      "anchor": "#obecné-principy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#neo4j-datový-model",
+      "type": "heading",
+      "label": "Neo4j Datový model",
+      "anchor": "#neo4j-datový-model"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#traversal-framework",
+      "type": "heading",
+      "label": "Traversal framework",
+      "anchor": "#traversal-framework"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#cypher-query-language",
+      "type": "heading",
+      "label": "Cypher Query Language",
+      "anchor": "#cypher-query-language"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "type": "wiki",
+      "label": "9. Pokročilé aspekty grafových databází",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#grafové-datové-struktury",
+      "type": "heading",
+      "label": "Grafové datové struktury",
+      "anchor": "#grafové-datové-struktury"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#lokalita-dat-a-optimalizace",
+      "type": "heading",
+      "label": "Lokalita dat a optimalizace",
+      "anchor": "#lokalita-dat-a-optimalizace"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#zpracování-velkých-grafů",
+      "type": "heading",
+      "label": "Zpracování velkých grafů",
+      "anchor": "#zpracování-velkých-grafů"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+      "type": "wiki",
+      "label": "10. RDF Stores a Sémantický web (SPARQL)",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#linked-data",
+      "type": "heading",
+      "label": "Linked Data",
+      "anchor": "#linked-data"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#sparql",
+      "type": "heading",
+      "label": "SPARQL",
+      "anchor": "#sparql"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#big-data",
+      "type": "heading",
+      "label": "Big Data",
+      "anchor": "#big-data"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#relační-databáze",
+      "type": "heading",
+      "label": "Relační databáze",
+      "anchor": "#relační-databáze"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#nosql-databáze",
+      "type": "heading",
+      "label": "NoSQL databáze",
+      "anchor": "#nosql-databáze"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#návrh-databází",
+      "type": "heading",
+      "label": "Návrh databází",
+      "anchor": "#návrh-databází"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#xml",
+      "type": "heading",
+      "label": "XML",
+      "anchor": "#xml"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#json-a-bson",
+      "type": "heading",
+      "label": "JSON a BSON",
+      "anchor": "#json-a-bson"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#rdf",
+      "type": "heading",
+      "label": "RDF",
+      "anchor": "#rdf"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#csv",
+      "type": "heading",
+      "label": "CSV",
+      "anchor": "#csv"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#škálování",
+      "type": "heading",
+      "label": "Škálování",
+      "anchor": "#škálování"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#distribuce-dat-sharding",
+      "type": "heading",
+      "label": "Distribuce dat (Sharding)",
+      "anchor": "#distribuce-dat-sharding"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#replikace-dat",
+      "type": "heading",
+      "label": "Replikace dat",
+      "anchor": "#replikace-dat"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#teorémy-a-garance",
+      "type": "heading",
+      "label": "Teorémy a garance",
+      "anchor": "#teorémy-a-garance"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#konzistence",
+      "type": "heading",
+      "label": "Konzistence",
+      "anchor": "#konzistence"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#ladění-výkonu",
+      "type": "heading",
+      "label": "Ladění výkonu",
+      "anchor": "#ladění-výkonu"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#programovací-modely",
+      "type": "heading",
+      "label": "Programovací modely",
+      "anchor": "#programovací-modely"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#mapreduce",
+      "type": "heading",
+      "label": "MapReduce",
+      "anchor": "#mapreduce"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#hadoop-a-hdfs",
+      "type": "heading",
+      "label": "Hadoop a HDFS",
+      "anchor": "#hadoop-a-hdfs"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#obecné-principy",
+      "type": "heading",
+      "label": "Obecné principy",
+      "anchor": "#obecné-principy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#redis",
+      "type": "heading",
+      "label": "Redis",
+      "anchor": "#redis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#operace-a-příkazy",
+      "type": "heading",
+      "label": "Operace a příkazy",
+      "anchor": "#operace-a-příkazy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#obecné-principy",
+      "type": "heading",
+      "label": "Obecné principy",
+      "anchor": "#obecné-principy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#datové-typy-a-hodnoty",
+      "type": "heading",
+      "label": "Datové typy a hodnoty",
+      "anchor": "#datové-typy-a-hodnoty"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#cassandra-query-language-cql",
+      "type": "heading",
+      "label": "Cassandra Query Language (CQL)",
+      "anchor": "#cassandra-query-language-cql"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#obecné-principy",
+      "type": "heading",
+      "label": "Obecné principy",
+      "anchor": "#obecné-principy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#dotazování-a-crud-operace",
+      "type": "heading",
+      "label": "Dotazování a CRUD operace",
+      "anchor": "#dotazování-a-crud-operace"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#operátory",
+      "type": "heading",
+      "label": "Operátory",
+      "anchor": "#operátory"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#aggregační-framework",
+      "type": "heading",
+      "label": "Aggregační framework",
+      "anchor": "#aggregační-framework"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#indexování",
+      "type": "heading",
+      "label": "Indexování",
+      "anchor": "#indexování"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#obecné-principy",
+      "type": "heading",
+      "label": "Obecné principy",
+      "anchor": "#obecné-principy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#neo4j-datový-model",
+      "type": "heading",
+      "label": "Neo4j Datový model",
+      "anchor": "#neo4j-datový-model"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#traversal-framework",
+      "type": "heading",
+      "label": "Traversal framework",
+      "anchor": "#traversal-framework"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#cypher-query-language",
+      "type": "heading",
+      "label": "Cypher Query Language",
+      "anchor": "#cypher-query-language"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#grafové-datové-struktury",
+      "type": "heading",
+      "label": "Grafové datové struktury",
+      "anchor": "#grafové-datové-struktury"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#lokalita-dat-a-optimalizace",
+      "type": "heading",
+      "label": "Lokalita dat a optimalizace",
+      "anchor": "#lokalita-dat-a-optimalizace"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#zpracování-velkých-grafů",
+      "type": "heading",
+      "label": "Zpracování velkých grafů",
+      "anchor": "#zpracování-velkých-grafů"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#linked-data",
+      "type": "heading",
+      "label": "Linked Data",
+      "anchor": "#linked-data"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#sparql",
+      "type": "heading",
+      "label": "SPARQL",
+      "anchor": "#sparql"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "type": "wiki",
+      "label": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#zápis-asymptotické-složitosti-algoritmů",
+      "type": "heading",
+      "label": "Zápis asymptotické složitosti algoritmů",
+      "anchor": "#zápis-asymptotické-složitosti-algoritmů"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#základní-grafové-pojmy-stupeň-cesta-tah-kružnicecyklus",
+      "type": "heading",
+      "label": "Základní grafové pojmy",
+      "anchor": "#základní-grafové-pojmy-stupeň-cesta-tah-kružnicecyklus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#stupeň-vrcholu",
+      "type": "heading",
+      "label": "Stupeň",
+      "anchor": "#stupeň-vrcholu"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#cesta",
+      "type": "heading",
+      "label": "Cesta",
+      "anchor": "#cesta"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#cyklus",
+      "type": "heading",
+      "label": "Cyklus",
+      "anchor": "#cyklus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#reprezentace-grafů",
+      "type": "heading",
+      "label": "Reprezentace grafů",
+      "anchor": "#reprezentace-grafů"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#matice-sousednosti",
+      "type": "heading",
+      "label": "Matice sousednosti",
+      "anchor": "#matice-sousednosti"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#matice-vzdáleností",
+      "type": "heading",
+      "label": "Matice vzdáleností",
+      "anchor": "#matice-vzdáleností"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#laplaceova-matice",
+      "type": "heading",
+      "label": "Laplaceova matice",
+      "anchor": "#laplaceova-matice"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#incidenční-matice",
+      "type": "heading",
+      "label": "Incidenční matice",
+      "anchor": "#incidenční-matice"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#adjacency-list-representation",
+      "type": "heading",
+      "label": "Adjacency list representation",
+      "anchor": "#adjacency-list-representation"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#big-data",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#relační-databáze",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#nosql-databáze",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#návrh-databází",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#xml",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#json-a-bson",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#rdf",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md#csv",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#škálování",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#distribuce-dat-sharding",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#replikace-dat",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#teorémy-a-garance",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#konzistence",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#ladění-výkonu",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#programovací-modely",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#mapreduce",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#hadoop-a-hdfs",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#obecné-principy",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#redis",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#operace-a-příkazy",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#obecné-principy",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#datové-typy-a-hodnoty",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#cassandra-query-language-cql",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#obecné-principy",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#dotazování-a-crud-operace",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#operátory",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#aggregační-framework",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#indexování",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#obecné-principy",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#neo4j-datový-model",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#traversal-framework",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#cypher-query-language",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#grafové-datové-struktury",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#lokalita-dat-a-optimalizace",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#zpracování-velkých-grafů",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#linked-data",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#sparql",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#zápis-asymptotické-složitosti-algoritmů",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#základní-grafové-pojmy-stupeň-cesta-tah-kružnicecyklus",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#stupeň-vrcholu",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#cesta",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#cyklus",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#reprezentace-grafů",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#matice-sousednosti",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#matice-vzdáleností",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#laplaceova-matice",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#incidenční-matice",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#adjacency-list-representation",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    }
+  ],
+  "stats": {
+    "documents": 14,
+    "headings": 48,
+    "missing": 0,
+    "links": 144
+  }
+}

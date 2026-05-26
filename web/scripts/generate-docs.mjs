@@ -4,6 +4,7 @@ import path from 'node:path';
 const webDir = path.resolve(import.meta.dirname, '..');
 const vaultDir = path.resolve(webDir, '..');
 const generatedDocsDir = path.join(webDir, 'generated', 'docs');
+const graphDataPath = path.join(webDir, 'src', 'data', 'graph-data.json');
 
 const excludedTopLevelDirs = new Set([
   '.git',
@@ -47,6 +48,78 @@ const headingSlug = (value) =>
     .toLowerCase()
     .replace(/[^\p{Letter}\p{Number}\s-]/gu, '')
     .replace(/\s+/g, '-');
+
+const routeSegment = (value) => value.replace(/^\d+[-_.\s]+/, '');
+
+const docRoute = (note) => {
+  if (note.sourceRel.toLowerCase() === 'readme.md') {
+    return '/';
+  }
+
+  const withoutExtension = note.generatedRel.replace(/\.md$/i, '');
+  const routeParts = withoutExtension.split('/').map(routeSegment);
+
+  return `/${routeParts.join('/')}`;
+};
+
+const docNodeId = (note) => `doc:${note.generatedRel}`;
+
+const headingNodeId = (note, slug) => `heading:${note.generatedRel}#${slug}`;
+
+const missingNodeId = (target) => `missing:${target.toLowerCase()}`;
+
+const lookupKey = (value) => value.trim().toLowerCase();
+
+const stripMarkdownSyntax = (value) =>
+  value
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[`*_~]/g, '')
+    .replace(/<[^>]+>/g, '')
+    .trim();
+
+const textSummary = (content) =>
+  stripMarkdownSyntax(content)
+    .replace(/^---[\s\S]*?---/m, '')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/!\[\[[^\]]+\]\]/g, '')
+    .replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, '$2$1')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 220);
+
+const collectHeadings = (content) => {
+  const headings = [];
+  const seenSlugs = new Map();
+
+  protectMarkdownCode(content, (protectedContent) => {
+    const headingPattern = /^(#{1,6})\s+(.+?)\s*#*\s*$/gm;
+    let match;
+
+    while ((match = headingPattern.exec(protectedContent)) !== null) {
+      const title = stripMarkdownSyntax(match[2]);
+
+      if (!title) {
+        continue;
+      }
+
+      const baseSlug = headingSlug(title);
+      const count = seenSlugs.get(baseSlug) ?? 0;
+      seenSlugs.set(baseSlug, count + 1);
+
+      headings.push({
+        title,
+        level: match[1].length,
+        slug: count === 0 ? baseSlug : `${baseSlug}-${count}`,
+        lookupSlugs: count === 0 ? [baseSlug] : [baseSlug, `${baseSlug}-${count}`],
+      });
+    }
+
+    return protectedContent;
+  });
+
+  return headings;
+};
 
 const ensureUniquePath = (relativePath, usedPaths) => {
   if (!usedPaths.has(relativePath)) {
@@ -294,6 +367,247 @@ const convertContent = (source, note, noteIndex, assetIndex) =>
     return converted;
   });
 
+const resolveHeading = (note, heading) => {
+  if (!heading) {
+    return null;
+  }
+
+  const key = lookupKey(heading);
+  const slug = headingSlug(heading);
+
+  return note.headings.find((candidate) =>
+    lookupKey(candidate.title) === key || candidate.lookupSlugs.includes(slug)
+  ) ?? null;
+};
+
+const targetNoteForMarkdownLink = (note, rawTarget, noteIndex) => {
+  const cleanTarget = decodeURI(rawTarget.split(/[?#]/)[0]).replace(/\\/g, '/');
+
+  if (!cleanTarget || /^(https?:|mailto:|tel:|#|\/)/i.test(cleanTarget)) {
+    return null;
+  }
+
+  const resolvedSourceRel = normalizePath(path.join(path.dirname(note.sourceRel), cleanTarget));
+
+  return (
+    noteIndex.get(cleanTarget.toLowerCase()) ??
+    noteIndex.get(resolvedSourceRel.toLowerCase()) ??
+    noteIndex.get(resolvedSourceRel.replace(/\.md$/i, '').toLowerCase()) ??
+    null
+  );
+};
+
+const addGraphLink = (links, linkKeys, link) => {
+  const key = `${link.source}|${link.target}|${link.type}|${link.anchor ?? ''}`;
+
+  if (link.source === link.target || linkKeys.has(key)) {
+    return;
+  }
+
+  linkKeys.add(key);
+  links.push(link);
+};
+
+const extractGraphLinks = (note, noteIndex, assetIndex, referencedHeadingIds, missingNodes) => {
+  const links = [];
+  const linkKeys = new Set();
+
+  protectMarkdownCode(note.source, (content) => {
+    content.replace(/(!?)\[\[([^\]]+)\]\]/g, (match, embedMarker, rawTarget) => {
+      const {target, heading, alias} = parseWikiTarget(rawTarget);
+      const source = docNodeId(note);
+      const isEmbed = embedMarker === '!';
+
+      if (isEmbed) {
+        const asset = assetIndex.get(target.toLowerCase()) ?? assetIndex.get(path.basename(target).toLowerCase());
+        if (asset) {
+          return match;
+        }
+      }
+
+      const targetNote = target
+        ? noteIndex.get(target.toLowerCase())
+        : note;
+
+      if (!targetNote) {
+        if (!isEmbed) {
+          const missingTitle = alias || target;
+          const missingId = missingNodeId(target);
+          missingNodes.set(missingId, {
+            id: missingId,
+            title: missingTitle,
+            type: 'missing',
+            group: 'Chybějící odkazy',
+            url: null,
+            sourceRel: target,
+          });
+          addGraphLink(links, linkKeys, {
+            source,
+            target: missingId,
+            type: 'missing',
+            label: missingTitle,
+          });
+        }
+        return match;
+      }
+
+      const headingTarget = resolveHeading(targetNote, heading);
+      const targetId = headingTarget
+        ? headingNodeId(targetNote, headingTarget.slug)
+        : docNodeId(targetNote);
+
+      if (headingTarget) {
+        referencedHeadingIds.add(targetId);
+      }
+
+      addGraphLink(links, linkKeys, {
+        source,
+        target: targetId,
+        type: isEmbed ? 'embed' : (headingTarget ? 'heading' : 'wiki'),
+        label: alias || heading || targetNote.title,
+        anchor: headingTarget ? `#${headingTarget.slug}` : '',
+      });
+
+      return match;
+    });
+
+    content.replace(/(!?)\[([^\]]+)\]\(([^)]+)\)/g, (match, imageMarker, label, rawTarget) => {
+      if (imageMarker === '!') {
+        return match;
+      }
+
+      const [pathTarget, hashTarget = ''] = rawTarget.trim().split('#');
+      const targetNote = pathTarget
+        ? targetNoteForMarkdownLink(note, pathTarget, noteIndex)
+        : note;
+
+      if (!targetNote) {
+        return match;
+      }
+
+      const headingTarget = resolveHeading(targetNote, hashTarget);
+      const targetId = headingTarget
+        ? headingNodeId(targetNote, headingTarget.slug)
+        : docNodeId(targetNote);
+
+      if (headingTarget) {
+        referencedHeadingIds.add(targetId);
+      }
+
+      addGraphLink(links, linkKeys, {
+        source: docNodeId(note),
+        target: targetId,
+        type: headingTarget ? 'heading' : 'markdown',
+        label: stripMarkdownSyntax(label) || targetNote.title,
+        anchor: headingTarget ? `#${headingTarget.slug}` : '',
+      });
+
+      return match;
+    });
+
+    return content;
+  });
+
+  return links;
+};
+
+const buildGraphData = (notes, noteIndex, assetIndex) => {
+  const referencedHeadingIds = new Set();
+  const missingNodes = new Map();
+  const links = [];
+  const linkKeys = new Set();
+
+  for (const note of notes) {
+    note.route = docRoute(note);
+    note.source = note.source ?? '';
+    note.headings = collectHeadings(note.source);
+    note.summary = textSummary(note.source);
+
+    for (const heading of note.headings) {
+      heading.id = headingNodeId(note, heading.slug);
+      heading.url = `${note.route}#${heading.slug}`;
+      heading.parentId = docNodeId(note);
+    }
+  }
+
+  for (const note of notes) {
+    const noteLinks = extractGraphLinks(note, noteIndex, assetIndex, referencedHeadingIds, missingNodes);
+
+    for (const link of noteLinks) {
+      addGraphLink(links, linkKeys, link);
+    }
+  }
+
+  const documentNodes = notes.map((note) => ({
+    id: docNodeId(note),
+    title: note.sourceRel.toLowerCase() === 'readme.md' ? 'Úvod' : note.title,
+    type: 'document',
+    group: note.sourceRel.includes('/') ? note.sourceRel.split('/')[0] : 'Kořen',
+    folder: path.dirname(note.sourceRel) === '.' ? '' : path.dirname(note.sourceRel),
+    url: note.route,
+    sourceRel: note.sourceRel,
+    generatedRel: note.generatedRel,
+    summary: note.summary,
+  }));
+
+  const headingNodes = notes.flatMap((note) =>
+    note.headings
+      .filter((heading) => referencedHeadingIds.has(heading.id))
+      .map((heading) => ({
+        id: heading.id,
+        title: heading.title,
+        type: 'heading',
+        group: note.sourceRel.includes('/') ? note.sourceRel.split('/')[0] : 'Kořen',
+        folder: path.dirname(note.sourceRel) === '.' ? '' : path.dirname(note.sourceRel),
+        url: heading.url,
+        sourceRel: note.sourceRel,
+        parentId: heading.parentId,
+        parentTitle: note.title,
+        level: heading.level,
+      }))
+  );
+
+  for (const heading of headingNodes) {
+    addGraphLink(links, linkKeys, {
+      source: heading.parentId,
+      target: heading.id,
+      type: 'contains',
+      label: 'obsahuje nadpis',
+    });
+  }
+
+  const nodes = [...documentNodes, ...headingNodes, ...missingNodes.values()];
+  const incoming = new Map(nodes.map((node) => [node.id, 0]));
+  const outgoing = new Map(nodes.map((node) => [node.id, 0]));
+
+  for (const link of links) {
+    outgoing.set(link.source, (outgoing.get(link.source) ?? 0) + 1);
+    incoming.set(link.target, (incoming.get(link.target) ?? 0) + 1);
+  }
+
+  for (const node of nodes) {
+    node.incoming = incoming.get(node.id) ?? 0;
+    node.outgoing = outgoing.get(node.id) ?? 0;
+    node.degree = node.incoming + node.outgoing;
+  }
+
+  return {
+    nodes,
+    links,
+    stats: {
+      documents: documentNodes.length,
+      headings: headingNodes.length,
+      missing: missingNodes.size,
+      links: links.length,
+    },
+  };
+};
+
+const writeGraphData = async (graphData) => {
+  await fs.mkdir(path.dirname(graphDataPath), {recursive: true});
+  await fs.writeFile(graphDataPath, `${JSON.stringify(graphData, null, 2)}\n`, 'utf8');
+};
+
 const writeCategories = async (notes) => {
   const categoryPositions = new Map();
   let nextTopLevelPosition = 1;
@@ -347,8 +661,8 @@ const main = async () => {
     const nextPosition = (notePositions.get(generatedDir) ?? 0) + 1;
     notePositions.set(generatedDir, nextPosition);
 
-    const source = await fs.readFile(note.sourceAbs, 'utf8');
-    const converted = convertContent(source, note, noteIndex, assetIndex);
+    note.source = await fs.readFile(note.sourceAbs, 'utf8');
+    const converted = convertContent(note.source, note, noteIndex, assetIndex);
 
     await fs.mkdir(path.dirname(path.join(generatedDocsDir, note.generatedRel)), {recursive: true});
     await fs.writeFile(
@@ -357,6 +671,8 @@ const main = async () => {
       'utf8',
     );
   }
+
+  await writeGraphData(buildGraphData(notes, noteIndex, assetIndex));
 
   console.log(`Generated ${notes.length} docs and ${assets.length} assets in ${normalizePath(path.relative(vaultDir, generatedDocsDir))}`);
 };

@@ -8,13 +8,13 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 - Dokončené předměty:
 	- Databáze 2
 - Rozpracované předměty:
-	- Softwarové architektury- Jirka
+	- Kombinatorická optimalizace - Jirka
 	- Pokročilá algoritmizace - Matěj (0%)
 - Nerozpracované předměty:
 	- Společné
-		- Kombinatorická optimalizace
-		- Teorie algoritmů
+		- Teorie algoritmů 💀
 	- Softwarové inženýrství
+		- Softwarové architektury
 		- Bezpečnosti systémů
 		- Efektivní software
 		- Paralelní algoritmy
