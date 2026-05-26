@@ -6,9 +6,9 @@ This repository contains study materials for the final exams at CTU FEE OI. If t
 Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 ## Obsah
 - Dokončené předměty:
-	- Zatím nic :(
+	- Databáze 2
 - Rozpracované předměty:
-	- Databáze 2 - Jirka
+	- Softwarové architektury- Jirka
 	- Pokročilá algoritmizace - Matěj (0%)
 - Nerozpracované předměty:
 	- Společné
@@ -18,7 +18,6 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 		- Bezpečnosti systémů
 		- Efektivní software
 		- Paralelní algoritmy
-		- Softwarové architektury
 		- Zajištění kvality software
 	- Počítačová grafika
 		- Algoritmy počítačové grafiky

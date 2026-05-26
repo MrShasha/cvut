@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "4. MapReduce a Hadoop"
+              "title": "README"
             }
           }
         ]
@@ -154,13 +154,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
+                "file": "README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Přehled 4. MapReduce a Hadoop"
+              "title": "Přehled README"
             }
           },
           {
@@ -194,7 +194,7 @@
             }
           }
         ],
-        "currentTab": 4
+        "currentTab": 7
       }
     ],
     "direction": "horizontal",
@@ -213,8 +213,9 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "40c94f375a61020b",
+  "active": "c2abdaf069bd4115",
   "lastOpenFiles": [
+    "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
     "Assets/mapreduce.png",
     "web/build/search-index.json",
     "web/build/sitemap.xml",
@@ -235,7 +236,6 @@
     "web/build/assets/images/database-replication-7edcfd2d934f74df29cde3ce79219a3f.png",
     "web/build/assets/images/database-leader-replication-05eab7a184e4151b0412f9fe07638f55.png",
     "web/build/assets/images/database-cap-318b4cd17d2afb696f0294004a51ca1e.png",
-    "web/build/assets/images/database-acid-5a05755f081004b79f2000ae34ab0ca3.png",
     "web/node_modules/index-array-by/README.md",
     "web/node_modules/react-kapsule/README.md",
     "web/node_modules/docusaurus-plugin-graph-view/README.md",
