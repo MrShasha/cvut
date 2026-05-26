@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "550534a864c2ed1d",
+        "id": "57103cd294491a40",
         "type": "tabs",
         "children": [
           {
-            "id": "777f5f3d5d00465b",
+            "id": "c2abdaf069bd4115",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "README.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "README"
+              "title": "Nová karta"
             }
           }
         ]
@@ -154,13 +150,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Společné/Pokročilá algoritmizace/Standardní grafové úlohy s polynomiální složitostí řešení.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Přehled Standardní grafové úlohy s polynomiální složitostí řešení"
+              "title": "Přehled"
             }
           },
           {
@@ -192,24 +187,13 @@
               "icon": "git-pull-request",
               "title": "Source Control"
             }
-          },
-          {
-            "id": "a362441427659a0c",
-            "type": "leaf",
-            "state": {
-              "type": "review-queue-list-view",
-              "state": {},
-              "icon": "SpacedRepIcon",
-              "title": "Fronta poznámek k revizi"
-            }
           }
         ],
-        "currentTab": 5
+        "currentTab": 7
       }
     ],
     "direction": "horizontal",
-    "width": 200,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -224,37 +208,54 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "777f5f3d5d00465b",
+  "active": "c2abdaf069bd4115",
   "lastOpenFiles": [
-    "Společné/Pokročilá algoritmizace/Standardní grafové úlohy s polynomiální složitostí řešení.md",
-    "README.md",
-    "Softwarové Inženýrství/Databáze 2/Obsah předmětu Databáze 2.md",
-    "Softwarové Inženýrství/Databáze 2/Principy distribuovaných systémů a NoSQL.md",
-    "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
-    "Softwarové Inženýrství/Databáze 2/Wide Column Stores (Cassandra).md",
-    "Softwarové Inženýrství/Databáze 2/Pokročilé aspekty grafových databází.md",
-    "Softwarové Inženýrství/Databáze 2/RDF Stores a Sémantický web (SPARQL).md",
-    "Softwarové Inženýrství/Databáze 2/MapReduce a Hadoop.md",
-    "Softwarové Inženýrství/Databáze 2/Grafové databáze (Neo4j).md",
-    "Softwarové Inženýrství/Databáze 2/Formáty dat.md",
-    "Assets/Spongebob.png",
-    "Společné/Pokročilá algoritmizace",
-    "Společné/Pokročilá algoritmizace.md",
-    "Softwarové Inženýrství/Databáze 2/Dokumentové databáze (MongoDB).md",
-    "Softwarové Inženýrství/Databáze 2/Key-Value databáze (Redis).md",
-    "Společné",
-    "web/build/sitemap.xml",
     "web/build/index.html",
     "web/build/404.html",
+    "web/build/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.html",
+    "web/build/spolecne/pokrocila-algoritmizace",
+    "web/build/spolecne",
     "web/build/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi.html",
-    "web/build/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql.html",
     "web/build/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql.html",
-    "web/build/softwarove-inzenyrstvi/databaze-2/key-value-databaze-redis.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/pokrocile-aspekty-grafovych-databazi.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/mapreduce-a-hadoop.html",
+    "web/build/assets/images/database-replication-7edcfd2d934f74df29cde3ce79219a3f.png",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
-    "Bez názvu.canvas",
-    "Big Data.md",
-    "Softwarové Inženýrství/Efektivní Software/Bez názvu.md",
-    "Vítejte.md"
+    "web/build/assets/images/littles-law-1af1c367b42af5df782797d3864a45c2.png",
+    "web/build/assets/images/database-leaderless-replication-6376fdb87273991c199ac80e3f5eec19.png",
+    "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
+    "web/build/assets/images/Directory-based-sharding-698c80c875b5c796be84f009032332bd.png",
+    "web/build/assets/images/database-scaling-d1730fbbc59647196087bcda60f9b841.png",
+    "web/build/assets/images/database-leader-replication-05eab7a184e4151b0412f9fe07638f55.png",
+    "web/build/assets/images/database-cap-318b4cd17d2afb696f0294004a51ca1e.png",
+    "web/build/assets/images/database-acid-5a05755f081004b79f2000ae34ab0ca3.png",
+    "web/generated/docs/spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+    "web/node_modules/micromark-extension-math/node_modules/katex/src/metrics/README.md",
+    "web/node_modules/katex/src/metrics/README.md",
+    "web/node_modules/katex/node_modules/commander/Readme.md",
+    "web/node_modules/katex/contrib/copy-tex/README.md",
+    "web/node_modules/katex/contrib/mathtex-script-type/README.md",
+    "web/node_modules/katex/contrib/auto-render/README.md",
+    "web/node_modules/katex/contrib/mhchem/README.md",
+    "web/node_modules/katex/dist/README.md",
+    "web/node_modules/katex/README.md",
+    "web/node_modules/rehype-katex/node_modules/katex/src/metrics/README.md",
+    "web/node_modules/rehype-katex/node_modules/katex/contrib/mathtex-script-type/README.md",
+    "web/node_modules/rehype-katex/node_modules/katex/contrib/mhchem/README.md",
+    "web/node_modules/rehype-katex/node_modules/katex/contrib/copy-tex/README.md",
+    "web/node_modules/rehype-katex/node_modules/katex/contrib/auto-render/README.md",
+    "web/node_modules/rehype-katex/node_modules/katex/dist/README.md",
+    "web/node_modules/rehype-katex/node_modules/katex/README.md",
+    "web/node_modules/rehype-katex/node_modules/commander/Readme.md",
+    "web/node_modules/rehype-katex/readme.md",
+    "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+    "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
+    "Softwarové Inženýrství/Databáze 2/0. Obsah předmětu Databáze 2.md",
+    "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
+    "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
+    "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md",
+    "Bez názvu.canvas"
   ]
 }
