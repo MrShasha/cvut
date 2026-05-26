@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
+                "file": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "1. Úvod do kombinatorické optimalizace"
+              "title": "2. Celočíselné lineární programování"
             }
           }
         ]
@@ -154,13 +154,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
+                "file": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Přehled 1. Úvod do kombinatorické optimalizace"
+              "title": "Přehled 2. Celočíselné lineární programování"
             }
           },
           {
@@ -215,11 +215,11 @@
   },
   "active": "047b645ab5885cf4",
   "lastOpenFiles": [
+    "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
     "web/node_modules/unist-util-find-after/lib/index.d.ts",
     "web/node_modules/unist-util-find-after/lib/index.js",
     "web/node_modules/unist-util-find-after/lib",
     "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
-    "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
     "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
     "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
     "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
@@ -238,7 +238,6 @@
     "web/build/search.html",
     "web/build/404.html",
     "web/build/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.html",
-    "web/build/spolecne/pokrocila-algoritmizace/obsah-pal.html",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
     "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
     "web/build/assets/images/path-9bf0005281844cedce92e73ed508fe93.png",
