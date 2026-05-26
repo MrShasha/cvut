@@ -67,9 +67,11 @@ const ensureUniquePath = (relativePath, usedPaths) => {
   return uniquePath;
 };
 
+const collator = new Intl.Collator('cs', {numeric: true, sensitivity: 'base'});
+
 const walk = async (directory, shouldSkipDir = () => false) => {
   const entries = await fs.readdir(directory, {withFileTypes: true});
-  const sortedEntries = entries.sort((a, b) => a.name.localeCompare(b.name, 'cs'));
+  const sortedEntries = entries.sort((a, b) => collator.compare(a.name, b.name));
   const files = [];
 
   for (const entry of sortedEntries) {
@@ -313,7 +315,7 @@ const writeCategories = async (notes) => {
         label: sourceParts[index],
         position: categoryPositions.get(generatedDirRel),
         collapsible: true,
-        collapsed: false,
+        collapsed: true,
       };
 
       await fs.mkdir(path.dirname(categoryPath), {recursive: true});

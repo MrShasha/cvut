@@ -4,21 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "8af765166577fb8d",
+        "id": "57103cd294491a40",
         "type": "tabs",
         "children": [
           {
-            "id": "69173391f03eeecc",
+            "id": "c2abdaf069bd4115",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "9. Pokročilé aspekty grafových databází"
+              "title": "Nová karta"
             }
           }
         ]
@@ -154,13 +150,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Přehled 9. Pokročilé aspekty grafových databází"
+              "title": "Přehled"
             }
           },
           {
@@ -213,8 +208,13 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "3e6d3bb488cdb65c",
+  "active": "c2abdaf069bd4115",
   "lastOpenFiles": [
+    "web/build/assets/js/35b05ac1.b29cbd1c.js",
+    "web/build/assets/js/523780c0.45ce987f.js",
+    "web/build/assets/js/2cffe2b7.27bb069b.js",
+    "web/build/assets/js/26126a34.c553e548.js",
+    "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
     "web/build/sitemap.xml",
     "web/build/index.html",
     "web/build/404.html",
@@ -222,10 +222,6 @@
     "web/build/assets/js/17896441.b8be1d6a.js.LICENSE.txt",
     "web/build/assets/js/9a44b205.3fd46930.js",
     "web/build/assets/js/35b05ac1.df5d01a3.js",
-    "web/build/assets/js/2cffe2b7.26b58584.js",
-    "web/build/assets/js/26126a34.19d35bfd.js",
-    "web/build/__server/server.bundle.js",
-    "web/build/__server",
     "Softwarové Inženýrství/Databáze 2/0. Obsah předmětu Databáze 2.md",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
     "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
@@ -260,7 +256,6 @@
     "Big Data.md",
     "Softwarové Inženýrství/Databáze 2/8. Grafové databáze (Neo4j).md",
     "Softwarové Inženýrství/Efektivní Software/Bez názvu.md",
-    "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
     "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md"
   ]
 }
