@@ -4,17 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "57103cd294491a40",
+        "id": "550534a864c2ed1d",
         "type": "tabs",
         "children": [
           {
-            "id": "c2abdaf069bd4115",
+            "id": "777f5f3d5d00465b",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nová karta"
+              "title": "README"
             }
           }
         ]
@@ -150,12 +154,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Společné/Pokročilá algoritmizace/Standardní grafové úlohy s polynomiální složitostí řešení.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Přehled"
+              "title": "Přehled Standardní grafové úlohy s polynomiální složitostí řešení"
             }
           },
           {
@@ -187,13 +192,24 @@
               "icon": "git-pull-request",
               "title": "Source Control"
             }
+          },
+          {
+            "id": "a362441427659a0c",
+            "type": "leaf",
+            "state": {
+              "type": "review-queue-list-view",
+              "state": {},
+              "icon": "SpacedRepIcon",
+              "title": "Fronta poznámek k revizi"
+            }
           }
         ],
-        "currentTab": 7
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -208,54 +224,37 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "c2abdaf069bd4115",
+  "active": "777f5f3d5d00465b",
   "lastOpenFiles": [
-    "web/build/assets/js/35b05ac1.b29cbd1c.js",
-    "web/build/assets/js/523780c0.45ce987f.js",
-    "web/build/assets/js/2cffe2b7.27bb069b.js",
-    "web/build/assets/js/26126a34.c553e548.js",
-    "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
+    "Společné/Pokročilá algoritmizace/Standardní grafové úlohy s polynomiální složitostí řešení.md",
+    "README.md",
+    "Softwarové Inženýrství/Databáze 2/Obsah předmětu Databáze 2.md",
+    "Softwarové Inženýrství/Databáze 2/Principy distribuovaných systémů a NoSQL.md",
+    "Softwarové Inženýrství/Databáze 2/Úvod do Big Data a NoSQL databází.md",
+    "Softwarové Inženýrství/Databáze 2/Wide Column Stores (Cassandra).md",
+    "Softwarové Inženýrství/Databáze 2/Pokročilé aspekty grafových databází.md",
+    "Softwarové Inženýrství/Databáze 2/RDF Stores a Sémantický web (SPARQL).md",
+    "Softwarové Inženýrství/Databáze 2/MapReduce a Hadoop.md",
+    "Softwarové Inženýrství/Databáze 2/Grafové databáze (Neo4j).md",
+    "Softwarové Inženýrství/Databáze 2/Formáty dat.md",
+    "Assets/Spongebob.png",
+    "Společné/Pokročilá algoritmizace",
+    "Společné/Pokročilá algoritmizace.md",
+    "Softwarové Inženýrství/Databáze 2/Dokumentové databáze (MongoDB).md",
+    "Softwarové Inženýrství/Databáze 2/Key-Value databáze (Redis).md",
+    "Společné",
     "web/build/sitemap.xml",
     "web/build/index.html",
     "web/build/404.html",
-    "web/build/assets/js/17896441.b8be1d6a.js",
-    "web/build/assets/js/17896441.b8be1d6a.js.LICENSE.txt",
-    "web/build/assets/js/9a44b205.3fd46930.js",
-    "web/build/assets/js/35b05ac1.df5d01a3.js",
-    "Softwarové Inženýrství/Databáze 2/0. Obsah předmětu Databáze 2.md",
+    "web/build/softwarove-inzenyrstvi/databaze-2/wide-column-stores-cassandra.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/uvod-do-big-data-a-nosql-databazi.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/rdf-stores-a-semanticky-web-sparql.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/principy-distribuovanych-systemu-a-nosql.html",
+    "web/build/softwarove-inzenyrstvi/databaze-2/key-value-databaze-redis.html",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
-    "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
-    "web/build/assets/images/littles-law-1af1c367b42af5df782797d3864a45c2.png",
-    "web/build/assets/images/Directory-based-sharding-698c80c875b5c796be84f009032332bd.png",
-    "web/build/assets/images/database-scaling-d1730fbbc59647196087bcda60f9b841.png",
-    "web/build/assets/images/database-replication-7edcfd2d934f74df29cde3ce79219a3f.png",
-    "web/build/assets/images/database-leaderless-replication-6376fdb87273991c199ac80e3f5eec19.png",
-    "web/build/assets/images/database-leader-replication-05eab7a184e4151b0412f9fe07638f55.png",
-    "web/build/assets/images/database-cap-318b4cd17d2afb696f0294004a51ca1e.png",
-    "web/build/assets/images/database-acid-5a05755f081004b79f2000ae34ab0ca3.png",
-    "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
-    "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
-    "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md",
-    "Softwarové Inženýrství/Databáze 2/5. Key-Value databáze (Redis).md",
-    "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
-    "web/generated/docs/softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
-    "Softwarové Inženýrství/Databáze 2/2. Formáty dat.md",
-    "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
-    "README.md",
     "Bez názvu.canvas",
     "Big Data.md",
-    "Softwarové Inženýrství/Databáze 2/8. Grafové databáze (Neo4j).md",
     "Softwarové Inženýrství/Efektivní Software/Bez názvu.md",
-    "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md"
+    "Vítejte.md"
   ]
 }
