@@ -393,13 +393,19 @@ const calloutTypeMap = new Map([
 
 const escapeAdmonitionTitle = (value) => value.replace(/]/g, '\\]');
 
+const escapeHtml = (value) =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
 const convertObsidianCallouts = (content) => {
   const lines = content.split(/\r?\n/);
   const convertedLines = [];
   let index = 0;
 
   while (index < lines.length) {
-    const calloutStart = lines[index].match(/^>\s*\[!([a-z]+)\][+-]?\s*(.*)$/i);
+    const calloutStart = lines[index].match(/^>\s*\[!([a-z][a-z-]*)\]([+-])?\s*(.*)$/i);
 
     if (!calloutStart) {
       convertedLines.push(lines[index]);
@@ -408,16 +414,13 @@ const convertObsidianCallouts = (content) => {
     }
 
     const obsidianType = calloutStart[1].toLowerCase();
+    const collapseMarker = calloutStart[2] ?? '';
     const docusaurusType = calloutTypeMap.get(obsidianType) ?? 'note';
-    const title = calloutStart[2].trim();
-
-    convertedLines.push(
-      title
-        ? `:::${docusaurusType}[${escapeAdmonitionTitle(title)}]`
-        : `:::${docusaurusType}`
-    );
+    const title = calloutStart[3].trim();
 
     index += 1;
+
+    const body = [];
 
     while (index < lines.length) {
       const quotedLine = lines[index].match(/^>\s?(.*)$/);
@@ -426,10 +429,29 @@ const convertObsidianCallouts = (content) => {
         break;
       }
 
-      convertedLines.push(quotedLine[1]);
+      body.push(quotedLine[1]);
       index += 1;
     }
 
+    if (collapseMarker) {
+      const openAttribute = collapseMarker === '+' ? ' open' : '';
+      const summary = escapeHtml(stripMarkdownSyntax(title) || obsidianType);
+
+      convertedLines.push(`<details${openAttribute}>`);
+      convertedLines.push(`<summary>${summary}</summary>`);
+      convertedLines.push('');
+      convertedLines.push(...body);
+      convertedLines.push('');
+      convertedLines.push('</details>');
+      continue;
+    }
+
+    convertedLines.push(
+      title
+        ? `:::${docusaurusType}[${escapeAdmonitionTitle(title)}]`
+        : `:::${docusaurusType}`
+    );
+    convertedLines.push(...body);
     convertedLines.push(':::');
   }
 
