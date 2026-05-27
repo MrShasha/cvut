@@ -213,8 +213,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "d8865303e0ec321c",
+  "active": "3e6d3bb488cdb65c",
   "lastOpenFiles": [
+    "Assets/LP-diagram.png",
+    "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
     "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
     "web/build/search-index.json",
     "web/build/sitemap.xml",
@@ -235,9 +237,7 @@
     "web/build/assets/images/Prim_Algorithm_7.svg-f7e48fb1975a3c63191ed40501e6e6c8.png",
     "web/build/assets/images/Prim_Algorithm_4.svg-236f5a5520fc41393c2e425c5db87bdf.png",
     "web/build/assets/images/Prim_Algorithm_5.svg-9c3e04add84c2706b45b0b928efcf039.png",
-    "web/build/assets/images/Prim_Algorithm_3.svg-cd3c00713c8ef9699822e09db8d1aeaf.png",
     "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
-    "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
     "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
     "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
     "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
