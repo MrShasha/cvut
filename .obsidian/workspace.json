@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
+                "file": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "1. Úvod do kombinatorické optimalizace"
+              "title": "2. Celočíselné lineární programování"
             }
           }
         ]
@@ -154,13 +154,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
+                "file": "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Přehled 1. Úvod do kombinatorické optimalizace"
+              "title": "Přehled 2. Celočíselné lineární programování"
             }
           },
           {
@@ -215,28 +215,27 @@
   },
   "active": "d8865303e0ec321c",
   "lastOpenFiles": [
-    "Assets/priklad-zakladni-maximalni-tok.png",
+    "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
     "web/build/search-index.json",
     "web/build/sitemap.xml",
     "web/build/index.html",
     "web/build/search.html",
-    "web/build/404.html",
     "web/build/graph.html",
-    "web/build/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.html",
-    "web/build/spolecne/pokrocila-algoritmizace/obsah-pal.html",
+    "web/build/404.html",
     "web/build/spolecne/kombinatoricka-optimalizace/uvod-do-kombinatoricke-optimalizace.html",
     "web/build/spolecne/kombinatoricka-optimalizace/toky-v-sitich-a-parovani.html",
-    "web/build/assets/images/sled-tah-cesta-grafu-8572e3267eb91286373aef46e8e4262f.png",
-    "web/build/assets/images/uplny-neorientovany-graf-b59e2efae6067f6ba6484c39278eea00.png",
+    "web/build/spolecne/kombinatoricka-optimalizace/rozvrhovani.html",
+    "web/build/spolecne/kombinatoricka-optimalizace/problem-obchodniho-cestujiciho.html",
+    "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
+    "web/build/assets/images/adjMatrix-923c90fca78168037d50171810cb5d75.png",
+    "web/build/assets/images/database-cap-318b4cd17d2afb696f0294004a51ca1e.png",
     "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
     "web/build/assets/images/spanningTreeExp-57b90f9b861e73318bf56710897df8e4.png",
-    "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
-    "web/build/assets/images/Prim_Algorithm_7.svg-f7e48fb1975a3c63191ed40501e6e6c8.png",
     "web/build/assets/images/Prim_Algorithm_6.svg-102edc52f2d68838f26261ca9e0352a3.png",
-    "web/build/assets/images/Prim_Algorithm_5.svg-9c3e04add84c2706b45b0b928efcf039.png",
+    "web/build/assets/images/Prim_Algorithm_7.svg-f7e48fb1975a3c63191ed40501e6e6c8.png",
     "web/build/assets/images/Prim_Algorithm_4.svg-236f5a5520fc41393c2e425c5db87bdf.png",
+    "web/build/assets/images/Prim_Algorithm_5.svg-9c3e04add84c2706b45b0b928efcf039.png",
     "web/build/assets/images/Prim_Algorithm_3.svg-cd3c00713c8ef9699822e09db8d1aeaf.png",
-    "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
     "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
     "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
     "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
