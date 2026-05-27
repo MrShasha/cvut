@@ -179,8 +179,8 @@
       "generatedRel": "spolecne/kombinatoricka-optimalizace/0-obsah-predmetu-ko.md",
       "summary": "Kapitoly 1. Úvod do kombinatorické optimalizace1. Úvod do kombinatorické optimalizace - Co je kombinatorická optimalizace1. Úvod do kombinatorické optimalizace - Formulace optimalizační úlohy1. Úvod do kombinatorické opt",
       "incoming": 0,
-      "outgoing": 67,
-      "degree": 67
+      "outgoing": 70,
+      "degree": 70
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md",
@@ -1113,9 +1113,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "parentTitle": "3. Nejkratší cesty",
       "level": 1,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#dynamickoprogramovací-pohled",
@@ -1143,9 +1143,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "parentTitle": "3. Nejkratší cesty",
       "level": 1,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#floydůvwarshallův-algoritmus",
@@ -1158,9 +1158,9 @@
       "parentId": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "parentTitle": "3. Nejkratší cesty",
       "level": 1,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#modelování-úloh-pomocí-nejkratších-cest",
@@ -2750,6 +2750,27 @@
     },
     {
       "source": "doc:spolecne/kombinatoricka-optimalizace/0-obsah-predmetu-ko.md",
+      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#bellmanůvfordův-algoritmus",
+      "type": "heading",
+      "label": "Bellmanův–Fordův algoritmus",
+      "anchor": "#bellmanůvfordův-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/kombinatoricka-optimalizace/0-obsah-predmetu-ko.md",
+      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#nejkratší-cesty-v-dagu",
+      "type": "heading",
+      "label": "Nejkratší cesty v DAGu",
+      "anchor": "#nejkratší-cesty-v-dagu"
+    },
+    {
+      "source": "doc:spolecne/kombinatoricka-optimalizace/0-obsah-predmetu-ko.md",
+      "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#floydůvwarshallův-algoritmus",
+      "type": "heading",
+      "label": "Floydův–Warshallův algoritmus",
+      "anchor": "#floydůvwarshallův-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/kombinatoricka-optimalizace/0-obsah-predmetu-ko.md",
       "target": "heading:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md#modelování-úloh-pomocí-nejkratších-cest",
       "type": "heading",
       "label": "Modelování úloh pomocí nejkratších cest",
@@ -4123,6 +4144,6 @@
     "documents": 23,
     "headings": 114,
     "missing": 0,
-    "links": 314
+    "links": 317
   }
 }
