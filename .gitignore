@@ -15,3 +15,6 @@ npm-debug.log*
 Thumbs.db
 
 /.obsidian/workspace.json
+*/workspace.json
+**/workspace.json
+**/.obsidian/workspace*.json
