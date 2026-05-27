@@ -215,6 +215,8 @@
   },
   "active": "d8865303e0ec321c",
   "lastOpenFiles": [
+    "Assets/priklad-bipartitni-graf.png",
+    "Assets/dnd-dag-diagram.png",
     "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
     "Assets/strom-graf.png",
     "Assets/komponenty-souvislosti-grafu.png",
@@ -225,7 +227,6 @@
     "Assets/klika-grafu.png",
     "Assets/complementary-graph.png",
     "Assets/regularni-graf.png",
-    "Assets/uplny-neorientovany-graf.png",
     "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
     "web/build/search-index.json",
     "web/build/assets/js/runtime~main.e3dd8e98.js",
