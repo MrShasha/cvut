@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "4d79fabb0e30a55c",
+        "id": "652cd33c949135cc",
         "type": "tabs",
         "children": [
           {
-            "id": "d8865303e0ec321c",
+            "id": "6c2e3a849bdae15f",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -215,9 +215,16 @@
   },
   "active": "3e6d3bb488cdb65c",
   "lastOpenFiles": [
+    "Assets/BB5.png",
+    "Assets/BB4.png",
+    "Assets/BB3.png",
+    "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
+    "Assets/BB2.png",
+    "Assets/BB1.png",
+    "Assets/BB0.png",
+    "Assets/BB0.png",
     "Assets/konvexni-pohled-na-planovani.png",
     "Assets/LP-diagram.png",
-    "Společné/Kombinatorická Optimalizace/2. Celočíselné lineární programování.md",
     "Společné/Kombinatorická Optimalizace/1. Úvod do kombinatorické optimalizace.md",
     "web/build/search-index.json",
     "web/build/sitemap.xml",
@@ -231,13 +238,6 @@
     "web/build/spolecne/kombinatoricka-optimalizace/problem-obchodniho-cestujiciho.html",
     "web/build/assets/images/range-based-sharding-90a5c73254df543d396ef35f5d1529a3.png",
     "web/build/assets/images/adjMatrix-923c90fca78168037d50171810cb5d75.png",
-    "web/build/assets/images/database-cap-318b4cd17d2afb696f0294004a51ca1e.png",
-    "web/build/assets/images/Spongebob-8bea94190b1d92656f7c70b9830b92ad.png",
-    "web/build/assets/images/spanningTreeExp-57b90f9b861e73318bf56710897df8e4.png",
-    "web/build/assets/images/Prim_Algorithm_6.svg-102edc52f2d68838f26261ca9e0352a3.png",
-    "web/build/assets/images/Prim_Algorithm_7.svg-f7e48fb1975a3c63191ed40501e6e6c8.png",
-    "web/build/assets/images/Prim_Algorithm_4.svg-236f5a5520fc41393c2e425c5db87bdf.png",
-    "web/build/assets/images/Prim_Algorithm_5.svg-9c3e04add84c2706b45b0b928efcf039.png",
     "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
     "Společné/Kombinatorická Optimalizace/0. Obsah předmětu KO.md",
     "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
