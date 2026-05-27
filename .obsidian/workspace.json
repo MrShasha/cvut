@@ -35,8 +35,7 @@
               "title": "0. Obsah PAL"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -228,10 +227,10 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "5ea1223560d15640",
+  "active": "22d17cec5c2be349",
   "lastOpenFiles": [
-    "conflict-files-obsidian-git.md",
     "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
+    "conflict-files-obsidian-git.md",
     "Assets/priklad-zakladni-maximalni-tok.png",
     "Assets/priklad-bipartitni-graf.png",
     "Assets/konvexni-pohled-na-planovani.png",
