@@ -1,6 +1,20 @@
 {
   "nodes": [
     {
+      "id": "doc:conflict-files-obsidian-git.md",
+      "title": "conflict-files-obsidian-git",
+      "type": "document",
+      "group": "Kořen",
+      "folder": "",
+      "url": "/conflict-files-obsidian-git",
+      "sourceRel": "conflict-files-obsidian-git.md",
+      "generatedRel": "conflict-files-obsidian-git.md",
+      "summary": "Conflicts Please resolve them and commit them using the commands Git: Commit all changes followed by Git: Push (This file will automatically be deleted before commit) [[#Additional Instructions]] available below file lis",
+      "incoming": 0,
+      "outgoing": 2,
+      "degree": 2
+    },
+    {
       "id": "doc:index.md",
       "title": "Úvod",
       "type": "document",
@@ -303,10 +317,10 @@
       "url": "/spolecne/pokrocila-algoritmizace/obsah-pal",
       "sourceRel": "Společné/Pokročilá algoritmizace/0. Obsah PAL.md",
       "generatedRel": "spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
-      "summary": "- 1. Standardní grafové úlohy s polynomiální složitostí řešení1. Standardní grafové úlohy s polynomiální složitostí řešení - Zápis asymptotické složitosti algoritmů1. Standardní grafové úlohy s polynomiální složitostí ře",
+      "summary": "1. Standardní grafové úlohy s polynomiální složitostí řešení1. Standardní grafové úlohy s polynomiální složitostí řešení - Zápis asymptotické složitosti algoritmů1. Standardní grafové úlohy s polynomiální složitostí řeše",
       "incoming": 0,
-      "outgoing": 14,
-      "degree": 14
+      "outgoing": 22,
+      "degree": 22
     },
     {
       "id": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
@@ -319,8 +333,37 @@
       "generatedRel": "spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "summary": "Zápis asymptotické složitosti algoritmů Asymptotická složitost algoritmů slouží k porovnání rychlosti růstu funkcí a zanedbává konstantní faktory. - Asymptotická horní mez $$ f(n) \\in O(g(n)) $$ - Hodnota funkce f se nac",
       "incoming": 1,
-      "outgoing": 13,
-      "degree": 14
+      "outgoing": 21,
+      "degree": 22
+    },
+    {
+      "id": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "title": "2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost",
+      "sourceRel": "Společné/Pokročilá algoritmizace/2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost.md",
+      "generatedRel": "spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "summary": "",
+      "incoming": 1,
+      "outgoing": 0,
+      "degree": 1
+    },
+    {
+      "id": "heading:conflict-files-obsidian-git.md#additional-instructions",
+      "title": "Additional Instructions",
+      "type": "heading",
+      "group": "Kořen",
+      "folder": "",
+      "url": "/conflict-files-obsidian-git#additional-instructions",
+      "sourceRel": "conflict-files-obsidian-git.md",
+      "parentId": "doc:conflict-files-obsidian-git.md",
+      "parentTitle": "conflict-files-obsidian-git",
+      "level": 1,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#big-data",
@@ -2121,9 +2164,121 @@
       "incoming": 2,
       "outgoing": 0,
       "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#kruskalův-greedy-algoritmus",
+      "title": "Kruskalův (greedy) algoritmus",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#kruskalův-greedy-algoritmus",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#union-find",
+      "title": "Union-Find",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#union-find",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 4,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#borůvkův-algoritmus",
+      "title": "Borůvkův algoritmus",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#borůvkův-algoritmus",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-silně-souvislé-komponenty",
+      "title": "Algoritmy pro Silně souvislé komponenty",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#algoritmy-pro-silně-souvislé-komponenty",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#kosaraju-sharirův-algoritmus",
+      "title": "Kosaraju-Sharirův algoritmus",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#kosaraju-sharirův-algoritmus",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#tarjanův-algoritmus",
+      "title": "Tarjanův algoritmus",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#tarjanův-algoritmus",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-eulerův-tah",
+      "title": "Algoritmy pro Eulerův tah",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni#algoritmy-pro-eulerův-tah",
+      "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
     }
   ],
   "links": [
+    {
+      "source": "doc:conflict-files-obsidian-git.md",
+      "target": "heading:conflict-files-obsidian-git.md#additional-instructions",
+      "type": "heading",
+      "label": "Additional Instructions",
+      "anchor": "#additional-instructions"
+    },
     {
       "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
       "target": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
@@ -3591,7 +3746,7 @@
       "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
       "target": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "type": "wiki",
-      "label": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "label": "Standardní grafové úlohy s polynomiální složitostí řešení",
       "anchor": ""
     },
     {
@@ -3684,6 +3839,75 @@
       "type": "heading",
       "label": "Prim-Jarníkův algoritmus",
       "anchor": "#prim-jarníkův-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#kruskalův-greedy-algoritmus",
+      "type": "heading",
+      "label": "Kruskalův (greedy) algoritmus",
+      "anchor": "#kruskalův-greedy-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#borůvkův-algoritmus",
+      "type": "heading",
+      "label": "Borůvkův algoritmus",
+      "anchor": "#borůvkův-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-silně-souvislé-komponenty",
+      "type": "heading",
+      "label": "Algoritmy pro Silně souvislé komponenty",
+      "anchor": "#algoritmy-pro-silně-souvislé-komponenty"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#kosaraju-sharirův-algoritmus",
+      "type": "heading",
+      "label": "Kosaraju-Sharirův algoritmus",
+      "anchor": "#kosaraju-sharirův-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#tarjanův-algoritmus",
+      "type": "heading",
+      "label": "Tarjanův algoritmus",
+      "anchor": "#tarjanův-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-eulerův-tah",
+      "type": "heading",
+      "label": "Eulerův tah",
+      "anchor": "#algoritmy-pro-eulerův-tah"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#union-find",
+      "type": "heading",
+      "label": "Union-Find problem",
+      "anchor": "#union-find"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "type": "wiki",
+      "label": "Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#union-find",
+      "type": "heading",
+      "label": "Union-Find",
+      "anchor": "#union-find"
+    },
+    {
+      "source": "doc:conflict-files-obsidian-git.md",
+      "target": "heading:conflict-files-obsidian-git.md#additional-instructions",
+      "type": "contains",
+      "label": "obsahuje nadpis"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
@@ -4404,12 +4628,54 @@
       "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#prim-jarníkův-algoritmus",
       "type": "contains",
       "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#kruskalův-greedy-algoritmus",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#union-find",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#borůvkův-algoritmus",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-silně-souvislé-komponenty",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#kosaraju-sharirův-algoritmus",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#tarjanův-algoritmus",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-eulerův-tah",
+      "type": "contains",
+      "label": "obsahuje nadpis"
     }
   ],
   "stats": {
-    "documents": 23,
-    "headings": 120,
+    "documents": 25,
+    "headings": 128,
     "missing": 0,
-    "links": 343
+    "links": 361
   }
 }
