@@ -13,3 +13,8 @@ npm-debug.log*
 
 .DS_Store
 Thumbs.db
+
+/.obsidian/workspace.json
+*/workspace.json
+**/workspace.json
+**/.obsidian/workspace*.json
