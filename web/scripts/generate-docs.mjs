@@ -458,12 +458,33 @@ const convertObsidianCallouts = (content) => {
   return convertedLines.join('\n');
 };
 
+// MDX requires style to be an object, not a string.
+// Convert style="prop: value; ..." → style={{prop: "value", ...}}
+const convertInlineStyles = (content) =>
+  content.replace(/style=(["'])([^"']*)\1/g, (match, _quote, styleStr) => {
+    const props = styleStr
+      .split(';')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((prop) => {
+        const colonIdx = prop.indexOf(':');
+        if (colonIdx < 0) return null;
+        const name = prop.slice(0, colonIdx).trim();
+        const value = prop.slice(colonIdx + 1).trim();
+        const camelName = name.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+        return `${camelName}: ${JSON.stringify(value)}`;
+      })
+      .filter(Boolean);
+    return `style={{${props.join(', ')}}}`;
+  });
+
 const convertContent = (source, note, noteIndex, assetIndex) =>
   protectMarkdownCode(source, (content) => {
     let converted = convertMarkdownAssetLinks(content, note, assetIndex);
     converted = convertWikiEmbeds(converted, note, assetIndex);
     converted = convertWikiLinks(converted, note, noteIndex);
     converted = convertObsidianCallouts(converted);
+    converted = convertInlineStyles(converted);
 
     if (note.sourceRel.toLowerCase() !== 'readme.md') {
       converted = demoteTopLevelHeadings(converted);

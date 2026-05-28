@@ -9,7 +9,7 @@
       "url": "/",
       "sourceRel": "README.md",
       "generatedRel": "index.md",
-      "summary": "ČVUT OI výpisky This repository contains study materials for the final exams at CTU FEE OI. If this doesn’t ring a bell, then this repo probably won’t be very helpful for you. Also, it is entirely in Czech ☺. Online verz",
+      "summary": "ČVUT OI výpisky This repository contains study materials for the final exams at CTU FEE OI. If this doesn’t ring a bell, then this repo probably won’t be very helpful for you. Also, it is entirely in Czech ☺. If you are ",
       "incoming": 0,
       "outgoing": 0,
       "degree": 0
@@ -38,9 +38,9 @@
       "sourceRel": "Softwarové Inženýrství/Databáze 2/1. Úvod do Big Data a NoSQL databází.md",
       "generatedRel": "softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
       "summary": "- Big Data1. Úvod do Big Data a NoSQL databází: koncept, 5V charakteristiky (volume, variety, velocity, veracity, value), současné trendy a výzvy. - Relační databáze1. Úvod do Big Data a NoSQL databází: funkční závislost",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 8,
-      "degree": 9
+      "degree": 10
     },
     {
       "id": "doc:softwarove-inzenyrstvi/databaze-2/2-formaty-dat.md",
@@ -66,9 +66,9 @@
       "sourceRel": "Softwarové Inženýrství/Databáze 2/3. Principy distribuovaných systémů a NoSQL.md",
       "generatedRel": "softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
       "summary": "- Škálování3. Principy distribuovaných systémů a NoSQL: vertikální vs. horizontální škálování (výhody, nevýhody, limity), network fallacies, architektura clusteru. - Distribuce dat (Sharding)3. Principy distribuovaných s",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 12,
-      "degree": 13
+      "degree": 14
     },
     {
       "id": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
@@ -80,9 +80,9 @@
       "sourceRel": "Softwarové Inženýrství/Databáze 2/4. MapReduce a Hadoop.md",
       "generatedRel": "softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
       "summary": "- Programovací modely4. MapReduce a Hadoop: datový paralelizmus, task paralelizmus, předávání zpráv, sdílená paměť. - MapReduce4. MapReduce a Hadoop: map a reduce funkce (vstupy, výstupy), architektura clusteru (master, ",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 6,
-      "degree": 7
+      "degree": 8
     },
     {
       "id": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
@@ -94,9 +94,9 @@
       "sourceRel": "Softwarové Inženýrství/Databáze 2/5. Key-Value databáze (Redis).md",
       "generatedRel": "softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
       "summary": "- Obecné principy5. Key-Value databáze (Redis): datový model (klíč-hodnota), správa klíčů (generované, strukturované, s předponami), základní CRUD operace, TTL. - Redis5. Key-Value databáze (Redis): in-memory vlastnosti,",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 6,
-      "degree": 7
+      "degree": 8
     },
     {
       "id": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
@@ -108,9 +108,9 @@
       "sourceRel": "Softwarové Inženýrství/Databáze 2/6. Wide Column Stores (Cassandra).md",
       "generatedRel": "softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
       "summary": "- Obecné principy6. Wide Column Stores (Cassandra): datový model (keyspace, table/column family, row, column), návrh dle dotazů (partition key + clustering columns). - Datové typy a hodnoty6. Wide Column Stores (Cassandr",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 6,
-      "degree": 7
+      "degree": 8
     },
     {
       "id": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
@@ -122,9 +122,9 @@
       "sourceRel": "Softwarové Inženýrství/Databáze 2/7. Dokumentové databáze (MongoDB).md",
       "generatedRel": "softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
       "summary": "- Obecné principy7. Dokumentové databáze (MongoDB): dokumenty (JSON/BSON), hierarchická struktura, datové modelování (vnořené dokumenty vs. reference podle vzorů dotazů a ceny updatů). - Dotazování a CRUD operace7. Dokum",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 10,
-      "degree": 11
+      "degree": 12
     },
     {
       "id": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
@@ -136,9 +136,9 @@
       "sourceRel": "Softwarové Inženýrství/Databáze 2/8. Grafové databáze (Neo4j).md",
       "generatedRel": "softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
       "summary": "- Obecné principy8. Grafové databáze (Neo4j): property grafy, vícekrokové (multi-hop) traverzování, vhodnost grafů vůči joinům v relačních DB. - Neo4j Datový model8. Grafové databáze (Neo4j): uzly, hrany (orientace), pro",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 8,
-      "degree": 9
+      "degree": 10
     },
     {
       "id": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
@@ -150,9 +150,9 @@
       "sourceRel": "Softwarové Inženýrství/Databáze 2/9. Pokročilé aspekty grafových databází.md",
       "generatedRel": "softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
       "summary": "- Grafové datové struktury9. Pokročilé aspekty grafových databází: matice sousednosti, seznam sousedů, matice incidence, Laplaceova matice. - Lokalita dat a optimalizace9. Pokročilé aspekty grafových databází: rozložení ",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 6,
-      "degree": 7
+      "degree": 8
     },
     {
       "id": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
@@ -164,9 +164,23 @@
       "sourceRel": "Softwarové Inženýrství/Databáze 2/10. RDF Stores a Sémantický web (SPARQL).md",
       "generatedRel": "softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
       "summary": "- Linked Data10. RDF Stores a Sémantický web (SPARQL): principy publikování (identifikace přes URI/URL, propojování, formáty, otevřené licence), Linked Open Data Cloud. - SPARQL10. RDF Stores a Sémantický web (SPARQL): -",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 4,
-      "degree": 5
+      "degree": 6
+    },
+    {
+      "id": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "title": "11. Shrnutí pro státnice",
+      "type": "document",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Databáze 2",
+      "url": "/softwarove-inzenyrstvi/databaze-2/shrnuti-pro-statnice",
+      "sourceRel": "Softwarové Inženýrství/Databáze 2/11. Shrnutí pro státnice.md",
+      "generatedRel": "softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "summary": "Tento dokument je rychlý záchytný bod, ne plnohodnotný výklad. Každou sekci otevři, až si nejsi jistý detailem — tady je zkondenzovaná esence toho, co u státnic chtějí. |---|---| | Volume | Obrovské objemy dat (TB, PB, E",
+      "incoming": 0,
+      "outgoing": 33,
+      "degree": 33
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/0-obsah-predmetu-ko.md",
@@ -303,7 +317,7 @@
       "url": "/spolecne/kombinatoricka-optimalizace/shrnuti-pro-statnice",
       "sourceRel": "Společné/Kombinatorická Optimalizace/9. Shrnutí pro státnice.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/9-shrnuti-pro-statnice.md",
-      "summary": "Tento dokument je rychlý záchytný bod, ne plnohodnotný výklad. Každou sekci otevři, až si nejsi jistý detailem — tady je zkondenzovaná esence toho, co u státnic chtějí. 2. Nejkratší cesty → Detaily: 3. Nejkratší cesty Kd",
+      "summary": "Tento dokument je rychlý záchytný bod, ne plnohodnotný výklad. Každou sekci otevři, až si nejsi jistý detailem — tady je zkondenzovaná esence toho, co u státnic chtějí. 1. Celočíselné lineární programování → Detaily: 2. ",
       "incoming": 1,
       "outgoing": 39,
       "degree": 40
@@ -319,8 +333,8 @@
       "generatedRel": "spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
       "summary": "1. Standardní grafové úlohy s polynomiální složitostí řešení1. Standardní grafové úlohy s polynomiální složitostí řešení - Zápis asymptotické složitosti algoritmů1. Standardní grafové úlohy s polynomiální složitostí řeše",
       "incoming": 0,
-      "outgoing": 28,
-      "degree": 28
+      "outgoing": 35,
+      "degree": 35
     },
     {
       "id": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
@@ -347,8 +361,120 @@
       "generatedRel": "spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
       "summary": "Izomorfizmus grafů Mějme grafy G₁ a G₂: $$ G1 = (V1, E1), \\qquad G2 = (V2, E2) $$ Grafy G₁ a G₂ jsou izomorfní, pokud existuje bijekce: - Každý prvek první množiny se spáruje s právě jedním prvkem druhé množiny. - Žádný ",
       "incoming": 1,
-      "outgoing": 6,
-      "degree": 7
+      "outgoing": 12,
+      "degree": 13
+    },
+    {
+      "id": "doc:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
+      "title": "3. Vyhledávací stromy a jejich využití",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/vyhledavaci-stromy-a-jejich-vyuziti",
+      "sourceRel": "Společné/Pokročilá algoritmizace/3. Vyhledávací stromy a jejich využití.md",
+      "generatedRel": "spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
+      "summary": "Vyhledávání řeší úlohu: máme množinu n klíčů a dotazovací klíč k. Chceme zjistit, zda se k v množině nachází. Search space Search space S je množina klíčů, ve které vyhledáváme. Přesněji je to množina záznamů s klíči, po",
+      "incoming": 1,
+      "outgoing": 1,
+      "degree": 2
+    },
+    {
+      "id": "doc:spolecne/teorie-algoritmu/1-asymptoticky-rust-casova-a-pametova-slozitost-spravnost-algoritmu-variant-a-invariant.md",
+      "title": "1. Asymptotický růst, časová a paměťová složitost, správnost algoritmů (variant a invariant)",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Teorie Algoritmů",
+      "url": "/spolecne/teorie-algoritmu/asymptoticky-rust-casova-a-pametova-slozitost-spravnost-algoritmu-variant-a-invariant",
+      "sourceRel": "Společné/Teorie Algoritmů/1. Asymptotický růst, časová a paměťová složitost, správnost algoritmů (variant a invariant).md",
+      "generatedRel": "spolecne/teorie-algoritmu/1-asymptoticky-rust-casova-a-pametova-slozitost-spravnost-algoritmu-variant-a-invariant.md",
+      "summary": "Přednášky a témata v tomto okruhu Tento okruh odpovídá hlavně těmto částem: - Přednáška 1: základní pojmy, algoritmus, úloha, instance, časová složitost, asymptotický růst funkcí, značení O, Ω, Θ, o, ω. - Přednáška 2: ře",
+      "incoming": 0,
+      "outgoing": 0,
+      "degree": 0
+    },
+    {
+      "id": "doc:spolecne/teorie-algoritmu/2-deterministicke-vicepaskove-a-nedeterministicke-turingovy-stroje.md",
+      "title": "2. Deterministické, vícepáskové a nedeterministické Turingovy stroje",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Teorie Algoritmů",
+      "url": "/spolecne/teorie-algoritmu/deterministicke-vicepaskove-a-nedeterministicke-turingovy-stroje",
+      "sourceRel": "Společné/Teorie Algoritmů/2. Deterministické, vícepáskové a nedeterministické Turingovy stroje.md",
+      "generatedRel": "spolecne/teorie-algoritmu/2-deterministicke-vicepaskove-a-nedeterministicke-turingovy-stroje.md",
+      "summary": "Přednášky a témata v tomto okruhu Tento okruh odpovídá hlavně těmto částem kurzu BE4M01TAL: - Přednáška 5: deterministický Turingův stroj, formální definice, konfigurace, krok výpočtu, přijímaný jazyk, rozhodovaný jazyk,",
+      "incoming": 0,
+      "outgoing": 0,
+      "degree": 0
+    },
+    {
+      "id": "doc:spolecne/teorie-algoritmu/3-decision-problems-languages-p-np-co-np-reductions-npc-cook-theorem-heuristics-and-approximation.md",
+      "title": "3. Decision problems, languages, P, NP, co-NP, reductions, NPC, Cook theorem, heuristics and approximation",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Teorie Algoritmů",
+      "url": "/spolecne/teorie-algoritmu/decision-problems-languages-p-np-co-np-reductions-npc-cook-theorem-heuristics-and-approximation",
+      "sourceRel": "Společné/Teorie Algoritmů/3. Decision problems, languages, P, NP, co-NP, reductions, NPC, Cook theorem, heuristics and approximation.md",
+      "generatedRel": "spolecne/teorie-algoritmu/3-decision-problems-languages-p-np-co-np-reductions-npc-cook-theorem-heuristics-and-approximation.md",
+      "summary": "Přednášky a témata v tomto okruhu Tento okruh odpovídá hlavně těmto částem kurzu BE4M01TAL: - Přednáška 7: rozhodovací úlohy, úloha jako jazyk, třídy P a NP, polynomiální redukce, třída NPC. - Přednáška 8: Cookova věta, ",
+      "incoming": 0,
+      "outgoing": 0,
+      "degree": 0
+    },
+    {
+      "id": "doc:spolecne/teorie-algoritmu/4-pspace-npspace-a-savitchova-veta.md",
+      "title": "4. PSPACE, NPSPACE a Savitchova věta",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Teorie Algoritmů",
+      "url": "/spolecne/teorie-algoritmu/pspace-npspace-a-savitchova-veta",
+      "sourceRel": "Společné/Teorie Algoritmů/4. PSPACE, NPSPACE a Savitchova věta.md",
+      "generatedRel": "spolecne/teorie-algoritmu/4-pspace-npspace-a-savitchova-veta.md",
+      "summary": "Přednášky a témata v tomto okruhu Tento okruh odpovídá hlavně části 4.7 Třídy PSPACE a NPSPACE. Hlavní témata: 1. Paměťová složitost Turingova stroje. 2. Třída PSPACE. 3. Třída NPSPACE. 4. Vztahy P ⊆ PSPACE, NP ⊆ NPSPACE",
+      "incoming": 0,
+      "outgoing": 0,
+      "degree": 0
+    },
+    {
+      "id": "doc:spolecne/teorie-algoritmu/5-randomizovane-algoritmy-randomizovany-turinguv-stroj-rp-co-rp-zpp.md",
+      "title": "5. Randomizované algoritmy, randomizovaný Turingův stroj, RP, co-RP, ZPP",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Teorie Algoritmů",
+      "url": "/spolecne/teorie-algoritmu/randomizovane-algoritmy-randomizovany-turinguv-stroj-rp-co-rp-zpp",
+      "sourceRel": "Společné/Teorie Algoritmů/5. Randomizované algoritmy, randomizovaný Turingův stroj, RP, co-RP, ZPP.md",
+      "generatedRel": "spolecne/teorie-algoritmu/5-randomizovane-algoritmy-randomizovany-turinguv-stroj-rp-co-rp-zpp.md",
+      "summary": "Přednášky a témata v tomto okruhu Tento okruh odpovídá hlavně části 4.8 Třídy založené na pravděpodobnostních algoritmech. Hlavní témata: 1. Randomizované algoritmy. 2. Randomizovaný Turingův stroj (RTM). 3. Rozdíl mezi ",
+      "incoming": 0,
+      "outgoing": 0,
+      "degree": 0
+    },
+    {
+      "id": "doc:spolecne/teorie-algoritmu/6-rozhodnutelnost-a-nerozhodnutelnost-rekurzivni-a-rekurzivne-spocetne-jazyky-diagonalni-jazyk-univerzalni-jazyk-a-univerzalni-turinguv-stroj.md",
+      "title": "6. Rozhodnutelnost a nerozhodnutelnost. Rekurzivní a rekurzivně spočetné jazyky. Diagonální jazyk. Univerzální jazyk a univerzální Turingův stroj.",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Teorie Algoritmů",
+      "url": "/spolecne/teorie-algoritmu/rozhodnutelnost-a-nerozhodnutelnost-rekurzivni-a-rekurzivne-spocetne-jazyky-diagonalni-jazyk-univerzalni-jazyk-a-univerzalni-turinguv-stroj",
+      "sourceRel": "Společné/Teorie Algoritmů/6. Rozhodnutelnost a nerozhodnutelnost. Rekurzivní a rekurzivně spočetné jazyky. Diagonální jazyk. Univerzální jazyk a univerzální Turingův stroj..md",
+      "generatedRel": "spolecne/teorie-algoritmu/6-rozhodnutelnost-a-nerozhodnutelnost-rekurzivni-a-rekurzivne-spocetne-jazyky-diagonalni-jazyk-univerzalni-jazyk-a-univerzalni-turinguv-stroj.md",
+      "summary": "Přednášky a témata v tomto okruhu Tento okruh odpovídá hlavně části 4.9 Nerozhodnutelnost. Hlavní témata: 1. Rozhodnutelnost a nerozhodnutelnost. 2. Rekursivní jazyky (R). 3. Rekursivně spočetné jazyky (RS, anglicky RE).",
+      "incoming": 0,
+      "outgoing": 0,
+      "degree": 0
+    },
+    {
+      "id": "doc:spolecne/teorie-algoritmu/7-dop-prehled-vztahu-mezi-tridami.md",
+      "title": "7. DOP - Přehled vztahů mezi třídami",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Teorie Algoritmů",
+      "url": "/spolecne/teorie-algoritmu/dop-prehled-vztahu-mezi-tridami",
+      "sourceRel": "Společné/Teorie Algoritmů/7. DOP - Přehled vztahů mezi třídami.md",
+      "generatedRel": "spolecne/teorie-algoritmu/7-dop-prehled-vztahu-mezi-tridami.md",
+      "summary": "Základní vztahy Platí: $$ P \\subseteq NP \\subseteq PSPACE $$ a podle Savitchovy věty: $$ PSPACE = NPSPACE $$ Dále platí: $$ P \\subseteq ZPP $$ $$ P \\subseteq RP \\subseteq NP $$ $$ P \\subseteq co\\text{-}RP \\subseteq co\\te",
+      "incoming": 0,
+      "outgoing": 0,
+      "degree": 0
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#big-data",
@@ -391,9 +517,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
       "parentTitle": "1. Úvod do Big Data a NoSQL databází",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#návrh-databází",
@@ -481,9 +607,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
       "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#distribuce-dat-sharding",
@@ -496,9 +622,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
       "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#replikace-dat",
@@ -511,9 +637,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
       "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#teorémy-a-garance",
@@ -526,9 +652,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
       "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#konzistence",
@@ -541,9 +667,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
       "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#ladění-výkonu",
@@ -556,9 +682,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
       "parentTitle": "3. Principy distribuovaných systémů a NoSQL",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#programovací-modely",
@@ -586,9 +712,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
       "parentTitle": "4. MapReduce a Hadoop",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#hadoop-a-hdfs",
@@ -601,9 +727,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
       "parentTitle": "4. MapReduce a Hadoop",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#obecné-principy",
@@ -646,9 +772,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
       "parentTitle": "5. Key-Value databáze (Redis)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#obecné-principy",
@@ -661,9 +787,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
       "parentTitle": "6. Wide Column Stores (Cassandra)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#datové-typy-a-hodnoty",
@@ -691,9 +817,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
       "parentTitle": "6. Wide Column Stores (Cassandra)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#obecné-principy",
@@ -706,9 +832,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
       "parentTitle": "7. Dokumentové databáze (MongoDB)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#dotazování-a-crud-operace",
@@ -721,9 +847,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
       "parentTitle": "7. Dokumentové databáze (MongoDB)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#operátory",
@@ -736,9 +862,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
       "parentTitle": "7. Dokumentové databáze (MongoDB)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#aggregační-framework",
@@ -751,9 +877,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
       "parentTitle": "7. Dokumentové databáze (MongoDB)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#indexování",
@@ -766,9 +892,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
       "parentTitle": "7. Dokumentové databáze (MongoDB)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#obecné-principy",
@@ -796,9 +922,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
       "parentTitle": "8. Grafové databáze (Neo4j)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#traversal-framework",
@@ -811,9 +937,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
       "parentTitle": "8. Grafové databáze (Neo4j)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#cypher-query-language",
@@ -826,9 +952,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
       "parentTitle": "8. Grafové databáze (Neo4j)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#grafové-datové-struktury",
@@ -856,9 +982,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
       "parentTitle": "9. Pokročilé aspekty grafových databází",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#zpracování-velkých-grafů",
@@ -871,9 +997,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
       "parentTitle": "9. Pokročilé aspekty grafových databází",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#linked-data",
@@ -886,9 +1012,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
       "parentTitle": "10. RDF Stores a Sémantický web (SPARQL)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#sparql",
@@ -901,9 +1027,9 @@
       "parentId": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
       "parentTitle": "10. RDF Stores a Sémantický web (SPARQL)",
       "level": 1,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:spolecne/kombinatoricka-optimalizace/1-uvod-do-kombinatoricke-optimalizace.md#co-je-kombinatorická-optimalizace",
@@ -2314,6 +2440,96 @@
       "incoming": 2,
       "outgoing": 0,
       "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#grayovy-kódy",
+      "title": "Grayovy kódy",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost#grayovy-kódy",
+      "sourceRel": "Společné/Pokročilá algoritmizace/2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "parentTitle": "2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#prvočísla",
+      "title": "Prvočísla",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost#prvočísla",
+      "sourceRel": "Společné/Pokročilá algoritmizace/2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "parentTitle": "2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#eratosthenovo-síto",
+      "title": "Eratosthenovo síto",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost#eratosthenovo-síto",
+      "sourceRel": "Společné/Pokročilá algoritmizace/2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "parentTitle": "2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost",
+      "level": 3,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#vlastnosti-pseudonáhodných-čísel",
+      "title": "Vlastnosti pseudonáhodných čísel",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost#vlastnosti-pseudonáhodných-čísel",
+      "sourceRel": "Společné/Pokročilá algoritmizace/2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "parentTitle": "2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#lineární-kongruenční-generátor",
+      "title": "Lineární kongruenční generátor",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost#lineární-kongruenční-generátor",
+      "sourceRel": "Společné/Pokročilá algoritmizace/2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "parentTitle": "2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost",
+      "level": 2,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#avl-strom",
+      "title": "AVL strom",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/vyhledavaci-stromy-a-jejich-vyuziti#avl-strom",
+      "sourceRel": "Společné/Pokročilá algoritmizace/3. Vyhledávací stromy a jejich využití.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
+      "parentTitle": "3. Vyhledávací stromy a jejich využití",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
     }
   ],
   "links": [
@@ -2903,6 +3119,237 @@
       "target": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#sparql",
       "type": "heading",
       "label": "SPARQL",
+      "anchor": "#sparql"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
+      "type": "wiki",
+      "label": "1. Úvod do Big Data a NoSQL databází",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#nosql-databáze",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#nosql-databáze"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md",
+      "type": "wiki",
+      "label": "3. Principy distribuovaných systémů a NoSQL",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#škálování",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#škálování"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#distribuce-dat-sharding",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#distribuce-dat-sharding"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#replikace-dat",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#replikace-dat"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#teorémy-a-garance",
+      "type": "heading",
+      "label": "Teorémy a garance",
+      "anchor": "#teorémy-a-garance"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#konzistence",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#konzistence"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/3-principy-distribuovanych-systemu-a-nosql.md#ladění-výkonu",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#ladění-výkonu"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md",
+      "type": "wiki",
+      "label": "4. MapReduce a Hadoop",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#mapreduce",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#mapreduce"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/4-mapreduce-a-hadoop.md#hadoop-a-hdfs",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#hadoop-a-hdfs"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md",
+      "type": "wiki",
+      "label": "5. Key-Value databáze (Redis)",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/5-key-value-databaze-redis.md#operace-a-příkazy",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#operace-a-příkazy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md",
+      "type": "wiki",
+      "label": "6. Wide Column Stores (Cassandra)",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#obecné-principy",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#obecné-principy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/6-wide-column-stores-cassandra.md#cassandra-query-language-cql",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#cassandra-query-language-cql"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md",
+      "type": "wiki",
+      "label": "7. Dokumentové databáze (MongoDB)",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#obecné-principy",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#obecné-principy"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#dotazování-a-crud-operace",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#dotazování-a-crud-operace"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#operátory",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#operátory"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#aggregační-framework",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#aggregační-framework"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/7-dokumentove-databaze-mongodb.md#indexování",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#indexování"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md",
+      "type": "wiki",
+      "label": "8. Grafové databáze (Neo4j)",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#neo4j-datový-model",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#neo4j-datový-model"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#traversal-framework",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#traversal-framework"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/8-grafove-databaze-neo4j.md#cypher-query-language",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#cypher-query-language"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md",
+      "type": "wiki",
+      "label": "9. Pokročilé aspekty grafových databází",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#lokalita-dat-a-optimalizace",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#lokalita-dat-a-optimalizace"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/9-pokrocile-aspekty-grafovych-databazi.md#zpracování-velkých-grafů",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#zpracování-velkých-grafů"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "doc:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md",
+      "type": "wiki",
+      "label": "10. RDF Stores a Sémantický web (SPARQL)",
+      "anchor": ""
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#linked-data",
+      "type": "heading",
+      "label": "→ sekce",
+      "anchor": "#linked-data"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/databaze-2/11-shrnuti-pro-statnice.md",
+      "target": "heading:softwarove-inzenyrstvi/databaze-2/10-rdf-stores-a-semanticky-web-sparql.md#sparql",
+      "type": "heading",
+      "label": "→ sekce",
       "anchor": "#sparql"
     },
     {
@@ -4432,11 +4879,67 @@
       "anchor": "#permutace"
     },
     {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#grayovy-kódy",
+      "type": "heading",
+      "label": "Grayovy kódy",
+      "anchor": "#grayovy-kódy"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#prvočísla",
+      "type": "heading",
+      "label": "Prvočísla",
+      "anchor": "#prvočísla"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#eratosthenovo-síto",
+      "type": "heading",
+      "label": "Eratosthenovo síto",
+      "anchor": "#eratosthenovo-síto"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#vlastnosti-pseudonáhodných-čísel",
+      "type": "heading",
+      "label": "Vlastnosti pseudonáhodných čísel",
+      "anchor": "#vlastnosti-pseudonáhodných-čísel"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#lineární-kongruenční-generátor",
+      "type": "heading",
+      "label": "Lineární kongruenční generátor",
+      "anchor": "#lineární-kongruenční-generátor"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "doc:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
+      "type": "wiki",
+      "label": "Vyhledávací stromy a jejich využití",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#avl-strom",
+      "type": "heading",
+      "label": "AVL strom",
+      "anchor": "#avl-strom"
+    },
+    {
       "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#union-find",
       "type": "heading",
       "label": "Union-Find",
       "anchor": "#union-find"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#lineární-kongruenční-generátor",
+      "type": "heading",
+      "label": "Lineárního kongruenčního generátoru",
+      "anchor": "#lineární-kongruenční-generátor"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
@@ -5223,12 +5726,48 @@
       "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#permutace",
       "type": "contains",
       "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#grayovy-kódy",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#prvočísla",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#eratosthenovo-síto",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#vlastnosti-pseudonáhodných-čísel",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md#lineární-kongruenční-generátor",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#avl-strom",
+      "type": "contains",
+      "label": "obsahuje nadpis"
     }
   ],
   "stats": {
-    "documents": 25,
-    "headings": 131,
+    "documents": 34,
+    "headings": 137,
     "missing": 0,
-    "links": 434
+    "links": 481
   }
 }
