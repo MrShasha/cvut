@@ -17,6 +17,7 @@ const APPEARANCES = {
     headingColor: HEADING_COLOR,
     missingColor: MISSING_COLOR,
     labelColor: '#e5e7eb',
+    labelBg: 'rgba(6, 11, 16, 0.82)',
     strokeColor: 'rgba(255,255,255,0.75)',
     link: {
       contains: 'rgba(148, 163, 184, 0.28)',
@@ -31,6 +32,7 @@ const APPEARANCES = {
     headingColor: '#15803d',
     missingColor: '#b91c1c',
     labelColor: '#111827',
+    labelBg: 'rgba(248, 250, 252, 0.88)',
     strokeColor: 'rgba(15,23,42,0.38)',
     link: {
       contains: 'rgba(100, 116, 139, 0.24)',
@@ -45,6 +47,7 @@ const APPEARANCES = {
     headingColor: '#a3e635',
     missingColor: '#fb7185',
     labelColor: '#f8fafc',
+    labelBg: 'rgba(2, 6, 23, 0.85)',
     strokeColor: 'rgba(255,255,255,0.88)',
     link: {
       contains: 'rgba(226, 232, 240, 0.34)',
@@ -257,7 +260,7 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
           }
 
           const distance = Math.sqrt(distanceSquared);
-          const force = Math.min(1.2 * settings.chargeScale, (900 * settings.chargeScale) / distanceSquared);
+          const force = Math.min(2.5 * settings.chargeScale, (1800 * settings.chargeScale) / distanceSquared);
           const fx = (dx / distance) * force;
           const fy = (dy / distance) * force;
 
@@ -274,7 +277,7 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
         const dx = target.x - source.x;
         const dy = target.y - source.y;
         const distance = Math.max(1, Math.sqrt(dx * dx + dy * dy));
-        const baseDesired = link.type === 'contains' ? 38 : link.type === 'heading' ? 80 : 120;
+        const baseDesired = link.type === 'contains' ? 55 : link.type === 'heading' ? 110 : 165;
         const desired = baseDesired * settings.linkLengthScale;
         const strength = (link.type === 'contains' ? 0.045 : 0.025) * settings.linkStrengthScale;
         const force = (distance - desired) * strength;
@@ -290,8 +293,8 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
       for (const node of nodes) {
         node.vx += (width / 2 - node.x) * 0.002 * settings.gravityScale;
         node.vy += (height / 2 - node.y) * 0.002 * settings.gravityScale;
-        node.vx *= 0.84;
-        node.vy *= 0.84;
+        node.vx *= 0.86;
+        node.vy *= 0.86;
 
         if (!node.fx) node.x += node.vx;
         if (!node.fy) node.y += node.vy;
@@ -339,15 +342,25 @@ function GraphCanvas({graph, searchTerm, selectedNodeId, onSelectNode, settings}
           matched ||
           node.id === hoverNodeId ||
           node.id === selectedNodeId ||
-          (settings.labelMode !== 'hidden' && transform.k > 1.35);
+          (settings.labelMode !== 'hidden' && transform.k > 1.8);
 
         if (shouldShowLabel) {
           const fontSize = Math.max(9, Math.min(13, 11 / Math.sqrt(transform.k)));
+          const maxChars = 32;
+          const label = node.title.length > maxChars ? `${node.title.slice(0, maxChars)}\u2026` : node.title;
+          const labelX = node.x;
+          const labelY = node.y + node.r + 4 / transform.k;
           ctx.font = `${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'top';
+          const textWidth = ctx.measureText(label).width;
+          const pad = 2.5 / transform.k;
+          ctx.globalAlpha = faded ? 0.05 : 0.8;
+          ctx.fillStyle = appearance.labelBg;
+          ctx.fillRect(labelX - textWidth / 2 - pad, labelY - pad, textWidth + pad * 2, fontSize + pad * 2);
+          ctx.globalAlpha = faded ? 0.18 : 1;
           ctx.fillStyle = appearance.labelColor;
-          ctx.fillText(node.title, node.x, node.y + node.r + 4 / transform.k);
+          ctx.fillText(label, labelX, labelY);
         }
 
         ctx.globalAlpha = 1;
@@ -523,13 +536,13 @@ function GraphContent() {
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [appearance, setAppearance] = useState('obsidian');
-  const [labelMode, setLabelMode] = useState('documents');
+  const [labelMode, setLabelMode] = useState('active');
   const [nodeScale, setNodeScale] = useState(1);
   const [linkOpacity, setLinkOpacity] = useState(0.36);
-  const [linkLengthScale, setLinkLengthScale] = useState(1);
+  const [linkLengthScale, setLinkLengthScale] = useState(1.2);
   const [linkStrengthScale, setLinkStrengthScale] = useState(1);
-  const [chargeScale, setChargeScale] = useState(1);
-  const [gravityScale, setGravityScale] = useState(1);
+  const [chargeScale, setChargeScale] = useState(1.3);
+  const [gravityScale, setGravityScale] = useState(0.8);
 
   const groups = useMemo(() => {
     const uniqueGroups = Array.from(new Set(graphData.nodes.map((node) => node.group)));
