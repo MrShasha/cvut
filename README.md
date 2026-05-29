@@ -3,7 +3,7 @@
 ![Spongebob|493](Assets/Spongebob.png)
 This repository contains study materials for the final exams at CTU FEE OI. If this doesn’t ring a bell, then this repo probably won’t be very helpful for you. Also, it is entirely in Czech ☺. 
 
-# If you are one of those fake CTU students who don’t have final exams anymore, consider yourself personally attacked. You are beneath us. 
+# If you are one of those fake CTU students who don’t have final exams anymore, consider yourself personally attacked and a lesser human being. You are beneath us. 
 
 Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 ## Obsah
@@ -13,11 +13,11 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 - Rozpracované předměty:
 	- Pokročilá algoritmizace 💀 - Matěj
 	-  Teorie algoritmů 💀 - Artur
+	- - Efektivní software 🤨 - Jirka
 - Nerozpracované předměty:
 	- Softwarové inženýrství
 		- Softwarové architektury 😊
 		- Bezpečnosti systémů 😊
-		- Efektivní software 🤨
 		- Paralelní algoritmy 💀
 		- Zajištění kvality software 😊
 	- Počítačová grafika
