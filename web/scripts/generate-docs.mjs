@@ -187,7 +187,7 @@ const assetLink = (fromGeneratedRel, assetGeneratedRel) => {
     link = `./${link}`;
   }
 
-  return link;
+  return link.split('/').map((segment, index) => (index === 0 && segment === '.') || segment === '..' ? segment : encodeURIComponent(segment)).join('/');
 };
 
 const parseWikiTarget = (rawTarget) => {
