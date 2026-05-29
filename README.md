@@ -11,7 +11,7 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 	- Databáze 2 😊
 	- Kombinatorická optimalizace 💀
 - Rozpracované předměty:
-	- Pokročilá algoritmizace 💀 - Matěj
+	- Pokročilá algoritmizace 💀 - Matěj - skoro ještě final factcheck
 	- Teorie algoritmů 💀 - Artur
 	- Efektivní software 🤨 - Jirka
 - Nerozpracované předměty:
