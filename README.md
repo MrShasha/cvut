@@ -12,8 +12,8 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 	- Kombinatorická optimalizace 💀
 - Rozpracované předměty:
 	- Pokročilá algoritmizace 💀 - Matěj
-	-  Teorie algoritmů 💀 - Artur
-	- - Efektivní software 🤨 - Jirka
+	- Teorie algoritmů 💀 - Artur
+	- Efektivní software 🤨 - Jirka
 - Nerozpracované předměty:
 	- Softwarové inženýrství
 		- Softwarové architektury 😊
