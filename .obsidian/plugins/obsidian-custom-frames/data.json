@@ -1,0 +1,17 @@
+{
+  "frames": [
+    {
+      "url": "https://mrshasha.github.io/cvut/assets/Assets/ESW/cache.html",
+      "displayName": "Asociativita cache",
+      "icon": "database-zap",
+      "hideOnMobile": true,
+      "addRibbonIcon": false,
+      "openInCenter": false,
+      "zoomLevel": 1,
+      "forceIframe": false,
+      "customCss": "",
+      "customJs": ""
+    }
+  ],
+  "padding": 5
+}
