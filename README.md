@@ -7,28 +7,34 @@ This repository contains study materials for the final exams at CTU FEE OI. If t
 
 Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 ## Obsah
-- Dokončené předměty:
-	- Databáze 2 😊
-	- Kombinatorická optimalizace 💀
-- Rozpracované předměty:
-	- Pokročilá algoritmizace 💀 - Matěj
-	-  Teorie algoritmů 💀 - Artur
-- Nerozpracované předměty:
-	- Softwarové inženýrství
-		- Softwarové architektury 😊
-		- Bezpečnosti systémů 😊
-		- Efektivní software 🤨
-		- Paralelní algoritmy 💀
-		- Zajištění kvality software 😊
-	- Počítačová grafika
-		- Algoritmy počítačové grafiky
-		- Datové struktury počítačové grafiky
-		- Multimédia a počítačová animace
-		- Výpočetní geometrie
-		- Vizualizace
-		- Geometrie počítačového vidění a grafiky
 
+### Společné předměty
 
+| Stav            | Předmět                        | Poznámka |
+| --------------- | ------------------------------ | -------- |
+| ✅ Dokončené     | Kombinatorická optimalizace 💀 | Jirka    |
+| ✅ Dokončené     | Teorie algoritmů 💀            | Artur    |
+| 🟡 Rozpracované | Pokročilá algoritmizace 💀     | Matěj    |
+### Softwarové inženýrství
+
+| Stav             | Předmět                       | Poznámka |
+| ---------------- | ----------------------------- | -------- |
+| ✅ Dokončené      | Databáze 2 😊                 |          |
+| ❌ Nerozpracované | Softwarové architektury 😊    |          |
+| ❌ Nerozpracované | Bezpečnost systémů 😊         |          |
+| 🟡 Rozpracované  | Efektivní software 🤨         | Jirka    |
+| ❌ Nerozpracované | Paralelní algoritmy 💀        |          |
+| ❌ Nerozpracované | Zajištění kvality software 😊 |          |
+### Počítačová grafika
+
+| Stav             | Předmět                                 | Poznámka |
+| ---------------- | --------------------------------------- | -------- |
+| ❌ Nerozpracované | Algoritmy počítačové grafiky            |          |
+| ❌ Nerozpracované | Datové struktury počítačové grafiky     |          |
+| ❌ Nerozpracované | Multimédia a počítačová animace         |          |
+| ❌ Nerozpracované | Výpočetní geometrie                     |          |
+| ❌ Nerozpracované | Vizualizace                             |          |
+| ❌ Nerozpracované | Geometrie počítačového vidění a grafiky |          |
 ## Pravidla
  Pracujte kvalitně s odkazy. Kouzlo Obsidianu je ta provázanost a rychlost psaní a hledání informací. Vyhněte se LLM dumpům velkých textů, ve kterých se relevantní informace nalézá "někde uvnitř". Also obrázky vydají za tisíc slov. Pravidelně fetchujte a zálohujte na git.
 
