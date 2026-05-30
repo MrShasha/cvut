@@ -7,6 +7,7 @@ module.exports = async function createConfig() {
     tagline: 'Studijní poznámky z Obsidian vaultu',
     url: 'https://mrshasha.github.io',
     baseUrl: process.env.DOCUSAURUS_BASE_URL ?? '/cvut/',
+    favicon: '/img/Spongebob_mini.png',
     organizationName: 'MrShasha',
     projectName: 'cvut',
     trailingSlash: false,
