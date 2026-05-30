@@ -29,7 +29,7 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 
 | Stav             | Předmět                                 | Poznámka |
 | ---------------- | --------------------------------------- | -------- |
-| 🟡 Rozpracované  | Algoritmy počítačové grafiky            |          |
+| 🟡 Rozpracované  | Algoritmy počítačové grafiky            | Vojta    |
 | ❌ Nerozpracované | Datové struktury počítačové grafiky     |          |
 | ❌ Nerozpracované | Multimédia a počítačová animace         |          |
 | ❌ Nerozpracované | Výpočetní geometrie                     |          |
