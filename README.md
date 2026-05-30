@@ -10,16 +10,16 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 
 ### Společné předměty
 
-| Stav            | Předmět                        | Poznámka |
-| --------------- | ------------------------------ | -------- |
-| ✅ Dokončené     | Kombinatorická optimalizace 💀 | Jirka    |
-| ✅ Dokončené     | Teorie algoritmů 💀            | Artur    |
-| 🟡 Rozpracované | Pokročilá algoritmizace 💀     | Matěj    |
+| Stav        | Předmět                        | Poznámka |
+| ----------- | ------------------------------ | -------- |
+| ✅ Dokončené | Kombinatorická optimalizace 💀 | Jirka    |
+| ✅ Dokončené | Teorie algoritmů 💀            | Artur    |
+| ✅ Dokončené | Pokročilá algoritmizace 💀     | Matěj    |
 ### Softwarové inženýrství
 
 | Stav             | Předmět                       | Poznámka |
 | ---------------- | ----------------------------- | -------- |
-| ✅ Dokončené      | Databáze 2 😊                 |          |
+| ✅ Dokončené      | Databáze 2 😊                 | Jirka    |
 | ❌ Nerozpracované | Softwarové architektury 😊    |          |
 | ❌ Nerozpracované | Bezpečnost systémů 😊         |          |
 | 🟡 Rozpracované  | Efektivní software 🤨         | Jirka    |
@@ -29,12 +29,12 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 
 | Stav             | Předmět                                 | Poznámka |
 | ---------------- | --------------------------------------- | -------- |
-| ❌ Nerozpracované | Algoritmy počítačové grafiky            |          |
+| 🟡 Rozpracované  | Algoritmy počítačové grafiky            | Vojta    |
 | ❌ Nerozpracované | Datové struktury počítačové grafiky     |          |
 | ❌ Nerozpracované | Multimédia a počítačová animace         |          |
 | ❌ Nerozpracované | Výpočetní geometrie                     |          |
 | ❌ Nerozpracované | Vizualizace                             |          |
-| ❌ Nerozpracované | Geometrie počítačového vidění a grafiky |          |
+| 🟡 Rozpracované  | Geometrie počítačového vidění a grafiky | Matěj    |
 ## Pravidla
  Pracujte kvalitně s odkazy. Kouzlo Obsidianu je ta provázanost a rychlost psaní a hledání informací. Vyhněte se LLM dumpům velkých textů, ve kterých se relevantní informace nalézá "někde uvnitř". Also obrázky vydají za tisíc slov. Pravidelně fetchujte a zálohujte na git.
 
