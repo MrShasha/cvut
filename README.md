@@ -24,7 +24,7 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 | ❌ Nerozpracované | Bezpečnost systémů 😊         |          |
 | 🟡 Rozpracované  | Efektivní software 🤨         | Jirka    |
 | ❌ Nerozpracované | Paralelní algoritmy 💀        |          |
-| ❌ Nerozpracované | Zajištění kvality software 😊 |          |
+| 🟡 Rozpracované  | Zajištění kvality software 😊 | Artur    |
 ### Počítačová grafika
 
 | Stav             | Předmět                                 | Poznámka |
