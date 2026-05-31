@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0-1 batoh - proc greedy selze</title>
+<style>
+:root {
+  --panel: rgba(24, 31, 43, .94);
+  --line: rgba(156, 163, 175, .24);
+  --text: #edf2f7;
+  --muted: #9ca3af;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --rose: #fb7185;
+  --blue: #60a5fa;
+}
+* { box-sizing: border-box; }
+body {
+  min-width: 780px;
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+  background:
+    radial-gradient(circle at 0 0, rgba(251, 113, 133, .13), transparent 25rem),
+    radial-gradient(circle at 100% 100%, rgba(96, 165, 250, .10), transparent 28rem),
+    #111827;
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+}
+.topbar, .panel, .scene {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .22);
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.eyebrow, .label, .panel-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
+button {
+  border: 1px solid rgba(96, 165, 250, .6);
+  border-radius: 8px;
+  padding: 7px 12px;
+  background: linear-gradient(135deg, rgba(30, 64, 175, .92), rgba(8, 145, 178, .88));
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 10px;
+}
+.scene {
+  min-height: 430px;
+  padding: 16px;
+  background:
+    linear-gradient(rgba(156, 163, 175, .04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(156, 163, 175, .04) 1px, transparent 1px),
+    rgba(17, 24, 39, .84);
+  background-size: 24px 24px;
+}
+.items {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px;
+  background: rgba(31, 41, 55, .86);
+  transition: .25s ease;
+}
+.item.active { border-color: var(--amber); background: rgba(120, 53, 15, .42); transform: translateY(-3px); }
+.item.greedy { border-color: var(--rose); background: rgba(127, 29, 29, .36); }
+.item.opt { border-color: var(--green); background: rgba(6, 78, 59, .45); }
+.item-title { display: flex; justify-content: space-between; font-weight: 850; margin-bottom: 8px; }
+.meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  color: #d1d5db;
+  font-size: 12px;
+}
+.tracks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.track {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  min-height: 220px;
+  background: rgba(15, 23, 42, .72);
+}
+.track.bad { border-color: rgba(251, 113, 133, .45); }
+.track.good { border-color: rgba(52, 211, 153, .45); }
+.bag {
+  height: 110px;
+  margin-top: 12px;
+  border: 1px dashed rgba(156, 163, 175, .38);
+  border-radius: 14px 14px 24px 24px;
+  padding: 10px;
+}
+.chip {
+  display: inline-block;
+  border-radius: 8px;
+  padding: 6px 8px;
+  margin: 4px;
+  color: #fff;
+  font-weight: 850;
+  font-size: 12px;
+}
+.chip.bad { background: rgba(225, 29, 72, .76); }
+.chip.good { background: rgba(5, 150, 105, .76); }
+.value {
+  margin-top: 10px;
+  font-size: 30px;
+  font-weight: 950;
+}
+.side { display: grid; gap: 10px; align-content: start; }
+.panel { padding: 12px; }
+.note { margin: 8px 0 0; color: #d1d5db; line-height: 1.45; }
+.callout {
+  border-left: 3px solid var(--rose);
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: rgba(127, 29, 29, .20);
+  color: #ffe4e6;
+  line-height: 1.45;
+}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">0-1 batoh</div>
+      <h1>Stejne p/w greedy uz nemusi byt optimalni</h1>
+    </div>
+    <button id="next">Krok</button>
+  </div>
+
+  <div class="layout">
+    <main class="scene">
+      <div class="items">
+        <div class="item" id="a"><div class="item-title"><span>A</span><span>nejlepsi p/w</span></div><div class="meta"><span>w=1</span><span>p=2</span><span>p/w=2.0</span></div></div>
+        <div class="item" id="b"><div class="item-title"><span>B</span><span>optimum</span></div><div class="meta"><span>w=10</span><span>p=15</span><span>p/w=1.5</span></div></div>
+        <div class="item" id="c"><div class="item-title"><span>C</span><span>ruseni</span></div><div class="meta"><span>w=9</span><span>p=1</span><span>p/w=0.1</span></div></div>
+      </div>
+      <div class="tracks">
+        <section class="track bad">
+          <div class="panel-title">Greedy podle p/w</div>
+          <div class="bag" id="greedyBag"></div>
+          <div class="value" id="greedyValue">0</div>
+          <p class="note" id="greedyText">Nejdrive vezme predmet A, protoze ma nejvyssi p/w.</p>
+        </section>
+        <section class="track good">
+          <div class="panel-title">Optimalni 0-1 volba</div>
+          <div class="bag" id="optBag"></div>
+          <div class="value" id="optValue">0</div>
+          <p class="note" id="optText">Optimum si muze dovolit ignorovat lepsi pomer a vzit vetsi cely predmet.</p>
+        </section>
+      </div>
+    </main>
+    <aside class="side">
+      <section class="panel">
+        <div class="panel-title">Kapacita</div>
+        <div style="font-size:30px;font-weight:950;margin-top:4px">W = 10</div>
+      </section>
+      <section class="callout" id="callout">U frakcniho batohu by slo vzit kus B. U 0-1 batohu ale predmet bud vezmu cely, nebo vubec.</section>
+      <section class="panel">
+        <div class="panel-title">Zaver</div>
+        <p class="note">Greedy podle p/w neni algoritmus pro presny 0-1 batoh. Je to jen heuristika bez obecne optimality.</p>
+      </section>
+    </aside>
+  </div>
+
+<script>
+let step = 0;
+const els = {
+  next: document.getElementById("next"),
+  a: document.getElementById("a"),
+  b: document.getElementById("b"),
+  c: document.getElementById("c"),
+  greedyBag: document.getElementById("greedyBag"),
+  optBag: document.getElementById("optBag"),
+  greedyValue: document.getElementById("greedyValue"),
+  optValue: document.getElementById("optValue"),
+  greedyText: document.getElementById("greedyText"),
+  optText: document.getElementById("optText"),
+  callout: document.getElementById("callout")
+};
+
+function chip(label, kind) {
+  return `<span class="chip ${kind}">${label}</span>`;
+}
+
+function resetClasses() {
+  [els.a, els.b, els.c].forEach(el => el.classList.remove("active", "greedy", "opt"));
+}
+
+function render() {
+  resetClasses();
+  if (step === 0) {
+    els.greedyBag.innerHTML = "";
+    els.optBag.innerHTML = "";
+    els.greedyValue.textContent = "0";
+    els.optValue.textContent = "0";
+    els.greedyText.textContent = "Nejdrive vezme predmet A, protoze ma nejvyssi p/w.";
+    els.optText.textContent = "Optimum si muze dovolit ignorovat lepsi pomer a vzit vetsi cely predmet.";
+    els.callout.textContent = "U frakcniho batohu by slo vzit kus B. U 0-1 batohu ale predmet bud vezmu cely, nebo vubec.";
+  }
+  if (step === 1) {
+    els.a.classList.add("active", "greedy");
+    els.greedyBag.innerHTML = chip("A: w1 p2", "bad");
+    els.greedyValue.textContent = "2";
+    els.greedyText.textContent = "Po A zbyva kapacita 9. Predmet B ma vahu 10, tak uz se nevejde.";
+    els.callout.textContent = "Greedy udelal lokalne rozumny krok, ale tim zablokoval nejhodnotnejsi predmet.";
+  }
+  if (step === 2) {
+    els.a.classList.add("greedy");
+    els.b.classList.add("active", "opt");
+    els.greedyBag.innerHTML = chip("A: w1 p2", "bad");
+    els.optBag.innerHTML = chip("B: w10 p15", "good");
+    els.greedyValue.textContent = "2";
+    els.optValue.textContent = "15";
+    els.optText.textContent = "Optimalni reseni vezme samotny predmet B a naplni batoh presne.";
+    els.callout.textContent = "Rozdil je jadro 0-1 batohu: nelze dorovnavat zlomkem, proto se musi resit kombinace.";
+  }
+  if (step === 3) {
+    step = -1;
+  }
+}
+
+els.next.addEventListener("click", () => {
+  step++;
+  render();
+});
+render();
+</script>
+</body>
+</html>
