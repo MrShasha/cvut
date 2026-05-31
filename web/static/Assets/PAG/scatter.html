@@ -1,349 +1,469 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scatter & Gather — animace</title>
+<title>Scatter &amp; Gather | interaktivni animace</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
-h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
-.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
-.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
-.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
-.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
-select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
-input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
-.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
-.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
-canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
-.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 60px; }
-.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
-.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
-.deriv-lbl { color: #888; min-width: 130px; font-size: 0.9em; }
-.deriv-val { color: #c3e88d; font-family: monospace; }
-.highlight { color: #0984e3; font-weight: 700; }
-.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
-.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
-.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; } .stat.orange { border-color: #e17055; }
-.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
-.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
-.tab-btns { display: flex; gap: 6px; margin-bottom: 10px; }
-.tab-btn { background: #3c3c3c; color: #888; border: none; border-radius: 5px; padding: 6px 14px; font-size: 0.82em; cursor: pointer; }
-.tab-btn.active { background: #0984e3; color: #fff; font-weight: 700; }
-.chunk-grid { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-.chunk { width: 20px; height: 20px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.65em; font-weight: 700; color: #fff; }
+:root {
+  --bg: #09101f;
+  --panel: rgba(18, 29, 52, .94);
+  --line: rgba(142, 164, 204, .2);
+  --text: #edf4ff;
+  --muted: #9aa9c8;
+  --cyan: #56e0dc;
+  --green: #6ee7a8;
+  --orange: #ffbd78;
+  --shadow: 0 18px 45px rgba(0,0,0,.22);
+}
+* { box-sizing: border-box; }
+body { margin:0; min-height:100vh; padding:18px; color:var(--text); background: radial-gradient(circle at 10% 5%, rgba(64,114,221,.18), transparent 28rem), radial-gradient(circle at 92% 90%, rgba(52,207,187,.12), transparent 30rem), var(--bg); font-family:Inter,"Segoe UI",system-ui,sans-serif; font-size:14px; }
+button,select,input { font:inherit; } button { cursor:pointer; }
+.shell { width:min(1420px,100%); margin:0 auto; }
+
+.hero { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; margin-bottom:14px; }
+.eyebrow { color:var(--cyan); font-size:11px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
+h1 { margin:5px 0 0; font-size:clamp(21px,2.8vw,30px); letter-spacing:-.045em; }
+.hero p { max-width:720px; margin:6px 0 0; color:var(--muted); line-height:1.55; font-size:13px; }
+.hero-badge { flex:0 0 auto; padding:10px 13px; border:1px solid rgba(86,224,220,.35); border-radius:14px; color:var(--cyan); background:rgba(86,224,220,.08); font-size:12px; font-weight:800; }
+
+.toolbar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; padding:11px 13px; border:1px solid var(--line); border-radius:15px; background:var(--panel); box-shadow:var(--shadow); flex-wrap:wrap; }
+.mode-tabs,.controls { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+.tab-btn,.icon-btn,.play-btn { border:1px solid transparent; border-radius:10px; font-size:12px; font-weight:800; transition:transform .18s,border-color .18s,background .18s,color .18s; }
+.tab-btn,.icon-btn { padding:7px 11px; color:var(--muted); background:rgba(255,255,255,.045); }
+.tab-btn:hover,.icon-btn:hover { transform:translateY(-1px); border-color:rgba(98,169,255,.55); color:var(--text); }
+.tab-btn.active { border-color:rgba(86,224,220,.6); color:#dffefd; background:rgba(86,224,220,.13); }
+.icon-btn:disabled,.play-btn:disabled { cursor:default; opacity:.38; transform:none; }
+.play-btn { padding:7px 13px; color:#07172c; background:linear-gradient(135deg,var(--cyan),#79b9ff); }
+.play-btn:hover { transform:translateY(-1px); }
+.control-group { display:flex; align-items:center; gap:6px; padding:0 6px; color:var(--muted); font-size:12px; }
+select { padding:6px 9px; border:1px solid var(--line); border-radius:8px; color:var(--text); background:#172744; }
+input[type="range"] { width:80px; accent-color:var(--cyan); }
+
+.layout { display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:12px; }
+.scene-card { border:1px solid var(--line); border-radius:16px; background:var(--panel); box-shadow:var(--shadow); overflow:hidden; }
+.scene-head { display:flex; align-items:center; justify-content:space-between; padding:12px 15px 8px; gap:12px; }
+.scene-title { font-size:13px; font-weight:850; }
+.scene-subtitle { margin-top:3px; color:var(--muted); font-size:12px; }
+.status-pill { flex:0 0 auto; padding:5px 9px; border:1px solid rgba(110,231,168,.35); border-radius:999px; color:var(--green); background:rgba(110,231,168,.08); font-size:11px; font-weight:850; }
+.canvas-wrap { padding:0 10px; }
+canvas { display:block; width:100%; height:380px; border:1px solid rgba(142,164,204,.14); border-radius:13px; background:#0b1528; }
+
+.processor-strip { display:grid; padding:8px 10px; gap:5px; }
+.proc-row { display:grid; align-items:center; gap:4px; grid-template-columns:28px 1fr; }
+.proc-label { font-size:10px; font-weight:800; color:var(--muted); text-align:center; }
+.chunk-track { display:flex; gap:3px; flex-wrap:wrap; }
+.chunk-cell { width:18px; height:18px; border-radius:3px; display:flex; align-items:center; justify-content:center; font-size:8px; font-weight:800; color:#fff; transition:opacity .3s,transform .3s; }
+.chunk-cell.empty { background:rgba(255,255,255,.05); opacity:.35; }
+
+.lesson { display:grid; gap:8px; padding:12px 15px 14px; border-top:1px solid var(--line); background:rgba(8,16,31,.55); }
+.lesson-kicker { color:var(--cyan); font-size:10px; font-weight:850; letter-spacing:.15em; text-transform:uppercase; }
+.lesson-title { font-size:15px; font-weight:850; margin-top:2px; }
+.lesson-text { color:var(--muted); font-size:12px; line-height:1.55; }
+.lesson-formula { padding:8px 11px; border:1px solid rgba(98,169,255,.22); border-radius:8px; color:#cfe6ff; background:rgba(98,169,255,.08); font:700 12px/1.45 ui-monospace,Consolas,monospace; white-space:pre-line; }
+
+.sidebar { display:grid; align-content:start; gap:10px; }
+.side-card { padding:13px; border:1px solid var(--line); border-radius:16px; background:var(--panel); box-shadow:var(--shadow); }
+.side-card h2 { margin:0 0 10px; color:#d8e8ff; font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+.stat { padding:8px 6px; border:1px solid rgba(142,164,204,.15); border-radius:9px; background:rgba(255,255,255,.03); text-align:center; }
+.stat-value { color:var(--text); font-size:18px; font-weight:900; }
+.stat-label { margin-top:2px; color:var(--muted); font-size:9px; text-transform:uppercase; letter-spacing:.08em; }
+.progress-track { display:flex; align-items:center; gap:5px; margin:12px 0 3px; }
+.progress-line { flex:1; height:3px; border-radius:99px; background:rgba(142,164,204,.18); }
+.progress-line.done { background:var(--green); }
+.progress-dot { width:13px; height:13px; border:2px solid rgba(142,164,204,.35); border-radius:50%; background:#12203a; }
+.progress-dot.done { border-color:var(--green); background:var(--green); box-shadow:0 0 13px rgba(110,231,168,.46); }
+.progress-dot.active { border-color:var(--orange); box-shadow:0 0 0 4px rgba(255,189,120,.12); }
+.timeline { display:grid; gap:6px; }
+.timeline-row { display:grid; grid-template-columns:20px 1fr auto; align-items:center; gap:7px; padding:7px; border:1px solid rgba(142,164,204,.12); border-radius:8px; color:var(--muted); background:rgba(255,255,255,.025); font-size:11px; }
+.timeline-row.done { border-color:rgba(110,231,168,.24); color:#c8f8dd; }
+.timeline-row.active { border-color:rgba(255,189,120,.48); color:#ffe3c2; background:rgba(255,189,120,.08); }
+.timeline-num { display:grid; place-items:center; width:20px; height:20px; border-radius:50%; color:#c9d7ef; background:rgba(142,164,204,.15); font-size:10px; font-weight:900; }
+.timeline-count { font-family:ui-monospace,Consolas,monospace; font-size:10px; color:inherit; }
+.formula-box { padding:9px 11px; border:1px solid rgba(86,224,220,.22); border-radius:8px; color:var(--cyan); background:rgba(86,224,220,.07); font:750 11px/1.55 ui-monospace,Consolas,monospace; white-space:pre-line; }
+.note { color:var(--muted); font-size:11px; line-height:1.55; margin-top:6px; }
+.legend { display:flex; flex-wrap:wrap; gap:7px 11px; margin-top:10px; color:var(--muted); font-size:10px; }
+.legend i { display:inline-block; width:8px; height:8px; margin-right:5px; border-radius:50%; }
+.legend .src  { background:#fff; }
+.legend .has  { background:var(--green); }
+.legend .send { background:var(--cyan); }
+.legend .recv { background:var(--orange); }
+
+@media (max-width:980px) { .hero { align-items:flex-start; flex-direction:column; } .toolbar { flex-direction:column; align-items:stretch; } .controls { justify-content:flex-start; } .layout { grid-template-columns:1fr; } .sidebar { grid-template-columns:repeat(2,minmax(0,1fr)); } canvas { height:320px; } }
+@media (max-width:640px) { .sidebar { grid-template-columns:1fr; } canvas { height:290px; } }
 </style>
 </head>
 <body>
-<h1>Scatter &amp; Gather — rekurzivní půlení</h1>
+<main class="shell">
 
-<div class="main">
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <div class="tab-btns">
-      <button class="tab-btn active" id="tabScatter" onclick="switchMode('scatter')">Scatter</button>
-      <button class="tab-btn" id="tabGather" onclick="switchMode('gather')">Gather</button>
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Paralelni algoritmy / komunikacni operace</div>
+      <h1>Scatter &amp; Gather: rekurzivni puleni dat</h1>
+      <p>Koren P<sub>src</sub> ma zpravu o <strong>m</strong> slovech a kazdy procesor dostane prave jeden chunk. Misto <strong>p - 1</strong> sekvencnich prenosu zvladneme distribuci v log p kolech &mdash; zprava se vzdy puli. Gather je presne opacny proces.</p>
     </div>
-    <div class="row">
-      <label>p = 2^</label>
-      <input type="range" id="pSlider" min="1" max="4" value="3" style="width:80px;" oninput="updateP()">
-      <span style="color:#c3e88d; font-weight:700;" id="pVal">8</span>
-      <label>&nbsp;Zdroj:</label>
-      <select id="srcSel" onchange="reset()"></select>
-    </div>
-    <div class="row">
-      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
-      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
-      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
-      <button class="btn secondary" onclick="reset()">↺ Reset</button>
-      <label>Rychlost:</label>
-      <input type="range" id="speed" min="300" max="2000" value="900" step="100" style="width:80px;">
-    </div>
-    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
-  </div>
+    <div class="hero-badge" id="heroBadge">p = 8 &middot; log p = 3 kroky</div>
+  </header>
 
-  <canvas id="cv" height="310"></canvas>
-  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
-</div>
-
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <h3 id="panelTitle">Kde jsou která data</h3>
-    <p style="font-size:0.78em; color:#888; margin-bottom:6px;" id="panelDesc">Každý barevný čtvereček = 1 chunk dat určený pro daný cíl.</p>
-    <div id="chunkViz"></div>
-  </div>
-
-  <div class="panel">
-    <h3>Odvození složitosti</h3>
-    <div class="deriv-box">
-      <div class="deriv-row"><span class="deriv-lbl">Algoritmus:</span><span class="deriv-val" id="dAlg">Scatter</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Metoda:</span><span class="deriv-val">Rekurzivní půlení</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Počet kroků:</span><span class="deriv-val" id="dSteps">log p</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Krok k — velikost:</span><span class="deriv-val" id="dMsgSize">m/2^(k-1)</span></div>
-      <hr style="border-color:#444; margin: 8px 0;">
-      <div style="color:#888; font-size:0.8em; margin-bottom:4px;">Celkový objem zpráv:</div>
-      <div style="color:#c3e88d; font-family:monospace; font-size:0.9em; margin-bottom:6px;" id="dSum">m/2 + m/4 + … + m/p = m·(1-1/p) ≈ m</div>
-      <div class="deriv-row"><span class="deriv-lbl">T (tₛ složka):</span><span class="deriv-val" id="dTs">tₛ·log p</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">T (tᵥ složka):</span><span class="deriv-val" id="dTw">tᵥ·m·(1−1/p)</span></div>
-      <div class="deriv-row"><span class="deriv-lbl highlight">T celkem:</span><span class="deriv-val highlight" id="dTotal">tₛ·log p + tᵥ·m</span></div>
+  <section class="toolbar">
+    <div class="mode-tabs" id="modeTabs">
+      <button class="tab-btn active" data-mode="scatter">Scatter</button>
+      <button class="tab-btn" data-mode="gather">Gather</button>
     </div>
-    <div class="stat-grid">
-      <div class="stat blue"><div class="stat-lbl">Krok</div><div class="stat-val" id="sCurStep">0/0</div></div>
-      <div class="stat green"><div class="stat-lbl">Chunků u cíle</div><div class="stat-val" id="sDelivered">0</div></div>
+    <div class="controls">
+      <label class="control-group">p = 2^
+        <input type="range" id="pSlider" min="1" max="4" value="3" style="width:64px;">
+        <strong style="color:var(--green);min-width:24px;" id="pVal">8</strong>
+      </label>
+      <label class="control-group">Zdroj
+        <select id="srcSel"></select>
+      </label>
+      <label class="control-group">Rychlost
+        <input type="range" id="speed" min="400" max="2000" value="900" step="100">
+      </label>
+      <button class="icon-btn" id="resetBtn">&#8635; Reset</button>
+      <button class="icon-btn" id="backBtn">&#9664; Zpet</button>
+      <button class="icon-btn" id="nextBtn">Dalsi &#9654;</button>
+      <button class="play-btn" id="playBtn">&#9654; Prehrat</button>
     </div>
-  </div>
-</div>
-</div>
+  </section>
+
+  <section class="layout">
+    <div class="scene-card">
+      <div class="scene-head">
+        <div>
+          <div class="scene-title" id="sceneTitle"></div>
+          <div class="scene-subtitle" id="sceneSubtitle"></div>
+        </div>
+        <div class="status-pill" id="statusPill"></div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="cv"></canvas>
+      </div>
+      <div class="processor-strip" id="procStrip"></div>
+      <div class="lesson">
+        <div>
+          <div class="lesson-kicker" id="lessonKicker"></div>
+          <div class="lesson-title" id="lessonTitle"></div>
+        </div>
+        <div class="lesson-text" id="lessonText"></div>
+        <div class="lesson-formula" id="lessonFormula"></div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <section class="side-card">
+        <h2>Stav vypoctu</h2>
+        <div class="stats">
+          <div class="stat"><div class="stat-value" id="roundStat">0/0</div><div class="stat-label">krok</div></div>
+          <div class="stat"><div class="stat-value" id="deliveredStat">0</div><div class="stat-label" id="deliveredLbl">u cile</div></div>
+          <div class="stat"><div class="stat-value" id="msgStat">0</div><div class="stat-label">prenosu</div></div>
+        </div>
+        <div class="progress-track" id="progressTrack"></div>
+        <div class="legend">
+          <span><i class="src"></i>koren</span>
+          <span><i class="has"></i>ma svuj chunk</span>
+          <span><i class="send"></i>odesilatel</span>
+          <span><i class="recv"></i>prijemce</span>
+        </div>
+      </section>
+      <section class="side-card">
+        <h2>Prubehy kroku</h2>
+        <div class="timeline" id="timeline"></div>
+      </section>
+      <section class="side-card">
+        <h2>Odvozeni slozitosti</h2>
+        <div class="formula-box" id="complexityFormula"></div>
+        <div class="note" id="complexityNote"></div>
+      </section>
+    </aside>
+  </section>
+</main>
 
 <script>
-const COLORS = ['#0984e3','#00b894','#e17055','#a29bfe','#fdcb6e','#fd79a8','#55efc4','#6c5ce7','#fab1a0','#74b9ff','#81ecec','#dfe6e9','#b2bec3','#636e72','#2d3436','#d63031'];
+const COLORS=['#0984e3','#00b894','#e17055','#a29bfe','#fdcb6e','#fd79a8','#55efc4','#6c5ce7','#fab1a0','#74b9ff','#81ecec','#dfe6e9','#b2bec3','#636e72','#e84393','#d63031'];
+let p=8, mode='scatter', src=0;
+let steps=[], snapshots=[], cursor=0, flights=[], busy=false, playing=false;
+let cssW=0, cssH=0, dpr=1, rafId=null, lastTs=null;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 
-let p = 8, mode = 'scatter', src = 0;
-let steps = [];
-let curStep = -1;
-// chunks[i] = set of chunk ids that proc i holds (chunk id = destination proc for scatter)
-let chunks = [];
-
-let arrows = [], playing = false, playTimer2 = null, animFrame = null, lastTime = null;
-
-function buildSteps() {
-  steps = [];
-  const d = Math.log2(p);
-  if (mode === 'scatter') {
-    // Recursive halving: step k=1..d
-    // Initially: src has chunks 0..p-1
-    // Step k: every node that has >1 chunk sends upper half to its partner at distance p/2^k
-    for (let k=1;k<=d;k++) {
-      const half = p >> k; // group size is p/2^k
-      const pairs = [];
-      // Active senders: nodes that own a contiguous block of 2*half chunks
-      for (let i=0;i<p;i+=2*half) {
-        // node i sends chunks [i+half .. i+2*half-1] to node i+half (relative to src)
-        const from = (src + i) % p;
-        const to = (src + i + half) % p;
-        pairs.push({from, to, chunks: Array.from({length:half},(_,x)=>(src+i+half+x)%p), msgSize: half});
+function buildSteps(){
+  steps=[];
+  const d=Math.log2(p);
+  if(mode==='scatter'){
+    for(let k=1;k<=d;k++){
+      const half=p>>k, pairs=[];
+      for(let i=0;i<p;i+=2*half){
+        const from=(src+i)%p, to=(src+i+half)%p;
+        pairs.push({from,to,cids:Array.from({length:half},(_,x)=>(src+i+half+x)%p)});
       }
-      steps.push({ pairs, desc: `Krok ${k}/${d}: zpráva = m/${Math.pow(2,k-1)} slov, nových odesílatelů: ${Math.pow(2,k-1)}`, k });
+      steps.push({pairs,k,
+        kicker:`Scatter \u00b7 krok ${k} z ${d}`,
+        title:`Zprava se puli: ${half} chunk${half>1?'u':''} na prenos`,
+        text:`Kazdy aktivni odesilatel posle horni polovinu sveho bloku svemu partnerovi. Po kroku ${k} odesilaji ${Math.pow(2,k-1)} procesoru.`,
+        formula:`prenos = m / 2^${k-1} slov\naktivni odesilatele = ${Math.pow(2,k-1)}\npartner vzdalen o ${half} pozic`
+      });
     }
   } else {
-    // Gather: reverse of scatter
-    // Step k = d, d-1, ..., 1
-    for (let k=d;k>=1;k--) {
-      const half = p >> k;
-      const pairs = [];
-      for (let i=0;i<p;i+=2*half) {
-        const from = (src + i + half) % p;
-        const to = (src + i) % p;
-        pairs.push({from, to, chunks: Array.from({length:half},(_,x)=>(src+i+half+x)%p), msgSize: half});
+    const d2=Math.log2(p);
+    for(let k=d2;k>=1;k--){
+      const half=p>>k, stepNum=d2-k+1, pairs=[];
+      for(let i=0;i<p;i+=2*half){
+        const from=(src+i+half)%p, to=(src+i)%p;
+        pairs.push({from,to,cids:Array.from({length:half},(_,x)=>(src+i+half+x)%p)});
       }
-      steps.push({ pairs, desc: `Krok ${d-k+1}/${d}: sběr zpráv, velikost = m/${Math.pow(2,k-1)} slov`, k });
+      steps.push({pairs,k:stepNum,
+        kicker:`Gather \u00b7 krok ${stepNum} z ${d2}`,
+        title:`Sber chunku: ${half} chunk${half>1?'u':''} na prenos`,
+        text:`Kazdy pravy uzel bloku posila svuj chunk-blok levemu sousedu. Konvergujeme ke koreni P${src}.`,
+        formula:`prenos = m / 2^${k-1} slov\naktivni prijemci = ${Math.pow(2,k-1)}\npartner vzdalen o ${half} pozic`
+      });
     }
   }
 }
 
-function initChunks() {
-  chunks = Array.from({length:p}, (_,i) => new Set());
-  if (mode === 'scatter') {
-    // src has all chunks
-    for (let i=0;i<p;i++) chunks[src].add(i);
-  } else {
-    // gather: each node has its own chunk
-    for (let i=0;i<p;i++) chunks[i].add(i);
-  }
+function initialChunks(){
+  const ch=Array.from({length:p},()=>new Set());
+  if(mode==='scatter') for(let i=0;i<p;i++) ch[src].add(i);
+  else for(let i=0;i<p;i++) ch[i].add(i);
+  return ch;
+}
+function applyStep(ch,pairs){
+  const next=ch.map(s=>new Set(s));
+  pairs.forEach(({from,to,cids})=>cids.forEach(c=>{next[from].delete(c);next[to].add(c);}));
+  return next;
+}
+function buildSnapshots(){
+  snapshots=[initialChunks()];
+  steps.forEach(st=>snapshots.push(applyStep(snapshots.at(-1),st.pairs)));
 }
 
-function applyStep(idx) {
-  curStep = idx;
-  const st = steps[idx];
-  const pos = nodePositions();
-  const dur = parseInt(document.getElementById('speed').value)/1000*0.5;
-
-  st.pairs.forEach(({from, to, chunks: cids}) => {
-    cids.forEach(c => { chunks[from].delete(c); chunks[to].add(c); });
-    if (pos[from]&&pos[to]) arrows.push({fx:pos[from].x,fy:pos[from].y,tx:pos[to].x,ty:pos[to].y,t:0,dur});
-  });
-
-  updateUI(idx);
-  cancelAnimationFrame(animFrame); animFrame=requestAnimationFrame(ts=>drawFrame(ts));
-}
-
-function rebuildState(upTo) {
-  initChunks();
-  for (let i=0;i<=upTo;i++) {
-    const st=steps[i];
-    st.pairs.forEach(({from,to,chunks:cids})=>{ cids.forEach(c=>{chunks[from].delete(c);chunks[to].add(c);}); });
-  }
-}
-
-function nodePositions() {
-  const W=cv.offsetWidth,H=310,cx=W/2,cy=H/2,R=Math.min(W,H)/2-38;
+function nodePositions(){
+  const cx=cssW/2, cy=cssH/2, R=Math.min(cssW,cssH)/2-44;
   return Array.from({length:p},(_,i)=>{
-    const a=2*Math.PI*i/p-Math.PI/2;
-    return {x:cx+R*Math.cos(a), y:cy+R*Math.sin(a)};
+    const a=(2*Math.PI*i/p)-Math.PI/2;
+    return {x:cx+R*Math.cos(a),y:cy+R*Math.sin(a)};
   });
 }
 
-const cv=document.getElementById('cv'); const ctx=cv.getContext('2d');
+function resizeDPR(){
+  const rect=cv.getBoundingClientRect();
+  const w=Math.max(200,Math.floor(rect.width)), h=Math.max(200,Math.floor(rect.height));
+  const ratio=Math.max(1,window.devicePixelRatio||1);
+  if(w===cssW&&h===cssH&&ratio===dpr) return;
+  cssW=w; cssH=h; dpr=ratio;
+  cv.width=w*ratio; cv.height=h*ratio;
+}
 
-function drawFrame(ts) {
-  const W=cv.width=cv.offsetWidth,H=cv.height=310;
-  ctx.clearRect(0,0,W,H); ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
-  const pos=nodePositions();
+function draw(ts){
+  resizeDPR();
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
+  const bg=ctx.createLinearGradient(0,0,cssW,cssH);
+  bg.addColorStop(0,'#0b1528'); bg.addColorStop(1,'#091120');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,cssW,cssH);
+  ctx.strokeStyle='rgba(142,164,204,.04)'; ctx.lineWidth=1;
+  for(let x=20;x<cssW;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cssH);ctx.stroke();}
+  for(let y=20;y<cssH;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cssW,y);ctx.stroke();}
 
-  // Edges (ring)
-  ctx.strokeStyle='#3c3c3c'; ctx.lineWidth=1;
+  const pos=nodePositions(), chunks=snapshots[cursor];
+  const activeStep=cursor>0?steps[cursor-1]:null;
+  const activeSenders=new Set(activeStep?activeStep.pairs.map(p=>p.from):[]);
+  const activeReceivers=new Set(activeStep?activeStep.pairs.map(p=>p.to):[]);
+
+  // Ring
+  ctx.strokeStyle='rgba(142,164,204,.12)'; ctx.lineWidth=1.5;
   for(let i=0;i<p;i++){ctx.beginPath();ctx.moveTo(pos[i].x,pos[i].y);ctx.lineTo(pos[(i+1)%p].x,pos[(i+1)%p].y);ctx.stroke();}
 
-  // Also draw active step edges
-  if (curStep>=0) {
-    steps[curStep].pairs.forEach(({from,to})=>{
-      ctx.beginPath(); ctx.moveTo(pos[from].x,pos[from].y); ctx.lineTo(pos[to].x,pos[to].y);
-      ctx.strokeStyle='#0984e3'; ctx.lineWidth=2; ctx.stroke();
+  // Active edges
+  if(activeStep){
+    activeStep.pairs.forEach(({from,to})=>{
+      ctx.save();
+      ctx.strokeStyle='rgba(86,224,220,.7)'; ctx.lineWidth=2.5;
+      ctx.shadowColor='#56e0dc'; ctx.shadowBlur=12;
+      ctx.setLineDash([6,5]);
+      ctx.beginPath(); ctx.moveTo(pos[from].x,pos[from].y); ctx.lineTo(pos[to].x,pos[to].y); ctx.stroke();
+      ctx.restore();
     });
   }
 
-  // Animate arrows
-  if (ts&&lastTime){const dt=(ts-lastTime)/1000;arrows.forEach(a=>a.t=Math.min(1,a.t+dt/a.dur));arrows=arrows.filter(a=>a.t<1);}
-  lastTime=ts;
-  arrows.forEach(ar=>{
-    const x=ar.fx+(ar.tx-ar.fx)*ar.t,y=ar.fy+(ar.ty-ar.fy)*ar.t;
-    ctx.beginPath();ctx.moveTo(ar.fx,ar.fy);ctx.lineTo(x,y);ctx.strokeStyle='#0984e360';ctx.lineWidth=2;ctx.stroke();
-    const ang=Math.atan2(ar.ty-ar.fy,ar.tx-ar.fx);
-    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-9*Math.cos(ang-.4),y-9*Math.sin(ang-.4));ctx.lineTo(x-9*Math.cos(ang+.4),y-9*Math.sin(ang+.4));ctx.closePath();ctx.fillStyle='#0984e3';ctx.fill();
-    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='#c3e88d';ctx.fill();
+  // Advance flights
+  if(ts&&lastTs){
+    const dt=ts-lastTs, spd=parseInt(document.getElementById('speed').value);
+    flights.forEach(f=>{f.t=Math.min(1,f.t+dt/spd);});
+  }
+  lastTs=ts;
+
+  // Draw flights
+  flights.forEach(f=>{
+    if(f.t<=0||f.t>=1) return;
+    const x=f.x0+(f.x1-f.x0)*f.t, y=f.y0+(f.y1-f.y0)*f.t;
+    const t0=Math.max(0,f.t-.18), tx=f.x0+(f.x1-f.x0)*t0, ty=f.y0+(f.y1-f.y0)*t0;
+    ctx.save();
+    ctx.strokeStyle=COLORS[f.cid%COLORS.length]+'60'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(x,y); ctx.stroke(); ctx.restore();
+    const ang=Math.atan2(f.y1-f.y0,f.x1-f.x0);
+    ctx.save(); ctx.fillStyle=COLORS[f.cid%COLORS.length];
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-9*Math.cos(ang-.42),y-9*Math.sin(ang-.42)); ctx.lineTo(x-9*Math.cos(ang+.42),y-9*Math.sin(ang+.42)); ctx.closePath(); ctx.fill(); ctx.restore();
+    ctx.save(); ctx.shadowColor=COLORS[f.cid%COLORS.length]; ctx.shadowBlur=16;
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fill(); ctx.restore();
   });
 
   // Nodes
-  pos.forEach((pt,i)=>{
-    const r=18;
-    const ownChunks=[...chunks[i]].sort((a,b)=>a-b);
-    const isDest = mode==='scatter' ? (ownChunks.length===1 && ownChunks[0]===i) : (i===src);
-    const isSrc = mode==='scatter' ? i===src : !isDest;
-
-    // Draw pie for chunks
-    if (ownChunks.length>0) {
-      const slice=2*Math.PI/ownChunks.length;
-      let angle=-Math.PI/2;
-      ownChunks.forEach(c=>{
-        ctx.beginPath();ctx.moveTo(pt.x,pt.y);ctx.arc(pt.x,pt.y,r,angle,angle+slice);ctx.closePath();
-        ctx.fillStyle=COLORS[c%COLORS.length];ctx.fill();
-        angle+=slice;
+  pos.forEach((pt,id)=>{
+    const own=[...chunks[id]].sort((a,b)=>a-b);
+    const isSrc=id===src, isSnd=activeSenders.has(id), isRcv=activeReceivers.has(id);
+    const isDone=mode==='scatter'?(own.length===1&&own[0]===id):(isSrc&&own.length===p);
+    const R=22;
+    if(isSnd||isRcv){
+      ctx.beginPath(); ctx.arc(pt.x,pt.y,R+8,0,Math.PI*2);
+      ctx.fillStyle=isSnd?'rgba(86,224,220,.12)':'rgba(255,189,120,.12)'; ctx.fill();
+    }
+    if(own.length>0){
+      const slice=(2*Math.PI)/own.length; let ang=-Math.PI/2;
+      own.forEach(c=>{
+        ctx.save(); ctx.shadowColor=isDone?'rgba(110,231,168,.4)':'rgba(0,0,0,.3)'; ctx.shadowBlur=isDone?10:4;
+        ctx.beginPath(); ctx.moveTo(pt.x,pt.y); ctx.arc(pt.x,pt.y,R,ang,ang+slice); ctx.closePath();
+        ctx.fillStyle=COLORS[c%COLORS.length]; ctx.fill(); ctx.restore(); ang+=slice;
       });
     } else {
-      ctx.beginPath();ctx.arc(pt.x,pt.y,r,0,Math.PI*2);ctx.fillStyle='#2a2a2a';ctx.fill();
+      ctx.beginPath(); ctx.arc(pt.x,pt.y,R,0,Math.PI*2); ctx.fillStyle='#1a2945'; ctx.fill();
     }
-
-    ctx.beginPath();ctx.arc(pt.x,pt.y,r,0,Math.PI*2);
-    ctx.strokeStyle = (i===src) ? '#fff' : '#555';
-    ctx.lineWidth=(i===src)?2.5:1.5;ctx.stroke();
-
-    // Label
-    ctx.fillStyle='rgba(0,0,0,0.7)';ctx.beginPath();ctx.arc(pt.x,pt.y,8,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(i,pt.x,pt.y);
-
-    // Chunk count
-    ctx.font='8px monospace';ctx.fillStyle='#888';
-    ctx.fillText(`(${ownChunks.length})`,pt.x,pt.y+r+10);
+    ctx.beginPath(); ctx.arc(pt.x,pt.y,R,0,Math.PI*2);
+    ctx.lineWidth=isSrc?2.8:(isSnd||isRcv)?2.5:1.5;
+    ctx.strokeStyle=isSrc?'#fff':isSnd?'#56e0dc':isRcv?'#ffbd78':isDone?'#6ee7a8':'rgba(142,164,204,.4)';
+    ctx.stroke();
+    ctx.save(); ctx.beginPath(); ctx.arc(pt.x,pt.y,9,0,Math.PI*2); ctx.fillStyle='rgba(0,0,0,.72)'; ctx.fill();
+    ctx.fillStyle='#edf4ff'; ctx.font='700 9px "Segoe UI",sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(id,pt.x,pt.y); ctx.restore();
+    ctx.fillStyle=isDone?'#6ee7a8':'rgba(142,164,204,.5)'; ctx.font='9px ui-monospace,Consolas,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillText('('+own.length+')',pt.x,pt.y+R+5);
   });
 
-  ctx.font='10px sans-serif';ctx.textBaseline='top';ctx.textAlign='left';ctx.fillStyle='#888';
-  ctx.fillText('Barevné výseče = data chunky. Bílý okraj = kořen (src/dst).', 6, H-14);
-
-  if (arrows.length>0) animFrame=requestAnimationFrame(ts=>drawFrame(ts));
+  if(flights.some(f=>f.t>0&&f.t<1)) rafId=requestAnimationFrame(draw);
 }
 
-function updateUI(step) {
-  const total=steps.length;
-  document.getElementById('progress').style.width=(total>0?(step+1)/total*100:0)+'%';
-  document.getElementById('sCurStep').textContent=`${Math.max(0,step+1)}/${total}`;
-
-  let delivered=0;
-  if (mode==='scatter') {
-    for (let i=0;i<p;i++) if (chunks[i].has(i)) delivered++;
-  } else {
-    delivered=chunks[src]?chunks[src].size:0;
-  }
-  document.getElementById('sDelivered').textContent=delivered;
-
-  if (step<0) {
-    document.getElementById('stepInfo').innerHTML=mode==='scatter'
-      ? `Kořen P${src} má ${p} chunků (jeden pro každý procesor). Rekurzivním půlením rozešleme každému jeho chunk.<br>log p = <strong>${Math.log2(p)}</strong> kroků, zpráva se vždy <strong>půlí</strong>.`
-      : `Každý P<sub>i</sub> má svůj chunk. Rekurzivním zdvojováním vše shromáždíme v P${src}.<br>log p = <strong>${Math.log2(p)}</strong> kroků.`;
-  } else {
-    const st=steps[step];
-    const d=Math.log2(p);
-    document.getElementById('stepInfo').innerHTML=`<strong>Krok ${step+1}/${total}:</strong> ${st.desc}<br>
-    Velikost zprávy v tomto kroku: <strong style="color:#c3e88d">m/${st.msgSize} slov</strong> | Aktivních odesílatelů: <strong>${Math.pow(2,st.k-1)}</strong>`;
-  }
-
-  // Chunk viz
-  const el=document.getElementById('chunkViz'); let html='';
-  for(let i=0;i<Math.min(p,8);i++){
-    html+=`<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;"><span style="color:#888;font-size:0.75em;min-width:24px">P${i}:</span>`;
-    for(let c=0;c<p;c++){
-      const has=chunks[i].has(c);
-      html+=`<div class="chunk" style="background:${has?COLORS[c%COLORS.length]:'#2a2a2a'};opacity:${has?1:0.2}">${has?c:''}</div>`;
-    }
-    html+='</div>';
-  }
-  el.innerHTML=html;
-
-  // Derivation
-  const d=Math.log2(p);
-  document.getElementById('dAlg').textContent=mode==='scatter'?'Scatter':'Gather';
-  document.getElementById('dSteps').textContent=`log p = ${d}`;
-  if (curStep>=0) {
-    const st=steps[curStep];
-    document.getElementById('dMsgSize').textContent=`krok ${curStep+1}: m/${st.msgSize} slov`;
-  } else {
-    document.getElementById('dMsgSize').textContent='m/2^(k-1) slov';
-  }
+function launchFlights(stepIdx){
+  const pos=nodePositions(), st=steps[stepIdx];
+  flights=st.pairs.flatMap(({from,to,cids})=>
+    cids.map((c,i)=>({x0:pos[from].x,y0:pos[from].y,x1:pos[to].x,y1:pos[to].y,t:-i*.06,cid:c}))
+  );
 }
 
-function stepFwd(){if(curStep+1<steps.length)applyStep(curStep+1);}
+async function advance(){
+  if(busy||cursor>=steps.length) return;
+  busy=true; launchFlights(cursor); lastTs=null;
+  const spd=parseInt(document.getElementById('speed').value);
+  await new Promise(resolve=>{
+    function tick(ts){ draw(ts); if(flights.every(f=>f.t>=1)) resolve(); else requestAnimationFrame(tick); }
+    requestAnimationFrame(tick);
+  });
+  cursor++; flights=[]; busy=false; draw(null); render();
+  await new Promise(r=>setTimeout(r,120));
+}
+
 function stepBack(){
-  if(curStep>0){rebuildState(curStep-1);curStep--;arrows=[];updateUI(curStep);cancelAnimationFrame(animFrame);requestAnimationFrame(ts=>drawFrame(ts));}
-  else{initChunks();curStep=-1;arrows=[];updateUI(-1);cancelAnimationFrame(animFrame);requestAnimationFrame(ts=>drawFrame(ts));}
+  if(busy||cursor===0) return;
+  cursor--; flights=[]; cancelAnimationFrame(rafId); lastTs=null; draw(null); render();
 }
 
-function togglePlay(){
-  playing=!playing;
-  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
-  if(playing){const go=()=>{if(curStep+1<steps.length){applyStep(curStep+1);playTimer2=setTimeout(go,parseInt(document.getElementById('speed').value));}else{playing=false;document.getElementById('playBtn').textContent='▶ Přehrát';}};go();}
-  else clearTimeout(playTimer2);
+async function togglePlay(){
+  if(playing){playing=false;render();return;}
+  if(cursor>=steps.length) reset();
+  playing=true; render();
+  while(playing&&cursor<steps.length) await advance();
+  playing=false; render();
 }
 
 function reset(){
-  clearTimeout(playTimer2);playing=false;document.getElementById('playBtn').textContent='▶ Přehrát';
+  playing=false; busy=false; flights=[]; cursor=0;
+  cancelAnimationFrame(rafId); lastTs=null;
   src=parseInt(document.getElementById('srcSel').value)||0;
-  initChunks();buildSteps();curStep=-1;arrows=[];
-  updateUI(-1);cancelAnimationFrame(animFrame);lastTime=null;requestAnimationFrame(ts=>drawFrame(ts));
+  buildSteps(); buildSnapshots(); draw(null); render();
 }
+
+function render(){
+  const total=steps.length, chunks=snapshots[cursor], finished=cursor===total;
+  const step=cursor>0?steps[cursor-1]:null;
+  document.getElementById('heroBadge').textContent='p = '+p+' \u00b7 log p = '+Math.log2(p)+' krok'+(Math.log2(p)===1?'':'u');
+  document.getElementById('sceneTitle').textContent=mode==='scatter'?'Scatter: distribuce chunku od korene':'Gather: sber chunku ke koreni';
+  document.getElementById('sceneSubtitle').textContent=mode==='scatter'?'P'+src+' rozesle '+p+' chunku v '+Math.log2(p)+' kolech. Zprava se vzdy puli.':''+p+' procesoru posle svuj chunk ke koreni P'+src+' v '+Math.log2(p)+' kolech.';
+  document.getElementById('statusPill').textContent=finished?'\u2713 dokonceno':cursor+' / '+total+' kol';
+  if(step){
+    document.getElementById('lessonKicker').textContent=step.kicker;
+    document.getElementById('lessonTitle').textContent=step.title;
+    document.getElementById('lessonText').textContent=step.text;
+    document.getElementById('lessonFormula').textContent=step.formula;
+  } else {
+    document.getElementById('lessonKicker').textContent=mode==='scatter'?'Scatter / start':'Gather / start';
+    document.getElementById('lessonTitle').textContent=mode==='scatter'?'P'+src+' drzi vsech '+p+' chunku \u2014 kazdy urcen jinemu procesoru':'Kazdy procesor drzi 1 chunk, P'+src+' je cil sberu';
+    document.getElementById('lessonText').textContent='Stiskni Prehrat nebo krokuj tlacitkem Dalsi. Barevne vysece uzlu reprezentuji kusy dat.';
+    document.getElementById('lessonFormula').textContent='T = ts\u00b7log p + tv\u00b7m\u00b7(1 \u2212 1/p)\n  = ts\u00b7'+Math.log2(p)+' + tv\u00b7m\u00b7'+((1-1/p).toFixed(3));
+  }
+  let delivered=0, totalMsgs=0;
+  for(let i=0;i<cursor;i++) totalMsgs+=steps[i].pairs.length;
+  if(mode==='scatter') for(let i=0;i<p;i++){if(chunks[i].has(i)&&chunks[i].size===1)delivered++;}
+  else delivered=chunks[src]?chunks[src].size:0;
+  document.getElementById('roundStat').textContent=cursor+'/'+total;
+  document.getElementById('deliveredStat').textContent=delivered;
+  document.getElementById('deliveredLbl').textContent=mode==='scatter'?'u cile':'v koreni';
+  document.getElementById('msgStat').textContent=totalMsgs;
+
+  let html='';
+  for(let i=0;i<=total;i++){
+    if(i>0) html+='<div class="progress-line'+(i<=cursor?' done':'')+'"></div>';
+    const cls=i<cursor?'done':i===cursor?'active':'';
+    html+='<div class="progress-dot '+cls+'" title="krok '+i+'"></div>';
+  }
+  document.getElementById('progressTrack').innerHTML=html;
+
+  document.getElementById('timeline').innerHTML=steps.map((st,i)=>{
+    const cls=i<cursor?'done':i===cursor-1?'active':'';
+    return '<div class="timeline-row '+cls+'"><div class="timeline-num">'+(i+1)+'</div><span>'+st.kicker.split('\u00b7')[1].trim()+'</span><span class="timeline-count">'+st.pairs.length+'\u00d7</span></div>';
+  }).join('');
+
+  const d=Math.log2(p);
+  document.getElementById('complexityFormula').textContent='T = ts \u00b7 log p + tv \u00b7 m \u00b7 (1 \u2212 1/p)\n  = ts \u00b7 '+d+' + tv \u00b7 m \u00b7 '+((1-1/p).toFixed(3))+'\n\nCelkem preneseno: m \u00b7 (1\u22121/p) \u2248 m slov\nZpravy celkem: '+steps.reduce((s,st)=>s+st.pairs.length,0)+' prenosu';
+  document.getElementById('complexityNote').textContent=mode==='scatter'?'V kroku k odesilaji 2^(k-1) procesoru zpravu o m/2^(k-1) slovech. Celkovy objem \u2248 m.':'Gather je presny zrcadlovy obraz scatteru \u2014 stejna slozitost, opacny smer.';
+
+  document.getElementById('procStrip').innerHTML=Array.from({length:p},(_,i)=>{
+    const own=[...chunks[i]].sort((a,b)=>a-b);
+    const isS=i===src, isA=cursor>0&&steps[cursor-1].pairs.some(pp=>pp.from===i||pp.to===i);
+    const cells=Array.from({length:p},(_,c)=>{
+      const has=chunks[i].has(c);
+      return '<div class="chunk-cell'+(has?'':' empty')+'" style="background:'+(has?COLORS[c%COLORS.length]:'rgba(255,255,255,.04)')+'">'+(has?c:'')+'</div>';
+    }).join('');
+    return '<div class="proc-row"><div class="proc-label" style="color:'+(isS?'#fff':isA?'var(--cyan)':'var(--muted)')+'">'+(isS?'\u25cf ':'')+'P'+i+'</div><div class="chunk-track">'+cells+'</div></div>';
+  }).join('');
+
+  document.getElementById('playBtn').textContent=playing?'\u23f8 Pauza':cursor>=total?'\u21ba Prehrat':'\u25b6 Prehrat';
+}
+
+document.getElementById('modeTabs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-mode]'); if(!b||busy) return;
+  mode=b.dataset.mode;
+  document.querySelectorAll('.tab-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.mode===mode));
+  reset();
+});
+document.getElementById('pSlider').addEventListener('input',()=>{
+  p=Math.pow(2,parseInt(document.getElementById('pSlider').value));
+  document.getElementById('pVal').textContent=p;
+  updateSrcSel(); reset();
+});
+document.getElementById('srcSel').addEventListener('change',reset);
+document.getElementById('resetBtn').addEventListener('click',reset);
+document.getElementById('backBtn').addEventListener('click',stepBack);
+document.getElementById('nextBtn').addEventListener('click',advance);
+document.getElementById('playBtn').addEventListener('click',togglePlay);
+window.addEventListener('resize',()=>draw(null));
 
 function updateSrcSel(){
-  const sel=document.getElementById('srcSel');sel.innerHTML='';
-  for(let i=0;i<p;i++){const o=document.createElement('option');o.value=i;o.textContent=`P${i}`;sel.appendChild(o);}
+  const sel=document.getElementById('srcSel'), cur=sel.value;
+  sel.innerHTML=Array.from({length:p},(_,i)=>'<option value="'+i+'"'+(i==cur?' selected':'')+'>P'+i+'</option>').join('');
+  src=parseInt(sel.value)||0;
 }
-
-function updateP(){
-  const k=parseInt(document.getElementById('pSlider').value);
-  p=Math.pow(2,k);document.getElementById('pVal').textContent=p;
-  updateSrcSel();reset();
-}
-
-function switchMode(m){
-  mode=m;
-  document.getElementById('tabScatter').className='tab-btn'+(m==='scatter'?' active':'');
-  document.getElementById('tabGather').className='tab-btn'+(m==='gather'?' active':'');
-  reset();
-}
-
-updateP();
+updateSrcSel(); reset();
 </script>
 </body>
 </html>
