@@ -157,7 +157,7 @@ input[type="range"] {
 
 .scene {
   position: relative;
-  min-height: 626px;
+  min-height: 760px;
   overflow: hidden;
   background:
     linear-gradient(rgba(156, 163, 175, .04) 1px, transparent 1px),
@@ -168,7 +168,7 @@ input[type="range"] {
 
 .workspace {
   display: grid;
-  grid-template-columns: 180px minmax(0, 1fr) 250px;
+  grid-template-columns: 180px minmax(0, 1fr);
   gap: 14px;
   padding: 16px;
 }
@@ -315,6 +315,8 @@ input[type="range"] {
 
 .decision-panel {
   display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(210px, .9fr) minmax(260px, 1fr) minmax(230px, .9fr);
   gap: 10px;
   align-content: start;
 }
@@ -381,7 +383,7 @@ input[type="range"] {
 
 .bag {
   position: relative;
-  min-height: 168px;
+  min-height: 132px;
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 12px;
@@ -430,6 +432,7 @@ input[type="range"] {
 }
 
 .callout {
+  grid-column: 1 / -1;
   min-height: 68px;
   border-left: 3px solid var(--cyan);
   border-radius: 8px;
@@ -541,7 +544,9 @@ input[type="range"] {
 @media (max-width: 980px) {
   body { min-width: 900px; }
   .layout { grid-template-columns: 1fr; }
-  .scene { min-height: 620px; }
+  .scene { min-height: 820px; }
+  .decision-panel { grid-template-columns: 1fr; }
+  .callout { grid-column: auto; }
   .side { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
@@ -556,10 +561,6 @@ input[type="range"] {
       <button class="control-btn primary" id="playBtn">Prehrat</button>
       <button class="control-btn" id="stepBtn">Krok</button>
       <button class="control-btn" id="resetBtn">Reset</button>
-      <select id="exampleSelect" title="Vyber instance">
-        <option value="classic">Klasicky priklad</option>
-        <option value="trap">Greedy past</option>
-      </select>
       <div class="speed-control">
         <span class="label">Rychlost</span>
         <input id="speed" type="range" min="360" max="1300" value="760">
@@ -661,15 +662,6 @@ const examples = {
       { name: "D", weight: 5, value: 8 },
       { name: "E", weight: 2, value: 3 }
     ]
-  },
-  trap: {
-    capacity: 10,
-    items: [
-      { name: "A", weight: 1, value: 2 },
-      { name: "B", weight: 10, value: 15 },
-      { name: "C", weight: 4, value: 5 },
-      { name: "D", weight: 5, value: 6 }
-    ]
   }
 };
 
@@ -691,7 +683,6 @@ const els = {
   step: document.getElementById("stepBtn"),
   reset: document.getElementById("resetBtn"),
   speed: document.getElementById("speed"),
-  select: document.getElementById("exampleSelect"),
   progress: document.getElementById("progressBar"),
   phase: document.getElementById("phaseLabel"),
   stepLabel: document.getElementById("stepLabel"),
@@ -997,8 +988,6 @@ els.speed.addEventListener("input", () => {
     play();
   }
 });
-els.select.addEventListener("change", e => boot(e.target.value));
-
 boot();
 </script>
 </body>
