@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Floyd-Warshall — 2D blokové rozložení</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
+h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
+.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
+.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
+.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
+select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
+input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
+.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
+.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
+canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
+.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 60px; }
+.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
+.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
+.deriv-lbl { color: #888; min-width: 130px; font-size: 0.9em; }
+.deriv-val { color: #c3e88d; font-family: monospace; }
+.highlight { color: #0984e3; font-weight: 700; }
+.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
+.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
+.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; } .stat.yellow { border-color: #fdcb6e; }
+.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
+.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+</style>
+</head>
+<body>
+<h1>Floyd-Warshall — All-Pairs Shortest Paths — 2D blokové rozložení</h1>
+
+<div class="main">
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="row">
+      <label>Uzlů n:</label>
+      <select id="nSel" onchange="reset()">
+        <option value="6" selected>6</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+      </select>
+      <label>Proc p:</label>
+      <select id="pSel" onchange="reset()">
+        <option value="4" selected>4 (2×2)</option>
+        <option value="9">9 (3×3)</option>
+      </select>
+      <label>Graf:</label>
+      <select id="gSel" onchange="reset()">
+        <option value="random" selected>Náhodný</option>
+        <option value="dense">Hustý</option>
+      </select>
+    </div>
+    <div class="row">
+      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
+      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
+      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
+      <button class="btn secondary" onclick="reset()">↺ Reset</button>
+      <label>Rychlost:</label>
+      <input type="range" id="speed" min="400" max="3000" value="1100" step="100" style="width:70px;">
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
+  </div>
+
+  <canvas id="cv" height="360"></canvas>
+  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
+</div>
+
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <h3>Průběh iterace k</h3>
+    <div style="font-size:0.79em;line-height:1.9;color:#d4d4d4;">
+      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph0">1. Broadcast řádku k (po sloupcích mřížky proc)</div>
+      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph1">2. Broadcast sloupce k (po řádcích mřížky proc)</div>
+      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;" id="ph2">3. Lokální update: D[i][j] = min(D[i][j], D[i][k]+D[k][j])</div>
+    </div>
+    <div style="margin-top:10px;font-size:0.78em;color:#666;">
+      Barvy buněk = vlastnící procesor (2D blok). Zvýrazněné řádky/sloupce = aktuálně broadcastované.
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Analýza Floyd-Warshall</h3>
+    <div class="deriv-box">
+      <div class="deriv-row"><span class="deriv-lbl">Mřížka proc:</span><span class="deriv-val" id="dGrid">√p × √p</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Blok každého proc:</span><span class="deriv-val" id="dBlock">n/√p × n/√p</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Lok. update/iter:</span><span class="deriv-val">O(n²/p)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Broadcast/iter:</span><span class="deriv-val">O(n/√p · log p)</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div class="deriv-row"><span class="deriv-lbl">Iterací celkem:</span><span class="deriv-val" id="dN">n</span></div>
+      <div class="deriv-row highlight"><span class="deriv-lbl">T_P:</span><span class="deriv-val">O(n³/p + n²·log p/√p)</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div class="deriv-row highlight"><span class="deriv-lbl">Isoefektivita:</span><span class="deriv-val">Θ(p^(3/2)·log³p)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Max p (cost-opt):</span><span class="deriv-val">O(n²/log²n)</span></div>
+      <div style="margin-top:8px;font-size:0.78em;color:#888;">Pipelined verze: T_P=O(n²/√p+n·log p), iso=Θ(p^(3/2)).</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat blue"><div class="stat-lbl">Iterace k</div><div class="stat-val" id="sK">—</div></div>
+      <div class="stat green"><div class="stat-lbl">Fáze</div><div class="stat-val" id="sPhase">—</div></div>
+      <div class="stat yellow" style="grid-column:1/-1"><div class="stat-lbl">Zlepšení (min D[i][j])</div><div class="stat-val" id="sMin">—</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const PROC_COLORS = [
+  '#0984e3','#e17055','#00b894','#a29bfe',
+  '#fdcb6e','#fd79a8','#55efc4','#74b9ff','#b2bec3'
+];
+const INF = 9999;
+
+let n, p, sqrtP;
+let steps = [], curStep = -1, playing = false, playTimer = null;
+let initialD = [];
+
+function buildGraph(n, type) {
+  const D = Array.from({length:n},()=>Array(n).fill(INF));
+  for (let i=0;i<n;i++) D[i][i]=0;
+  for (let i=0;i<n;i++) for (let j=i+1;j<n;j++) {
+    const hasEdge = type==='dense' ? Math.random()<0.8 : Math.random()<0.45;
+    if (hasEdge) { const w=Math.floor(Math.random()*15)+1; D[i][j]=D[j][i]=w; }
+  }
+  return D;
+}
+
+function cloneD(D) { return D.map(row=>[...row]); }
+
+function buildSteps(D0, p) {
+  const n = D0.length;
+  const steps = [];
+  const D = cloneD(D0);
+
+  steps.push({k:-1,phase:-1,D:cloneD(D),rowK:-1,colK:-1,updated:[],desc:`Počáteční matice vzdáleností D. Procesory mají 2D bloky n/√p × n/√p (${Math.ceil(n/sqrtP)}×${Math.ceil(n/sqrtP)} buněk). Každá iterace k broadcastuje řádek k a sloupec k.`});
+
+  for (let k=0;k<n;k++) {
+    // Phase 0: broadcast row k
+    steps.push({k,phase:0,D:cloneD(D),rowK:k,colK:-1,updated:[],desc:`Iterace k=${k}: Broadcast řádku k=${k} po sloupcích mřížky. Každý proc ve sloupci dostane podřádek délky n/√p. Čas: O(n/√p · log p).`});
+    // Phase 1: broadcast col k
+    steps.push({k,phase:1,D:cloneD(D),rowK:k,colK:k,updated:[],desc:`Iterace k=${k}: Broadcast sloupce k=${k} po řádcích mřížky. Každý proc dostane podsloupec délky n/√p. Čas: O(n/√p · log p).`});
+    // Phase 2: local update
+    const updated = [];
+    for (let i=0;i<n;i++) for (let j=0;j<n;j++) {
+      if (D[i][k]!==INF && D[k][j]!==INF && D[i][k]+D[k][j]<D[i][j]) {
+        D[i][j]=D[i][k]+D[k][j]; updated.push([i,j]);
+      }
+    }
+    steps.push({k,phase:2,D:cloneD(D),rowK:k,colK:k,updated:[...updated],desc:`Iterace k=${k}: Lokální update — ${updated.length} buněk zlepšeno. D[i][j] = min(D[i][j], D[i][${k}] + D[${k}][j]). Čas: O(n²/p).`});
+  }
+
+  const minDist = D.flat().filter(v=>v>0&&v<INF);
+  steps.push({k:n,phase:-1,D:cloneD(D),rowK:-1,colK:-1,updated:[],desc:`Hotovo! Floyd-Warshall dokončen po ${n} iteracích. Nejkratší cesty mezi všemi dvojicemi. T_P = O(n³/p + n²·log p/√p).`});
+  return steps;
+}
+
+function reset() {
+  clearTimeout(playTimer); playing=false; document.getElementById('playBtn').textContent='▶ Přehrát';
+  n = parseInt(document.getElementById('nSel').value);
+  p = parseInt(document.getElementById('pSel').value);
+  sqrtP = Math.round(Math.sqrt(p));
+  const gt = document.getElementById('gSel').value;
+  initialD = buildGraph(n, gt);
+  steps = buildSteps(initialD, p);
+  curStep = -1;
+  document.getElementById('dGrid').textContent = `${sqrtP} × ${sqrtP}`;
+  document.getElementById('dBlock').textContent = `${Math.ceil(n/sqrtP)} × ${Math.ceil(n/sqrtP)}`;
+  document.getElementById('dN').textContent = n;
+  updateUI(); drawFrame(steps[0]);
+}
+
+function applyStep(idx) { curStep=idx; updateUI(); drawFrame(steps[idx]); }
+function stepFwd() { if (curStep+1<steps.length) applyStep(curStep+1); }
+function stepBack() { if (curStep>0) applyStep(curStep-1); else { curStep=-1; updateUI(); drawFrame(steps[0]); } }
+
+function updateUI() {
+  const total=steps.length;
+  document.getElementById('progress').style.width=(total>0?(curStep+1)/total*100:0)+'%';
+  const st=curStep>=0?steps[curStep]:null;
+  document.getElementById('sK').textContent=st&&st.k>=0?`${st.k}/${n-1}`:'—';
+  document.getElementById('sPhase').textContent=st?.phase>=0?['Broadcast řádek','Broadcast sloupec','Lok. update'][st.phase]:'Init';
+  const minD=st?st.D.flat().filter(v=>v>0&&v<INF):[];
+  document.getElementById('sMin').textContent=minD.length?`${Math.min(...minD)} … ${Math.max(...minD)}`:'—';
+  document.getElementById('stepInfo').innerHTML=`<strong>${st?`Krok ${curStep+1}/${total}`:'Start'}:</strong> ${(st||steps[0]).desc}`;
+
+  for (let ph=0;ph<3;ph++) {
+    const el=document.getElementById(`ph${ph}`);
+    const active=st?.phase===ph;
+    el.style.borderLeftColor=active?'#0984e3':'#3c3c3c';
+    el.style.background=active?'#1a1a2e':'transparent';
+    el.style.color=active?'#d4d4d4':'#888';
+  }
+}
+
+const cv=document.getElementById('cv'); const ctx=cv.getContext('2d');
+
+function getProc(i,j) {
+  const pr=Math.floor(i/Math.ceil(n/sqrtP));
+  const pc=Math.floor(j/Math.ceil(n/sqrtP));
+  return pr*sqrtP+pc;
+}
+
+function drawFrame(st) {
+  const W=cv.width=cv.offsetWidth, H=cv.height=360;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
+  if (!st) return;
+
+  const D=st.D;
+  const bSize=Math.max(28,Math.min(44,Math.floor(Math.min(W-20,H-60)/n)));
+  const offX=Math.floor((W-bSize*n)/2), offY=Math.floor((H-70-bSize*n)/2)+20;
+
+  // Draw cells
+  for (let i=0;i<n;i++) for (let j=0;j<n;j++) {
+    const proc=getProc(i,j);
+    const bx=offX+j*bSize, by=offY+i*bSize;
+    const isRowK=st.rowK>=0&&i===st.rowK;
+    const isColK=st.colK>=0&&j===st.colK;
+    const isUpdated=st.updated.some(([ui,uj])=>ui===i&&uj===j);
+    const isKK=st.rowK>=0&&i===st.rowK&&st.colK>=0&&j===st.colK;
+
+    // Base color from proc
+    let baseColor = PROC_COLORS[proc%PROC_COLORS.length]+'33';
+    if (isUpdated) baseColor='#00b89466';
+    else if (isRowK&&isColK) baseColor='#fdcb6e66';
+    else if (isRowK) baseColor='#fd79a844';
+    else if (isColK) baseColor='#a29bfe44';
+
+    ctx.fillStyle=baseColor; ctx.fillRect(bx,by,bSize,bSize);
+    ctx.strokeStyle=isUpdated?'#00b894':(isRowK||isColK?'#666':'#444');
+    ctx.lineWidth=isUpdated?1.5:(isKK?2:0.5); ctx.strokeRect(bx,by,bSize,bSize);
+
+    // Value
+    const val=D[i][j];
+    const txt=val===INF?'∞':(val===0?'0':String(val));
+    ctx.fillStyle=isUpdated?'#00b894':(isKK?'#fdcb6e':(i===j?'#666':'#d4d4d4'));
+    ctx.font=`${Math.max(8,bSize*0.35)}px monospace`; ctx.textAlign='center';
+    ctx.fillText(txt,bx+bSize/2,by+bSize*0.65);
+  }
+
+  // Row/col highlight borders
+  if (st.rowK>=0) {
+    const by=offY+st.rowK*bSize;
+    ctx.strokeStyle='#fd79a8'; ctx.lineWidth=2;
+    ctx.strokeRect(offX,by,bSize*n,bSize);
+  }
+  if (st.colK>=0) {
+    const bx=offX+st.colK*bSize;
+    ctx.strokeStyle='#a29bfe'; ctx.lineWidth=2;
+    ctx.strokeRect(bx,offY,bSize,bSize*n);
+  }
+
+  // Row labels
+  for (let i=0;i<n;i++) {
+    ctx.fillStyle=st.rowK===i?'#fd79a8':'#666';
+    ctx.font=`${Math.max(8,bSize*0.32)}px sans-serif`; ctx.textAlign='right';
+    ctx.fillText(i,offX-4,offY+i*bSize+bSize*0.65);
+  }
+  // Col labels
+  for (let j=0;j<n;j++) {
+    ctx.fillStyle=st.colK===j?'#a29bfe':'#666';
+    ctx.font=`${Math.max(8,bSize*0.32)}px sans-serif`; ctx.textAlign='center';
+    ctx.fillText(j,offX+j*bSize+bSize/2,offY-6);
+  }
+
+  // Proc grid border lines (thicker)
+  ctx.strokeStyle='#888'; ctx.lineWidth=2;
+  for (let pr=0;pr<=sqrtP;pr++) {
+    const y=offY+pr*Math.ceil(n/sqrtP)*bSize;
+    if (y<=offY+n*bSize) { ctx.beginPath(); ctx.moveTo(offX,y); ctx.lineTo(offX+n*bSize,Math.min(y,offY+n*bSize)); ctx.stroke(); }
+  }
+  for (let pc=0;pc<=sqrtP;pc++) {
+    const x=offX+pc*Math.ceil(n/sqrtP)*bSize;
+    if (x<=offX+n*bSize) { ctx.beginPath(); ctx.moveTo(x,offY); ctx.lineTo(Math.min(x,offX+n*bSize),offY+n*bSize); ctx.stroke(); }
+  }
+
+  // Proc labels on right
+  for (let pr=0;pr<sqrtP;pr++) for (let pc=0;pc<sqrtP;pc++) {
+    const proc=pr*sqrtP+pc;
+    const bx=offX+pc*Math.ceil(n/sqrtP)*bSize;
+    const by=offY+pr*Math.ceil(n/sqrtP)*bSize;
+    const bw=Math.min(Math.ceil(n/sqrtP)*bSize, n*bSize-pc*Math.ceil(n/sqrtP)*bSize);
+    const bh=Math.min(Math.ceil(n/sqrtP)*bSize, n*bSize-pr*Math.ceil(n/sqrtP)*bSize);
+    ctx.fillStyle=PROC_COLORS[proc%PROC_COLORS.length]+'cc';
+    ctx.font='bold 9px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(`P${proc}`,bx+3,by+12);
+  }
+
+  // Legend at bottom
+  const legY=H-36;
+  [[`#fd79a8`,'Řádek k (broadcast)'],[`#a29bfe`,'Sloupec k (broadcast)'],[`#00b894`,'Aktualizovaná buňka']].forEach(([c,txt],i)=>{
+    const lx=10+i*140;
+    ctx.fillStyle=c; ctx.fillRect(lx,legY,10,10);
+    ctx.fillStyle='#aaa'; ctx.font='8px sans-serif'; ctx.textAlign='left'; ctx.fillText(txt,lx+13,legY+9);
+  });
+
+  // Title
+  ctx.fillStyle='#0984e3'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(`Floyd-Warshall — n=${n}, p=${p} (${sqrtP}×${sqrtP} mřížka)`, W/2, 14);
+}
+
+function togglePlay() {
+  playing=!playing;
+  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
+  if (playing) {
+    const go=()=>{
+      if (curStep+1<steps.length) { applyStep(curStep+1); playTimer=setTimeout(go,parseInt(document.getElementById('speed').value)); }
+      else { playing=false; document.getElementById('playBtn').textContent='▶ Přehrát'; }
+    };
+    go();
+  } else clearTimeout(playTimer);
+}
+
+window.addEventListener('resize',()=>{ if(curStep>=0) drawFrame(steps[curStep]); else drawFrame(steps[0]); });
+reset();
+</script>
+</body>
+</html>

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odd-Even Transposition Sort — animace</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
+h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
+.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
+.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
+.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
+select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
+input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
+.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
+.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
+canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
+.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 56px; }
+.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
+.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
+.deriv-lbl { color: #888; min-width: 150px; font-size: 0.9em; }
+.deriv-val { color: #c3e88d; font-family: monospace; }
+.highlight { color: #0984e3; font-weight: 700; }
+.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
+.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
+.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; }
+.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
+.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+</style>
+</head>
+<body>
+<h1>Odd-Even Transposition Sort — paralelní bublinkové řazení</h1>
+
+<div class="main">
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="row">
+      <label>n (= p):</label>
+      <select id="nSel" onchange="reset()">
+        <option value="8" selected>8</option>
+        <option value="12">12</option>
+        <option value="16">16</option>
+      </select>
+      <label style="margin-left:8px;">Data:</label>
+      <select id="dataSel" onchange="reset()">
+        <option value="random" selected>Náhodná</option>
+        <option value="reverse">Sestupná</option>
+        <option value="sorted">Setříděná</option>
+        <option value="almost">Skoro setříděná</option>
+      </select>
+    </div>
+    <div class="row">
+      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
+      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
+      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
+      <button class="btn secondary" onclick="reset()">↺ Reset</button>
+      <label>Rychlost:</label>
+      <input type="range" id="speed" min="100" max="1500" value="600" step="50" style="width:70px;">
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
+  </div>
+
+  <canvas id="cv" height="300"></canvas>
+  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
+</div>
+
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <h3>Porovnání fází</h3>
+    <div style="font-size:0.82em;color:#d4d4d4;line-height:1.8;">
+      <div style="padding:5px 8px;border-left:3px solid #0984e3;margin-bottom:4px;background:#1a1a2e;" id="evenDiv">
+        <strong style="color:#0984e3;">Sudá fáze:</strong> porovnej páry (0,1), (2,3), (4,5), ...
+      </div>
+      <div style="padding:5px 8px;border-left:3px solid #e17055;margin-bottom:4px;" id="oddDiv">
+        <strong style="color:#e17055;">Lichá fáze:</strong> porovnej páry (1,2), (3,4), (5,6), ...
+      </div>
+      <div style="color:#666;font-size:0.85em;margin-top:8px;">
+        Po <em>n</em> fázích je pole vždy setříděné.<br>
+        Prohození = <span style="color:#e17055;">●</span>, Pořádek OK = <span style="color:#00b894;">●</span>
+      </div>
+    </div>
+    <canvas id="swapCanvas" height="60" style="margin-top:8px;border-radius:4px;background:#1e1e1e;"></canvas>
+  </div>
+
+  <div class="panel">
+    <h3>Odvození složitosti</h3>
+    <div class="deriv-box">
+      <div class="deriv-row"><span class="deriv-lbl">Procesorů:</span><span class="deriv-val" id="dP">p = 8</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Celkem fází:</span><span class="deriv-val" id="dPhases">n = 8</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Práce / fáze:</span><span class="deriv-val">1 porovnání/proc</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div class="deriv-row highlight"><span class="deriv-lbl">T_P (1 prvek/proc):</span><span class="deriv-val">Θ(n)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Cost = p·T_P:</span><span class="deriv-val">Θ(n²)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">T_S (bubble sort):</span><span class="deriv-val">Θ(n²) → cost-opt ✓</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">T_S (merge sort):</span><span class="deriv-val">Θ(n log n) → cost-opt ✗</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div style="color:#888;font-size:0.78em;margin-bottom:4px;">S n/p prvky na procesor:</div>
+      <div class="deriv-row"><span class="deriv-lbl">T_P:</span><span class="deriv-val">Θ(n/p·log(n/p) + n)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">T_o ≈:</span><span class="deriv-val">Θ(n·p)</span></div>
+      <div class="deriv-row highlight"><span class="deriv-lbl">Isoefektivita:</span><span class="deriv-val">Θ(p · 2^p)</span></div>
+      <div style="color:#e17055;font-size:0.78em;margin-top:4px;">⚠ Exponenciálně špatná škálovatelnost!</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat blue"><div class="stat-lbl">Fáze</div><div class="stat-val" id="sCurStep">0/0</div></div>
+      <div class="stat green"><div class="stat-lbl">Prohození</div><div class="stat-val" id="sSwaps">0</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const SORTED_COLOR = '#00b894';
+const SWAP_COLOR = '#e17055';
+const COMPARE_COLOR = '#fdcb6e';
+const DEFAULT_COLOR = '#0984e3';
+const INACTIVE_COLOR = '#3c3c3c';
+
+let n = 8;
+let arr = [], steps = [], curStep = -1;
+let playing = false, playTimer = null;
+let totalSwaps = 0;
+
+function generateData() {
+  const type = document.getElementById('dataSel').value;
+  const a = [];
+  if (type === 'random') { for(let i=0;i<n;i++) a.push(Math.floor(Math.random()*90)+5); }
+  else if (type === 'reverse') { for(let i=0;i<n;i++) a.push(n-i); }
+  else if (type === 'sorted') { for(let i=0;i<n;i++) a.push(i+1); }
+  else { for(let i=0;i<n;i++) a.push(i+1); a[Math.floor(n*0.3)]=n; a[Math.floor(n*0.7)]=1; }
+  return a;
+}
+
+function buildSteps(initial) {
+  const steps = [];
+  const a = [...initial];
+  let swaps = 0;
+  for (let phase = 0; phase < n; phase++) {
+    const isEven = phase % 2 === 0;
+    const start = isEven ? 0 : 1;
+    const swapped = [];
+    const state = [...a];
+    for (let i = start; i < n-1; i += 2) {
+      if (a[i] > a[i+1]) {
+        [a[i], a[i+1]] = [a[i+1], a[i]];
+        swapped.push(i);
+        swaps++;
+      }
+    }
+    steps.push({ phase, isEven, arr: [...a], swapped, swapCount: swaps });
+  }
+  return steps;
+}
+
+function reset() {
+  clearTimeout(playTimer); playing = false; document.getElementById('playBtn').textContent = '▶ Přehrát';
+  n = parseInt(document.getElementById('nSel').value);
+  arr = generateData();
+  const built = buildSteps(arr);
+  steps.length = 0; built.forEach(s => steps.push(s));
+  curStep = -1; totalSwaps = 0;
+  updateUI(); drawFrame(arr, [], false); drawSwapTimeline();
+}
+
+function applyStep(idx) {
+  curStep = idx;
+  const st = steps[idx];
+  totalSwaps = st.swapCount;
+  updateUI();
+  drawFrame(st.arr, st.swapped, st.isEven);
+  drawSwapTimeline();
+}
+
+function stepFwd() { if (curStep+1 < steps.length) applyStep(curStep+1); }
+function stepBack() {
+  if (curStep > 0) applyStep(curStep-1);
+  else { curStep = -1; totalSwaps = 0; updateUI(); drawFrame(arr, [], false); drawSwapTimeline(); }
+}
+
+function updateUI() {
+  const total = steps.length;
+  document.getElementById('progress').style.width = (total > 0 ? (curStep+1)/total*100 : 0) + '%';
+  document.getElementById('sCurStep').textContent = `${Math.max(0,curStep+1)}/${total}`;
+  document.getElementById('sSwaps').textContent = totalSwaps;
+  document.getElementById('dP').textContent = `p = ${n}`;
+  document.getElementById('dPhases').textContent = `n = ${n} fází`;
+
+  if (curStep < 0) {
+    document.getElementById('stepInfo').innerHTML = `<strong>Počáteční stav</strong>: ${n} procesorů, každý drží jeden prvek. Bude provedeno <strong>${n} fází</strong> (střídavě sudé/liché).`;
+    document.getElementById('evenDiv').style.background = '#1a1a2e';
+    document.getElementById('oddDiv').style.background = 'transparent';
+  } else {
+    const st = steps[curStep];
+    const phaseType = st.isEven ? 'Sudá' : 'Lichá';
+    const color = st.isEven ? '#0984e3' : '#e17055';
+    document.getElementById('stepInfo').innerHTML =
+      `<strong style="color:${color}">Fáze ${st.phase+1}/${n} — ${phaseType}</strong>: ` +
+      `Porovnáno ${Math.floor(n/2)} párů, prohozeno <strong>${st.swapped.length}</strong> párů.` +
+      (st.swapped.length === 0 ? ' <em>Žádné prohození — lokálně v pořádku.</em>' : '');
+    document.getElementById('evenDiv').style.background = st.isEven ? '#1a1a2e' : 'transparent';
+    document.getElementById('oddDiv').style.background = st.isEven ? 'transparent' : '#1a1a2e';
+  }
+  const sorted = curStep >= 0 && isSorted(steps[curStep].arr);
+  if (sorted) document.getElementById('stepInfo').innerHTML += ' <strong style="color:#00b894">✓ Setříděno!</strong>';
+}
+
+function isSorted(a) { for(let i=0;i<a.length-1;i++) if(a[i]>a[i+1]) return false; return true; }
+
+const cv = document.getElementById('cv'); const ctx = cv.getContext('2d');
+
+function drawFrame(data, swapped, isEven) {
+  const W = cv.width = cv.offsetWidth, H = cv.height = 300;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
+
+  const maxVal = Math.max(...data, 1);
+  const barW = Math.floor((W - 20) / n) - 2;
+  const offX = 10;
+  const maxH = H - 60;
+
+  const curArr = curStep >= 0 ? steps[curStep].arr : arr;
+  const swSet = new Set(swapped);
+
+  // Which pairs are being compared this phase
+  const compareSet = new Set();
+  if (curStep >= 0) {
+    const st = steps[curStep];
+    const start = st.isEven ? 0 : 1;
+    for (let i = start; i < n-1; i+=2) { compareSet.add(i); compareSet.add(i+1); }
+  }
+
+  const sortedSoFar = curStep >= 0 ? isSorted(curArr) : false;
+
+  for (let i = 0; i < n; i++) {
+    const x = offX + i * (barW + 2);
+    const val = curArr[i];
+    const barH = Math.max(4, Math.floor(val / maxVal * maxH));
+    const y = H - 42 - barH;
+
+    let color = DEFAULT_COLOR;
+    if (sortedSoFar) color = SORTED_COLOR;
+    else if (swSet.has(i)) color = SWAP_COLOR;
+    else if (compareSet.has(i)) color = COMPARE_COLOR;
+    else if (curStep >= 0 && !compareSet.has(i)) color = INACTIVE_COLOR;
+
+    // Draw bar
+    ctx.fillStyle = color + 'cc';
+    ctx.fillRect(x, y, barW, barH);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x, y, barW, barH);
+
+    // Draw swap arrows between swapped pairs
+    if (swSet.has(i) && swSet.has(i) && (i % 2 === (isEven ? 0 : 1)) && i+1 < n && swSet.has(i+1)) {
+      const x2 = offX + (i+1) * (barW + 2);
+      ctx.beginPath();
+      ctx.moveTo(x + barW/2, y - 6);
+      ctx.lineTo(x2 + barW/2, y - 6);
+      ctx.strokeStyle = SWAP_COLOR; ctx.lineWidth = 2; ctx.stroke();
+      // Arrowheads
+      ctx.beginPath(); ctx.moveTo(x+barW/2, y-6); ctx.lineTo(x+barW/2+5, y-2); ctx.lineTo(x+barW/2+5, y-10); ctx.closePath(); ctx.fillStyle=SWAP_COLOR; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(x2+barW/2, y-6); ctx.lineTo(x2+barW/2-5, y-2); ctx.lineTo(x2+barW/2-5, y-10); ctx.closePath(); ctx.fillStyle=SWAP_COLOR; ctx.fill();
+    }
+
+    // Value label
+    ctx.fillStyle = '#ccc'; ctx.font = `${Math.max(8, barW*0.55)}px monospace`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    if (barW >= 14) ctx.fillText(val, x + barW/2, y + (barH > 16 ? 2 : barH + 2));
+
+    // Proc label
+    ctx.fillStyle = '#555'; ctx.font = `${Math.max(7, barW*0.4)}px sans-serif`;
+    ctx.fillText(`P${i}`, x + barW/2, H - 36);
+  }
+
+  // Phase indicator bar
+  ctx.fillStyle = '#333'; ctx.fillRect(offX, H-28, W-20, 20);
+  const phases = steps.length;
+  if (phases > 0) {
+    const phW = (W-20) / phases;
+    for (let p = 0; p <= curStep; p++) {
+      ctx.fillStyle = steps[p].isEven ? '#0984e366' : '#e1705566';
+      ctx.fillRect(offX + p*phW, H-28, phW, 20);
+    }
+    if (curStep >= 0) {
+      ctx.fillStyle = steps[curStep].isEven ? '#0984e3' : '#e17055';
+      ctx.fillRect(offX + curStep*phW, H-28, phW, 20);
+    }
+  }
+  ctx.fillStyle = '#888'; ctx.font = '9px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('Fáze', offX + (W-20)/2, H-18);
+
+  // Legend
+  ctx.font = '9px sans-serif'; ctx.textAlign = 'left';
+  [[DEFAULT_COLOR,'Neaktivní'],[COMPARE_COLOR,'Porovnáváno'],[SWAP_COLOR,'Prohozeno'],[SORTED_COLOR,'Setříděno']].forEach(([c,l],idx) => {
+    ctx.fillStyle = c; ctx.fillRect(offX + idx*80, H-10, 8, 8);
+    ctx.fillStyle = '#888'; ctx.fillText(l, offX + idx*80+10, H-3);
+  });
+}
+
+const swapCv = document.getElementById('swapCanvas'); const swapCtx = swapCv.getContext('2d');
+function drawSwapTimeline() {
+  const W = swapCv.width = swapCv.offsetWidth, H = 60;
+  swapCtx.clearRect(0,0,W,H); swapCtx.fillStyle='#1e1e1e'; swapCtx.fillRect(0,0,W,H);
+  if (steps.length === 0) return;
+  const phW = Math.max(4, Math.floor((W-4) / steps.length));
+  for (let p = 0; p < steps.length; p++) {
+    const st = steps[p];
+    const x = 2 + p*phW;
+    const active = p <= curStep;
+    swapCtx.fillStyle = active ? (st.isEven ? '#0984e3' : '#e17055') : '#2a2a2a';
+    swapCtx.fillRect(x, 2, phW-1, 26);
+    // Swap count bar
+    const maxSw = Math.max(...steps.map(s=>s.swapped.length), 1);
+    const swH = Math.floor(st.swapped.length / maxSw * 24);
+    swapCtx.fillStyle = active ? '#c3e88d' : '#3c3c3c';
+    swapCtx.fillRect(x, 52-swH, phW-1, swH);
+  }
+  swapCtx.fillStyle = '#666'; swapCtx.font = '8px sans-serif'; swapCtx.textAlign = 'left';
+  swapCtx.fillText('Fáze (modrá=sudá, oranž=lichá)', 2, 42);
+  swapCtx.fillText('Prohození (zelená)', 2, 58);
+}
+
+function togglePlay() {
+  playing = !playing;
+  document.getElementById('playBtn').textContent = playing ? '⏸ Pauza' : '▶ Přehrát';
+  if (playing) {
+    const go = () => {
+      if (curStep+1 < steps.length) {
+        applyStep(curStep+1);
+        playTimer = setTimeout(go, parseInt(document.getElementById('speed').value));
+      } else { playing = false; document.getElementById('playBtn').textContent = '▶ Přehrát'; }
+    };
+    go();
+  } else clearTimeout(playTimer);
+}
+
+window.addEventListener('resize', () => { drawFrame(curStep>=0?steps[curStep].arr:arr, curStep>=0?steps[curStep].swapped:[], curStep>=0?steps[curStep].isEven:false); drawSwapTimeline(); });
+reset();
+</script>
+</body>
+</html>

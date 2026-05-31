@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIS — Lubyho randomizovaný algoritmus</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
+h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
+.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
+.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
+.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
+select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
+input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
+.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
+.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
+canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
+.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 60px; }
+.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
+.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
+.deriv-lbl { color: #888; min-width: 130px; font-size: 0.9em; }
+.deriv-val { color: #c3e88d; font-family: monospace; }
+.highlight { color: #0984e3; font-weight: 700; }
+.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
+.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
+.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; } .stat.yellow { border-color: #fdcb6e; }
+.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
+.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+</style>
+</head>
+<body>
+<h1>MIS — Lubyho randomizovaný algoritmus</h1>
+
+<div class="main">
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="row">
+      <label>Uzlů n:</label>
+      <select id="nSel" onchange="reset()">
+        <option value="10">10</option>
+        <option value="12" selected>12</option>
+        <option value="15">15</option>
+      </select>
+      <label>Graf:</label>
+      <select id="gSel" onchange="reset()">
+        <option value="random" selected>Náhodný</option>
+        <option value="grid">Mřížka</option>
+        <option value="cycle">Cyklus</option>
+      </select>
+    </div>
+    <div class="row">
+      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
+      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
+      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
+      <button class="btn secondary" onclick="reset()">↺ Reset</button>
+      <label>Rychlost:</label>
+      <input type="range" id="speed" min="400" max="3000" value="1200" step="100" style="width:70px;">
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
+  </div>
+
+  <canvas id="cv" height="360"></canvas>
+  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
+</div>
+
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <h3>Krok Lubyho algoritmu</h3>
+    <div style="font-size:0.79em;line-height:1.9;color:#d4d4d4;">
+      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph0">1. Každý aktivní uzel generuje náhodné číslo r(v)</div>
+      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph1">2. Lokální minimum: r(v) &lt; r(u) pro všechny sousedy u?</div>
+      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph2">3. Lokální minima vstoupí do MIS (zelená)</div>
+      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;" id="ph3">4. Odeber MIS uzly + jejich sousedy z grafu</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Analýza Lubyho MIS</h3>
+    <div class="deriv-box">
+      <div class="deriv-row"><span class="deriv-lbl">Vlastnost MIS:</span><span class="deriv-val">Nezávislá + max</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Každé kolo:</span><span class="deriv-val">paralelní (|V| proc)</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div style="color:#888;font-size:0.78em;margin-bottom:4px;">Každé kolo odstraní v průměru ≥ ½ hran z grafu (w.h.p.). Proto:</div>
+      <div class="deriv-row"><span class="deriv-lbl">Kol celkem (E[]):</span><span class="deriv-val">O(log |V|)</span></div>
+      <div class="deriv-row highlight"><span class="deriv-lbl">T_P (p=|E|):</span><span class="deriv-val">O(log |V|)</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div class="deriv-row"><span class="deriv-lbl">Každý uzel:</span><span class="deriv-val">kontaktuje sousedy</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Komunikace:</span><span class="deriv-val">O(1) zpráv/kolo</span></div>
+      <div style="margin-top:8px;font-size:0.78em;color:#888;">Randomizace zaručuje konvergenci — na rozdíl od deterministických algoritmů, které potřebují složitou koordinaci.</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat blue"><div class="stat-lbl">Kolo</div><div class="stat-val" id="sRound">0</div></div>
+      <div class="stat green"><div class="stat-lbl">V MIS</div><div class="stat-val" id="sMIS">0</div></div>
+      <div class="stat yellow"><div class="stat-lbl">Aktivních</div><div class="stat-val" id="sActive">0</div></div>
+      <div class="stat blue"><div class="stat-lbl">Odstraněných</div><div class="stat-val" id="sRemoved">0</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+let n, graphType;
+let steps = [], curStep = -1, playing = false, playTimer = null;
+let nodes = [], adjList = [];
+
+function buildGraph(n, type) {
+  const nodes = [];
+  if (type === 'grid') {
+    const cols = Math.round(Math.sqrt(n));
+    const rows = Math.ceil(n/cols);
+    for (let i=0;i<n;i++) {
+      const r=Math.floor(i/cols), c=i%cols;
+      nodes.push({x:(c/(cols-1||1))*220-110, y:(r/(rows-1||1))*180-90});
+    }
+  } else if (type === 'cycle') {
+    for (let i=0;i<n;i++) {
+      const a=(i/n)*2*Math.PI-Math.PI/2;
+      nodes.push({x:120*Math.cos(a), y:120*Math.sin(a)});
+    }
+  } else {
+    for (let i=0;i<n;i++) {
+      const a=(i/n)*2*Math.PI-Math.PI/2;
+      const r=90+Math.random()*50;
+      nodes.push({x:r*Math.cos(a), y:r*Math.sin(a)});
+    }
+  }
+
+  const adj = Array.from({length:n},()=>new Set());
+  if (type==='grid') {
+    const cols=Math.round(Math.sqrt(n));
+    for (let i=0;i<n;i++) {
+      const r=Math.floor(i/cols), c=i%cols;
+      if (c+1<cols&&i+1<n) { adj[i].add(i+1); adj[i+1].add(i); }
+      if (i+cols<n) { adj[i].add(i+cols); adj[i+cols].add(i); }
+    }
+  } else if (type==='cycle') {
+    for (let i=0;i<n;i++) { const j=(i+1)%n; adj[i].add(j); adj[j].add(i); }
+    // Add some chords
+    for (let i=0;i<n;i+=3) { const j=(i+Math.floor(n/3))%n; adj[i].add(j); adj[j].add(i); }
+  } else {
+    // Ensure connected: random spanning tree
+    const perm=[...Array(n).keys()].sort(()=>Math.random()-0.5);
+    for (let i=1;i<n;i++) { adj[perm[i]].add(perm[i-1]); adj[perm[i-1]].add(perm[i]); }
+    // Extra edges
+    for (let i=0;i<n;i++) for (let j=i+1;j<n;j++) if (!adj[i].has(j)&&Math.random()<0.2) { adj[i].add(j); adj[j].add(i); }
+  }
+  return {nodes, adj: adj.map(s=>[...s])};
+}
+
+function buildSteps(nodes, adj) {
+  const n = nodes.length;
+  const steps = [];
+  const mis = new Set();
+  const removed = new Set();
+
+  steps.push({phase:-1,round:0,mis:new Set(),removed:new Set(),randNums:{},localMins:new Set(),
+    desc:`Graf s ${n} uzly. Lubyho algoritmus iterativně vybírá MIS uzly — v každém kole každý uzel generuje náhodné číslo a lokální minima vstoupí do MIS.`});
+
+  let round = 0;
+  const MAX_ROUNDS = 20;
+
+  while (removed.size < n && round < MAX_ROUNDS) {
+    const active = [...Array(n).keys()].filter(i=>!removed.has(i)&&!mis.has(i));
+    if (active.length===0) break;
+    round++;
+
+    // Phase 0: generate random numbers
+    const randNums = {};
+    active.forEach(v=>{ randNums[v]=Math.floor(Math.random()*1000); });
+
+    steps.push({phase:0,round,mis:new Set(mis),removed:new Set(removed),randNums:{...randNums},localMins:new Set(),
+      desc:`Kolo ${round}: Každý aktivní uzel (${active.length}) generuje náhodné číslo r(v). Paralelně — každý proc nezávisle.`});
+
+    // Phase 1: find local minima (v je lokální minimum pokud r(v) < r(u) pro všechny aktivní sousedy u)
+    const localMins = new Set();
+    active.forEach(v=>{
+      const activeNeighbors = adj[v].filter(u=>!removed.has(u)&&!mis.has(u));
+      const isMin = activeNeighbors.every(u=>randNums[v]<randNums[u]);
+      if (isMin) localMins.add(v);
+    });
+
+    steps.push({phase:1,round,mis:new Set(mis),removed:new Set(removed),randNums:{...randNums},localMins:new Set(localMins),
+      desc:`Kolo ${round}: Každý uzel porovná r(v) se svými sousedy. Lokální minima (${localMins.size} uzlů) vstoupí do MIS — r(v) < r(u) pro všechny sousedy u.`});
+
+    // Phase 2: add local mins to MIS
+    localMins.forEach(v=>mis.add(v));
+
+    steps.push({phase:2,round,mis:new Set(mis),removed:new Set(removed),randNums:{...randNums},localMins:new Set(localMins),
+      desc:`Kolo ${round}: Uzly ${[...localMins].join(', ')} přidány do MIS (zelená). Jejich sousedé budou odstraněni.`});
+
+    // Phase 3: remove MIS nodes and their neighbors
+    localMins.forEach(v=>{
+      removed.add(v);
+      adj[v].forEach(u=>{ if (!mis.has(u)) removed.add(u); });
+    });
+
+    steps.push({phase:3,round,mis:new Set(mis),removed:new Set(removed),randNums:{...randNums},localMins:new Set(localMins),
+      desc:`Kolo ${round}: Uzly MIS + jejich sousedé odstraněni z grafu. Aktivních zbývá: ${n-removed.size}. Pokračujeme dalším kolem.`});
+  }
+
+  steps.push({phase:-1,round,mis:new Set(mis),removed:new Set(removed),randNums:{},localMins:new Set(),
+    desc:`MIS dokončena po ${round} kolech! Nezávislá množina: {${[...mis].join(', ')}}. T_P = O(log n) kol, každé kolo O(1) paralelně.`});
+
+  return steps;
+}
+
+function reset() {
+  clearTimeout(playTimer); playing=false; document.getElementById('playBtn').textContent='▶ Přehrát';
+  n=parseInt(document.getElementById('nSel').value);
+  graphType=document.getElementById('gSel').value;
+  const g=buildGraph(n,graphType);
+  nodes=g.nodes; adjList=g.adj;
+  steps=buildSteps(nodes,adjList);
+  curStep=-1;
+  updateUI(); drawFrame(steps[0]);
+}
+
+function applyStep(idx) { curStep=idx; updateUI(); drawFrame(steps[idx]); }
+function stepFwd() { if (curStep+1<steps.length) applyStep(curStep+1); }
+function stepBack() { if (curStep>0) applyStep(curStep-1); else { curStep=-1; updateUI(); drawFrame(steps[0]); } }
+
+function updateUI() {
+  const total=steps.length;
+  document.getElementById('progress').style.width=(total>0?(curStep+1)/total*100:0)+'%';
+  const st=curStep>=0?steps[curStep]:steps[0];
+  document.getElementById('sRound').textContent=st.round;
+  document.getElementById('sMIS').textContent=st.mis.size;
+  document.getElementById('sActive').textContent=Math.max(0,n-st.removed.size-st.mis.size);
+  document.getElementById('sRemoved').textContent=st.removed.size-st.mis.size;
+  document.getElementById('stepInfo').innerHTML=`<strong>${curStep>=0?`Krok ${curStep+1}/${total}`:'Start'}:</strong> ${st.desc}`;
+
+  for (let ph=0;ph<4;ph++) {
+    const el=document.getElementById(`ph${ph}`);
+    const active=st.phase===ph;
+    el.style.borderLeftColor=active?'#0984e3':'#3c3c3c';
+    el.style.background=active?'#1a1a2e':'transparent';
+    el.style.color=active?'#d4d4d4':'#888';
+  }
+}
+
+const cv=document.getElementById('cv'); const ctx=cv.getContext('2d');
+
+function drawFrame(st) {
+  const W=cv.width=cv.offsetWidth, H=cv.height=360;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
+  if (!st) return;
+
+  const scale=Math.min(W,H)*0.34;
+  const cx=W/2, cy=H/2;
+  const pos=nodes.map(nd=>({x:cx+nd.x/150*scale, y:cy+nd.y/150*scale}));
+  const R=Math.max(14,Math.min(20,scale*0.1));
+
+  // Draw edges
+  for (let u=0;u<n;u++) {
+    adjList[u].forEach(v=>{
+      if (v<=u) return;
+      const uR=st.removed.has(u)||st.mis.has(u);
+      const vR=st.removed.has(v)||st.mis.has(v);
+      if (uR&&vR) return; // hide removed edges
+      ctx.beginPath(); ctx.moveTo(pos[u].x,pos[u].y); ctx.lineTo(pos[v].x,pos[v].y);
+      ctx.strokeStyle=(uR||vR)?'#333':'#555'; ctx.lineWidth=1; ctx.stroke();
+    });
+  }
+
+  // Draw nodes
+  for (let i=0;i<n;i++) {
+    const inMIS=st.mis.has(i);
+    const isRemoved=st.removed.has(i)&&!inMIS;
+    const isLocalMin=st.localMins&&st.localMins.has(i);
+    const randNum=st.randNums[i];
+    const isActive=!st.removed.has(i)&&!st.mis.has(i);
+
+    if (isLocalMin) {
+      ctx.beginPath(); ctx.arc(pos[i].x,pos[i].y,R+5,0,2*Math.PI);
+      ctx.strokeStyle='#fdcb6e'; ctx.lineWidth=3; ctx.stroke();
+    }
+
+    ctx.beginPath(); ctx.arc(pos[i].x,pos[i].y,R,0,2*Math.PI);
+    ctx.fillStyle = inMIS?'#00b894':(isRemoved?'#333':(isLocalMin?'#fdcb6e55':'#3c3c3c'));
+    ctx.fill();
+    ctx.strokeStyle = inMIS?'#00b894':(isRemoved?'#555':(isActive?'#888':'#444'));
+    ctx.lineWidth = inMIS?3:(isLocalMin?2:1); ctx.stroke();
+
+    // Node ID
+    ctx.fillStyle = isRemoved?'#555':(inMIS?'#fff':'#d4d4d4');
+    ctx.font=`bold ${R*0.7}px sans-serif`; ctx.textAlign='center';
+    ctx.fillText(i,pos[i].x,pos[i].y+4);
+
+    // Random number
+    if (randNum!==undefined&&isActive) {
+      ctx.fillStyle=isLocalMin?'#fdcb6e':'#9cdcfe';
+      ctx.font=`${Math.max(7,R*0.5)}px monospace`; ctx.textAlign='center';
+      ctx.fillText(randNum,pos[i].x,pos[i].y-R-4);
+    }
+
+    // MIS label
+    if (inMIS) {
+      ctx.fillStyle='#00b894'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('MIS',pos[i].x,pos[i].y+R+11);
+    }
+  }
+
+  // Legend
+  const legY=H-36;
+  [[`#00b894`,'V MIS'],[`#fdcb6e55`,'Lokální min (vstoupí)'],[`#3c3c3c`,'Aktivní'],[`#333`,'Odstraněný']].forEach(([c,txt],i)=>{
+    const lx=10+i*120;
+    ctx.fillStyle=c; ctx.strokeStyle='#888'; ctx.lineWidth=1;
+    ctx.fillRect(lx,legY,10,10); ctx.strokeRect(lx,legY,10,10);
+    ctx.fillStyle='#aaa'; ctx.font='8px sans-serif'; ctx.textAlign='left'; ctx.fillText(txt,lx+13,legY+9);
+  });
+
+  // Title
+  ctx.fillStyle='#0984e3'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
+  ctx.fillText(`Lubyho MIS — n=${n} uzlů, ${st.round} kol, MIS={${[...st.mis].join(',')}}`, W/2, 14);
+}
+
+function togglePlay() {
+  playing=!playing;
+  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
+  if (playing) {
+    const go=()=>{
+      if (curStep+1<steps.length) { applyStep(curStep+1); playTimer=setTimeout(go,parseInt(document.getElementById('speed').value)); }
+      else { playing=false; document.getElementById('playBtn').textContent='▶ Přehrát'; }
+    };
+    go();
+  } else clearTimeout(playTimer);
+}
+
+window.addEventListener('resize',()=>{ if(curStep>=0) drawFrame(steps[curStep]); else drawFrame(steps[0]); });
+reset();
+</script>
+</body>
+</html>

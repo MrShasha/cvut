@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paralelní Quicksort — animace</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
+h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
+.tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.tab { padding: 6px 16px; border-radius: 5px 5px 0 0; cursor: pointer; background: #3c3c3c; color: #888; font-size: 0.85em; border-bottom: 2px solid #3c3c3c; }
+.tab.active { background: #2d2d2d; color: #9cdcfe; border-bottom: 2px solid #0984e3; }
+.tab-content { display: none; } .tab-content.active { display: block; }
+.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
+.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
+.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
+select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
+input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
+.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
+.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
+canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
+.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 56px; }
+.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
+.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
+.deriv-lbl { color: #888; min-width: 150px; font-size: 0.9em; }
+.deriv-val { color: #c3e88d; font-family: monospace; }
+.highlight { color: #0984e3; font-weight: 700; }
+.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
+.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
+.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; }
+.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
+.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+</style>
+</head>
+<body>
+<h1>Paralelní Quicksort</h1>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('pram')">PRAM (n proc., log²n)</div>
+  <div class="tab" onclick="switchTab('dist')">Distribuovaný (p proc.)</div>
+</div>
+
+<!-- PRAM tab -->
+<div id="tab-pram" class="tab-content active">
+<div class="main">
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="row">
+      <label>n (= p):</label>
+      <select id="nSelP" onchange="resetPram()">
+        <option value="8" selected>8</option>
+        <option value="16">16</option>
+      </select>
+      <label>Data:</label>
+      <select id="dataSelP" onchange="resetPram()">
+        <option value="random" selected>Náhodná</option>
+        <option value="reverse">Sestupná</option>
+      </select>
+    </div>
+    <div class="row">
+      <button class="btn" id="playBtnP" onclick="togglePlayPram()">▶ Přehrát</button>
+      <button class="btn secondary" onclick="stepBackPram()">◀ Zpět</button>
+      <button class="btn secondary" onclick="stepFwdPram()">Vpřed ▶</button>
+      <button class="btn secondary" onclick="resetPram()">↺ Reset</button>
+      <label>Rychlost:</label>
+      <input type="range" id="speedP" min="300" max="2000" value="900" step="100" style="width:70px;">
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressP" style="width:0%"></div></div>
+  </div>
+  <canvas id="cvP" height="300"></canvas>
+  <div class="step-info" id="stepInfoP">Stiskni ▶ nebo krok vpřed.</div>
+</div>
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <h3>Postup PRAM quicksortu</h3>
+    <div style="font-size:0.82em;line-height:1.8;color:#d4d4d4;">
+      <div style="padding:4px 8px;border-left:3px solid #0984e3;margin-bottom:3px;" id="pramStep1">1. Broadcast pivotu (náhodný prvek)</div>
+      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:3px;" id="pramStep2">2. Každý proc porovná svůj prvek s pivotem</div>
+      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:3px;" id="pramStep3">3. Prefix scan → výpočet cílových pozic</div>
+      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:3px;" id="pramStep4">4. Paralelní přeuspořádání (concurrent write)</div>
+      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;" id="pramStep5">5. Rekurze na obě části</div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Složitost PRAM</h3>
+    <div class="deriv-box">
+      <div class="deriv-row"><span class="deriv-lbl">Proc. (CRCW PRAM):</span><span class="deriv-val" id="dPramP">p = n</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Prefix scan / fáze:</span><span class="deriv-val">Θ(log n)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Úrovní rekurze:</span><span class="deriv-val">Θ(log n) expected</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div class="deriv-row highlight"><span class="deriv-lbl">T_P celkem:</span><span class="deriv-val">Θ(log² n)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Cost = n·T_P:</span><span class="deriv-val">Θ(n log² n)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">T_S optimální:</span><span class="deriv-val">Θ(n log n)</span></div>
+      <div class="deriv-row" style="color:#e17055;"><span class="deriv-lbl">→ Cost-optimal?</span><span class="deriv-val">Ne (log n násobek)</span></div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat blue"><div class="stat-lbl">Krok</div><div class="stat-val" id="sCurStepP">0/0</div></div>
+      <div class="stat green"><div class="stat-lbl">Hloubka rek.</div><div class="stat-val" id="sDepthP">0</div></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<!-- Distributed tab -->
+<div id="tab-dist" class="tab-content">
+<div class="main">
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="row">
+      <label>n:</label>
+      <select id="nSelD" onchange="resetDist()">
+        <option value="16" selected>16</option>
+        <option value="24">24</option>
+        <option value="32">32</option>
+      </select>
+      <label>p:</label>
+      <select id="pSelD" onchange="resetDist()">
+        <option value="4" selected>4</option>
+        <option value="8">8</option>
+      </select>
+    </div>
+    <div class="row">
+      <button class="btn" id="playBtnD" onclick="togglePlayDist()">▶ Přehrát</button>
+      <button class="btn secondary" onclick="stepBackDist()">◀ Zpět</button>
+      <button class="btn secondary" onclick="stepFwdDist()">Vpřed ▶</button>
+      <button class="btn secondary" onclick="resetDist()">↺ Reset</button>
+      <label>Rychlost:</label>
+      <input type="range" id="speedD" min="400" max="2000" value="1000" step="100" style="width:70px;">
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressD" style="width:0%"></div></div>
+  </div>
+  <canvas id="cvD" height="300"></canvas>
+  <div class="step-info" id="stepInfoD">Stiskni ▶ nebo krok vpřed.</div>
+</div>
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <h3>Postup distribuovaného QS</h3>
+    <div style="font-size:0.82em;line-height:1.8;color:#d4d4d4;" id="distPhaseList"></div>
+  </div>
+  <div class="panel">
+    <h3>Složitost (p proc.)</h3>
+    <div class="deriv-box">
+      <div class="deriv-row"><span class="deriv-lbl">T / úroveň:</span><span class="deriv-val">Θ(n/p + log p)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Úrovní rekurze:</span><span class="deriv-val">Θ(log p)</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div class="deriv-row highlight"><span class="deriv-lbl">T_P:</span><span class="deriv-val">Θ(n·log p/p + log²p)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">T_o overhead:</span><span class="deriv-val">Θ(p·log²p)</span></div>
+      <div class="deriv-row highlight"><span class="deriv-lbl">Isoefektivita:</span><span class="deriv-val">Θ(p·log²p)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Max p:</span><span class="deriv-val">O(n/log²n)</span></div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat blue"><div class="stat-lbl">Krok</div><div class="stat-val" id="sCurStepD">0/0</div></div>
+      <div class="stat green"><div class="stat-lbl">Úroveň rek.</div><div class="stat-val" id="sLevelD">0</div></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<script>
+const BLOCK_COLORS = ['#0984e3','#e17055','#00b894','#a29bfe','#fdcb6e','#fd79a8','#55efc4','#74b9ff'];
+const PIVOT_COLOR = '#fdcb6e';
+const LEFT_COLOR = '#0984e3';
+const RIGHT_COLOR = '#e17055';
+
+// ===== TAB SWITCHING =====
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['pram','dist'][i]===name));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// ===== PRAM QUICKSORT =====
+let np = 8, pramArr = [], pramSteps = [], pramCurStep = -1, pramPlaying = false, pramTimer = null;
+
+function genArr(n, type) {
+  if (type === 'random') return Array.from({length:n},()=>Math.floor(Math.random()*90)+5);
+  return Array.from({length:n},(_,i)=>n-i);
+}
+
+function buildPramSteps(initial) {
+  // Simulate recursive PRAM quicksort — record each level
+  const steps = [];
+  // We track segments: {lo, hi, arr} that still need sorting
+  let arr = [...initial];
+
+  function recurse(indices, depth) {
+    if (indices.length <= 1) return;
+    // Pick pivot (middle element)
+    const pivIdx = Math.floor(indices.length/2);
+    const pivotIdx = indices[pivIdx];
+    const pivot = arr[pivotIdx];
+    const left = [], right = [];
+    indices.forEach(i => { if (i !== pivotIdx) (arr[i] <= pivot ? left : right).push(i); });
+
+    steps.push({
+      arr: [...arr], pivot, pivotIdx, left: [...left], right: [...right],
+      allIndices: [...indices], depth,
+      desc: `Hloubka ${depth+1}: Pivot = ${pivot} (index ${pivotIdx}). ${left.length} prvků ≤ pivot → vlevo, ${right.length} prvků > pivot → vpravo.`
+    });
+
+    // Simulate prefix scan + rearrange
+    const sortedLeft = left.sort((a,b)=>arr[a]-arr[b]);
+    const sortedRight = right.sort((a,b)=>arr[a]-arr[b]);
+    const sortedPivot = [pivotIdx];
+    const allSorted = [...sortedLeft, ...sortedPivot, ...sortedRight];
+
+    // Rearrange step
+    const tempArr = [...arr];
+    indices.forEach((origIdx, pos) => { arr[origIdx] = tempArr[allSorted[pos]]; });
+
+    // Remap indices after rearrangement
+    const newLeft = indices.slice(0, sortedLeft.length);
+    const newRight = indices.slice(sortedLeft.length+1);
+
+    steps.push({
+      arr: [...arr], pivot, pivotIdx: indices[sortedLeft.length],
+      left: [...newLeft], right: [...newRight],
+      allIndices: [...indices], rearranged: true, depth,
+      desc: `Hloubka ${depth+1}: Prefix scan + přeuspořádání. Pivot ${pivot} na správném místě. Rekurze na ${newLeft.length} a ${newRight.length} prvků.`
+    });
+
+    recurse(newLeft, depth+1);
+    recurse(newRight, depth+1);
+  }
+
+  recurse(Array.from({length:initial.length},(_,i)=>i), 0);
+  return steps;
+}
+
+function resetPram() {
+  clearTimeout(pramTimer); pramPlaying = false; document.getElementById('playBtnP').textContent = '▶ Přehrát';
+  np = parseInt(document.getElementById('nSelP').value);
+  pramArr = genArr(np, document.getElementById('dataSelP').value);
+  pramSteps = buildPramSteps(pramArr);
+  pramCurStep = -1;
+  updatePramUI(); drawPram(pramArr, [], [], -1, 0);
+}
+
+function applyPramStep(idx) {
+  pramCurStep = idx;
+  const st = pramSteps[idx];
+  updatePramUI();
+  drawPram(st.arr, st.left || [], st.right || [], st.pivotIdx, st.depth);
+}
+
+function stepFwdPram() { if (pramCurStep+1 < pramSteps.length) applyPramStep(pramCurStep+1); }
+function stepBackPram() {
+  if (pramCurStep > 0) applyPramStep(pramCurStep-1);
+  else { pramCurStep = -1; updatePramUI(); drawPram(pramArr, [], [], -1, 0); }
+}
+
+function updatePramUI() {
+  const total = pramSteps.length;
+  document.getElementById('progressP').style.width = (total > 0 ? (pramCurStep+1)/total*100 : 0) + '%';
+  document.getElementById('sCurStepP').textContent = `${Math.max(0,pramCurStep+1)}/${total}`;
+  const depth = pramCurStep >= 0 ? pramSteps[pramCurStep].depth : 0;
+  document.getElementById('sDepthP').textContent = depth + 1;
+  document.getElementById('dPramP').textContent = `p = ${np}`;
+
+  const steps = ['pramStep1','pramStep2','pramStep3','pramStep4','pramStep5'];
+  let phase = 0;
+  if (pramCurStep >= 0) phase = pramSteps[pramCurStep].rearranged ? 4 : 1;
+  steps.forEach((id,i) => {
+    const el = document.getElementById(id);
+    el.style.borderLeftColor = i === phase ? '#0984e3' : (i < phase ? '#00b89466' : '#3c3c3c');
+    el.style.background = i === phase ? '#1a1a2e' : 'transparent';
+  });
+  document.getElementById('stepInfoP').innerHTML = pramCurStep < 0
+    ? `<strong>PRAM Quicksort</strong>: n=${np} procesorů, každý drží jeden prvek. Každá úroveň rekurze trvá Θ(log n) (prefix scan). Celkem Θ(log n) úrovní → <strong>T_P = Θ(log² n)</strong>.`
+    : `<strong>Krok ${pramCurStep+1}/${total}:</strong> ${pramSteps[pramCurStep].desc}`;
+}
+
+const cvP = document.getElementById('cvP'); const ctxP = cvP.getContext('2d');
+function drawPram(data, left, right, pivotIdx, depth) {
+  const W = cvP.width = cvP.offsetWidth, H = cvP.height = 300;
+  ctxP.clearRect(0,0,W,H); ctxP.fillStyle='#252525'; ctxP.fillRect(0,0,W,H);
+  const n = data.length;
+  const maxVal = Math.max(...data, 1);
+  const barW = Math.floor((W-20)/n) - 2;
+  const offX = 10, maxH = H - 50;
+  const leftSet = new Set(left), rightSet = new Set(right);
+
+  for (let i=0; i<n; i++) {
+    const x = offX + i*(barW+2);
+    const val = data[i];
+    const barH = Math.max(4, Math.floor(val/maxVal*maxH));
+    const y = H - 42 - barH;
+    let color = '#3c3c3c';
+    if (i === pivotIdx) color = PIVOT_COLOR;
+    else if (leftSet.has(i)) color = LEFT_COLOR;
+    else if (rightSet.has(i)) color = RIGHT_COLOR;
+
+    ctxP.fillStyle = color + 'cc'; ctxP.fillRect(x, y, barW, barH);
+    ctxP.strokeStyle = color; ctxP.lineWidth = 1.5; ctxP.strokeRect(x, y, barW, barH);
+    if (barW >= 12) {
+      ctxP.fillStyle = '#ccc'; ctxP.font = `${Math.max(8,barW*0.5)}px monospace`;
+      ctxP.textAlign = 'center'; ctxP.textBaseline = 'top';
+      ctxP.fillText(val, x+barW/2, y+(barH>14?2:barH+2));
+    }
+  }
+
+  // Draw pivot line
+  if (pivotIdx >= 0) {
+    const px = offX + pivotIdx*(barW+2) + barW/2;
+    ctxP.beginPath(); ctxP.moveTo(px, 0); ctxP.lineTo(px, H-42);
+    ctxP.strokeStyle = PIVOT_COLOR+'66'; ctxP.lineWidth = 1.5; ctxP.setLineDash([4,3]); ctxP.stroke(); ctxP.setLineDash([]);
+    ctxP.fillStyle = PIVOT_COLOR; ctxP.font = 'bold 10px sans-serif'; ctxP.textAlign = 'center';
+    ctxP.fillText(`pivot=${data[pivotIdx]}`, px, 12);
+  }
+
+  // Legend
+  ctxP.font = '9px sans-serif'; ctxP.textAlign = 'left';
+  [[PIVOT_COLOR,'Pivot'],[LEFT_COLOR,'≤ pivot'],[RIGHT_COLOR,'> pivot'],['#3c3c3c','Hotovo']].forEach(([c,l],idx) => {
+    ctxP.fillStyle=c; ctxP.fillRect(10+idx*70,H-12,8,8);
+    ctxP.fillStyle='#888'; ctxP.fillText(l,20+idx*70,H-5);
+  });
+
+  // Depth indicator
+  ctxP.fillStyle='#9cdcfe'; ctxP.font='bold 11px sans-serif'; ctxP.textAlign='right';
+  ctxP.fillText(`Hloubka: ${depth+1} / Θ(log ${n}) = ${Math.ceil(Math.log2(n))}`, W-10, H-4);
+}
+
+let pramTimerR = null;
+function togglePlayPram() {
+  pramPlaying = !pramPlaying;
+  document.getElementById('playBtnP').textContent = pramPlaying ? '⏸ Pauza' : '▶ Přehrát';
+  if (pramPlaying) {
+    const go = () => { if (pramCurStep+1 < pramSteps.length) { applyPramStep(pramCurStep+1); pramTimerR=setTimeout(go, parseInt(document.getElementById('speedP').value)); } else { pramPlaying=false; document.getElementById('playBtnP').textContent='▶ Přehrát'; } };
+    go();
+  } else clearTimeout(pramTimerR);
+}
+
+// ===== DISTRIBUTED QUICKSORT =====
+let nd = 16, pd = 4, distArr = [], distSteps = [], distCurStep = -1, distPlaying = false, distTimer2 = null;
+
+function buildDistSteps(initial, p) {
+  const steps = [];
+  const n = initial.length;
+
+  // Simulate: at each level, p active procs each hold n/p elements.
+  // Level k: p/(2^k) "groups", each group has 2^k procs.
+  // The master proc of each group picks a pivot, broadcasts to group, all partition, redistribute.
+
+  let procData = [];
+  const perProc = Math.floor(n/p);
+  for (let i=0;i<p;i++) {
+    const sorted = [...initial.slice(i*perProc, (i+1)*perProc)].sort((a,b)=>a-b);
+    procData.push(sorted);
+  }
+
+  steps.push({ level: 0, procData: procData.map(d=>[...d]), desc: `Init: ${p} procesorů, každý má ${perProc} setříděných prvků (lokální třídění).`, pivot: null, groups: [[...Array(p).keys()]] });
+
+  let groups = [[...Array(p).keys()]]; // initial: one group of all procs
+  let level = 0;
+
+  while (groups.some(g=>g.length>1)) {
+    const newGroups = [];
+    let pivotVal = null;
+    groups.forEach(group => {
+      if (group.length <= 1) { newGroups.push(group); return; }
+      const master = group[0];
+      // Pick pivot (median of master's data)
+      const d = procData[master];
+      const pv = d[Math.floor(d.length/2)] || d[0];
+      pivotVal = pv;
+      // Each proc splits its data
+      const leftGroup = group.slice(0, Math.floor(group.length/2));
+      const rightGroup = group.slice(Math.floor(group.length/2));
+      // Redistribute: all procs send elements ≤ pivot to left half, > pivot to right half
+      const allLeft = [], allRight = [];
+      group.forEach(proc => {
+        procData[proc].forEach(v => (v <= pv ? allLeft : allRight).push(v));
+      });
+      allLeft.sort((a,b)=>a-b); allRight.sort((a,b)=>a-b);
+      // Distribute evenly to procs
+      leftGroup.forEach((proc, idx) => {
+        const perP = Math.ceil(allLeft.length / leftGroup.length);
+        procData[proc] = allLeft.slice(idx*perP, (idx+1)*perP);
+      });
+      rightGroup.forEach((proc, idx) => {
+        const perP = Math.ceil(allRight.length / rightGroup.length);
+        procData[proc] = allRight.slice(idx*perP, (idx+1)*perP);
+      });
+      newGroups.push(leftGroup, rightGroup);
+    });
+    level++;
+    steps.push({
+      level, procData: procData.map(d=>[...d]), pivot: pivotVal,
+      groups: newGroups.map(g=>[...g]),
+      desc: `Úroveň ${level}: Pivot = ${pivotVal}. Každá skupina rozdělena na 2. Procs redistribuovány — ${newGroups.length} skupin po ${Math.ceil(p/Math.pow(2,level))} proc.`
+    });
+    groups = newGroups;
+    if (level >= 10) break;
+  }
+
+  // Final: each proc locally sorts
+  steps.push({
+    level, procData: procData.map(d=>[...d].sort((a,b)=>a-b)),
+    groups: groups, pivot: null, final: true,
+    desc: `Hotovo! Každý procesor lokálně setřídil svůj bucket. Data jsou globálně setříděna — P0 má nejmenší prvky, P${p-1} největší.`
+  });
+
+  return steps;
+}
+
+function resetDist() {
+  clearTimeout(distTimer2); distPlaying = false; document.getElementById('playBtnD').textContent = '▶ Přehrát';
+  nd = parseInt(document.getElementById('nSelD').value);
+  pd = parseInt(document.getElementById('pSelD').value);
+  distArr = genArr(nd, 'random');
+  distSteps = buildDistSteps(distArr, pd);
+  distCurStep = -1;
+  updateDistUI(); drawDist(distSteps[0] || {procData:[], groups:[]});
+
+  // Build phase list
+  const list = document.getElementById('distPhaseList');
+  list.innerHTML = '';
+  distSteps.forEach((s,i) => {
+    const d = document.createElement('div');
+    d.id = `dphase${i}`;
+    d.style.cssText = 'padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:3px;font-size:0.85em;';
+    d.innerHTML = `<strong>${i===0?'Init':s.final?'Finální sort':`Úroveň ${s.level}`}:</strong> ${i===0?`Lokální třídění (${pd} proc × ${Math.floor(nd/pd)} prvků)`:s.final?'Lokální setřídění bucketů':`Broadcast pivot, redistribuce dat`}`;
+    list.appendChild(d);
+  });
+}
+
+function applyDistStep(idx) {
+  distCurStep = idx;
+  updateDistUI();
+  drawDist(distSteps[idx]);
+}
+
+function stepFwdDist() { if (distCurStep+1 < distSteps.length) applyDistStep(distCurStep+1); }
+function stepBackDist() {
+  if (distCurStep > 0) applyDistStep(distCurStep-1);
+  else { distCurStep = -1; updateDistUI(); if(distSteps[0]) drawDist(distSteps[0]); }
+}
+
+function updateDistUI() {
+  const total = distSteps.length;
+  document.getElementById('progressD').style.width = (total>0?(distCurStep+1)/total*100:0)+'%';
+  document.getElementById('sCurStepD').textContent = `${Math.max(0,distCurStep+1)}/${total}`;
+  const level = distCurStep >= 0 ? distSteps[distCurStep].level : 0;
+  document.getElementById('sLevelD').textContent = level + '/' + Math.ceil(Math.log2(pd));
+  document.getElementById('stepInfoD').innerHTML = distCurStep < 0
+    ? `<strong>Distribuovaný Quicksort</strong>: n=${nd} prvků, p=${pd} proc. Θ(log p) úrovní rekurze. T_P = Θ(n·log p / p + log²p). Isoefektivita = <strong>Θ(p·log²p)</strong>.`
+    : `<strong>Krok ${distCurStep+1}/${total}:</strong> ${distSteps[distCurStep].desc}`;
+
+  // Highlight phase list
+  for (let i=0; i<distSteps.length; i++) {
+    const el = document.getElementById(`dphase${i}`);
+    if (!el) continue;
+    el.style.borderLeftColor = i === distCurStep ? '#0984e3' : (i < distCurStep ? '#00b89466' : '#3c3c3c');
+    el.style.background = i === distCurStep ? '#1a1a2e' : 'transparent';
+  }
+}
+
+const cvD = document.getElementById('cvD'); const ctxD = cvD.getContext('2d');
+function drawDist(st) {
+  const W = cvD.width = cvD.offsetWidth, H = cvD.height = 300;
+  ctxD.clearRect(0,0,W,H); ctxD.fillStyle='#252525'; ctxD.fillRect(0,0,W,H);
+  if (!st || !st.procData) return;
+  const p = st.procData.length;
+  const allVals = st.procData.flat();
+  const maxVal = Math.max(...allVals, 1);
+  const procW = Math.floor((W-20)/p);
+  const offX = 10, maxH = H - 60;
+
+  // Draw group boundaries
+  if (st.groups) {
+    st.groups.forEach(group => {
+      if (group.length === 0) return;
+      const gx1 = offX + group[0]*procW;
+      const gx2 = offX + (group[group.length-1]+1)*procW;
+      ctxD.fillStyle = '#ffffff08';
+      ctxD.fillRect(gx1, 0, gx2-gx1, H-30);
+      ctxD.strokeStyle = '#444'; ctxD.lineWidth=1;
+      ctxD.strokeRect(gx1, 0, gx2-gx1, H-30);
+    });
+  }
+
+  for (let proc=0; proc<p; proc++) {
+    const data = st.procData[proc];
+    const px = offX + proc*procW;
+    const innerW = procW - 4;
+
+    // Proc header
+    ctxD.fillStyle = BLOCK_COLORS[proc % BLOCK_COLORS.length];
+    ctxD.fillRect(px+2, 4, innerW, 14);
+    ctxD.fillStyle='#fff'; ctxD.font='8px sans-serif'; ctxD.textAlign='center';
+    ctxD.fillText(`P${proc}`, px+2+innerW/2, 14);
+
+    // Data bars stacked
+    const n = data.length;
+    if (n === 0) continue;
+    const barH = Math.max(3, Math.floor((maxH-20)/Math.max(...st.procData.map(d=>d.length),1)));
+    data.forEach((val, idx) => {
+      const bw = Math.max(2, Math.floor(val/maxVal*innerW));
+      const by = 22 + idx*(barH+1);
+      ctxD.fillStyle = BLOCK_COLORS[proc%BLOCK_COLORS.length]+'88';
+      ctxD.fillRect(px+2, by, bw, barH);
+      if (barH >= 10 && innerW >= 24) {
+        ctxD.fillStyle='#ccc'; ctxD.font=`${Math.max(7,barH*0.7)}px monospace`; ctxD.textAlign='left';
+        ctxD.fillText(val, px+4+bw+1, by+barH*0.7);
+      }
+    });
+
+    // Count label
+    ctxD.fillStyle='#888'; ctxD.font='9px sans-serif'; ctxD.textAlign='center';
+    ctxD.fillText(`${n}`, px+2+innerW/2, H-32);
+  }
+
+  // Pivot line
+  if (st.pivot !== null) {
+    ctxD.fillStyle=PIVOT_COLOR; ctxD.font='bold 11px sans-serif'; ctxD.textAlign='center';
+    ctxD.fillText(`Pivot = ${st.pivot}`, W/2, H-16);
+  }
+  if (st.final) {
+    ctxD.fillStyle='#00b894'; ctxD.font='bold 11px sans-serif'; ctxD.textAlign='center';
+    ctxD.fillText('✓ Globálně setříděno!', W/2, H-16);
+  }
+
+  // Level indicator
+  ctxD.fillStyle='#9cdcfe'; ctxD.font='10px sans-serif'; ctxD.textAlign='left';
+  ctxD.fillText(`Úroveň ${st.level} / Θ(log ${pd})=${Math.ceil(Math.log2(pd))}`, 10, H-4);
+}
+
+let distTimer3 = null;
+function togglePlayDist() {
+  distPlaying=!distPlaying;
+  document.getElementById('playBtnD').textContent=distPlaying?'⏸ Pauza':'▶ Přehrát';
+  if(distPlaying){const go=()=>{if(distCurStep+1<distSteps.length){applyDistStep(distCurStep+1);distTimer3=setTimeout(go,parseInt(document.getElementById('speedD').value));}else{distPlaying=false;document.getElementById('playBtnD').textContent='▶ Přehrát';}};go();}
+  else clearTimeout(distTimer3);
+}
+
+window.addEventListener('resize', () => {
+  drawPram(pramCurStep>=0?pramSteps[pramCurStep].arr:pramArr, pramCurStep>=0?pramSteps[pramCurStep].left||[]:[], pramCurStep>=0?pramSteps[pramCurStep].right||[]:[], pramCurStep>=0?pramSteps[pramCurStep].pivotIdx:-1, pramCurStep>=0?pramSteps[pramCurStep].depth:0);
+  if(distCurStep>=0) drawDist(distSteps[distCurStep]); else if(distSteps[0]) drawDist(distSteps[0]);
+});
+
+resetPram();
+resetDist();
+</script>
+</body>
+</html>
