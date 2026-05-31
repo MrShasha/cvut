@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C10k Comparator</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg-1: #08131d;
+            --bg-2: #112537;
+            --text: #edf7ff;
+            --muted: #9bb9cb;
+            --warm: #ff7d5c;
+            --warm-soft: rgba(255, 125, 92, 0.16);
+            --cyan: #4ad6ff;
+            --cyan-soft: rgba(74, 214, 255, 0.16);
+            --mint: #7df3ba;
+            --mint-soft: rgba(125, 243, 186, 0.16);
+            --gold: #ffd56c;
+            --line: rgba(152, 196, 223, 0.12);
+            --shadow: 0 30px 70px rgba(1, 9, 17, 0.42);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 24px;
+            font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(74, 214, 255, 0.22), transparent 28%),
+                radial-gradient(circle at top right, rgba(125, 243, 186, 0.16), transparent 24%),
+                linear-gradient(160deg, var(--bg-1), var(--bg-2) 54%, #09121c);
+        }
+
+        .widget {
+            max-width: 1360px;
+            margin: 0 auto;
+            padding: 28px;
+            border-radius: 28px;
+            background: linear-gradient(180deg, rgba(13, 28, 42, 0.94), rgba(7, 16, 25, 0.96));
+            border: 1px solid rgba(152, 196, 223, 0.16);
+            box-shadow: var(--shadow);
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+            gap: 24px;
+            align-items: stretch;
+            margin-bottom: 22px;
+        }
+
+        .hero-copy,
+        .control-panel,
+        .arch-card {
+            border-radius: 24px;
+            border: 1px solid rgba(129, 181, 210, 0.16);
+            background: linear-gradient(160deg, rgba(18, 37, 56, 0.88), rgba(8, 20, 31, 0.88));
+        }
+
+        .hero-copy {
+            padding: 24px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(74, 214, 255, 0.12);
+            color: #bfefff;
+            font-size: 0.78rem;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .eyebrow::before {
+            content: "";
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cyan), var(--mint));
+            box-shadow: 0 0 16px rgba(74, 214, 255, 0.7);
+        }
+
+        h1,
+        h2,
+        p {
+            margin: 0;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 2.8vw, 3.4rem);
+            line-height: 1.02;
+            letter-spacing: -0.04em;
+        }
+
+        .hero-copy p {
+            margin-top: 14px;
+            max-width: 64ch;
+            color: var(--muted);
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .quick-facts {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .fact,
+        .slider-shell,
+        .summary-box,
+        .metric,
+        .scene,
+        .insight {
+            background: rgba(6, 17, 28, 0.72);
+            border: 1px solid var(--line);
+        }
+
+        .fact {
+            padding: 14px 16px;
+            border-radius: 18px;
+        }
+
+        .fact strong {
+            display: block;
+            font-size: 1.2rem;
+            margin-bottom: 6px;
+        }
+
+        .fact span {
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.45;
+        }
+
+        .control-panel {
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .control-panel h2 {
+            font-size: 1.1rem;
+        }
+
+        .slider-shell,
+        .summary-box {
+            padding: 16px 18px;
+            border-radius: 18px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: baseline;
+            margin-bottom: 10px;
+        }
+
+        .slider-label {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .slider-value {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 700;
+            letter-spacing: -0.05em;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--cyan);
+            cursor: pointer;
+        }
+
+        .preset-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .preset-btn {
+            border: 1px solid rgba(152, 196, 223, 0.14);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 10px 14px;
+            font: inherit;
+            cursor: pointer;
+            transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+        }
+
+        .preset-btn:hover,
+        .preset-btn:focus-visible {
+            transform: translateY(-1px);
+            border-color: rgba(74, 214, 255, 0.46);
+            background: rgba(74, 214, 255, 0.12);
+            outline: none;
+        }
+
+        .summary-box {
+            background: linear-gradient(140deg, rgba(255, 213, 108, 0.1), rgba(255, 125, 92, 0.1));
+            border-color: rgba(255, 213, 108, 0.22);
+        }
+
+        .summary-box strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff3c6;
+        }
+
+        .summary-box p {
+            color: #f7dfaf;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .compare-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .arch-card {
+            position: relative;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .arch-card[data-mode="os"] {
+            --accent: var(--warm);
+            --accent-soft: var(--warm-soft);
+            --accent-text: #ffd2c7;
+        }
+
+        .arch-card[data-mode="epoll"] {
+            --accent: var(--cyan);
+            --accent-soft: var(--cyan-soft);
+            --accent-text: #d9f8ff;
+        }
+
+        .arch-card[data-mode="virtual"] {
+            --accent: var(--mint);
+            --accent-soft: var(--mint-soft);
+            --accent-text: #d8ffe9;
+        }
+
+        .arch-card::after {
+            content: "";
+            position: absolute;
+            inset: auto -80px -120px auto;
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle, var(--accent-soft), transparent 68%);
+            pointer-events: none;
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: start;
+            margin-bottom: 16px;
+        }
+
+        .card-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: var(--accent);
+            font-size: 0.74rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 10px;
+        }
+
+        .card-kicker::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            box-shadow: 0 0 14px currentColor;
+        }
+
+        .card-title {
+            font-size: 1.35rem;
+            letter-spacing: -0.03em;
+        }
+
+        .card-subtitle {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 0.94rem;
+            line-height: 1.45;
+        }
+
+        .health-pill {
+            flex: 0 0 auto;
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.83rem;
+            border: 1px solid transparent;
+        }
+
+        .health-pill.stable {
+            color: var(--mint);
+            background: rgba(125, 243, 186, 0.12);
+            border-color: rgba(125, 243, 186, 0.24);
+        }
+
+        .health-pill.warning {
+            color: var(--gold);
+            background: rgba(255, 213, 108, 0.12);
+            border-color: rgba(255, 213, 108, 0.22);
+        }
+
+        .health-pill.danger {
+            color: #ffb4a4;
+            background: rgba(255, 125, 92, 0.12);
+            border-color: rgba(255, 125, 92, 0.28);
+        }
+
+        .metric-row,
+        .stage-labels,
+        .stage-grid,
+        .event-stack,
+        .carrier-row,
+        .core-stack {
+            display: grid;
+        }
+
+        .metric-row {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .metric {
+            padding: 12px;
+            border-radius: 16px;
+        }
+
+        .metric label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .metric strong {
+            font-size: 1.04rem;
+            letter-spacing: -0.03em;
+        }
+
+        .scene {
+            position: relative;
+            min-height: 350px;
+            padding: 18px;
+            border-radius: 20px;
+            background:
+                linear-gradient(180deg, rgba(12, 27, 40, 0.78), rgba(5, 13, 20, 0.86)),
+                linear-gradient(90deg, rgba(152, 196, 223, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(152, 196, 223, 0.03) 1px, transparent 1px);
+            background-size: auto, 28px 28px, 28px 28px;
+            overflow: hidden;
+        }
+
+        .scene::before,
+        .scene::after {
+            content: "";
+            position: absolute;
+            top: 18px;
+            bottom: 18px;
+            width: 1px;
+            background: linear-gradient(180deg, transparent, rgba(152, 196, 223, 0.16), transparent);
+        }
+
+        .scene::before {
+            left: 34%;
+        }
+
+        .scene::after {
+            left: 71%;
+        }
+
+        .stage-labels {
+            grid-template-columns: 1.1fr 1.2fr 0.9fr;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: var(--muted);
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+
+        .stage-grid {
+            grid-template-columns: 1.1fr 1.2fr 0.9fr;
+            gap: 12px;
+            align-items: stretch;
+        }
+
+        .column {
+            position: relative;
+            min-height: 270px;
+        }
+
+        .connection-cloud,
+        .dispatcher {
+            position: relative;
+            min-height: 224px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+            overflow: hidden;
+        }
+
+        .dispatcher {
+            padding: 14px;
+        }
+
+        .cloud-note,
+        .column-note {
+            margin-top: 10px;
+            color: var(--muted);
+            font-size: 0.85rem;
+            line-height: 1.45;
+        }
+
+        .packet {
+            position: absolute;
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.88), var(--accent));
+            opacity: 0.8;
+            box-shadow: 0 0 16px rgba(255, 255, 255, 0.12);
+            animation: drift var(--duration, 7s) ease-in-out infinite;
+            animation-delay: var(--delay, 0s);
+        }
+
+        .flow-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0.3;
+            transform: translateY(-50%);
+        }
+
+        .thread-stack {
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 8px;
+        }
+
+        .event-stack {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            place-items: center;
+            margin-top: 14px;
+        }
+
+        .carrier-row,
+        .core-stack {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .queue-bar {
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            bottom: 16px;
+            height: 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            overflow: hidden;
+        }
+
+        .queue-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--accent), rgba(255, 255, 255, 0.72));
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.12);
+        }
+
+        .thread-pill,
+        .virtual-pill,
+        .carrier-pill,
+        .worker-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            min-width: 46px;
+            height: 24px;
+            padding: 0 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            animation: pulse-glow 2.8s ease-in-out infinite;
+            animation-delay: var(--delay, 0s);
+        }
+
+        .thread-pill {
+            background: rgba(255, 125, 92, 0.14);
+            color: #ffd2c7;
+        }
+
+        .virtual-pill {
+            background: rgba(125, 243, 186, 0.14);
+            color: #d8ffe9;
+        }
+
+        .carrier-pill,
+        .worker-pill {
+            background: rgba(74, 214, 255, 0.12);
+            color: #d9f8ff;
+        }
+
+        .carrier-pill,
+        .core-box {
+            min-height: 60px;
+            border-radius: 16px;
+        }
+
+        .carrier-pill {
+            flex-direction: column;
+            gap: 4px;
+            padding: 10px;
+            min-width: 0;
+            height: auto;
+            border: 1px solid rgba(125, 243, 186, 0.22);
+            background: linear-gradient(180deg, rgba(125, 243, 186, 0.16), rgba(74, 214, 255, 0.1));
+            color: #ebfff6;
+        }
+
+        .carrier-pill small {
+            color: rgba(235, 255, 246, 0.72);
+            font-size: 0.66rem;
+            font-weight: 600;
+        }
+
+        .worker-pill {
+            background: rgba(74, 214, 255, 0.12);
+        }
+
+        .storm {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 220ms ease;
+        }
+
+        .storm.active {
+            opacity: 1;
+        }
+
+        .storm::before,
+        .storm::after {
+            content: "";
+            position: absolute;
+            inset: -20%;
+            background:
+                repeating-linear-gradient(135deg, transparent 0 16px, rgba(255, 125, 92, 0.16) 16px 22px),
+                radial-gradient(circle at center, rgba(255, 125, 92, 0.12), transparent 56%);
+            animation: storm-spin 8s linear infinite;
+        }
+
+        .storm::after {
+            animation-direction: reverse;
+            animation-duration: 6s;
+            opacity: 0.6;
+        }
+
+        .loop-ring {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid rgba(74, 214, 255, 0.42);
+            display: grid;
+            place-items: center;
+            color: #d9f8ff;
+            font-size: 0.7rem;
+            font-weight: 700;
+            background: radial-gradient(circle, rgba(74, 214, 255, 0.16), transparent 70%);
+            box-shadow: inset 0 0 26px rgba(74, 214, 255, 0.16), 0 0 26px rgba(74, 214, 255, 0.12);
+            animation: ring-pulse 2.8s ease-in-out infinite;
+            animation-delay: var(--delay, 0s);
+        }
+
+        .loop-ring::after {
+            content: "";
+            position: absolute;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            border: 1px dashed rgba(74, 214, 255, 0.18);
+        }
+
+        .virtual-layout {
+            display: grid;
+            grid-template-rows: auto auto;
+            gap: 12px;
+        }
+
+        .core-box {
+            position: relative;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+            overflow: hidden;
+        }
+
+        .core-box strong {
+            position: relative;
+            z-index: 1;
+            font-size: 0.82rem;
+        }
+
+        .core-fill {
+            position: absolute;
+            inset: auto 0 0;
+            height: var(--fill, 40%);
+            background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.48));
+            opacity: 0.78;
+            transition: height 320ms ease;
+        }
+
+        .insight {
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: 18px;
+        }
+
+        .insight strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .insight p {
+            color: var(--muted);
+            line-height: 1.5;
+            font-size: 0.92rem;
+        }
+
+        @keyframes drift {
+            0%, 100% {
+                transform: translate3d(-4px, -2px, 0) scale(0.92);
+                opacity: 0.46;
+            }
+            50% {
+                transform: translate3d(6px, 6px, 0) scale(1.08);
+                opacity: 0.92;
+            }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                transform: translateY(0);
+                box-shadow: 0 0 0 rgba(255, 255, 255, 0);
+            }
+            50% {
+                transform: translateY(-2px);
+                box-shadow: 0 12px 22px rgba(255, 255, 255, 0.05);
+            }
+        }
+
+        @keyframes ring-pulse {
+            0%, 100% {
+                transform: scale(0.98);
+            }
+            50% {
+                transform: scale(1.03);
+            }
+        }
+
+        @keyframes storm-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1180px) {
+            .hero,
+            .compare-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 12px;
+            }
+
+            .widget {
+                padding: 16px;
+                border-radius: 20px;
+            }
+
+            .quick-facts,
+            .metric-row,
+            .stage-labels,
+            .stage-grid,
+            .carrier-row,
+            .core-stack {
+                grid-template-columns: 1fr;
+            }
+
+            .scene::before,
+            .scene::after {
+                display: none;
+            }
+
+            .column,
+            .scene {
+                min-height: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="widget">
+        <section class="hero">
+            <div class="hero-copy">
+                <div class="eyebrow">C10k visual comparator</div>
+                <h1>Tři architektury, stejný nápor spojení, úplně jiné chování.</h1>
+                <p>
+                    Posuvníkem měníš počet současných socketů a všechny tři modely se animují vedle sebe. Sleduj hlavně počet
+                    skutečných OS vláken, tlak na scheduler a kolik čekající práce se jen levně odloží mimo CPU.
+                </p>
+                <div class="quick-facts">
+                    <div class="fact">
+                        <strong id="globalThreads">1 200</strong>
+                        <span>otevřených spojení tlačí do všech tří modelů stejný nápor</span>
+                    </div>
+                    <div class="fact">
+                        <strong>4</strong>
+                        <span>fyzická CPU jádra jsou stejný limit bez ohledu na architekturu</span>
+                    </div>
+                    <div class="fact">
+                        <strong id="globalTakeaway">Rozdíl je v režii</strong>
+                        <span>co tě systém stojí jen za to, že spojení existují a čekají na I/O</span>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="control-panel">
+                <h2>Simulované zatížení</h2>
+                <div class="slider-shell">
+                    <div class="slider-header">
+                        <span class="slider-label">Počet paralelních spojení</span>
+                        <span class="slider-value" id="loadValue">1 200</span>
+                    </div>
+                    <input id="loadSlider" type="range" min="100" max="10000" step="100" value="1200">
+                </div>
+                <div class="preset-row">
+                    <button class="preset-btn" data-load="500" type="button">500</button>
+                    <button class="preset-btn" data-load="2000" type="button">2 000</button>
+                    <button class="preset-btn" data-load="5000" type="button">5 000</button>
+                    <button class="preset-btn" data-load="10000" type="button">10 000</button>
+                </div>
+                <div class="summary-box">
+                    <strong id="pressureTitle">Nízký až střední tlak</strong>
+                    <p id="pressureText">Všechny tři modely fungují, ale už je vidět rozdíl mezi těžkým OS vláknem, event loopem a lehkým logical threadem.</p>
+                </div>
+            </aside>
+        </section>
+
+        <section class="compare-grid" id="compareGrid"></section>
+    </main>
+
+    <script>
+        const loadSlider = document.getElementById("loadSlider");
+        const loadValue = document.getElementById("loadValue");
+        const compareGrid = document.getElementById("compareGrid");
+        const globalThreads = document.getElementById("globalThreads");
+        const globalTakeaway = document.getElementById("globalTakeaway");
+        const pressureTitle = document.getElementById("pressureTitle");
+        const pressureText = document.getElementById("pressureText");
+        const presetButtons = document.querySelectorAll(".preset-btn");
+
+        const CORE_COUNT = 4;
+
+        const ARCHITECTURES = [
+            {
+                id: "os",
+                kicker: "Legacy",
+                title: "1 spojení = 1 OS vlákno",
+                subtitle: "Blocking kód je přímočarý, ale čekání na síť nebo DB drží celé těžké OS vlákno.",
+                insightTitle: "Proč to bolí",
+                insightText: "Paměť i scheduler rostou skoro lineárně s počtem spojení. Každý klient si nese vlastní stack i vlastní scheduling overhead."
+            },
+            {
+                id: "epoll",
+                kicker: "Event loop",
+                title: "epoll / Node.js / Netty",
+                subtitle: "Malý počet workerů čeká v kernelu na ready sockety a probouzí se jen při skutečné práci.",
+                insightTitle: "Proč škáluje",
+                insightText: "Spojení jsou levný stav v paměti. OS vlákna zůstávají skoro konstantní a CPU řeší jen aktivní eventy, ne pasivní čekání."
+            },
+            {
+                id: "virtual",
+                kicker: "Modern runtime",
+                title: "Virtuální vlákna / Go goroutines",
+                subtitle: "Logické vlákno pro každé spojení, ale runtime je multiplexuje na malý počet carrier vláken.",
+                insightTitle: "Proč je to pohodlné",
+                insightText: "Programuješ synchronně, ale runtime při I/O čekání lehké vlákno odmountuje z carrier threadu a použije jádro jinde."
+            }
+        ];
+
+        function formatInt(value) {
+            return new Intl.NumberFormat("cs-CZ").format(Math.round(value));
+        }
+
+        function formatRam(megabytes) {
+            if (megabytes >= 1024) {
+                return `${(megabytes / 1024).toFixed(megabytes >= 4096 ? 1 : 2)} GB`;
+            }
+
+            return `${formatInt(megabytes)} MB`;
+        }
+
+        function clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        }
+
+        function buildPackets(count) {
+            return Array.from({ length: count }, (_, index) => {
+                const x = (index * 17) % 88 + 4;
+                const y = (index * 31) % 74 + 10;
+                const size = 9 + (index % 3);
+                const delay = -(index % 11) * 0.3;
+                const duration = 5.4 + (index % 5) * 0.55;
+                const line = (index % 5) * 18 + 28;
+                return `
+                    <span class="flow-line" style="top:${line}%"></span>
+                    <span class="packet" style="left:${x}%;top:${y}%;width:${size}px;height:${size}px;--delay:${delay}s;--duration:${duration}s"></span>
+                `;
+            }).join("");
+        }
+
+        function buildThreadPills(count, overflowLabel) {
+            return Array.from({ length: count }, (_, index) => {
+                const label = index === count - 1 && overflowLabel ? overflowLabel : `T${index + 1}`;
+                return `<span class="thread-pill" style="--delay:${-index * 0.12}s">${label}</span>`;
+            }).join("");
+        }
+
+        function buildVirtualPills(count) {
+            return Array.from({ length: count }, (_, index) => `
+                <span class="virtual-pill" style="--delay:${-index * 0.08}s">v${index + 1}</span>
+            `).join("");
+        }
+
+        function buildLoopRings(count) {
+            return Array.from({ length: count }, (_, index) => `
+                <div class="loop-ring" style="--delay:${-index * 0.3}s">loop ${index + 1}</div>
+            `).join("");
+        }
+
+        function buildWorkerPills(count) {
+            return Array.from({ length: count }, (_, index) => `
+                <span class="worker-pill" style="--delay:${-index * 0.1}s">W${index + 1}</span>
+            `).join("");
+        }
+
+        function buildCores(load, mode) {
+            return Array.from({ length: CORE_COUNT }, (_, index) => {
+                let fill = 36;
+                if (mode === "os") {
+                    fill = clamp(32 + load / 110, 36, 96);
+                } else if (mode === "epoll") {
+                    fill = clamp(42 + load / 420, 40, 72);
+                } else {
+                    fill = clamp(40 + load / 260, 42, 82);
+                }
+
+                return `
+                    <div class="core-box">
+                        <strong>CPU ${index + 1}</strong>
+                        <div class="core-fill" style="--fill:${fill}%"></div>
+                    </div>
+                `;
+            }).join("");
+        }
+
+        function computeModel(load, mode) {
+            if (mode === "os") {
+                const osThreads = load;
+                const ram = 180 + load * 0.9;
+                const queue = clamp(load / 100, 6, 100);
+                const packetCount = clamp(Math.round(load / 240), 8, 34);
+                const pillCount = clamp(Math.round(load / 220), 10, 30);
+                const overflowLabel = load > 2400 ? `+${formatInt(load - pillCount + 1)}` : "";
+                return {
+                    osThreads,
+                    ram,
+                    queue,
+                    packetCount,
+                    cpu: load > 4500 ? "Thrashing" : load > 1800 ? "Vysoká režie" : "Ještě únosné",
+                    health: load > 5500 ? "danger" : load > 2200 ? "warning" : "stable",
+                    healthLabel: load > 5500 ? "Kolaps scheduleru" : load > 2200 ? "Na hraně" : "Čitelné, ale drahé",
+                    dispatcherHtml: `
+                        <div class="thread-stack">${buildThreadPills(pillCount, overflowLabel)}</div>
+                        <div class="storm ${load > 2200 ? "active" : ""}"></div>
+                        <div class="queue-bar"><div class="queue-fill" style="width:${queue}%"></div></div>
+                    `,
+                    workersHtml: `<div class="core-stack">${buildCores(load, mode)}</div>`,
+                    note: load > 2200
+                        ? "Každý další klient znamená další těžké OS vlákno. Fronta i scheduler bobtnají současně."
+                        : "Přímočaré programování, ale cena roste skoro lineárně s počtem spojení."
+                };
+            }
+
+            if (mode === "epoll") {
+                const queue = clamp(load / 180, 10, 70);
+                const packetCount = clamp(Math.round(load / 180), 12, 42);
+                const activeEvents = clamp(Math.round(load / 420), 4, 10);
+                return {
+                    osThreads: CORE_COUNT,
+                    ram: 130 + load * 0.012,
+                    queue,
+                    packetCount,
+                    cpu: load > 7000 ? "Citlivé na blocking" : "Nízká režie",
+                    health: load > 8200 ? "warning" : "stable",
+                    healthLabel: load > 8200 ? "Pořád stabilní" : "Velmi stabilní",
+                    dispatcherHtml: `
+                        <div class="event-stack">${buildLoopRings(4)}</div>
+                        <div class="thread-stack" style="margin-top:14px;">${buildWorkerPills(activeEvents)}</div>
+                        <div class="queue-bar"><div class="queue-fill" style="width:${queue}%"></div></div>
+                    `,
+                    workersHtml: `<div class="core-stack">${buildCores(load, mode)}</div>`,
+                    note: "Jádra neřeší deset tisíc vláken, ale jen ready eventy. Proto paměť i switching zůstávají malé."
+                };
+            }
+
+            const queue = clamp(load / 160, 12, 82);
+            const packetCount = clamp(Math.round(load / 200), 12, 38);
+            const virtualCount = clamp(Math.round(load / 160), 14, 30);
+            return {
+                osThreads: CORE_COUNT,
+                ram: 170 + load * 0.03,
+                queue,
+                packetCount,
+                cpu: load > 9000 ? "Nízká režie runtime" : "Lehký scheduling",
+                health: "stable",
+                healthLabel: load > 7500 ? "Velmi dobré" : "Optimální",
+                dispatcherHtml: `
+                    <div class="virtual-layout">
+                        <div class="thread-stack">${buildVirtualPills(virtualCount)}</div>
+                        <div class="carrier-row">
+                            <div class="carrier-pill">carrier 1<small>OS vlákno</small></div>
+                            <div class="carrier-pill">carrier 2<small>OS vlákno</small></div>
+                            <div class="carrier-pill">carrier 3<small>OS vlákno</small></div>
+                            <div class="carrier-pill">carrier 4<small>OS vlákno</small></div>
+                        </div>
+                        <div class="queue-bar"><div class="queue-fill" style="width:${queue}%"></div></div>
+                    </div>
+                `,
+                workersHtml: `<div class="core-stack">${buildCores(load, mode)}</div>`,
+                note: "Logických vláken je hodně, ale heavy OS vlákna skoro nepřibývají. Runtime parkne čekající úlohy mimo jádra."
+            };
+        }
+
+        function buildCard(arch, load) {
+            const model = computeModel(load, arch.id);
+            const connectionCaption = arch.id === "epoll"
+                ? `${formatInt(load)} socketů, ale CPU řeší jen ready eventy.`
+                : arch.id === "virtual"
+                    ? `${formatInt(load)} logických vláken čeká levně mimo carrier jádra.`
+                    : `${formatInt(load)} klientů = ${formatInt(model.osThreads)} skutečných OS vláken.`;
+
+            return `
+                <article class="arch-card" data-mode="${arch.id}">
+                    <div class="card-top">
+                        <div>
+                            <div class="card-kicker">${arch.kicker}</div>
+                            <h2 class="card-title">${arch.title}</h2>
+                            <p class="card-subtitle">${arch.subtitle}</p>
+                        </div>
+                        <div class="health-pill ${model.health}">${model.healthLabel}</div>
+                    </div>
+                    <div class="metric-row">
+                        <div class="metric">
+                            <label>OS vlákna</label>
+                            <strong>${formatInt(model.osThreads)}</strong>
+                        </div>
+                        <div class="metric">
+                            <label>RAM</label>
+                            <strong>${formatRam(model.ram)}</strong>
+                        </div>
+                        <div class="metric">
+                            <label>Switching</label>
+                            <strong>${model.cpu}</strong>
+                        </div>
+                    </div>
+                    <div class="scene">
+                        <div class="stage-labels">
+                            <span>Příchozí spojení</span>
+                            <span>Orchestrace</span>
+                            <span>CPU jádra</span>
+                        </div>
+                        <div class="stage-grid">
+                            <div class="column">
+                                <div class="connection-cloud">${buildPackets(model.packetCount)}</div>
+                                <div class="cloud-note">${connectionCaption}</div>
+                            </div>
+                            <div class="column">
+                                <div class="dispatcher">${model.dispatcherHtml}</div>
+                                <div class="column-note">Fronta práce: <strong>${model.queue}%</strong>. ${model.note}</div>
+                            </div>
+                            <div class="column">
+                                ${model.workersHtml}
+                                <div class="column-note">Fyzická jádra jsou pořád jen ${CORE_COUNT}. Rozdíl je v tom, kolik těžkých vláken se o ně pere.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="insight">
+                        <strong>${arch.insightTitle}</strong>
+                        <p>${arch.insightText}</p>
+                    </div>
+                </article>
+            `;
+        }
+
+        function updateGlobalSummary(load) {
+            loadValue.textContent = formatInt(load);
+            globalThreads.textContent = formatInt(load);
+
+            if (load >= 7000) {
+                pressureTitle.textContent = "Extrémní C10k tlak";
+                pressureText.textContent = "Thread-per-connection model přechází do scheduler stormu. Event loop i virtuální vlákna stále drží nízký počet OS workerů a zůstávají levnější.";
+                globalTakeaway.textContent = "Vlákna jsou bottleneck";
+                return;
+            }
+
+            if (load >= 2500) {
+                pressureTitle.textContent = "Reálné rozdíly jsou vidět";
+                pressureText.textContent = "Paměť i context switching začínají thread-per-connection model rychle brzdit. Event loop a virtual threads platí hlavně za aktivní práci, ne za pouhé čekání.";
+                globalTakeaway.textContent = "epoll a runtime vítězí";
+                return;
+            }
+
+            pressureTitle.textContent = "Nízký až střední tlak";
+            pressureText.textContent = "Všechny tři modely fungují, ale už je vidět rozdíl mezi těžkým OS vláknem, event loopem a lehkým logical threadem.";
+            globalTakeaway.textContent = "Rozdíl je v režii";
+        }
+
+        function render() {
+            const load = Number(loadSlider.value);
+            compareGrid.innerHTML = ARCHITECTURES.map((arch) => buildCard(arch, load)).join("");
+            updateGlobalSummary(load);
+        }
+
+        loadSlider.addEventListener("input", render);
+        presetButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                loadSlider.value = button.dataset.load;
+                render();
+            });
+        });
+
+        render();
+    </script>
+</body>
+</html>

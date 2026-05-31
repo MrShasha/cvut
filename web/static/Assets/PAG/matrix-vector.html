@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N&aacute;soben&iacute; matice a vektoru</title>
+<style>
+:root {
+  --bg: #111827;
+  --panel: rgba(21, 31, 51, .92);
+  --panel-2: rgba(30, 41, 59, .92);
+  --line: rgba(148, 163, 184, .2);
+  --muted: #94a3b8;
+  --text: #e5edf8;
+  --blue: #60a5fa;
+  --cyan: #22d3ee;
+  --green: #4ade80;
+  --amber: #fbbf24;
+  --rose: #fb7185;
+  --violet: #c084fc;
+  --proc-0: #38bdf8;
+  --proc-1: #4ade80;
+  --proc-2: #fbbf24;
+  --proc-3: #c084fc;
+  --speed: 900ms;
+}
+
+* { box-sizing: border-box; }
+body {
+  min-width: 720px;
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(37, 99, 235, .14), transparent 28rem),
+    radial-gradient(circle at 90% 100%, rgba(8, 145, 178, .12), transparent 32rem),
+    var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+}
+
+button, input { font: inherit; }
+
+.topbar, .panel, .scene {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, .18);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.eyebrow, .label, .panel-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 2px 0 0;
+  color: #f8fbff;
+  font-size: 19px;
+  letter-spacing: -.02em;
+}
+
+.mode-tabs, .controls, .speed-control, .step-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.mode-tab, .control-btn {
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 7px 11px;
+  background: rgba(51, 65, 85, .72);
+  color: #d8e2f1;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.mode-tab:hover, .control-btn:hover {
+  border-color: rgba(96, 165, 250, .7);
+  transform: translateY(-1px);
+}
+
+.mode-tab.active {
+  border-color: rgba(96, 165, 250, .75);
+  background: rgba(37, 99, 235, .33);
+  color: #dbeafe;
+  font-weight: 750;
+}
+
+.control-btn.primary {
+  min-width: 100px;
+  border-color: rgba(56, 189, 248, .6);
+  background: linear-gradient(135deg, rgba(14, 116, 144, .92), rgba(37, 99, 235, .92));
+  color: #fff;
+  font-weight: 750;
+}
+
+.control-btn:disabled {
+  cursor: default;
+  opacity: .42;
+  transform: none;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, .66);
+}
+
+input[type="range"] {
+  width: 96px;
+  accent-color: var(--cyan);
+  cursor: pointer;
+}
+
+.stage-progress {
+  flex: 1;
+  min-width: 170px;
+}
+
+.progress-track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(51, 65, 85, .86);
+}
+
+.progress-bar {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--blue), var(--cyan), var(--green));
+  transition: width .35s ease;
+}
+
+.progress-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 10px;
+}
+
+.scene {
+  position: relative;
+  min-height: 625px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(148, 163, 184, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, .035) 1px, transparent 1px),
+    rgba(15, 23, 42, .78);
+  background-size: 22px 22px;
+}
+
+.math-scene {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  min-height: 278px;
+  padding: 24px 18px 12px;
+}
+
+.matrix-wrap, .vector-wrap {
+  position: relative;
+}
+
+.object-label {
+  margin-bottom: 7px;
+  color: #cbd5e1;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.matrix, .vector {
+  display: grid;
+  gap: 4px;
+}
+
+.matrix {
+  grid-template-columns: repeat(4, 43px);
+}
+
+.vector {
+  grid-template-columns: 43px;
+}
+
+.cell {
+  display: grid;
+  width: 43px;
+  height: 43px;
+  place-items: center;
+  border: 1px solid rgba(148, 163, 184, .24);
+  border-radius: 9px;
+  background: rgba(51, 65, 85, .72);
+  color: #e2e8f0;
+  font-family: Consolas, monospace;
+  font-size: 15px;
+  font-weight: 800;
+  transition:
+    opacity .28s ease,
+    transform .28s ease,
+    background .28s ease,
+    border-color .28s ease,
+    box-shadow .28s ease;
+}
+
+.cell.dimmed { opacity: .28; }
+.cell.focus-a {
+  border-color: rgba(251, 191, 36, .95);
+  background: rgba(180, 83, 9, .68);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, .15), 0 0 22px rgba(251, 191, 36, .28);
+  transform: scale(1.09);
+}
+.cell.focus-x {
+  border-color: rgba(34, 211, 238, .95);
+  background: rgba(8, 145, 178, .68);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, .15), 0 0 22px rgba(34, 211, 238, .28);
+  transform: scale(1.09);
+}
+.cell.focus-y {
+  border-color: rgba(74, 222, 128, .95);
+  background: rgba(22, 101, 52, .74);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, .17), 0 0 22px rgba(74, 222, 128, .3);
+  transform: scale(1.12);
+}
+.cell.pending {
+  color: rgba(226, 232, 240, .35);
+  background: rgba(30, 41, 59, .6);
+}
+.cell.done {
+  border-color: rgba(74, 222, 128, .58);
+  background: rgba(22, 101, 52, .54);
+  color: #dcfce7;
+}
+
+.block-outline {
+  position: absolute;
+  pointer-events: none;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  transition: opacity .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+.block-outline.active {
+  border-color: rgba(251, 191, 36, .95);
+  box-shadow: 0 0 22px rgba(251, 191, 36, .22);
+}
+
+.operator {
+  color: #64748b;
+  font-family: Georgia, serif;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.workbench {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 204px;
+  gap: 10px;
+  min-height: 118px;
+  padding: 12px 14px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: rgba(2, 6, 23, .38);
+}
+
+.explanation {
+  color: #cbd5e1;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.explanation strong { color: #f8fafc; }
+.explanation .accent { color: var(--cyan); }
+
+.formula-card {
+  align-self: stretch;
+  padding: 10px 12px;
+  border: 1px solid rgba(96, 165, 250, .28);
+  border-radius: 11px;
+  background: rgba(30, 41, 59, .72);
+}
+
+.formula {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  margin-top: 7px;
+  color: #dbeafe;
+  font-family: Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.processors {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 13px 14px 14px;
+}
+
+.processor {
+  position: relative;
+  min-height: 142px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(30, 41, 59, .7);
+  transition: opacity .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+.processor.hidden { display: none; }
+.processor.active {
+  border-color: color-mix(in srgb, var(--proc) 76%, transparent);
+  box-shadow: 0 0 22px color-mix(in srgb, var(--proc) 20%, transparent);
+}
+.processor.inactive { opacity: .4; }
+
+.processor-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 7px 8px;
+  background: color-mix(in srgb, var(--proc) 18%, transparent);
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.processor-body {
+  padding: 8px;
+  color: #a9b7ca;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-height: 23px;
+  margin-top: 5px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 25px;
+  height: 22px;
+  border: 1px solid rgba(148, 163, 184, .22);
+  border-radius: 7px;
+  background: rgba(15, 23, 42, .68);
+  color: #dbeafe;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  font-weight: 800;
+}
+.chip.known {
+  border-color: rgba(34, 211, 238, .5);
+  background: rgba(8, 145, 178, .2);
+  color: #cffafe;
+}
+.chip.partial {
+  border-color: rgba(192, 132, 252, .52);
+  background: rgba(126, 34, 206, .2);
+  color: #f3e8ff;
+}
+.chip.result {
+  border-color: rgba(74, 222, 128, .55);
+  background: rgba(22, 101, 52, .28);
+  color: #dcfce7;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel { padding: 12px; }
+.panel-title { margin-bottom: 8px; }
+.step-title {
+  color: #f8fafc;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.step-detail {
+  margin-top: 6px;
+  color: #b9c6d8;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.legend-item, .metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, .1);
+  color: #b9c6d8;
+  font-size: 12px;
+}
+.legend-item:last-child, .metric:last-child { border-bottom: 0; }
+.legend-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 7px;
+  border-radius: 50%;
+}
+.metric code {
+  color: #cffafe;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+}
+
+.complexity {
+  color: #b9c6d8;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.complexity code {
+  color: #bbf7d0;
+  font-family: Consolas, monospace;
+}
+
+.particle {
+  position: absolute;
+  z-index: 20;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  pointer-events: none;
+  border: 1px solid rgba(255, 255, 255, .48);
+  border-radius: 50%;
+  background: var(--particle, var(--cyan));
+  color: #082f49;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  font-weight: 900;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--particle, var(--cyan)) 72%, transparent);
+  transform: translate(-50%, -50%);
+  animation: fly var(--duration, 900ms) cubic-bezier(.2, .7, .25, 1) forwards;
+}
+
+.flying-chip {
+  width: auto;
+  min-width: 31px;
+  padding: 0 6px;
+  border-radius: 8px;
+}
+
+@keyframes fly {
+  0% { left: var(--x1); top: var(--y1); opacity: 0; transform: translate(-50%, -50%) scale(.75); }
+  12% { opacity: 1; }
+  56% { left: var(--xm); top: var(--ym); opacity: 1; transform: translate(-50%, -50%) scale(1.12); }
+  100% { left: var(--x2); top: var(--y2); opacity: 0; transform: translate(-50%, -50%) scale(.72); }
+}
+
+@media (max-width: 930px) {
+  .layout { grid-template-columns: 1fr; }
+  .side { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .scene { min-height: 610px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <div class="eyebrow">Paraleln&iacute; algoritmy &middot; v&yacute;ukov&aacute; animace</div>
+    <h1>N&aacute;soben&iacute; matice a vektoru <span style="color:#7dd3fc">y = A &middot; x</span></h1>
+  </div>
+  <div class="mode-tabs" aria-label="Rozlozeni dat">
+    <button class="mode-tab active" id="mode1d" type="button">1D: po &#345;&aacute;dc&iacute;ch</button>
+    <button class="mode-tab" id="mode2d" type="button">2D: po bloc&iacute;ch</button>
+  </div>
+</header>
+
+<section class="toolbar">
+  <div class="controls">
+    <button class="control-btn primary" id="playBtn" type="button">&#9654; P&#345;ehr&aacute;t</button>
+    <button class="control-btn" id="backBtn" type="button">&#9664; Zp&#283;t</button>
+    <button class="control-btn" id="nextBtn" type="button">Vp&#345;ed &#9654;</button>
+    <button class="control-btn" id="resetBtn" type="button">&#8634; Reset</button>
+  </div>
+  <div class="stage-progress">
+    <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="progress-caption">
+      <span id="phaseCaption">P&#345;ipraveno ke spu&scaron;t&#283;n&iacute;</span>
+      <span id="stepCaption">0 / 0</span>
+    </div>
+  </div>
+  <label class="speed-control">
+    <span class="label">Rychlost</span>
+    <input id="speedRange" type="range" min="500" max="1500" value="900" step="100">
+  </label>
+</section>
+
+<main class="layout">
+  <section class="scene" id="scene">
+    <div class="math-scene">
+      <div class="matrix-wrap">
+        <div class="object-label">matice A</div>
+        <div class="matrix" id="matrix"></div>
+        <div class="block-outline" id="blockOutline"></div>
+      </div>
+      <div class="operator">&middot;</div>
+      <div class="vector-wrap">
+        <div class="object-label">vektor x</div>
+        <div class="vector" id="vectorX"></div>
+      </div>
+      <div class="operator">=</div>
+      <div class="vector-wrap">
+        <div class="object-label">v&yacute;sledek y</div>
+        <div class="vector" id="vectorY"></div>
+      </div>
+    </div>
+
+    <section class="workbench">
+      <div>
+        <div class="panel-title">Co se pr&aacute;v&#283; d&#283;je</div>
+        <div class="explanation" id="explanation"></div>
+      </div>
+      <div class="formula-card" id="formulaCard">
+        <div class="panel-title">Pracovn&iacute; v&yacute;raz</div>
+        <div class="formula" id="formula"></div>
+      </div>
+    </section>
+
+    <section class="processors" id="processors"></section>
+  </section>
+
+  <aside class="side">
+    <section class="panel">
+      <div class="panel-title">Aktu&aacute;ln&iacute; krok</div>
+      <div class="step-title" id="stepTitle"></div>
+      <div class="step-detail" id="stepDetail"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">Barevn&aacute; legenda</div>
+      <div class="legend-item"><span><i class="legend-dot" style="background:var(--amber)"></i>prvek A</span><code>A[i,j]</code></div>
+      <div class="legend-item"><span><i class="legend-dot" style="background:var(--cyan)"></i>prvek x</span><code>x[j]</code></div>
+      <div class="legend-item"><span><i class="legend-dot" style="background:var(--green)"></i>hotov&eacute; y</span><code>y[i]</code></div>
+      <div class="legend-item"><span><i class="legend-dot" style="background:var(--violet)"></i>mezisou&#269;et</span><code>s[i]</code></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">Cena algoritmu</div>
+      <div class="complexity" id="complexity"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">Parametry uk&aacute;zky</div>
+      <div class="metric"><span>Matice</span><code>4 &times; 4</code></div>
+      <div class="metric"><span>Procesory</span><code id="procMetric">p = 2</code></div>
+      <div class="metric"><span>Rozlo&#382;en&iacute;</span><code id="modeMetric">1D &#345;&aacute;dky</code></div>
+    </section>
+  </aside>
+</main>
+
+<script>
+const A = [
+  [2, 1, 0, 3],
+  [1, 2, 1, 0],
+  [0, 1, 3, 1],
+  [2, 0, 1, 2],
+];
+const x = [1, 2, 1, 3];
+const y = A.map((row) => row.reduce((sum, value, col) => sum + value * x[col], 0));
+const PROC_COLORS = ["#38bdf8", "#4ade80", "#fbbf24", "#c084fc"];
+const $ = (id) => document.getElementById(id);
+
+let mode = "1d";
+let cursor = 0;
+let playing = false;
+let animationBusy = false;
+let playToken = 0;
+let actions = [];
+
+function html(text) {
+  return text;
+}
+
+function renderBase() {
+  $("matrix").innerHTML = A.flatMap((row, r) =>
+    row.map((value, c) => `<div class="cell" data-a="${r}-${c}">${value}</div>`)
+  ).join("");
+  $("vectorX").innerHTML = x.map((value, i) =>
+    `<div class="cell" data-x="${i}">${value}</div>`
+  ).join("");
+  $("vectorY").innerHTML = y.map((value, i) =>
+    `<div class="cell pending" data-y="${i}">?</div>`
+  ).join("");
+  $("processors").innerHTML = Array.from({length: 4}, (_, i) =>
+    `<article class="processor" id="proc-${i}" style="--proc:${PROC_COLORS[i]}">
+      <div class="processor-header"><span>P${i}</span><span id="proc-scope-${i}"></span></div>
+      <div class="processor-body">
+        <div id="proc-desc-${i}"></div>
+        <div class="label" style="margin-top:7px">Lok&aacute;ln&iacute; kopie x</div>
+        <div class="chip-row" id="cache-${i}"></div>
+        <div class="label" style="margin-top:7px">V&yacute;stup / mezisou&#269;et</div>
+        <div class="chip-row" id="out-${i}"></div>
+      </div>
+    </article>`
+  ).join("");
+}
+
+function owner1d(row) {
+  return row < 2 ? 0 : 1;
+}
+
+function makeActions() {
+  if (mode === "1d") {
+    const next = [
+      {type: "intro", phase: "Rozlo\u017een\u00ed dat"},
+      {type: "broadcast", segment: 0, phase: "All-to-all broadcast"},
+      {type: "broadcast", segment: 1, phase: "All-to-all broadcast"},
+    ];
+    for (let row = 0; row < 4; row += 1) {
+      for (let col = 0; col < 4; col += 1) {
+        next.push({type: "term", row, col, phase: `Lok\u00e1ln\u00ed v\u00fdpo\u010det y[${row}]`});
+      }
+      next.push({type: "row-result", row, phase: `Dokon\u010den\u00ed y[${row}]`});
+    }
+    next.push({type: "finish", phase: "Hotovo"});
+    return next;
+  }
+
+  return [
+    {type: "intro", phase: "2D rozlo\u017een\u00ed dat"},
+    {type: "block-broadcast", blockCol: 0, phase: "Broadcast x[0:2]"},
+    {type: "block-broadcast", blockCol: 1, phase: "Broadcast x[2:4]"},
+    {type: "block-compute", blockRow: 0, blockCol: 0, phase: "Lok\u00e1ln\u00ed blokov\u00fd sou\u010din"},
+    {type: "block-compute", blockRow: 0, blockCol: 1, phase: "Lok\u00e1ln\u00ed blokov\u00fd sou\u010din"},
+    {type: "block-reduce", blockRow: 0, phase: "Redukce mezisou\u010dt\u016f"},
+    {type: "block-compute", blockRow: 1, blockCol: 0, phase: "Lok\u00e1ln\u00ed blokov\u00fd sou\u010din"},
+    {type: "block-compute", blockRow: 1, blockCol: 1, phase: "Lok\u00e1ln\u00ed blokov\u00fd sou\u010din"},
+    {type: "block-reduce", blockRow: 1, phase: "Redukce mezisou\u010dt\u016f"},
+    {type: "finish", phase: "Hotovo"},
+  ];
+}
+
+function completed(type, predicate = () => true) {
+  return actions.slice(0, cursor).some((action) => action.type === type && predicate(action));
+}
+
+function completedAll(type, predicate = () => true) {
+  return actions.slice(0, cursor).filter((action) => action.type === type && predicate(action));
+}
+
+function setupProcessorCards() {
+  for (let i = 0; i < 4; i += 1) {
+    const card = $(`proc-${i}`);
+    card.classList.toggle("hidden", mode === "1d" && i > 1);
+    card.classList.toggle("inactive", false);
+    card.classList.toggle("active", false);
+
+    if (mode === "1d") {
+      const rows = i === 0 ? "A[0:2, :]" : "A[2:4, :]";
+      $(`proc-scope-${i}`).textContent = rows;
+      $(`proc-desc-${i}`).innerHTML = `Vlastn\u00ed dva \u0159\u00e1dky matice a zpo\u010d\u00e1tku jen polovinu vektoru.`;
+      const owns = i === 0 ? [0, 1] : [2, 3];
+      const knowsRemote = completed("broadcast", (a) => a.segment !== i);
+      $(`cache-${i}`).innerHTML = x.map((value, j) => {
+        const known = owns.includes(j) || knowsRemote;
+        return `<span class="chip ${known ? "known" : ""}">${known ? `x${j}=${value}` : `x${j}=?`}</span>`;
+      }).join("");
+      const rowsForProc = i === 0 ? [0, 1] : [2, 3];
+      $(`out-${i}`).innerHTML = rowsForProc.map((row) => {
+        const done = completed("row-result", (a) => a.row === row);
+        const termCount = completedAll("term", (a) => a.row === row).length;
+        const partial = A[row].slice(0, termCount).reduce((sum, value, col) => sum + value * x[col], 0);
+        if (done) return `<span class="chip result">y${row}=${y[row]}</span>`;
+        if (termCount) return `<span class="chip partial">s${row}=${partial}</span>`;
+        return `<span class="chip">y${row}=?</span>`;
+      }).join("");
+      continue;
+    }
+
+    const blockRow = Math.floor(i / 2);
+    const blockCol = i % 2;
+    $(`proc-scope-${i}`).textContent = `A[${blockRow},${blockCol}]`;
+    $(`proc-desc-${i}`).innerHTML = `Dr\u017e\u00ed blok matice 2\u00d72 a po broadcastu odpov\u00eddaj\u00edc\u00ed blok vektoru.`;
+    const knowsBlock = completed("block-broadcast", (a) => a.blockCol === blockCol);
+    const start = blockCol * 2;
+    $(`cache-${i}`).innerHTML = x.slice(start, start + 2).map((value, offset) =>
+      `<span class="chip ${knowsBlock ? "known" : ""}">${knowsBlock ? `x${start + offset}=${value}` : `x${start + offset}=?`}</span>`
+    ).join("");
+    const partialDone = completed("block-compute", (a) => a.blockRow === blockRow && a.blockCol === blockCol);
+    const reduced = completed("block-reduce", (a) => a.blockRow === blockRow);
+    const partial = blockPartial(blockRow, blockCol);
+    $(`out-${i}`).innerHTML = reduced && blockCol === 0
+      ? `<span class="chip result">y=${y.slice(blockRow * 2, blockRow * 2 + 2).join(",")}</span>`
+      : partialDone
+        ? `<span class="chip partial">s=${partial.join(",")}</span>`
+        : `<span class="chip">s=?</span>`;
+  }
+}
+
+function blockPartial(blockRow, blockCol) {
+  const rowStart = blockRow * 2;
+  const colStart = blockCol * 2;
+  return [0, 1].map((offset) =>
+    A[rowStart + offset][colStart] * x[colStart] +
+    A[rowStart + offset][colStart + 1] * x[colStart + 1]
+  );
+}
+
+function resetHighlights() {
+  document.querySelectorAll(".cell").forEach((cell) => {
+    cell.classList.remove("dimmed", "focus-a", "focus-x", "focus-y");
+  });
+  document.querySelectorAll(".processor").forEach((card) => {
+    card.classList.remove("active", "inactive");
+  });
+  $("blockOutline").classList.remove("active");
+}
+
+function focusCells(selectors, className) {
+  document.querySelectorAll(".cell").forEach((cell) => cell.classList.add("dimmed"));
+  selectors.forEach((selector) => {
+    const cell = document.querySelector(selector);
+    if (cell) cell.classList.remove("dimmed");
+    if (cell) cell.classList.add(className);
+  });
+}
+
+function activeProcessors(ids) {
+  document.querySelectorAll(".processor:not(.hidden)").forEach((card) => {
+    const id = Number(card.id.replace("proc-", ""));
+    card.classList.toggle("active", ids.includes(id));
+    card.classList.toggle("inactive", !ids.includes(id));
+  });
+}
+
+function positionBlockOutline(blockRow, blockCol) {
+  const first = document.querySelector(`[data-a="${blockRow * 2}-${blockCol * 2}"]`);
+  const last = document.querySelector(`[data-a="${blockRow * 2 + 1}-${blockCol * 2 + 1}"]`);
+  const wrap = $("matrix").getBoundingClientRect();
+  const start = first.getBoundingClientRect();
+  const end = last.getBoundingClientRect();
+  const outline = $("blockOutline");
+  outline.style.left = `${start.left - wrap.left - 3}px`;
+  outline.style.top = `${start.top - wrap.top - 3}px`;
+  outline.style.width = `${end.right - start.left + 6}px`;
+  outline.style.height = `${end.bottom - start.top + 6}px`;
+  outline.classList.add("active");
+}
+
+function renderSnapshot() {
+  resetHighlights();
+  setupProcessorCards();
+
+  for (let row = 0; row < 4; row += 1) {
+    const yCell = document.querySelector(`[data-y="${row}"]`);
+    const isDone = mode === "1d"
+      ? completed("row-result", (a) => a.row === row)
+      : completed("block-reduce", (a) => a.blockRow === Math.floor(row / 2));
+    yCell.textContent = isDone ? y[row] : "?";
+    yCell.classList.toggle("pending", !isDone);
+    yCell.classList.toggle("done", isDone);
+  }
+
+  const previous = actions[cursor - 1];
+  const next = actions[cursor];
+  const display = previous || next;
+  $("progressBar").style.width = `${actions.length ? cursor / actions.length * 100 : 0}%`;
+  $("stepCaption").textContent = `${cursor} / ${actions.length}`;
+  $("phaseCaption").textContent = display ? display.phase : "P\u0159ipraveno";
+  $("backBtn").disabled = cursor === 0 || animationBusy;
+  $("nextBtn").disabled = cursor >= actions.length || animationBusy;
+
+  if (!previous) {
+    $("stepTitle").textContent = mode === "1d" ? "Rozd\u011blen\u00e1 data" : "Blokov\u00e9 rozlo\u017een\u00ed";
+    $("stepDetail").innerHTML = mode === "1d"
+      ? "Ka\u017ed\u00fd procesor vlastn\u00ed dva \u0159\u00e1dky matice A a pouze polovinu vektoru x."
+      : "Ka\u017ed\u00fd ze \u010dty\u0159 procesor\u016f vlastn\u00ed blok matice A o velikosti 2\u00d72.";
+    $("explanation").innerHTML = mode === "1d"
+      ? `Ne\u017e lze vypo\u010d\u00edtat skal\u00e1rn\u00ed sou\u010diny, mus\u00ed oba procesory zn\u00e1t <strong>cel\u00fd vektor x</strong>. Stiskni <span class="accent">P\u0159ehr\u00e1t</span> nebo krokuj ru\u010dn\u011b.`
+      : `Vektor x je rozd\u011blen na bloky. Ka\u017ed\u00fd blok se nejprve roze\u0161le procesor\u016fm ve spr\u00e1vn\u00e9m sloupci procesorov\u00e9 m\u0159\u00ed\u017eky.`;
+    $("formula").innerHTML = "y[i] = &Sigma;<sub>j</sub> A[i,j] &middot; x[j]";
+    return;
+  }
+
+  if (previous.type === "intro") {
+    $("stepTitle").textContent = mode === "1d" ? "Start: \u0159\u00e1dkov\u00e9 rozlo\u017een\u00ed" : "Start: blokov\u00e9 rozlo\u017een\u00ed";
+    $("stepDetail").textContent = mode === "1d"
+      ? "P0 dostal prvn\u00ed dva \u0159\u00e1dky, P1 posledn\u00ed dva."
+      : "Procesory tvo\u0159\u00ed m\u0159\u00ed\u017eku 2\u00d72 a ka\u017ed\u00fd dr\u017e\u00ed jeden blok A.";
+    $("explanation").innerHTML = mode === "1d"
+      ? `Matice je rozd\u011blena <strong>po \u0159\u00e1dc\u00edch</strong>. V\u00fdpo\u010det \u0159\u00e1dk\u016f pak prob\u00edh\u00e1 paraleln\u011b, ale nejd\u0159\u00edv je nutn\u00fd broadcast vektoru.`
+      : `Blokov\u00e9 rozlo\u017een\u00ed sni\u017euje velikost lok\u00e1ln\u00edch dat. Nyn\u00ed roze\u0161leme spr\u00e1vn\u00e9 bloky vektoru x.`;
+    $("formula").innerHTML = "y = A &middot; x";
+    return;
+  }
+
+  if (previous.type === "broadcast") {
+    const start = previous.segment * 2;
+    activeProcessors([0, 1]);
+    focusCells([`[data-x="${start}"]`, `[data-x="${start + 1}"]`], "focus-x");
+    $("stepTitle").textContent = `Broadcast bloku x[${start}:${start + 2}]`;
+    $("stepDetail").textContent = `Procesor P${previous.segment} odeslal svoji polovinu vektoru druh\u00e9mu procesoru.`;
+    $("explanation").innerHTML = `P${previous.segment} pos\u00edl\u00e1 hodnoty <strong>x[${start}] = ${x[start]}</strong> a <strong>x[${start + 1}] = ${x[start + 1]}</strong>. Po obou p\u0159enosech bude m\u00edt ka\u017ed\u00fd procesor lok\u00e1ln\u00ed kopii cel\u00e9ho vektoru.`;
+    $("formula").innerHTML = `P${previous.segment} &rarr; P${1 - previous.segment}: &nbsp; [${x[start]}, ${x[start + 1]}]`;
+    return;
+  }
+
+  if (previous.type === "term") {
+    const {row, col} = previous;
+    const owner = owner1d(row);
+    activeProcessors([owner]);
+    focusCells([`[data-a="${row}-${col}"]`], "focus-a");
+    document.querySelector(`[data-x="${col}"]`).classList.remove("dimmed");
+    document.querySelector(`[data-x="${col}"]`).classList.add("focus-x");
+    const doneTerms = completedAll("term", (a) => a.row === row);
+    const parts = doneTerms.map((action) => `${A[row][action.col]}\u00b7${x[action.col]}`);
+    const partial = doneTerms.reduce((sum, action) => sum + A[row][action.col] * x[action.col], 0);
+    $("stepTitle").textContent = `Skal\u00e1rn\u00ed sou\u010din: y[${row}]`;
+    $("stepDetail").textContent = `P${owner} n\u00e1sob\u00ed dvojici A[${row},${col}] \u00d7 x[${col}] a p\u0159i\u010d\u00edt\u00e1 ji do lok\u00e1ln\u00edho sou\u010dtu.`;
+    $("explanation").innerHTML = `Zv\u00fdrazn\u011bn\u00e9 hodnoty tvo\u0159\u00ed jeden \u010dlen sumy: <strong>${A[row][col]} &middot; ${x[col]} = ${A[row][col] * x[col]}</strong>. Pr\u016fb\u011b\u017en\u00fd sou\u010det je <strong class="accent">${partial}</strong>.`;
+    $("formula").innerHTML = `y[${row}] = ${parts.join(" + ")}${col < 3 ? " + \u2026" : ""}<br><span style="color:#86efac">s = ${partial}</span>`;
+    return;
+  }
+
+  if (previous.type === "row-result") {
+    const {row} = previous;
+    const owner = owner1d(row);
+    activeProcessors([owner]);
+    const yCell = document.querySelector(`[data-y="${row}"]`);
+    yCell.classList.add("focus-y");
+    $("stepTitle").textContent = `Hotovo: y[${row}] = ${y[row]}`;
+    $("stepDetail").textContent = `P${owner} ulo\u017eil v\u00fdsledek skal\u00e1rn\u00edho sou\u010dinu do vektoru y.`;
+    $("explanation").innerHTML = `Cel\u00fd \u0159\u00e1dek A[${row},:] byl vyn\u00e1soben vektorem x a se\u010dten. Hodnota <strong class="accent">${y[row]}</strong> se zapisuje do spr\u00e1vn\u00e9 pozice vektoru y.`;
+    $("formula").innerHTML = `y[${row}] = ${A[row].map((value, col) => `${value}\u00b7${x[col]}`).join(" + ")} = <span style="color:#86efac">${y[row]}</span>`;
+    return;
+  }
+
+  if (previous.type === "block-broadcast") {
+    const start = previous.blockCol * 2;
+    activeProcessors([previous.blockCol, previous.blockCol + 2]);
+    focusCells([`[data-x="${start}"]`, `[data-x="${start + 1}"]`], "focus-x");
+    $("stepTitle").textContent = `Broadcast bloku x[${start}:${start + 2}]`;
+    $("stepDetail").textContent = "Blok vektoru putuje pod\u00e9l sloupce procesorov\u00e9 m\u0159\u00ed\u017eky.";
+    $("explanation").innerHTML = `Procesory ve sloupci ${previous.blockCol} dostanou hodnoty <strong>[${x[start]}, ${x[start + 1]}]</strong>. Ty odpov\u00eddaj\u00ed sloupc\u016fm jejich blok\u016f matice A.`;
+    $("formula").innerHTML = `x[${start}:${start + 2}] = [${x[start]}, ${x[start + 1]}]`;
+    return;
+  }
+
+  if (previous.type === "block-compute") {
+    const {blockRow, blockCol} = previous;
+    const proc = blockRow * 2 + blockCol;
+    const partial = blockPartial(blockRow, blockCol);
+    activeProcessors([proc]);
+    positionBlockOutline(blockRow, blockCol);
+    const start = blockCol * 2;
+    focusCells([
+      `[data-a="${blockRow * 2}-${start}"]`,
+      `[data-a="${blockRow * 2}-${start + 1}"]`,
+      `[data-a="${blockRow * 2 + 1}-${start}"]`,
+      `[data-a="${blockRow * 2 + 1}-${start + 1}"]`,
+    ], "focus-a");
+    document.querySelectorAll(`[data-x="${start}"], [data-x="${start + 1}"]`).forEach((cell) => {
+      cell.classList.remove("dimmed");
+      cell.classList.add("focus-x");
+    });
+    $("stepTitle").textContent = `P${proc}: blok A[${blockRow},${blockCol}] \u00d7 x[${blockCol}]`;
+    $("stepDetail").textContent = "Procesor po\u010d\u00edt\u00e1 dva d\u00edl\u010d\u00ed skal\u00e1rn\u00ed sou\u010diny.";
+    $("explanation").innerHTML = `Blok matice 2\u00d72 se n\u00e1sob\u00ed odpov\u00eddaj\u00edc\u00edm blokem x. Vznikne lok\u00e1ln\u00ed meziv\u00fdsledek <strong class="accent">[${partial.join(", ")}]</strong>.`;
+    $("formula").innerHTML = `s<sub>${blockRow},${blockCol}</sub> = A<sub>${blockRow},${blockCol}</sub> &middot; x<sub>${blockCol}</sub><br><span style="color:#e9d5ff">= [${partial.join(", ")}]</span>`;
+    return;
+  }
+
+  if (previous.type === "block-reduce") {
+    const {blockRow} = previous;
+    const left = blockPartial(blockRow, 0);
+    const right = blockPartial(blockRow, 1);
+    activeProcessors([blockRow * 2, blockRow * 2 + 1]);
+    const first = blockRow * 2;
+    document.querySelector(`[data-y="${first}"]`).classList.add("focus-y");
+    document.querySelector(`[data-y="${first + 1}"]`).classList.add("focus-y");
+    $("stepTitle").textContent = `Redukce mezisou\u010dt\u016f pro y[${first}:${first + 2}]`;
+    $("stepDetail").textContent = "Dva blokov\u00e9 meziv\u00fdsledky se po \u0159\u00e1dku procesor\u016f se\u010dtou.";
+    $("explanation").innerHTML = `Procesory spoj\u00ed sv\u00e9 lok\u00e1ln\u00ed v\u00fdsledky: <strong>[${left.join(", ")}] + [${right.join(", ")}]</strong>. Hotov\u00fd blok y je <strong class="accent">[${y[first]}, ${y[first + 1]}]</strong>.`;
+    $("formula").innerHTML = `y<sub>${blockRow}</sub> = [${left.join(", ")}] + [${right.join(", ")}]<br><span style="color:#86efac">= [${y[first]}, ${y[first + 1]}]</span>`;
+    return;
+  }
+
+  $("stepTitle").textContent = "V\u00fdpo\u010det dokon\u010den";
+  $("stepDetail").textContent = "Vektor y obsahuje v\u00fdsledky v\u0161ech skal\u00e1rn\u00edch sou\u010din\u016f.";
+  $("explanation").innerHTML = mode === "1d"
+    ? `Po jednor\u00e1zov\u00e9m broadcastu x mohou procesory po\u010d\u00edtat sv\u00e9 \u0159\u00e1dky <strong>nez\u00e1visle a paraleln\u011b</strong>.`
+    : `Po broadcastu blok\u016f x, lok\u00e1ln\u00edch blokov\u00fdch sou\u010dinech a redukci vznikl kompletn\u00ed vektor y.`;
+  $("formula").innerHTML = `y = [${y.join(", ")}]<sup>T</sup>`;
+}
+
+function pointFor(element) {
+  const sceneRect = $("scene").getBoundingClientRect();
+  const rect = element.getBoundingClientRect();
+  return {
+    x: rect.left - sceneRect.left + rect.width / 2,
+    y: rect.top - sceneRect.top + rect.height / 2,
+  };
+}
+
+function fly(from, to, text, color, className = "", delay = 0) {
+  const particle = document.createElement("span");
+  const start = pointFor(from);
+  const end = pointFor(to);
+  particle.className = `particle ${className}`;
+  particle.textContent = text;
+  particle.style.setProperty("--particle", color);
+  particle.style.setProperty("--duration", `${speed()}ms`);
+  particle.style.setProperty("--x1", `${start.x}px`);
+  particle.style.setProperty("--y1", `${start.y}px`);
+  particle.style.setProperty("--xm", `${(start.x + end.x) / 2}px`);
+  particle.style.setProperty("--ym", `${Math.min(start.y, end.y) - 30}px`);
+  particle.style.setProperty("--x2", `${end.x}px`);
+  particle.style.setProperty("--y2", `${end.y}px`);
+  particle.style.animationDelay = `${delay}ms`;
+  $("scene").appendChild(particle);
+  setTimeout(() => particle.remove(), speed() + delay + 80);
+}
+
+function speed() {
+  return Number($("speedRange").value);
+}
+
+function pause(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function animateAction(action) {
+  const duration = speed();
+  if (action.type === "broadcast") {
+    const start = action.segment * 2;
+    const target = $(`cache-${1 - action.segment}`);
+    fly(document.querySelector(`[data-x="${start}"]`), target, `x${start}`, "#22d3ee", "flying-chip");
+    fly(document.querySelector(`[data-x="${start + 1}"]`), target, `x${start + 1}`, "#22d3ee", "flying-chip", 110);
+    await pause(duration + 150);
+    return;
+  }
+
+  if (action.type === "term") {
+    const aCell = document.querySelector(`[data-a="${action.row}-${action.col}"]`);
+    const xCell = document.querySelector(`[data-x="${action.col}"]`);
+    fly(aCell, $("formulaCard"), String(A[action.row][action.col]), "#fbbf24");
+    fly(xCell, $("formulaCard"), String(x[action.col]), "#22d3ee", "", 80);
+    await pause(duration + 120);
+    return;
+  }
+
+  if (action.type === "row-result") {
+    fly($("formulaCard"), document.querySelector(`[data-y="${action.row}"]`), String(y[action.row]), "#4ade80");
+    await pause(duration + 80);
+    return;
+  }
+
+  if (action.type === "block-broadcast") {
+    const start = action.blockCol * 2;
+    const target = $(`cache-${action.blockCol + 2}`);
+    fly(document.querySelector(`[data-x="${start}"]`), target, `x${start}`, "#22d3ee", "flying-chip");
+    fly(document.querySelector(`[data-x="${start + 1}"]`), target, `x${start + 1}`, "#22d3ee", "flying-chip", 110);
+    await pause(duration + 150);
+    return;
+  }
+
+  if (action.type === "block-compute") {
+    const first = document.querySelector(`[data-a="${action.blockRow * 2}-${action.blockCol * 2}"]`);
+    const out = $(`out-${action.blockRow * 2 + action.blockCol}`);
+    fly(first, out, "A\u00d7x", "#c084fc", "flying-chip");
+    await pause(duration + 80);
+    return;
+  }
+
+  if (action.type === "block-reduce") {
+    const source = $(`out-${action.blockRow * 2 + 1}`);
+    const firstRow = action.blockRow * 2;
+    fly(source, document.querySelector(`[data-y="${firstRow}"]`), "\u03a3", "#4ade80");
+    fly(source, document.querySelector(`[data-y="${firstRow + 1}"]`), "\u03a3", "#4ade80", "", 100);
+    await pause(duration + 140);
+    return;
+  }
+
+  await pause(Math.min(450, duration / 2));
+}
+
+async function forward() {
+  if (animationBusy || cursor >= actions.length) return;
+  animationBusy = true;
+  renderSnapshot();
+  await animateAction(actions[cursor]);
+  cursor += 1;
+  animationBusy = false;
+  renderSnapshot();
+}
+
+function backward() {
+  if (animationBusy || cursor <= 0) return;
+  cursor -= 1;
+  renderSnapshot();
+}
+
+async function play() {
+  if (playing) {
+    playing = false;
+    playToken += 1;
+    $("playBtn").innerHTML = "&#9654; P&#345;ehr&aacute;t";
+    return;
+  }
+  if (cursor >= actions.length) cursor = 0;
+  playing = true;
+  const token = ++playToken;
+  $("playBtn").innerHTML = "&#10074;&#10074; Pauza";
+  while (playing && token === playToken && cursor < actions.length) {
+    await forward();
+    await pause(Math.max(80, speed() * .12));
+  }
+  if (token === playToken) {
+    playing = false;
+    $("playBtn").innerHTML = "&#9654; P&#345;ehr&aacute;t";
+  }
+}
+
+function reset() {
+  playing = false;
+  playToken += 1;
+  animationBusy = false;
+  cursor = 0;
+  document.querySelectorAll(".particle").forEach((particle) => particle.remove());
+  actions = makeActions();
+  $("playBtn").innerHTML = "&#9654; P&#345;ehr&aacute;t";
+  renderSnapshot();
+}
+
+function setMode(nextMode) {
+  mode = nextMode;
+  $("mode1d").classList.toggle("active", mode === "1d");
+  $("mode2d").classList.toggle("active", mode === "2d");
+  $("procMetric").textContent = mode === "1d" ? "p = 2" : "p = 4 (2\u00d72)";
+  $("modeMetric").textContent = mode === "1d" ? "1D \u0159\u00e1dky" : "2D bloky";
+  $("complexity").innerHTML = mode === "1d"
+    ? `Nejd\u0159\u00edv <strong>all-to-all broadcast</strong> x, potom lok\u00e1ln\u00ed \u0159\u00e1dky.<br><br>
+       <code>T<sub>P</sub> = &Theta;(n&sup2;/p) + t<sub>s</sub>p + t<sub>w</sub>n</code><br>
+       <code>W<sub>iso</sub> = &Theta;(p&sup2;)</code>`
+    : `Broadcast blok\u016f x pod\u00e9l sloupc\u016f, blokov\u00fd sou\u010din a redukce po \u0159\u00e1dc\u00edch.<br><br>
+       <code>T<sub>P</sub> = &Theta;(n&sup2;/p + n log p / &radic;p)</code><br>
+       <code>W<sub>iso</sub> = &Theta;(p<sup>3/2</sup>)</code>`;
+  reset();
+}
+
+$("playBtn").addEventListener("click", play);
+$("backBtn").addEventListener("click", backward);
+$("nextBtn").addEventListener("click", forward);
+$("resetBtn").addEventListener("click", reset);
+$("mode1d").addEventListener("click", () => setMode("1d"));
+$("mode2d").addEventListener("click", () => setMode("2d"));
+$("speedRange").addEventListener("input", () => {
+  document.documentElement.style.setProperty("--speed", `${speed()}ms`);
+});
+
+renderBase();
+setMode("1d");
+</script>
+</body>
+</html>

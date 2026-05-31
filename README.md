@@ -22,8 +22,8 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 | ✅ Dokončené      | Databáze 2 😊                 | Jirka    |
 | ❌ Nerozpracované | Softwarové architektury 😊    |          |
 | ❌ Nerozpracované | Bezpečnost systémů 😊         |          |
-| 🟡 Rozpracované  | Efektivní software 🤨         | Jirka    |
-| ❌ Nerozpracované | Paralelní algoritmy 💀        |          |
+| ✅ Dokončené      | Efektivní software 🤨         | Jirka    |
+| 🟡 Rozpracované   | Paralelní algoritmy 💀        | Jirka    |
 | ✅ Dokončené      | Zajištění kvality software 😊 | Artur    |
 ### Počítačová grafika
 
@@ -47,3 +47,19 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 `[[Nějaký odkaz|Label co se zobrazí reálně v textu]]`
 
 https://obsidian.md/help/syntax
+
+
+**Jak na interaktivní widgety:**
+
+Vložte je jako html soubor do web/static/Assets/předmět a do .md souboru je pak importujte jako:
+```html
+<iframe 
+    src="https://mrshasha.github.io/cvut/Assets/ESW/cache.html" 
+    width="100%" 
+    height="600px" 
+    frameborder="0" 
+    style="border-radius: 8px; border: 1px solid #444;">
+</iframe>
+
+```
+V Obsidianu se začnou renderovat až poté, co se vygeneruje web, jelikož si to tahá z webu a ne lokálně. Lokálně by to nefungovalo kvůli CSP pravidlu a takhle to je syncnutý i s webem.

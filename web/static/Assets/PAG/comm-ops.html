@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kolektivní komunikační operace | interaktivní přehled</title>
+<style>
+:root {
+  --bg: #09101f;
+  --panel: rgba(18, 29, 52, .94);
+  --soft: rgba(255, 255, 255, .045);
+  --line: rgba(142, 164, 204, .2);
+  --text: #edf4ff;
+  --muted: #9aa9c8;
+  --blue: #62a9ff;
+  --cyan: #56e0dc;
+  --green: #6ee7a8;
+  --orange: #ffbd78;
+  --violet: #aa91ff;
+  --shadow: 0 18px 45px rgba(0, 0, 0, .22);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 18px;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(72, 123, 232, .17), transparent 26rem),
+    radial-gradient(circle at 95% 95%, rgba(68, 209, 186, .11), transparent 28rem),
+    var(--bg);
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+.shell { width: min(1460px, 100%); margin: 0 auto; }
+.hero { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 13px; }
+.eyebrow { color: var(--cyan); font-size: 11px; font-weight: 850; letter-spacing: .17em; text-transform: uppercase; }
+h1 { margin: 5px 0 0; font-size: clamp(21px, 2.8vw, 30px); letter-spacing: -.045em; }
+.hero p { max-width: 760px; margin: 6px 0 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.hero-tag { align-self: center; padding: 9px 11px; border: 1px solid rgba(86, 224, 220, .32); border-radius: 12px; color: var(--cyan); background: rgba(86, 224, 220, .07); font-size: 11px; font-weight: 850; }
+.layout { display: grid; grid-template-columns: 245px minmax(0, 1fr) 318px; gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 15px; background: var(--panel); box-shadow: var(--shadow); }
+.card-pad { padding: 12px; }
+h2 { margin: 0 0 9px; color: #dceaff; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+.op-list { display: grid; gap: 6px; }
+.op {
+  width: 100%; padding: 9px; border: 1px solid rgba(142, 164, 204, .13); border-radius: 9px;
+  color: var(--muted); background: var(--soft); text-align: left; transition: .18s ease;
+}
+.op:hover { border-color: rgba(98, 169, 255, .52); color: var(--text); transform: translateX(2px); }
+.op.active { border-color: rgba(86, 224, 220, .65); color: #e3fffe; background: rgba(86, 224, 220, .11); }
+.op strong { display: block; font-size: 11px; }
+.op span { display: block; margin-top: 3px; color: inherit; font-size: 9px; line-height: 1.35; opacity: .78; }
+.scene-card { overflow: hidden; }
+.scene-head, .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.scene-head { padding: 12px 13px 8px; }
+.scene-title { font-size: 14px; font-weight: 900; }
+.scene-sub { margin-top: 3px; color: var(--muted); font-size: 11px; }
+.toolbar { flex-wrap: wrap; justify-content: flex-end; }
+.btn {
+  padding: 7px 9px; border: 1px solid transparent; border-radius: 8px; color: var(--muted);
+  background: rgba(255, 255, 255, .055); font-size: 11px; font-weight: 850; transition: .18s ease;
+}
+.btn:hover { border-color: rgba(98, 169, 255, .52); color: var(--text); transform: translateY(-1px); }
+.btn.play { color: #07172c; background: linear-gradient(135deg, var(--cyan), #79b9ff); }
+.btn:disabled { cursor: default; opacity: .38; transform: none; }
+.speed { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 10px; }
+.speed input { width: 62px; accent-color: var(--cyan); }
+.canvas-wrap { padding: 0 9px; }
+canvas { display: block; width: 100%; height: 310px; border: 1px solid rgba(142, 164, 204, .15); border-radius: 12px; background: #0b1528; }
+.round-strip { display: flex; align-items: center; gap: 5px; padding: 9px 11px; overflow-x: auto; }
+.round {
+  flex: 1 0 42px; min-width: 42px; height: 5px; border-radius: 99px; background: rgba(142, 164, 204, .2); transition: .2s ease;
+}
+.round.done { background: var(--green); }
+.round.active { background: var(--orange); box-shadow: 0 0 12px rgba(255, 189, 120, .5); }
+.lesson { display: grid; gap: 6px; padding: 11px 13px 13px; border-top: 1px solid var(--line); background: rgba(8, 16, 31, .55); }
+.lesson-phase { color: var(--cyan); font-size: 10px; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
+.lesson-title { font-size: 15px; font-weight: 900; }
+.lesson-text { color: var(--muted); font-size: 11px; line-height: 1.55; }
+.lesson-formula { padding: 8px 9px; border: 1px solid rgba(98, 169, 255, .23); border-radius: 8px; color: #cfe6ff; background: rgba(98, 169, 255, .07); font: 750 11px/1.45 ui-monospace, Consolas, monospace; }
+.side { display: grid; align-content: start; gap: 10px; }
+.formula { padding: 8px 9px; border: 1px solid rgba(86, 224, 220, .22); border-radius: 8px; color: var(--cyan); background: rgba(86, 224, 220, .07); font: 750 11px/1.45 ui-monospace, Consolas, monospace; }
+.intuition { margin-top: 7px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.slider-grid { display: grid; gap: 8px; }
+.slider-row { display: grid; grid-template-columns: 76px 1fr 38px; align-items: center; gap: 6px; color: var(--muted); font-size: 10px; }
+.slider-row input { width: 100%; accent-color: var(--cyan); }
+.slider-row output { color: var(--text); font: 750 10px ui-monospace, Consolas, monospace; text-align: right; }
+.compare { display: grid; gap: 7px; margin-top: 10px; }
+.compare-row { display: grid; grid-template-columns: 67px 1fr 48px; align-items: center; gap: 6px; color: var(--muted); font-size: 10px; }
+.bar-track { height: 8px; overflow: hidden; border-radius: 99px; background: rgba(142, 164, 204, .14); }
+.bar { height: 100%; border-radius: inherit; transition: width .3s ease; }
+.bar.hyper { background: var(--cyan); }
+.bar.mesh { background: var(--green); }
+.bar.ring { background: var(--orange); }
+.compare-row b { color: var(--text); font: 750 10px ui-monospace, Consolas, monospace; text-align: right; }
+.cost-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
+.cost { padding: 7px 5px; border: 1px solid rgba(142, 164, 204, .13); border-radius: 8px; background: var(--soft); text-align: center; }
+.cost strong { display: block; font-size: 15px; }
+.cost span { display: block; margin-top: 2px; color: var(--muted); font-size: 8px; letter-spacing: .08em; text-transform: uppercase; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; color: var(--muted); font-size: 9px; }
+.legend i { display: inline-block; width: 7px; height: 7px; margin-right: 4px; border-radius: 50%; }
+.legend .node { background: var(--green); }.legend .send { background: var(--cyan); }.legend .recv { background: var(--orange); }.legend .packet { background: #ffe596; }
+@media (max-width: 1050px) { .layout { grid-template-columns: 220px minmax(0, 1fr); } .side { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; } }
+@media (max-width: 720px) { body { padding: 11px; } .hero { flex-direction: column; } .hero-tag { align-self: start; } .layout { grid-template-columns: 1fr; } .side { grid-column: auto; grid-template-columns: 1fr; } canvas { height: 280px; } }
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Paralelní algoritmy / rychlá orientace</div>
+      <h1>Kolektivní komunikační operace</h1>
+      <p>Vyber operaci a sleduj její charakteristický pohyb dat. Animace ukazuje komunikační vzor na osmi procesorech; laboratoř vpravo samostatně počítá cenu pro zvolené <strong>p</strong>, <strong>m</strong>, <strong>t<sub>s</sub></strong> a <strong>t<sub>w</sub></strong>.</p>
+    </div>
+    <div class="hero-tag">cíl: méně startupů + méně slov</div>
+  </header>
+
+  <section class="layout">
+    <aside class="card card-pad">
+      <h2>Vyber operaci</h2>
+      <div class="op-list" id="operationList"></div>
+    </aside>
+
+    <section class="card scene-card">
+      <div class="scene-head">
+        <div>
+          <div class="scene-title" id="sceneTitle"></div>
+          <div class="scene-sub" id="sceneSubtitle"></div>
+        </div>
+        <div class="toolbar">
+          <label class="speed">rychlost <input id="speed" type="range" min="400" max="1400" value="800" step="80"></label>
+          <button class="btn" id="resetBtn">&#8635; Reset</button>
+          <button class="btn" id="backBtn">&#9664; Zpět</button>
+          <button class="btn" id="nextBtn">Další &#9654;</button>
+          <button class="btn play" id="playBtn">&#9654; Přehrát</button>
+        </div>
+      </div>
+      <div class="canvas-wrap"><canvas id="canvas" role="img" aria-label="Animovaný komunikační vzor"></canvas></div>
+      <div class="round-strip" id="roundStrip"></div>
+      <div class="lesson">
+        <div class="lesson-phase" id="lessonPhase"></div>
+        <div class="lesson-title" id="lessonTitle"></div>
+        <div class="lesson-text" id="lessonText"></div>
+        <div class="lesson-formula" id="lessonFormula"></div>
+      </div>
+    </section>
+
+    <aside class="side">
+      <section class="card card-pad">
+        <h2>Co si zapamatovat</h2>
+        <div class="formula" id="formula"></div>
+        <div class="intuition" id="intuition"></div>
+        <div class="legend">
+          <span><i class="node"></i>má data</span><span><i class="send"></i>odesílá</span>
+          <span><i class="recv"></i>přijímá</span><span><i class="packet"></i>paket</span>
+        </div>
+      </section>
+      <section class="card card-pad">
+        <h2>Cenová laboratoř</h2>
+        <div class="slider-grid">
+          <label class="slider-row"><span>p = 2<sup>k</sup></span><input id="pRange" type="range" min="1" max="8" value="4"><output id="pOut"></output></label>
+          <label class="slider-row"><span>m slov</span><input id="mRange" type="range" min="1" max="512" value="64"><output id="mOut"></output></label>
+          <label class="slider-row"><span>t<sub>s</sub> latence</span><input id="tsRange" type="range" min="1" max="100" value="10"><output id="tsOut"></output></label>
+          <label class="slider-row"><span>t<sub>w</sub> / slovo</span><input id="twRange" type="range" min="1" max="20" value="1"><output id="twOut"></output></label>
+        </div>
+        <div class="compare" id="compare"></div>
+        <div class="cost-grid">
+          <div class="cost"><strong id="roundCost">0</strong><span>kol / startupů</span></div>
+          <div class="cost"><strong id="wordCost">0</strong><span>slov po cestě</span></div>
+          <div class="cost"><strong id="bestCost">0</strong><span>nejlepší čas</span></div>
+        </div>
+      </section>
+    </aside>
+  </section>
+</main>
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const els = {
+  list: document.getElementById("operationList"), title: document.getElementById("sceneTitle"),
+  subtitle: document.getElementById("sceneSubtitle"), strip: document.getElementById("roundStrip"),
+  phase: document.getElementById("lessonPhase"), lessonTitle: document.getElementById("lessonTitle"),
+  text: document.getElementById("lessonText"), lessonFormula: document.getElementById("lessonFormula"),
+  formula: document.getElementById("formula"), intuition: document.getElementById("intuition"),
+  compare: document.getElementById("compare"), roundCost: document.getElementById("roundCost"),
+  wordCost: document.getElementById("wordCost"), bestCost: document.getElementById("bestCost")
+};
+const controls = {
+  speed: document.getElementById("speed"), reset: document.getElementById("resetBtn"),
+  back: document.getElementById("backBtn"), next: document.getElementById("nextBtn"), play: document.getElementById("playBtn"),
+  p: document.getElementById("pRange"), m: document.getElementById("mRange"),
+  ts: document.getElementById("tsRange"), tw: document.getElementById("twRange")
+};
+const outputs = { p: document.getElementById("pOut"), m: document.getElementById("mOut"), ts: document.getElementById("tsOut"), tw: document.getElementById("twOut") };
+let selected = "broadcast", events = [], cursor = 0, active = null, flights = [], busy = false, playing = false, cssWidth = 0, cssHeight = 0, dpr = 1;
+
+const operations = {
+  broadcast: {
+    label: "One-to-All Broadcast", short: "jedna zpráva pro všechny", subtitle: "Počet informovaných procesorů se každé kolo zdvojnásobí.",
+    formula: "T = (t_s + t_w * m) * log2(p)", intuition: "Každý, kdo už zprávu zná, pomůže v dalším kole. Na hyperkrychli vede přenos vždy po přímé hraně.",
+    build: () => doubling("Broadcast", round => "Přidej další skupinu o velikosti " + (2 ** round), round => "m"),
+    costs: (ts, tw, m, p) => sameCosts((ts + tw * m) * Math.log2(p)), rounds: p => Math.log2(p), words: (m, p) => m * Math.log2(p)
+  },
+  allbroadcast: {
+    label: "All-to-All Broadcast", short: "každý zveřejní svůj blok", subtitle: "Na prstenu rotují bloky dat; po p - 1 posunech zná každý všechny bloky.",
+    formula: "T_ring = (t_s + t_w * m) * (p - 1)", intuition: "Každý procesor současně posílá dál blok, který právě drží. Objem přijatých dat je m * (p - 1).",
+    build: () => rotation("Rotace bloků", "blok dat"),
+    costs: (ts, tw, m, p) => ({ hyper: ts * Math.log2(p) + tw * m * (p - 1), mesh: 2 * ts * (Math.sqrt(p) - 1) + tw * m * (p - 1), ring: (ts + tw * m) * (p - 1) }),
+    rounds: p => p - 1, words: (m, p) => m * (p - 1)
+  },
+  allreduce: {
+    label: "All-Reduce", short: "agregace výsledku u všech", subtitle: "V každém kole si dvojice vymění částečný součet a ihned jej sloučí.",
+    formula: "T = (t_s + t_w * m) * log2(p)", intuition: "Zpráva se nezvětšuje: lokální operátor průběžně kombinuje data. Typický příklad je průměrování gradientů.",
+    build: () => exchange("Agregace částečných výsledků", round => "součet " + (2 ** (round + 1)) + " bloků"),
+    costs: (ts, tw, m, p) => sameCosts((ts + tw * m) * Math.log2(p)), rounds: p => Math.log2(p), words: (m, p) => m * Math.log2(p)
+  },
+  scatter: {
+    label: "Scatter", short: "unikátní díl pro každého", subtitle: "Zdroj posílá balíky určené menším a menším skupinám příjemců.",
+    formula: "T = t_s * log2(p) + t_w * m", intuition: "Na rozdíl od broadcastu se přenášený balík půlí. Součet velikostí po jedné cestě je nejvýše m.",
+    build: () => doubling("Rekurzivní půlení balíku", round => "Odděl polovinu balíku pro novou skupinu", round => "m/" + (2 ** (round + 1))),
+    costs: (ts, tw, m, p) => sameCosts(ts * Math.log2(p) + tw * m), rounds: p => Math.log2(p), words: m => m
+  },
+  personalized: {
+    label: "All-to-All Personalized", short: "unikátní zásilka pro každého", subtitle: "Total exchange: každý procesor má jiná data pro každého příjemce.",
+    formula: "T_hyper = (t_s + t_w * m) * (p - 1)", intuition: "Je nutné dopravit p * (p - 1) různých zásilek. Správné plánování zabraňuje zbytečným kolizím.",
+    build: () => rotation("Total exchange", "unikátní m_ij"),
+    costs: (ts, tw, m, p) => ({ hyper: (ts + tw * m) * (p - 1), mesh: 2 * (ts * (Math.sqrt(p) - 1) + tw * m * p / 2 * (Math.sqrt(p) - 1)), ring: ts * (p - 1) + tw * m * p * (p - 1) / 2 }),
+    rounds: p => p - 1, words: (m, p) => m * (p - 1)
+  },
+  prefix: {
+    label: "Prefix Sum", short: "součet všech předchůdců", subtitle: "Procesor P_i postupně získá příspěvky ze vzdáleností 1, 2 a 4.",
+    formula: "T = (t_s + t_w * m) * log2(p)", intuition: "V kole k přitéká výsledek ze vzdálenosti 2^k. Scan se používá pro kompakci i výpočet cílových pozic při řazení.",
+    build: prefixEvents,
+    costs: (ts, tw, m, p) => sameCosts((ts + tw * m) * Math.log2(p)), rounds: p => Math.log2(p), words: (m, p) => m * Math.log2(p)
+  }
+};
+
+function sameCosts(value) { return { hyper: value, mesh: value, ring: value }; }
+function makeEvent(phase, title, text, formula, sends) { return { phase, title, text, formula, sends }; }
+function doubling(phase, title, packet) {
+  const result = [];
+  for (let round = 0; round < 3; round++) {
+    const mask = 1 << round;
+    const sends = Array.from({ length: mask }, (_, from) => ({ from, to: from ^ mask, packet: packet(round) }));
+    result.push(makeEvent(phase, title(round), "Všechny zobrazené přenosy probíhají současně. Po dokončení kola se noví příjemci mohou sami stát odesílateli.", "|S_" + (round + 1) + "| = 2 * |S_" + round + "| = " + (2 ** (round + 1)), sends));
+  }
+  return result;
+}
+function rotation(phase, packet) {
+  return Array.from({ length: 7 }, (_, round) => makeEvent(phase, "Posun po prstenu " + (round + 1) + " / 7", "Každý procesor odešle držený blok sousedovi. Všechny linky pracují souběžně.", "počet dokončených rotací = " + (round + 1), Array.from({ length: 8 }, (_, from) => ({ from, to: (from + 1) % 8, packet }))));
+}
+function exchange(phase, packet) {
+  return Array.from({ length: 3 }, (_, round) => {
+    const mask = 1 << round, sends = [];
+    for (let from = 0; from < 8; from++) sends.push({ from, to: from ^ mask, packet: packet(round) });
+    return makeEvent(phase, "Výměna přes bit " + round, "Každý procesor si vymění průběžný výsledek s partnerem a lokálně oba bloky sloučí.", "agregováno bloků = " + (2 ** (round + 1)), sends);
+  });
+}
+function prefixEvents() {
+  return [1, 2, 4].map((offset, round) => makeEvent("Paralelní scan", "Přičti prefix ze vzdálenosti " + offset, "Procesory, které mají předchůdce v dané vzdálenosti, převezmou jeho dosavadní prefix.", "offset = 2^" + round + " = " + offset, Array.from({ length: 8 - offset }, (_, index) => ({ from: index, to: index + offset, packet: "sum" }))));
+}
+
+function reset(key = selected) { selected = key; events = operations[selected].build(); cursor = 0; active = null; flights = []; busy = false; playing = false; render(); }
+function positions() {
+  const radius = Math.min(120, cssWidth * .27, cssHeight * .35), cx = cssWidth / 2, cy = cssHeight / 2 + 3;
+  return Array.from({ length: 8 }, (_, id) => { const angle = -Math.PI / 2 + id * Math.PI / 4; return { x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius }; });
+}
+function resize() { const rect = canvas.getBoundingClientRect(); const w = Math.max(300, Math.floor(rect.width)), h = Math.max(240, Math.floor(rect.height)), ratio = Math.max(1, devicePixelRatio || 1); if (w === cssWidth && h === cssHeight && ratio === dpr) return; cssWidth = w; cssHeight = h; dpr = ratio; canvas.width = w * ratio; canvas.height = h * ratio; }
+function knownNodes() {
+  if (selected === "broadcast" || selected === "scatter") return new Set(Array.from({ length: 2 ** cursor }, (_, id) => id));
+  return new Set(Array.from({ length: 8 }, (_, id) => id));
+}
+function path(send, nodes) { return { from: nodes[send.from], to: nodes[send.to] }; }
+function point(route, t) { return { x: route.from.x + (route.to.x - route.from.x) * t, y: route.from.y + (route.to.y - route.from.y) * t }; }
+function draw() {
+  resize(); const nodes = positions(), known = knownNodes(), senders = new Set(active ? active.sends.map(x => x.from) : []), receivers = new Set(active ? active.sends.map(x => x.to) : []);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, cssWidth, cssHeight);
+  const bg = ctx.createLinearGradient(0, 0, cssWidth, cssHeight); bg.addColorStop(0, "#0c1930"); bg.addColorStop(1, "#091222"); ctx.fillStyle = bg; ctx.fillRect(0, 0, cssWidth, cssHeight);
+  ctx.strokeStyle = "rgba(142,164,204,.06)"; ctx.lineWidth = 1; for (let x = 18; x < cssWidth; x += 28) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, cssHeight); ctx.stroke(); } for (let y = 18; y < cssHeight; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(cssWidth, y); ctx.stroke(); }
+  ctx.strokeStyle = "rgba(142,164,204,.28)"; ctx.lineWidth = 2; for (let id = 0; id < 8; id++) { ctx.beginPath(); ctx.moveTo(nodes[id].x, nodes[id].y); ctx.lineTo(nodes[(id + 1) % 8].x, nodes[(id + 1) % 8].y); ctx.stroke(); }
+  if (active) active.sends.forEach(send => { const route = path(send, nodes); ctx.save(); ctx.strokeStyle = "rgba(86,224,220,.78)"; ctx.lineWidth = 2.5; ctx.setLineDash(Math.abs(send.to - send.from) === 1 || Math.abs(send.to - send.from) === 7 ? [] : [7, 6]); ctx.shadowColor = "#56e0dc"; ctx.shadowBlur = 11; ctx.beginPath(); ctx.moveTo(route.from.x, route.from.y); ctx.lineTo(route.to.x, route.to.y); ctx.stroke(); ctx.restore(); });
+  nodes.forEach((node, id) => { const has = known.has(id), sending = senders.has(id), receiving = receivers.has(id); ctx.save(); ctx.shadowColor = has ? "rgba(110,231,168,.5)" : "rgba(0,0,0,.4)"; ctx.shadowBlur = has ? 13 : 6; ctx.beginPath(); ctx.arc(node.x, node.y, 22, 0, Math.PI * 2); ctx.fillStyle = receiving ? "#423425" : has ? "#174d45" : "#1a2945"; ctx.fill(); ctx.lineWidth = sending || receiving ? 3 : 2; ctx.strokeStyle = receiving ? "#ffbd78" : sending ? "#56e0dc" : has ? "#6ee7a8" : "rgba(154,169,200,.55)"; ctx.stroke(); ctx.shadowBlur = 0; ctx.fillStyle = "#f5f8ff"; ctx.textAlign = "center"; ctx.font = "800 12px Segoe UI"; ctx.fillText("P" + id, node.x, node.y + 4); ctx.restore(); });
+  flights.forEach(flight => { if (flight.progress < 0 || flight.progress > 1) return; const p = point(path(flight.send, nodes), flight.progress); ctx.save(); ctx.shadowColor = "#ffe596"; ctx.shadowBlur = 14; ctx.fillStyle = "#ffe596"; ctx.beginPath(); ctx.arc(p.x, p.y, 7, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.fillStyle = "#28304b"; ctx.textAlign = "center"; ctx.font = "900 8px Consolas"; ctx.fillText("m", p.x, p.y + 3); ctx.restore(); });
+}
+function calculate() {
+  const p = 2 ** Number(controls.p.value), m = Number(controls.m.value), ts = Number(controls.ts.value), tw = Number(controls.tw.value), op = operations[selected], costs = op.costs(ts, tw, m, p), max = Math.max(costs.hyper, costs.mesh, costs.ring, 1);
+  outputs.p.textContent = p; outputs.m.textContent = m; outputs.ts.textContent = ts; outputs.tw.textContent = tw;
+  els.compare.innerHTML = [["hyper", "Hypercube"], ["mesh", "Mřížka"], ["ring", "Prsten"]].map(([key, label]) => '<div class="compare-row"><span>' + label + '</span><div class="bar-track"><div class="bar ' + key + '" style="width:' + (100 * costs[key] / max) + '%"></div></div><b>' + costs[key].toFixed(0) + '</b></div>').join("");
+  els.roundCost.textContent = op.rounds(p).toFixed(0); els.wordCost.textContent = op.words(m, p).toFixed(0); els.bestCost.textContent = Math.min(costs.hyper, costs.mesh, costs.ring).toFixed(0);
+}
+function render() {
+  const op = operations[selected], shown = active || (cursor ? events[cursor - 1] : null);
+  els.list.innerHTML = Object.entries(operations).map(([key, item]) => '<button class="op' + (key === selected ? " active" : "") + '" data-op="' + key + '"><strong>' + item.label + '</strong><span>' + item.short + '</span></button>').join("");
+  els.title.textContent = op.label; els.subtitle.textContent = op.subtitle; els.formula.textContent = op.formula; els.intuition.textContent = op.intuition;
+  if (shown) { els.phase.textContent = shown.phase; els.lessonTitle.textContent = shown.title; els.text.textContent = shown.text; els.lessonFormula.textContent = shown.formula; }
+  else { els.phase.textContent = "Start / nejdřív si všimni vzoru"; els.lessonTitle.textContent = "Spusť první komunikační kolo"; els.text.textContent = "Animace záměrně používá osm procesorů, aby byl pohyb dat čitelný. Cenová laboratoř vpravo může pracovat s jiným p."; els.lessonFormula.textContent = "odesílatel -- paket m --> příjemce"; }
+  els.strip.innerHTML = events.map((event, index) => '<div class="round' + (index < cursor ? " done" : active === event ? " active" : "") + '" title="kolo ' + (index + 1) + '"></div>').join("");
+  controls.back.disabled = busy || cursor === 0; controls.next.disabled = busy || cursor === events.length; controls.reset.disabled = busy; controls.play.innerHTML = playing ? "&#10074;&#10074; Pauza" : "&#9654; Přehrát";
+  els.list.querySelectorAll(".op").forEach(button => button.disabled = busy); calculate(); draw();
+}
+async function advance() {
+  if (busy || cursor >= events.length) return; busy = true; active = events[cursor]; flights = active.sends.map((send, index) => ({ send, delay: (index % 8) * 42, progress: -1 })); render();
+  const started = performance.now(), duration = Number(controls.speed.value), maxDelay = flights.length ? Math.max(...flights.map(x => x.delay)) : 0;
+  await new Promise(resolve => { function tick(now) { const elapsed = now - started; flights.forEach(f => f.progress = Math.max(-.01, Math.min(1, (elapsed - f.delay) / duration))); draw(); if (elapsed < duration + maxDelay) requestAnimationFrame(tick); else resolve(); } requestAnimationFrame(tick); });
+  cursor++; active = null; flights = []; busy = false; render(); await new Promise(resolve => setTimeout(resolve, 130));
+}
+async function togglePlay() { if (playing) { playing = false; render(); return; } if (cursor === events.length) reset(); playing = true; render(); while (playing && cursor < events.length) await advance(); playing = false; render(); }
+els.list.addEventListener("click", event => { const button = event.target.closest("[data-op]"); if (button && !busy) reset(button.dataset.op); });
+controls.reset.addEventListener("click", () => reset()); controls.back.addEventListener("click", () => { if (!busy && cursor) { cursor--; render(); } }); controls.next.addEventListener("click", advance); controls.play.addEventListener("click", togglePlay);
+[controls.p, controls.m, controls.ts, controls.tw].forEach(input => input.addEventListener("input", calculate)); window.addEventListener("resize", draw);
+reset();
+</script>
+</body>
+</html>

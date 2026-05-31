@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One-to-All Broadcast | interaktivni animace</title>
+<style>
+:root {
+  --bg: #09101f;
+  --panel: rgba(18, 29, 52, .92);
+  --panel-soft: rgba(26, 41, 70, .7);
+  --line: rgba(142, 164, 204, .2);
+  --muted: #9aa9c8;
+  --text: #edf4ff;
+  --blue: #62a9ff;
+  --cyan: #56e0dc;
+  --green: #6ee7a8;
+  --orange: #ffbd78;
+  --violet: #aa91ff;
+  --red: #ff8d9b;
+  --shadow: 0 18px 45px rgba(0, 0, 0, .22);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding: 18px;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(64, 114, 221, .18), transparent 28rem),
+    radial-gradient(circle at 92% 92%, rgba(52, 207, 187, .12), transparent 30rem),
+    var(--bg);
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+}
+
+button, select, input { font: inherit; }
+button { cursor: pointer; }
+
+.shell {
+  width: min(1420px, 100%);
+  margin: 0 auto;
+}
+
+.hero {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.eyebrow {
+  color: var(--cyan);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 5px 0 0;
+  font-size: clamp(21px, 2.8vw, 31px);
+  letter-spacing: -.045em;
+}
+
+.hero p {
+  max-width: 720px;
+  margin: 6px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.hero-badge {
+  flex: 0 0 auto;
+  padding: 10px 13px;
+  border: 1px solid rgba(86, 224, 220, .35);
+  border-radius: 14px;
+  color: var(--cyan);
+  background: rgba(86, 224, 220, .08);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.toolbar, .scene-card, .side-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 12px;
+}
+
+.topology-tabs, .controls, .control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topology-tabs { flex-wrap: wrap; }
+
+.topology-btn, .icon-btn, .play-btn {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, .045);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease;
+}
+
+.topology-btn {
+  padding: 8px 11px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.topology-btn:hover, .icon-btn:hover, .play-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(98, 169, 255, .55);
+  color: var(--text);
+}
+
+.topology-btn.active {
+  border-color: rgba(86, 224, 220, .55);
+  color: #dffefd;
+  background: rgba(86, 224, 220, .13);
+}
+
+.controls { flex-wrap: wrap; justify-content: flex-end; }
+
+.control-group {
+  padding: 0 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+select {
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: #172744;
+}
+
+input[type="range"] {
+  width: 86px;
+  accent-color: var(--cyan);
+}
+
+.play-btn, .icon-btn {
+  min-height: 34px;
+  padding: 7px 11px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.play-btn {
+  color: #07172c;
+  background: linear-gradient(135deg, var(--cyan), #76b6ff);
+}
+
+.icon-btn:disabled, .play-btn:disabled {
+  cursor: default;
+  opacity: .38;
+  transform: none;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 14px;
+}
+
+.scene-card {
+  overflow: hidden;
+}
+
+.scene-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 15px 9px;
+}
+
+.scene-title {
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.scene-subtitle {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.status-pill {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border: 1px solid rgba(110, 231, 168, .35);
+  border-radius: 999px;
+  color: var(--green);
+  background: rgba(110, 231, 168, .08);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.canvas-wrap {
+  padding: 0 10px;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 380px;
+  border: 1px solid rgba(142, 164, 204, .16);
+  border-radius: 13px;
+  background: #0b1528;
+}
+
+.processor-strip {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+}
+
+.processor {
+  position: relative;
+  min-width: 0;
+  padding: 8px 5px 7px;
+  overflow: hidden;
+  border: 1px solid rgba(142, 164, 204, .16);
+  border-radius: 9px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, .035);
+  text-align: center;
+  transition: border-color .25s ease, background .25s ease, transform .25s ease;
+}
+
+.processor strong {
+  display: block;
+  color: inherit;
+  font-size: 11px;
+}
+
+.processor span {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  color: inherit;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.processor.known {
+  border-color: rgba(110, 231, 168, .48);
+  color: var(--green);
+  background: rgba(110, 231, 168, .1);
+}
+
+.processor.sender {
+  border-color: rgba(86, 224, 220, .85);
+  transform: translateY(-3px);
+  color: var(--cyan);
+}
+
+.processor.receiver {
+  border-color: rgba(255, 189, 120, .9);
+  transform: translateY(-3px);
+  color: var(--orange);
+  background: rgba(255, 189, 120, .1);
+}
+
+.lesson {
+  display: grid;
+  gap: 10px;
+  padding: 13px 15px 15px;
+  border-top: 1px solid var(--line);
+  background: rgba(8, 16, 31, .55);
+}
+
+.lesson-kicker {
+  color: var(--cyan);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.lesson-title {
+  margin-top: 3px;
+  font-size: 16px;
+  font-weight: 850;
+}
+
+.lesson-text {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.lesson-formula {
+  padding: 9px 11px;
+  border: 1px solid rgba(98, 169, 255, .24);
+  border-radius: 9px;
+  color: #cfe6ff;
+  background: rgba(98, 169, 255, .08);
+  font: 700 12px/1.45 ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.sidebar {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.side-card { padding: 13px; }
+
+.side-card h2 {
+  margin: 0 0 10px;
+  color: #d8e8ff;
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+}
+
+.stat {
+  padding: 8px 6px;
+  border: 1px solid rgba(142, 164, 204, .15);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .035);
+  text-align: center;
+}
+
+.stat-value {
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 900;
+}
+
+.stat-label {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.progress-track {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 12px 0 3px;
+}
+
+.progress-line {
+  flex: 1;
+  height: 3px;
+  border-radius: 99px;
+  background: rgba(142, 164, 204, .18);
+}
+
+.progress-line.done { background: var(--green); }
+
+.progress-dot {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(142, 164, 204, .35);
+  border-radius: 50%;
+  background: #12203a;
+}
+
+.progress-dot.done {
+  border-color: var(--green);
+  background: var(--green);
+  box-shadow: 0 0 13px rgba(110, 231, 168, .46);
+}
+
+.progress-dot.active {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 4px rgba(255, 189, 120, .12);
+}
+
+.timeline {
+  display: grid;
+  gap: 6px;
+}
+
+.timeline-row {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  align-items: center;
+  gap: 7px;
+  padding: 7px;
+  border: 1px solid rgba(142, 164, 204, .12);
+  border-radius: 8px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, .025);
+  font-size: 11px;
+}
+
+.timeline-row.done {
+  border-color: rgba(110, 231, 168, .24);
+  color: #c8f8dd;
+}
+
+.timeline-row.active {
+  border-color: rgba(255, 189, 120, .48);
+  color: #ffe3c2;
+  background: rgba(255, 189, 120, .08);
+}
+
+.timeline-num {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  border-radius: 50%;
+  color: #c9d7ef;
+  background: rgba(142, 164, 204, .15);
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.timeline-count {
+  color: inherit;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 10px;
+}
+
+.formula-card {
+  display: grid;
+  gap: 8px;
+}
+
+.formula {
+  padding: 9px 10px;
+  border: 1px solid rgba(86, 224, 220, .22);
+  border-radius: 8px;
+  color: var(--cyan);
+  background: rgba(86, 224, 220, .07);
+  font: 750 11px/1.55 ui-monospace, Consolas, monospace;
+  white-space: pre-line;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 11px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.legend i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.legend .has { background: var(--green); }
+.legend .send { background: var(--cyan); }
+.legend .recv { background: var(--orange); }
+
+@media (max-width: 980px) {
+  body { padding: 12px; }
+  .hero { align-items: start; flex-direction: column; }
+  .toolbar { align-items: stretch; flex-direction: column; }
+  .controls { justify-content: flex-start; }
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  canvas { height: 340px; }
+}
+
+@media (max-width: 640px) {
+  .sidebar { grid-template-columns: 1fr; }
+  .control-group { padding: 0; }
+  canvas { height: 310px; }
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Paralelní algoritmy / komunikační operace</div>
+      <h1>One-to-All Broadcast: zpráva se šíří zdvojováním</h1>
+      <p>Jeden procesor má zprávu <strong>m</strong>. V každém kole ji předá dalším procesorům, kteří se v příštím kole zapojí také. Sleduj, proč místo sekvenčních <strong>p - 1</strong> přenosů stačí logaritmický počet kol.</p>
+    </div>
+    <div class="hero-badge">invariant: informovaných = 2<sup>k</sup></div>
+  </header>
+
+  <section class="toolbar" aria-label="Ovládání animace">
+    <div class="topology-tabs" id="topologyTabs">
+      <button class="topology-btn active" data-topology="hypercube">Hyperkrychle</button>
+      <button class="topology-btn" data-topology="ring">Prsten</button>
+      <button class="topology-btn" data-topology="mesh">Mřížka 4 x 4</button>
+    </div>
+    <div class="controls">
+      <label class="control-group">Zdroj
+        <select id="sourceSelect" aria-label="Zdrojový procesor"></select>
+      </label>
+      <label class="control-group">Rychlost
+        <input id="speedRange" type="range" min="520" max="1800" value="1050" step="80" aria-label="Rychlost animace">
+      </label>
+      <button class="icon-btn" id="resetBtn" title="Reset">&#8635; Reset</button>
+      <button class="icon-btn" id="backBtn" title="Krok zpět">&#9664; Zpět</button>
+      <button class="icon-btn" id="nextBtn" title="Další krok">Další &#9654;</button>
+      <button class="play-btn" id="playBtn">&#9654; Přehrát</button>
+    </div>
+  </section>
+
+  <section class="layout">
+    <div class="scene-card">
+      <div class="scene-head">
+        <div>
+          <div class="scene-title" id="sceneTitle"></div>
+          <div class="scene-subtitle" id="sceneSubtitle"></div>
+        </div>
+        <div class="status-pill" id="statusPill"></div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="networkCanvas" role="img" aria-label="Síť procesorů a animované přenosy zprávy"></canvas>
+      </div>
+      <div class="processor-strip" id="processorStrip"></div>
+      <div class="lesson">
+        <div>
+          <div class="lesson-kicker" id="lessonKicker"></div>
+          <div class="lesson-title" id="lessonTitle"></div>
+        </div>
+        <div class="lesson-text" id="lessonText"></div>
+        <div class="lesson-formula" id="lessonFormula"></div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <section class="side-card">
+        <h2>Stav vypoctu</h2>
+        <div class="stats">
+          <div class="stat"><div class="stat-value" id="roundStat">0/0</div><div class="stat-label">dokončená kola</div></div>
+          <div class="stat"><div class="stat-value" id="knownStat">1</div><div class="stat-label">má zprávu</div></div>
+          <div class="stat"><div class="stat-value" id="messageStat">0</div><div class="stat-label">přenosů</div></div>
+        </div>
+        <div class="progress-track" id="progressTrack"></div>
+        <div class="legend">
+          <span><i class="has"></i>má zprávu</span>
+          <span><i class="send"></i>odesílá</span>
+          <span><i class="recv"></i>přijímá</span>
+        </div>
+      </section>
+
+      <section class="side-card">
+        <h2>Jednotlivá kola</h2>
+        <div class="timeline" id="timeline"></div>
+      </section>
+
+      <section class="side-card formula-card">
+        <h2>Proč je to rychlé</h2>
+        <div class="formula" id="complexityFormula"></div>
+        <div class="note" id="topologyNote"></div>
+      </section>
+    </aside>
+  </section>
+</main>
+
+<script>
+const canvas = document.getElementById("networkCanvas");
+const ctx = canvas.getContext("2d");
+const topologyTabs = document.getElementById("topologyTabs");
+const sourceSelect = document.getElementById("sourceSelect");
+const speedRange = document.getElementById("speedRange");
+const resetBtn = document.getElementById("resetBtn");
+const backBtn = document.getElementById("backBtn");
+const nextBtn = document.getElementById("nextBtn");
+const playBtn = document.getElementById("playBtn");
+
+const els = {
+  title: document.getElementById("sceneTitle"),
+  subtitle: document.getElementById("sceneSubtitle"),
+  status: document.getElementById("statusPill"),
+  strip: document.getElementById("processorStrip"),
+  lessonKicker: document.getElementById("lessonKicker"),
+  lessonTitle: document.getElementById("lessonTitle"),
+  lessonText: document.getElementById("lessonText"),
+  lessonFormula: document.getElementById("lessonFormula"),
+  round: document.getElementById("roundStat"),
+  known: document.getElementById("knownStat"),
+  messages: document.getElementById("messageStat"),
+  track: document.getElementById("progressTrack"),
+  timeline: document.getElementById("timeline"),
+  complexity: document.getElementById("complexityFormula"),
+  note: document.getElementById("topologyNote")
+};
+
+let topology = "hypercube";
+let source = 0;
+let actions = [];
+let cursor = 0;
+let activeAction = null;
+let flights = [];
+let busy = false;
+let playing = false;
+let cssWidth = 0;
+let cssHeight = 0;
+let dpr = 1;
+
+const configs = {
+  hypercube: {
+    p: 8,
+    title: "3D hyperkrychle: tři bity, tři kola",
+    subtitle: "Aktivní hrany mění vždy právě jeden bit adresy procesoru.",
+    complexity: "T = (t_s + t_w * m) * log2(p)\n  = (t_s + t_w * m) * 3",
+    note: "Hypercube je pro broadcast přirozená: každý animovaný přenos vede přes skutečnou hranu sítě. V kole k se mění k-tý bit adresy.",
+    nodeMeta: id => id.toString(2).padStart(3, "0"),
+    positions: cubePositions,
+    edges: cubeEdges,
+    build: buildHypercube
+  },
+  ring: {
+    p: 8,
+    title: "Prsten: logické skoky po obvodu",
+    subtitle: "Zdvojování funguje také, ale delší skok se musí v reálné síti emulovat.",
+    complexity: "T_model = (t_s + t_w * m) * log2(p)\npozor: fyzická vzdálenost skoku roste",
+    note: "Přerušovaná aktivní čára znamená logický přenos. Na prstenu může zpráva při větším skoku procházet mezilehlými uzly; formální počet kol zůstává logaritmický.",
+    nodeMeta: id => "pozice " + id,
+    positions: ringPositions,
+    edges: ringEdges,
+    build: buildRing
+  },
+  mesh: {
+    p: 16,
+    title: "Mřížka 4 x 4: nejdřív řádek, potom sloupce",
+    subtitle: "Dvě vnořené broadcast operace: log2(sqrt(p)) + log2(sqrt(p)).",
+    complexity: "T = 2 * (t_s + t_w * m) * log2(sqrt(p))\n  = (t_s + t_w * m) * log2(p)",
+    note: "Nejprve se zdvojuje počet příjemců ve zdrojovém řádku. Pak všechny informované uzly tohoto řádku souběžně zahájí stejné zdvojování ve svých sloupcích.",
+    nodeMeta: id => "[" + Math.floor(id / 4) + "," + (id % 4) + "]",
+    positions: meshPositions,
+    edges: meshEdges,
+    build: buildMesh
+  }
+};
+
+function cloneSet(set) {
+  return new Set(Array.from(set));
+}
+
+function createAction(known, spec) {
+  const before = cloneSet(known);
+  spec.sends.forEach(send => known.add(send.to));
+  return { ...spec, before, after: cloneSet(known) };
+}
+
+function buildHypercube(src) {
+  const known = new Set([src]);
+  const result = [];
+  ["nejnižší bit", "prostřední bit", "nejvyšší bit"].forEach((bitLabel, bit) => {
+    const mask = 1 << bit;
+    const sends = Array.from(known).map(from => ({ from, to: from ^ mask }));
+    result.push(createAction(known, {
+      phase: "Rekurzivní zdvojování",
+      title: "Změň bit " + bit + ": " + bitLabel,
+      text: "Každý procesor, který už zprávu má, ji pošle svému sousedovi lišícímu se v bitu " + bit + ". Všechny přenosy probíhají souběžně a přímo po hranách hyperkrychle.",
+      formula: "|S_" + (bit + 1) + "| = 2 * |S_" + bit + "| = " + (2 ** (bit + 1)),
+      sends
+    }));
+  });
+  return result;
+}
+
+function buildRing(src) {
+  const known = new Set([src]);
+  const result = [];
+  for (let round = 0; round < 3; round++) {
+    const hop = 1 << round;
+    const sends = Array.from(known).map(from => ({
+      from,
+      to: (from + hop) % 8,
+      virtual: hop > 1
+    }));
+    result.push(createAction(known, {
+      phase: "Rekurzivní zdvojování na prstenu",
+      title: "Posun o 2^" + round + " = " + hop + " pozic",
+      text: hop === 1
+        ? "První zpráva putuje k sousedovi. Od příštího kola už mohou odesílat oba informované procesory."
+        : "Každý informovaný procesor posílá zprávu o " + hop + " pozic dále. Jde o logický skok: na fyzickém prstenu může procházet přes mezilehlé uzly.",
+      formula: "|S_" + (round + 1) + "| = 2 * |S_" + round + "| = " + (2 ** (round + 1)),
+      sends
+    }));
+  }
+  return result;
+}
+
+function buildMesh(src) {
+  const known = new Set([src]);
+  const result = [];
+  const sourceRow = Math.floor(src / 4);
+  [0, 1].forEach((bit, index) => {
+    const mask = 1 << bit;
+    const sends = Array.from(known)
+      .filter(from => Math.floor(from / 4) === sourceRow)
+      .map(from => ({ from, to: sourceRow * 4 + ((from % 4) ^ mask) }));
+    result.push(createAction(known, {
+      phase: "Fáze 1 / broadcast ve zdrojovém řádku",
+      title: "Řádek " + sourceRow + ": zdvojení přes sloupcový bit " + bit,
+      text: "Zpráva se zatím šíří pouze ve zdrojovém řádku. Po tomto kole zná zprávu " + (2 ** (index + 1)) + " procesorů v řádku.",
+      formula: "|řádek se zprávou| = " + (2 ** (index + 1)) + " / 4",
+      sends
+    }));
+  });
+  [0, 1].forEach((bit, index) => {
+    const mask = 1 << bit;
+    const sends = Array.from(known).map(from => {
+      const row = Math.floor(from / 4);
+      const col = from % 4;
+      return { from, to: (row ^ mask) * 4 + col };
+    });
+    result.push(createAction(known, {
+      phase: "Fáze 2 / souběžné broadcasty ve sloupcích",
+      title: "Sloupce: zdvojení přes řádkový bit " + bit,
+      text: "Každý informovaný procesor posílá zprávu ve svém sloupci. Všechny čtyři sloupce pracují souběžně, proto nepřidáváme jejich časy.",
+      formula: "|S_" + (index + 3) + "| = 2 * |S_" + (index + 2) + "| = " + (8 * (index + 1)),
+      sends
+    }));
+  });
+  return result;
+}
+
+function cubePositions(width, height) {
+  const result = [];
+  const cx = width / 2;
+  const cy = height / 2 + 8;
+  for (let id = 0; id < 8; id++) {
+    const xBit = id & 1;
+    const yBit = (id >> 1) & 1;
+    const zBit = (id >> 2) & 1;
+    result[id] = {
+      x: cx - 165 + xBit * 230 + zBit * 100,
+      y: cy - 68 + yBit * 155 - zBit * 58
+    };
+  }
+  return result;
+}
+
+function ringPositions(width, height) {
+  const result = [];
+  const radius = Math.min(145, width * .28, height * .38);
+  const cx = width / 2;
+  const cy = height / 2 + 10;
+  for (let id = 0; id < 8; id++) {
+    const angle = -Math.PI / 2 + id * Math.PI / 4;
+    result[id] = { x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius };
+  }
+  return result;
+}
+
+function meshPositions(width, height) {
+  const result = [];
+  const gap = Math.min(90, width * .15, height * .21);
+  const startX = width / 2 - gap * 1.5;
+  const startY = height / 2 - gap * 1.5 + 10;
+  for (let id = 0; id < 16; id++) {
+    result[id] = { x: startX + (id % 4) * gap, y: startY + Math.floor(id / 4) * gap };
+  }
+  return result;
+}
+
+function cubeEdges() {
+  const edges = [];
+  for (let id = 0; id < 8; id++) {
+    for (let bit = 0; bit < 3; bit++) {
+      if ((id & (1 << bit)) === 0) edges.push([id, id ^ (1 << bit)]);
+    }
+  }
+  return edges;
+}
+
+function ringEdges() {
+  return Array.from({ length: 8 }, (_, id) => [id, (id + 1) % 8]);
+}
+
+function meshEdges() {
+  const edges = [];
+  for (let id = 0; id < 16; id++) {
+    const row = Math.floor(id / 4);
+    const col = id % 4;
+    if (col < 3) edges.push([id, id + 1]);
+    if (row < 3) edges.push([id, id + 4]);
+  }
+  return edges;
+}
+
+function currentKnown() {
+  return cursor === 0 ? new Set([source]) : cloneSet(actions[cursor - 1].after);
+}
+
+function completedMessages() {
+  return actions.slice(0, cursor).reduce((sum, action) => sum + action.sends.length, 0);
+}
+
+function setupSourceOptions() {
+  const config = configs[topology];
+  const old = Math.min(source, config.p - 1);
+  sourceSelect.innerHTML = Array.from({ length: config.p }, (_, id) =>
+    '<option value="' + id + '">P' + id + " " + config.nodeMeta(id) + "</option>"
+  ).join("");
+  sourceSelect.value = String(old);
+  source = old;
+}
+
+function reset(nextTopology = topology) {
+  topology = nextTopology;
+  setupSourceOptions();
+  actions = configs[topology].build(source);
+  cursor = 0;
+  activeAction = null;
+  flights = [];
+  busy = false;
+  playing = false;
+  topologyTabs.querySelectorAll(".topology-btn").forEach(button => {
+    button.classList.toggle("active", button.dataset.topology === topology);
+  });
+  render();
+}
+
+function render() {
+  const config = configs[topology];
+  const known = currentKnown();
+  const activeSenders = new Set(activeAction ? activeAction.sends.map(send => send.from) : []);
+  const activeReceivers = new Set(activeAction ? activeAction.sends.map(send => send.to) : []);
+  const isFinished = cursor === actions.length;
+  const shownAction = activeAction || (cursor > 0 ? actions[cursor - 1] : null);
+
+  els.title.textContent = config.title;
+  els.subtitle.textContent = config.subtitle;
+  els.status.textContent = isFinished ? "hotovo: všichni mají m" : known.size + " / " + config.p + " procesorů má m";
+  els.round.textContent = cursor + "/" + actions.length;
+  els.known.textContent = known.size;
+  els.messages.textContent = completedMessages();
+  els.complexity.textContent = config.complexity;
+  els.note.textContent = config.note;
+
+  if (!shownAction) {
+    els.lessonKicker.textContent = "Start / zdrojový procesor P" + source;
+    els.lessonTitle.textContent = "Zprávu m má zatím jediný procesor";
+    els.lessonText.textContent = "Spusť další krok. Každé kolo využije všechny procesory, které už zprávu znají, a počet informovaných uzlů se zdvojnásobí.";
+    els.lessonFormula.textContent = "|S_0| = 1  ->  po k kolech |S_k| = 2^k";
+  } else {
+    els.lessonKicker.textContent = shownAction.phase;
+    els.lessonTitle.textContent = shownAction.title;
+    els.lessonText.textContent = shownAction.text;
+    els.lessonFormula.textContent = shownAction.formula;
+  }
+
+  els.strip.style.gridTemplateColumns = "repeat(" + config.p + ", minmax(0, 1fr))";
+  els.strip.innerHTML = Array.from({ length: config.p }, (_, id) => {
+    const classes = ["processor"];
+    if (known.has(id)) classes.push("known");
+    if (activeSenders.has(id)) classes.push("sender");
+    if (activeReceivers.has(id)) classes.push("receiver");
+    return '<div class="' + classes.join(" ") + '"><strong>P' + id + '</strong><span>' +
+      (known.has(id) ? "má m" : "čeká") + "</span></div>";
+  }).join("");
+
+  els.track.innerHTML = "";
+  for (let index = 0; index <= actions.length; index++) {
+    if (index > 0) {
+      const line = document.createElement("div");
+      line.className = "progress-line" + (index <= cursor ? " done" : "");
+      els.track.appendChild(line);
+    }
+    const dot = document.createElement("div");
+    dot.className = "progress-dot" + (index <= cursor ? " done" : "") +
+      (busy && index === cursor + 1 ? " active" : "");
+    els.track.appendChild(dot);
+  }
+
+  els.timeline.innerHTML = actions.map((action, index) => {
+    const state = index < cursor ? " done" : (activeAction === action ? " active" : "");
+    return '<div class="timeline-row' + state + '"><span class="timeline-num">' + (index + 1) +
+      '</span><span>' + action.title + '</span><span class="timeline-count">' +
+      action.sends.length + " msg</span></div>";
+  }).join("");
+
+  backBtn.disabled = busy || cursor === 0;
+  nextBtn.disabled = busy || isFinished;
+  resetBtn.disabled = busy;
+  sourceSelect.disabled = busy;
+  topologyTabs.querySelectorAll("button").forEach(button => button.disabled = busy);
+  playBtn.disabled = busy && !playing;
+  playBtn.innerHTML = playing ? "&#10074;&#10074; Pauza" : "&#9654; Přehrát";
+  canvas.setAttribute("aria-label", config.title + ". " + known.size + " z " + config.p + " procesorů má zprávu.");
+  draw();
+}
+
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  const nextWidth = Math.max(320, Math.floor(rect.width));
+  const nextHeight = Math.max(260, Math.floor(rect.height));
+  const nextDpr = Math.max(1, window.devicePixelRatio || 1);
+  if (nextWidth === cssWidth && nextHeight === cssHeight && nextDpr === dpr) return;
+  cssWidth = nextWidth;
+  cssHeight = nextHeight;
+  dpr = nextDpr;
+  canvas.width = Math.floor(cssWidth * dpr);
+  canvas.height = Math.floor(cssHeight * dpr);
+}
+
+function pathFor(send, positions) {
+  const from = positions[send.from];
+  const to = positions[send.to];
+  if (topology === "ring" && send.virtual) {
+    const cx = cssWidth / 2;
+    const cy = cssHeight / 2 + 10;
+    return { from, to, control: { x: (from.x + to.x + cx) / 3, y: (from.y + to.y + cy) / 3 } };
+  }
+  return { from, to };
+}
+
+function pointOnPath(path, t) {
+  if (!path.control) {
+    return {
+      x: path.from.x + (path.to.x - path.from.x) * t,
+      y: path.from.y + (path.to.y - path.from.y) * t
+    };
+  }
+  const inv = 1 - t;
+  return {
+    x: inv * inv * path.from.x + 2 * inv * t * path.control.x + t * t * path.to.x,
+    y: inv * inv * path.from.y + 2 * inv * t * path.control.y + t * t * path.to.y
+  };
+}
+
+function strokePath(path) {
+  ctx.beginPath();
+  ctx.moveTo(path.from.x, path.from.y);
+  if (path.control) ctx.quadraticCurveTo(path.control.x, path.control.y, path.to.x, path.to.y);
+  else ctx.lineTo(path.to.x, path.to.y);
+  ctx.stroke();
+}
+
+function drawArrowHead(path) {
+  const near = pointOnPath(path, .91);
+  const end = pointOnPath(path, .98);
+  const angle = Math.atan2(end.y - near.y, end.x - near.x);
+  ctx.beginPath();
+  ctx.moveTo(end.x, end.y);
+  ctx.lineTo(end.x - 11 * Math.cos(angle - .48), end.y - 11 * Math.sin(angle - .48));
+  ctx.lineTo(end.x - 11 * Math.cos(angle + .48), end.y - 11 * Math.sin(angle + .48));
+  ctx.closePath();
+  ctx.fill();
+}
+
+function draw() {
+  resizeCanvas();
+  const config = configs[topology];
+  const positions = config.positions(cssWidth, cssHeight);
+  const known = currentKnown();
+  const senders = new Set(activeAction ? activeAction.sends.map(send => send.from) : []);
+  const receivers = new Set(activeAction ? activeAction.sends.map(send => send.to) : []);
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+  const gradient = ctx.createLinearGradient(0, 0, cssWidth, cssHeight);
+  gradient.addColorStop(0, "#0c1930");
+  gradient.addColorStop(1, "#091222");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, cssWidth, cssHeight);
+
+  ctx.strokeStyle = "rgba(142, 164, 204, .055)";
+  ctx.lineWidth = 1;
+  for (let x = 18; x < cssWidth; x += 28) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, cssHeight); ctx.stroke();
+  }
+  for (let y = 18; y < cssHeight; y += 28) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(cssWidth, y); ctx.stroke();
+  }
+
+  ctx.strokeStyle = "rgba(142, 164, 204, .28)";
+  ctx.lineWidth = 2;
+  ctx.setLineDash([]);
+  config.edges().forEach(([from, to]) => {
+    ctx.beginPath();
+    ctx.moveTo(positions[from].x, positions[from].y);
+    ctx.lineTo(positions[to].x, positions[to].y);
+    ctx.stroke();
+  });
+
+  if (activeAction) {
+    activeAction.sends.forEach(send => {
+      const path = pathFor(send, positions);
+      ctx.save();
+      ctx.shadowColor = "rgba(86, 224, 220, .8)";
+      ctx.shadowBlur = 13;
+      ctx.strokeStyle = "rgba(86, 224, 220, .92)";
+      ctx.fillStyle = "#56e0dc";
+      ctx.lineWidth = 3;
+      ctx.setLineDash(send.virtual ? [8, 7] : []);
+      strokePath(path);
+      drawArrowHead(path);
+      ctx.restore();
+    });
+  }
+
+  positions.forEach((point, id) => {
+    const hasMessage = known.has(id);
+    const isSender = senders.has(id);
+    const isReceiver = receivers.has(id);
+    const radius = topology === "mesh" ? 22 : 25;
+
+    ctx.save();
+    if (isSender || isReceiver) {
+      ctx.beginPath();
+      ctx.arc(point.x, point.y, radius + 10, 0, Math.PI * 2);
+      ctx.fillStyle = isReceiver ? "rgba(255, 189, 120, .14)" : "rgba(86, 224, 220, .14)";
+      ctx.fill();
+    }
+    ctx.shadowColor = hasMessage ? "rgba(110, 231, 168, .45)" : "rgba(0, 0, 0, .4)";
+    ctx.shadowBlur = hasMessage ? 15 : 8;
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = isReceiver ? "#423425" : hasMessage ? "#174d45" : "#1a2945";
+    ctx.fill();
+    ctx.lineWidth = isReceiver || isSender ? 3 : 2;
+    ctx.strokeStyle = isReceiver ? "#ffbd78" : isSender ? "#56e0dc" : hasMessage ? "#6ee7a8" : "rgba(154, 169, 200, .5)";
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#f4f8ff";
+    ctx.font = "800 12px Segoe UI, sans-serif";
+    ctx.fillText("P" + id, point.x, point.y + 4);
+    ctx.fillStyle = hasMessage ? "#aaf2cc" : "#9aa9c8";
+    ctx.font = "700 10px ui-monospace, Consolas, monospace";
+    ctx.fillText(config.nodeMeta(id), point.x, point.y + radius + 17);
+    ctx.restore();
+  });
+
+  flights.forEach(flight => {
+    if (flight.progress < 0 || flight.progress > 1) return;
+    const point = pointOnPath(pathFor(flight.send, positions), flight.progress);
+    ctx.save();
+    ctx.shadowColor = "#fff1a5";
+    ctx.shadowBlur = 18;
+    ctx.fillStyle = "#ffe596";
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, 9, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#243250";
+    ctx.textAlign = "center";
+    ctx.font = "900 10px ui-monospace, Consolas, monospace";
+    ctx.fillText("m", point.x, point.y + 3.5);
+    ctx.restore();
+  });
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function advance() {
+  if (busy || cursor >= actions.length) return;
+  busy = true;
+  const action = actions[cursor];
+  activeAction = action;
+  flights = action.sends.map((send, index) => ({ send, progress: -1, delay: index * 95 }));
+  render();
+
+  const duration = Number(speedRange.value);
+  const maxDelay = flights.length ? flights[flights.length - 1].delay : 0;
+  const started = performance.now();
+  await new Promise(resolve => {
+    function tick(now) {
+      const elapsed = now - started;
+      flights.forEach(flight => {
+        flight.progress = Math.max(-.01, Math.min(1, (elapsed - flight.delay) / duration));
+      });
+      draw();
+      if (elapsed < duration + maxDelay) requestAnimationFrame(tick);
+      else resolve();
+    }
+    requestAnimationFrame(tick);
+  });
+
+  cursor++;
+  activeAction = null;
+  flights = [];
+  busy = false;
+  render();
+  await sleep(170);
+}
+
+async function togglePlay() {
+  if (playing) {
+    playing = false;
+    render();
+    return;
+  }
+  if (cursor >= actions.length) reset();
+  playing = true;
+  render();
+  while (playing && cursor < actions.length) await advance();
+  playing = false;
+  render();
+}
+
+topologyTabs.addEventListener("click", event => {
+  const button = event.target.closest("[data-topology]");
+  if (!button || busy) return;
+  source = 0;
+  reset(button.dataset.topology);
+});
+
+sourceSelect.addEventListener("change", () => {
+  source = Number(sourceSelect.value);
+  reset();
+});
+
+resetBtn.addEventListener("click", () => reset());
+backBtn.addEventListener("click", () => {
+  if (busy || cursor === 0) return;
+  cursor--;
+  render();
+});
+nextBtn.addEventListener("click", advance);
+playBtn.addEventListener("click", togglePlay);
+window.addEventListener("resize", draw);
+
+reset();
+</script>
+</body>
+</html>
