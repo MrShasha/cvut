@@ -10,20 +10,20 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 
 ### Společné předměty
 
-| Stav        | Předmět                        | Poznámka |
-| ----------- | ------------------------------ | -------- |
-| ✅ Dokončené | Kombinatorická optimalizace 💀 | Jirka    |
-| ✅ Dokončené | Teorie algoritmů 💀            | Artur    |
-| ✅ Dokončené | Pokročilá algoritmizace 💀     | Matěj    |
+| Stav        | Předmět                        | Poznámka      |
+| ----------- | ------------------------------ | ------------- |
+| ⚠️ Revize   | Kombinatorická optimalizace 💀 | Jirka + Artur |
+| ✅ Dokončené | Teorie algoritmů 💀            | Artur         |
+| ✅ Dokončené | Pokročilá algoritmizace 💀     | Matěj         |
 ### Softwarové inženýrství
 
 | Stav             | Předmět                       | Poznámka |
 | ---------------- | ----------------------------- | -------- |
 | ✅ Dokončené      | Databáze 2 😊                 | Jirka    |
-| ❌ Nerozpracované | Softwarové architektury 😊    |          |
+| 🟡 Rozpracované  | Softwarové architektury 😊    | Artur    |
 | ❌ Nerozpracované | Bezpečnost systémů 😊         |          |
 | ✅ Dokončené      | Efektivní software 🤨         | Jirka    |
-| 🟡 Rozpracované   | Paralelní algoritmy 💀        | Jirka    |
+| 🟡 Rozpracované  | Paralelní algoritmy 💀        | Jirka    |
 | ✅ Dokončené      | Zajištění kvality software 😊 | Artur    |
 ### Počítačová grafika
 
