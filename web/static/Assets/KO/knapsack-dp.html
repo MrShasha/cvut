@@ -561,10 +561,6 @@ input[type="range"] {
       <button class="control-btn primary" id="playBtn">Prehrat</button>
       <button class="control-btn" id="stepBtn">Krok</button>
       <button class="control-btn" id="resetBtn">Reset</button>
-      <select id="exampleSelect" title="Vyber instance">
-        <option value="classic">Klasicky priklad</option>
-        <option value="trap">Greedy past</option>
-      </select>
       <div class="speed-control">
         <span class="label">Rychlost</span>
         <input id="speed" type="range" min="360" max="1300" value="760">
@@ -666,15 +662,6 @@ const examples = {
       { name: "D", weight: 5, value: 8 },
       { name: "E", weight: 2, value: 3 }
     ]
-  },
-  trap: {
-    capacity: 10,
-    items: [
-      { name: "A", weight: 1, value: 2 },
-      { name: "B", weight: 10, value: 15 },
-      { name: "C", weight: 4, value: 5 },
-      { name: "D", weight: 5, value: 6 }
-    ]
   }
 };
 
@@ -696,7 +683,6 @@ const els = {
   step: document.getElementById("stepBtn"),
   reset: document.getElementById("resetBtn"),
   speed: document.getElementById("speed"),
-  select: document.getElementById("exampleSelect"),
   progress: document.getElementById("progressBar"),
   phase: document.getElementById("phaseLabel"),
   stepLabel: document.getElementById("stepLabel"),
@@ -1002,8 +988,6 @@ els.speed.addEventListener("input", () => {
     play();
   }
 });
-els.select.addEventListener("change", e => boot(e.target.value));
-
 boot();
 </script>
 </body>
