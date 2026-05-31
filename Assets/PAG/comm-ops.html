@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Komunikační operace — PAG</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  h1 {
+    color: #569cd6;
+    font-size: 1.3em;
+    margin-bottom: 16px;
+  }
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 16px;
+  }
+  .controls {
+    background: #2d2d2d;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .controls h3 {
+    color: #9cdcfe;
+    margin-bottom: 12px;
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .control-group {
+    margin-bottom: 16px;
+  }
+  .control-group label {
+    display: block;
+    color: #9cdcfe;
+    margin-bottom: 6px;
+    font-size: 0.85em;
+  }
+  select, input[type=range] {
+    width: 100%;
+    background: #3c3c3c;
+    color: #d4d4d4;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 0.9em;
+  }
+  input[type=range] {
+    padding: 4px 0;
+    cursor: pointer;
+    accent-color: #0984e3;
+  }
+  .range-val {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    color: #888;
+    margin-top: 3px;
+  }
+  .result-panel {
+    background: #2d2d2d;
+    border-radius: 8px;
+    padding: 16px;
+  }
+  .result-panel h3 {
+    color: #9cdcfe;
+    margin-bottom: 12px;
+    font-size: 0.95em;
+  }
+  .formula-box {
+    background: #1a1a2e;
+    border-left: 3px solid #0984e3;
+    border-radius: 0 6px 6px 0;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    font-family: 'Courier New', monospace;
+    font-size: 1em;
+    color: #c3e88d;
+  }
+  .formula-box .label {
+    color: #888;
+    font-size: 0.8em;
+    font-family: inherit;
+    margin-bottom: 4px;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-box {
+    background: #3c3c3c;
+    border-radius: 6px;
+    padding: 12px;
+    border-left: 3px solid;
+  }
+  .stat-box.blue { border-color: #0984e3; }
+  .stat-box.green { border-color: #00b894; }
+  .stat-box.orange { border-color: #e17055; }
+  .stat-box.purple { border-color: #a29bfe; }
+  .stat-label {
+    font-size: 0.75em;
+    color: #888;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+  .stat-value {
+    font-size: 1.15em;
+    font-weight: 600;
+    color: #d4d4d4;
+  }
+  .topology-compare {
+    margin-top: 16px;
+  }
+  .topology-compare h4 {
+    color: #9cdcfe;
+    font-size: 0.85em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th {
+    background: #3c3c3c;
+    color: #9cdcfe;
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 0.82em;
+  }
+  td {
+    padding: 7px 10px;
+    border-bottom: 1px solid #3c3c3c;
+    font-size: 0.88em;
+    font-family: 'Courier New', monospace;
+  }
+  tr.highlight td { background: #0984e315; color: #c3e88d; }
+  .bar-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .bar {
+    height: 12px;
+    border-radius: 2px;
+    background: #0984e3;
+    min-width: 4px;
+    transition: width 0.3s ease;
+  }
+  .explanation {
+    background: #252525;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 0.85em;
+    color: #aaa;
+    line-height: 1.6;
+    margin-top: 16px;
+  }
+  .explanation strong { color: #c3e88d; }
+</style>
+</head>
+<body>
+<h1>Komunikační operace — PAG</h1>
+<div class="layout">
+  <div class="controls">
+    <h3>Parametry</h3>
+    <div class="control-group">
+      <label>Operace</label>
+      <select id="operation" onchange="compute()">
+        <option value="one2all">One-to-All Broadcast</option>
+        <option value="all2all">All-to-All Broadcast</option>
+        <option value="allreduce">All-Reduce</option>
+        <option value="scatter">Scatter</option>
+        <option value="alltoall_p">All-to-All Personalized</option>
+        <option value="prefix">Prefix Sum</option>
+      </select>
+    </div>
+    <div class="control-group">
+      <label>Počet procesorů (p = 2^k): <span id="pVal">16</span></label>
+      <input type="range" id="pSlider" min="1" max="8" value="4" step="1" oninput="updateP()">
+      <div class="range-val"><span>2</span><span>256</span></div>
+    </div>
+    <div class="control-group">
+      <label>Velikost zprávy m (slova): <span id="mVal">64</span></label>
+      <input type="range" id="mSlider" min="1" max="512" value="64" step="1" oninput="compute()">
+      <div class="range-val"><span>1</span><span>512</span></div>
+    </div>
+    <div class="control-group">
+      <label>Latence tₛ (jednotky): <span id="tsVal">10</span></label>
+      <input type="range" id="tsSlider" min="1" max="100" value="10" step="1" oninput="compute()">
+    </div>
+    <div class="control-group">
+      <label>Bandwidth tᵥ (jednotky): <span id="twVal">1</span></label>
+      <input type="range" id="twSlider" min="1" max="20" value="1" step="1" oninput="compute()">
+    </div>
+  </div>
+  <div class="result-panel">
+    <h3>Výsledky</h3>
+    <div class="formula-box">
+      <div class="label">Vzorec (vybraná topologie: Hyperkrychle)</div>
+      <div id="formula">T = (tₛ + tᵥ·m) · log p</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box blue">
+        <div class="stat-label">T (hyperkrychle)</div>
+        <div class="stat-value" id="tHyper">—</div>
+      </div>
+      <div class="stat-box green">
+        <div class="stat-label">T (mřížka)</div>
+        <div class="stat-value" id="tMesh">—</div>
+      </div>
+      <div class="stat-box orange">
+        <div class="stat-label">T (prsten)</div>
+        <div class="stat-value" id="tRing">—</div>
+      </div>
+      <div class="stat-box purple">
+        <div class="stat-label">log p</div>
+        <div class="stat-value" id="logP">—</div>
+      </div>
+    </div>
+    <div class="topology-compare">
+      <h4>Srovnání topologií (vizuálně)</h4>
+      <table>
+        <tr>
+          <th>Topologie</th>
+          <th>Čas</th>
+          <th>Relativní</th>
+        </tr>
+        <tr>
+          <td>Hyperkrychle</td>
+          <td id="tHyper2">—</td>
+          <td><div class="bar-container"><div class="bar" id="barHyper" style="width:80px; background:#0984e3"></div></div></td>
+        </tr>
+        <tr>
+          <td>Mřížka</td>
+          <td id="tMesh2">—</td>
+          <td><div class="bar-container"><div class="bar" id="barMesh" style="width:80px; background:#00b894"></div></div></td>
+        </tr>
+        <tr>
+          <td>Prsten</td>
+          <td id="tRing2">—</td>
+          <td><div class="bar-container"><div class="bar" id="barRing" style="width:80px; background:#e17055"></div></div></td>
+        </tr>
+      </table>
+    </div>
+    <div class="explanation" id="explanation">Vyberte operaci a nastavte parametry.</div>
+  </div>
+</div>
+
+<script>
+const ops = {
+  one2all: {
+    name: "One-to-All Broadcast",
+    formula: "T = (tₛ + tᵥ·m) · log p",
+    hyper: (ts,tw,m,p) => (ts + tw*m) * Math.log2(p),
+    mesh: (ts,tw,m,p) => (ts + tw*m) * Math.log2(p),
+    ring: (ts,tw,m,p) => (ts + tw*m) * Math.log2(p),
+    explain: "Rekurzivní zdvojování: v každém z <strong>log p</strong> kroků zdvojnásobí počet procesorů se zprávou. Na všech topologiích asymptoticky stejné — ale hyperkrychle komunikuje vždy přímo.",
+  },
+  all2all: {
+    name: "All-to-All Broadcast",
+    formula: "Hyper: T = tₛ·log p + tᵥ·m·(p−1)",
+    hyper: (ts,tw,m,p) => ts * Math.log2(p) + tw*m*(p-1),
+    mesh: (ts,tw,m,p) => 2*ts*(Math.sqrt(p)-1) + tw*m*(p-1),
+    ring: (ts,tw,m,p) => (ts + tw*m)*(p-1),
+    explain: "Každý posílá svá data všem. Ring: rotující zprávy po <strong>p−1</strong> krocích. Mřížka: dvě fáze (řádky + sloupce). Hyperkrychle: log p fází ale datový objem roste → celkem m(p−1) slov.",
+  },
+  allreduce: {
+    name: "All-Reduce",
+    formula: "T = (tₛ + tᵥ·m) · log p",
+    hyper: (ts,tw,m,p) => (ts + tw*m)*Math.log2(p),
+    mesh: (ts,tw,m,p) => (ts + tw*m)*Math.log2(p),
+    ring: (ts,tw,m,p) => (ts + tw*m)*Math.log2(p),
+    explain: "Jako All-to-One Reduction + Broadcast, ale efektivněji. Zpráva <strong>neroste</strong> — každý krok agreguje data. Základ distribuovaného ML (gradient averaging).",
+  },
+  scatter: {
+    name: "Scatter (One-to-All Personalized)",
+    formula: "T = tₛ·log p + tᵥ·m",
+    hyper: (ts,tw,m,p) => ts*Math.log2(p) + tw*m,
+    mesh: (ts,tw,m,p) => ts*Math.log2(p) + tw*m,
+    ring: (ts,tw,m,p) => ts*Math.log2(p) + tw*m,
+    explain: "Jeden zdroj posílá každému <strong>jiná</strong> data. Rekurzivní půlení — v každém z log p kroků se přenáší zpráva, která se <strong>půlí</strong> (k menší skupině). Celkový datový objem je m.",
+  },
+  alltoall_p: {
+    name: "All-to-All Personalized (Total Exchange)",
+    formula: "Hyper optimal: T = (tₛ + tᵥ·m)·(p−1)",
+    hyper: (ts,tw,m,p) => (ts + tw*m)*(p-1),
+    mesh: (ts,tw,m,p) => 2*(ts*(Math.sqrt(p)-1) + tw*m*p/2*(Math.sqrt(p)-1)),
+    ring: (ts,tw,m,p) => ts*(p-1) + tw*m*p*(p-1)/2,
+    explain: "Každý posílá každému jiná data. <strong>Total Exchange</strong>. Ring je nejhorší — O(m·p²) dat. Hyperkrychle s XOR schedulingem je optimální: congestion-free, p−1 kroků.",
+  },
+  prefix: {
+    name: "Prefix Sum (Scan)",
+    formula: "T = (tₛ + tᵥ·m) · log p",
+    hyper: (ts,tw,m,p) => (ts + tw*m)*Math.log2(p),
+    mesh: (ts,tw,m,p) => (ts + tw*m)*Math.log2(p),
+    ring: (ts,tw,m,p) => (ts + tw*m)*Math.log2(p),
+    explain: "Procesor k dostane součet prvků 0..k. Stejný komunikační vzor jako All-Reduce. Použití: paralelní kompakce, paralelní třídění (výpočet pozic).",
+  },
+};
+
+function updateP() {
+  const k = parseInt(document.getElementById('pSlider').value);
+  document.getElementById('pVal').textContent = Math.pow(2, k);
+  compute();
+}
+
+function compute() {
+  const k = parseInt(document.getElementById('pSlider').value);
+  const p = Math.pow(2, k);
+  const m = parseInt(document.getElementById('mSlider').value);
+  const ts = parseInt(document.getElementById('tsSlider').value);
+  const tw = parseInt(document.getElementById('twSlider').value);
+
+  document.getElementById('mVal').textContent = m;
+  document.getElementById('tsVal').textContent = ts;
+  document.getElementById('twVal').textContent = tw;
+  document.getElementById('pVal').textContent = p;
+
+  const opKey = document.getElementById('operation').value;
+  const op = ops[opKey];
+
+  const tH = op.hyper(ts, tw, m, p);
+  const tM = op.mesh(ts, tw, m, p);
+  const tR = op.ring(ts, tw, m, p);
+
+  document.getElementById('formula').textContent = op.formula;
+  document.getElementById('tHyper').textContent = tH.toFixed(1);
+  document.getElementById('tMesh').textContent = tM.toFixed(1);
+  document.getElementById('tRing').textContent = tR.toFixed(1);
+  document.getElementById('tHyper2').textContent = tH.toFixed(1);
+  document.getElementById('tMesh2').textContent = tM.toFixed(1);
+  document.getElementById('tRing2').textContent = tR.toFixed(1);
+  document.getElementById('logP').textContent = Math.log2(p).toFixed(0);
+  document.getElementById('explanation').innerHTML = op.explain;
+
+  const maxT = Math.max(tH, tM, tR, 1);
+  const scale = 160;
+  document.getElementById('barHyper').style.width = Math.max(4, tH/maxT*scale) + 'px';
+  document.getElementById('barMesh').style.width = Math.max(4, tM/maxT*scale) + 'px';
+  document.getElementById('barRing').style.width = Math.max(4, tR/maxT*scale) + 'px';
+}
+
+compute();
+</script>
+</body>
+</html>
