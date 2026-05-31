@@ -237,4 +237,45 @@
                 queueInfo.innerText = `epoll_wait sleduje ${load} socketů na 4 vláknech.`;
 
             } else if (model === 'virtual') {
-                const ramMB =
+                const ramMB = 100 + (load * 0.002); // Small footprint for virtual thread
+                ramStr = ramMB.toFixed(1) + " MB";
+                vizColor = "#89d185"; // Green for lightweight threads
+                contextSwitch = "Interní (JVM/Go) - Nízká";
+                status = "Stabilní (Optimální)";
+                statusColor = "var(--success)";
+                queueInfo.innerText = `${load} Virtuálních vláken je mountováno na 4 OS vlákna.`;
+            }
+
+            ramMetric.innerText = ramStr;
+            cpuMetric.innerText = contextSwitch;
+            statusMetric.innerText = status;
+            statusMetric.style.color = statusColor;
+
+            // Render visual dots
+            for(let i=0; i<NUM_CORES; i++) {
+                const workDiv = document.getElementById(`work-${i}`);
+                workDiv.innerHTML = '';
+                const coreBox = document.getElementById(`core-${i}`);
+                
+                if (status === "Přetíženo (Thrashing)") {
+                    coreBox.style.borderColor = "var(--danger)";
+                    coreBox.style.backgroundColor = "rgba(241, 76, 76, 0.2)";
+                } else {
+                    coreBox.style.borderColor = "#555";
+                    coreBox.style.backgroundColor = "var(--core-bg)";
+                }
+
+                for(let j=0; j<dotsPerCore; j++) {
+                    workDiv.innerHTML += `<div class="thread-dot" style="background-color: ${vizColor}"></div>`;
+                }
+            }
+        }
+
+        slider.addEventListener('input', updateSimulation);
+        modelSelect.addEventListener('change', updateSimulation);
+
+        renderCores();
+        updateSimulation();
+    </script>
+</body>
+</html>
