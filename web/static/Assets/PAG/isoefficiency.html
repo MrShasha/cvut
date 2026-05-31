@@ -1,365 +1,420 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Isoefektivita — PAG</title>
+<title>Isoefektivita | PAG</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: #1e1e1e;
-    color: #d4d4d4;
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    font-size: 14px;
-    min-height: 100vh;
-    padding: 20px;
-  }
-  h1 {
-    color: #569cd6;
-    font-size: 1.3em;
-    margin-bottom: 16px;
-  }
-  .layout {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 16px;
-  }
-  .controls {
-    background: #2d2d2d;
-    border-radius: 8px;
-    padding: 16px;
-  }
-  .controls h3 {
-    color: #9cdcfe;
-    margin-bottom: 12px;
-    font-size: 0.9em;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .control-group {
-    margin-bottom: 14px;
-  }
-  .control-group label {
-    display: block;
-    color: #9cdcfe;
-    margin-bottom: 5px;
-    font-size: 0.82em;
-  }
-  select, input[type=range] {
-    width: 100%;
-    background: #3c3c3c;
-    color: #d4d4d4;
-    border: 1px solid #555;
-    border-radius: 4px;
-    padding: 5px 8px;
-    font-size: 0.88em;
-  }
-  input[type=range] {
-    padding: 4px 0;
-    cursor: pointer;
-    accent-color: #0984e3;
-  }
-  .canvas-panel {
-    background: #2d2d2d;
-    border-radius: 8px;
-    padding: 16px;
-  }
-  canvas {
-    display: block;
-    width: 100%;
-    border-radius: 4px;
-    background: #252525;
-  }
-  .algo-list {
-    margin-top: 14px;
-  }
-  .algo-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    font-size: 0.85em;
-    cursor: pointer;
-    opacity: 0.9;
-  }
-  .algo-item:hover { opacity: 1; }
-  .color-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .checkbox-custom {
-    width: 14px;
-    height: 14px;
-    border: 2px solid #555;
-    border-radius: 2px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-  }
-  .checkbox-custom.checked { background: #0984e3; border-color: #0984e3; }
-  .stat-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .stat-box {
-    background: #3c3c3c;
-    border-radius: 5px;
-    padding: 8px 10px;
-    text-align: center;
-  }
-  .stat-label { font-size: 0.72em; color: #888; }
-  .stat-value { font-size: 1em; font-weight: 600; color: #c3e88d; }
-  .info-text {
-    font-size: 0.82em;
-    color: #aaa;
-    line-height: 1.6;
-    margin-top: 12px;
-  }
+:root {
+  --bg:#09101f; --panel:rgba(18,29,52,.94); --line:rgba(142,164,204,.2);
+  --text:#edf4ff; --muted:#9aa9c8; --cyan:#56e0dc; --green:#6ee7a8;
+  --orange:#ffbd78; --shadow:0 18px 45px rgba(0,0,0,.22);
+}
+*{box-sizing:border-box;}
+body{margin:0;min-height:100vh;padding:18px;color:var(--text);
+  background:radial-gradient(circle at 10% 5%,rgba(64,114,221,.18),transparent 28rem),
+             radial-gradient(circle at 92% 90%,rgba(52,207,187,.12),transparent 30rem),
+             var(--bg);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif;font-size:14px;}
+button,select,input{font:inherit;}button{cursor:pointer;}
+.shell{width:min(1420px,100%);margin:0 auto;}
+
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:14px;}
+.eyebrow{color:var(--cyan);font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;}
+h1{margin:5px 0 0;font-size:clamp(21px,2.8vw,30px);letter-spacing:-.045em;}
+.hero p{max-width:680px;margin:6px 0 0;color:var(--muted);line-height:1.55;font-size:13px;}
+.hero-badge{flex:0 0 auto;padding:10px 13px;border:1px solid rgba(86,224,220,.35);border-radius:14px;
+  color:var(--cyan);background:rgba(86,224,220,.08);font-size:12px;font-weight:800;white-space:nowrap;}
+
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;
+  padding:11px 13px;border:1px solid var(--line);border-radius:15px;background:var(--panel);
+  box-shadow:var(--shadow);flex-wrap:wrap;}
+.tb-group{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.ctrl-lbl{color:var(--muted);font-size:12px;margin-right:2px;}
+.tab-btn{border:1px solid transparent;border-radius:10px;font-size:12px;font-weight:800;
+  padding:7px 11px;color:var(--muted);background:rgba(255,255,255,.045);
+  transition:transform .18s,border-color .18s,background .18s,color .18s;}
+.tab-btn:hover{transform:translateY(-1px);border-color:rgba(98,169,255,.55);color:var(--text);}
+.tab-btn.active{border-color:rgba(86,224,220,.6);color:#dffefd;background:rgba(86,224,220,.13);}
+.ctrl-grp{display:flex;align-items:center;gap:6px;padding:0 8px;color:var(--muted);font-size:12px;}
+input[type="range"]{width:72px;accent-color:var(--cyan);}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 345px;gap:12px;}
+.scene-card{border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:var(--shadow);overflow:hidden;}
+.scene-head{display:flex;align-items:center;justify-content:space-between;padding:12px 15px 8px;gap:12px;}
+.scene-title{font-size:13px;font-weight:850;}
+.scene-sub{margin-top:3px;color:var(--muted);font-size:12px;}
+.status-pill{flex:0 0 auto;padding:5px 9px;border:1px solid rgba(110,231,168,.35);border-radius:999px;
+  color:var(--green);background:rgba(110,231,168,.08);font-size:11px;font-weight:850;}
+.canvas-wrap{padding:0 10px;}
+canvas{display:block;width:100%;height:380px;border:1px solid rgba(142,164,204,.14);border-radius:13px;background:#0b1528;cursor:crosshair;}
+
+.info{display:grid;gap:8px;padding:12px 15px 14px;border-top:1px solid var(--line);background:rgba(8,16,31,.55);}
+.info-kicker{color:var(--cyan);font-size:10px;font-weight:850;letter-spacing:.15em;text-transform:uppercase;}
+.info-title{font-size:15px;font-weight:850;margin-top:2px;}
+.info-text{color:var(--muted);font-size:12px;line-height:1.55;}
+.info-formula{padding:8px 11px;border:1px solid rgba(98,169,255,.22);border-radius:8px;color:#cfe6ff;
+  background:rgba(98,169,255,.08);font:700 12px/1.45 ui-monospace,Consolas,monospace;white-space:pre-line;}
+
+.sidebar{display:grid;align-content:start;gap:10px;}
+.side-card{padding:13px;border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:var(--shadow);}
+.side-card h2{margin:0 0 10px;color:#d8e8ff;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;}
+
+.algo-card{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;cursor:pointer;
+  border:1px solid rgba(142,164,204,.12);background:rgba(255,255,255,.025);margin-bottom:6px;
+  transition:border-color .18s,background .18s;}
+.algo-card:last-child{margin-bottom:0;}
+.algo-card:hover{border-color:rgba(142,164,204,.3);background:rgba(255,255,255,.05);}
+.algo-card.selected{border-color:rgba(86,224,220,.5);background:rgba(86,224,220,.07);}
+.algo-card.dimmed{opacity:.38;}
+.algo-bar{width:4px;min-height:34px;border-radius:3px;flex-shrink:0;}
+.algo-info{flex:1;min-width:0;}
+.algo-name{font-size:12px;font-weight:700;color:var(--text);}
+.algo-note{font-size:10px;color:var(--muted);font-family:ui-monospace,Consolas,monospace;margin-top:2px;}
+.algo-tog{width:28px;height:16px;border-radius:999px;border:1px solid rgba(142,164,204,.3);background:rgba(0,0,0,.3);
+  position:relative;flex-shrink:0;transition:background .18s,border-color .18s;}
+.algo-tog::after{content:'';position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;
+  background:#555;transition:transform .18s,background .18s;}
+.algo-tog.on{border-color:var(--green);background:rgba(110,231,168,.18);}
+.algo-tog.on::after{transform:translateX(12px);background:var(--green);}
+
+.stats-table{width:100%;border-collapse:collapse;}
+.stats-table th{font-size:10px;color:var(--muted);text-align:left;padding:3px 5px;font-weight:700;text-transform:uppercase;border-bottom:1px solid rgba(142,164,204,.15);}
+.stats-table td{font-size:11px;padding:4px 5px;vertical-align:middle;}
+.stats-table tr:not(:last-child) td{border-bottom:1px solid rgba(142,164,204,.07);}
+.sdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+
+.formula-box{padding:9px 11px;border:1px solid rgba(86,224,220,.22);border-radius:8px;color:var(--cyan);
+  background:rgba(86,224,220,.07);font:750 11px/1.55 ui-monospace,Consolas,monospace;white-space:pre-line;}
+.note{color:var(--muted);font-size:11px;line-height:1.55;margin-top:6px;}
+
+@media(max-width:980px){
+  .hero{align-items:flex-start;flex-direction:column;}
+  .toolbar{flex-direction:column;align-items:stretch;}
+  .layout{grid-template-columns:1fr;}
+  canvas{height:300px;}
+}
 </style>
 </head>
 <body>
-<h1>Isoefektivita algoritmů — PAG</h1>
-<div class="layout">
-  <div class="controls">
-    <h3>Zobrazení</h3>
-    <div class="control-group">
-      <label>Osa X: Počet procesorů p</label>
-      <select id="xscale" onchange="draw()">
-        <option value="linear">Lineární</option>
-        <option value="log" selected>Logaritmická</option>
-      </select>
+<main class="shell">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Paralelni algoritmy / analyza skalovatelnosti</div>
+      <h1>Isoefektivita: jak rychle musi rust W</h1>
+      <p>Isoefektivni funkce f(p) rika, jak rychle musi narustat velikost problemu W pri pridavani procesoru, abychom zachovali konstantni efektivitu E. Cim pomaleji f(p) roste, tim lepe se algoritmus skaluje.</p>
     </div>
-    <div class="control-group">
-      <label>Osa Y: Velikost problému W</label>
-      <select id="yscale" onchange="draw()">
-        <option value="linear">Lineární</option>
-        <option value="log" selected>Logaritmická</option>
-      </select>
+    <div class="hero-badge">6 algoritmu &middot; log skaly</div>
+  </header>
+
+  <section class="toolbar">
+    <div class="tb-group">
+      <span class="ctrl-lbl">Osa X:</span>
+      <button class="tab-btn active" id="xlog" data-xsc="log">Log&#x2082;</button>
+      <button class="tab-btn" id="xlin" data-xsc="linear">Linearni</button>
+      <span class="ctrl-lbl" style="margin-left:10px">Osa Y:</span>
+      <button class="tab-btn active" id="ylog" data-ysc="log">Log&#x2081;&#x2080;</button>
+      <button class="tab-btn" id="ylin" data-ysc="linear">Linearni</button>
     </div>
-    <div class="control-group">
-      <label>Max p: <span id="pMaxVal">1024</span></label>
-      <input type="range" id="pMaxSlider" min="2" max="10" value="10" step="1" oninput="updatePMax()">
+    <div class="tb-group">
+      <label class="ctrl-grp">Max p = 2^
+        <input type="range" id="pSlider" min="2" max="10" value="10">
+        <strong style="color:var(--green);min-width:26px" id="pMaxVal">1024</strong>
+      </label>
+    </div>
+  </section>
+
+  <section class="layout">
+    <div class="scene-card">
+      <div class="scene-head">
+        <div>
+          <div class="scene-title">Isoefektivni krivky W(p)</div>
+          <div class="scene-sub">Najet mysi zobraz hodnoty W pro vsechny algoritmy pri dane p. Klikni algoritmus pro detail.</div>
+        </div>
+        <div class="status-pill" id="hovPill">najet mysi</div>
+      </div>
+      <div class="canvas-wrap"><canvas id="cv"></canvas></div>
+      <div class="info">
+        <div>
+          <div class="info-kicker" id="infoKicker">Definice</div>
+          <div class="info-title" id="infoTitle">Isoefektivni funkce f(p)</div>
+        </div>
+        <div class="info-text" id="infoText"></div>
+        <div class="info-formula" id="infoFormula"></div>
+      </div>
     </div>
 
-    <h3 style="margin-top:16px; margin-bottom:10px;">Algoritmy</h3>
-    <div class="algo-list" id="algoList"></div>
+    <aside class="sidebar">
+      <section class="side-card">
+        <h2>Algoritmy</h2>
+        <div id="algoList"></div>
+      </section>
+      <section class="side-card">
+        <h2>Hodnoty W pri p = <span id="statsP">16</span></h2>
+        <table class="stats-table">
+          <thead><tr><th>Algoritmus</th><th style="text-align:right">W(p)</th><th style="text-align:right">ratio</th></tr></thead>
+          <tbody id="statsBody"></tbody>
+        </table>
+      </section>
+      <section class="side-card">
+        <h2>Isoefektivita &mdash; definice</h2>
+        <div class="formula-box">E = T_s / (p * T_p)
 
-    <div class="info-text">
-      Isoefektivita $f(p)$: jak rychle musí narůstat W, aby efektivita E zůstala konstantní. Strmější křivka = horší škálovatelnost.
-    </div>
-  </div>
+T_o = p*T_p - T_s  (overhead)
 
-  <div class="canvas-panel">
-    <canvas id="chart" width="600" height="400"></canvas>
-    <div class="stat-row">
-      <div class="stat-box">
-        <div class="stat-label">Nejlepší škálovatelnost</div>
-        <div class="stat-value" id="statBest">—</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">Nejhorší škálovatelnost</div>
-        <div class="stat-value" id="statWorst">—</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-label">p = <span id="curP">—</span></div>
-        <div class="stat-value" id="curW">—</div>
-      </div>
-    </div>
-  </div>
-</div>
+E = konst. <=> W >= K * T_o(p)
+
+=> W(p) = isoefektivni funkce</div>
+        <div class="note">Cim pomaleji f(p) roste (napr. Theta(p log p) vs Theta(p^2)), tim lepsi skalovatelnost. Strmejsi krivka v grafu = horsi algoritmus.</div>
+      </section>
+    </aside>
+  </section>
+</main>
 
 <script>
-const algorithms = [
-  {
-    name: "Sčítání čísel",
-    desc: "Θ(p log p)",
-    color: "#0984e3",
-    fn: p => p * Math.log2(p),
-    enabled: true,
-  },
-  {
-    name: "Quicksort",
-    desc: "Θ(p log²p)",
-    color: "#00b894",
-    fn: p => p * Math.pow(Math.log2(p), 2),
-    enabled: true,
-  },
-  {
-    name: "Matice×Vektor 2D",
-    desc: "Θ(p^1.5)",
-    color: "#fdcb6e",
-    fn: p => Math.pow(p, 1.5),
-    enabled: true,
-  },
-  {
-    name: "Cannon / Gauss 2D",
-    desc: "Θ(p^1.5 log³p)",
-    color: "#e17055",
-    fn: p => Math.pow(p, 1.5) * Math.pow(Math.log2(p), 3),
-    enabled: true,
-  },
-  {
-    name: "Prim / Dijkstra",
-    desc: "Θ(p² log²p)",
-    color: "#a29bfe",
-    fn: p => p * p * Math.pow(Math.log2(p), 2),
-    enabled: true,
-  },
-  {
-    name: "Odd-Even Sort",
-    desc: "Θ(p·2^p)",
-    color: "#ff7675",
-    fn: p => p * Math.pow(2, Math.min(p, 30)),
-    enabled: false,
-  },
+const ALGOS=[
+  {id:0,name:'Scitani cisel',note:'Theta(p log p)',color:'#0984e3',
+   fn:p=>p*Math.log2(p),enabled:true,
+   kicker:'Redukce / broadcast',
+   title:'Scitani n cisel na hyperkrychli',
+   text:'Paralelni redukce: log p kroku, kazdy s p/2 zpravami. Overhead T_o = p*log p. Nejlepsi skalovatelnost ze vsech zobrazenych algoritmu.',
+   formula:'T_o(p) = p * log2(p)\nW(p) = Theta(p log p)\n=> W roste o faktor log p nad linearnim'},
+  {id:1,name:'Trideni (sample sort)',note:'Theta(p log^2 p)',color:'#00b894',
+   fn:p=>p*Math.pow(Math.log2(p),2),enabled:true,
+   kicker:'Trideni',
+   title:'Paralelni quicksort se vzorkovanim',
+   text:'Sample sort: vzorkovani a redistribuce prvku prida faktor log p nad zakladni komunikaci -> Theta(p log^2 p). Stale velmi dobra skalovatelnost.',
+   formula:'T_o(p) = p * log^2(p)\nW(p) = Theta(p log^2 p)\n=> o 1 faktor log p horsi nez redukce'},
+  {id:2,name:'Nasobeni matic (Cannon)',note:'Theta(p^1.5)',color:'#fdcb6e',
+   fn:p=>Math.pow(p,1.5),enabled:true,
+   kicker:'Matice x matice',
+   title:'Cannuv algoritmus na 2D mrizce',
+   text:'2D rozklad na sqrt(p) x sqrt(p) procesoru: T_o = O(n*sqrt(p)), W = n^3. Resenim W >= K*n*sqrt(p) dostaneme n >= K*sqrt(p), tedy W = n^3 = Theta(p^1.5).',
+   formula:'T_o = O(n*sqrt(p)),  W = n^3\nn^3 >= K*n*sqrt(p) => n >= K*sqrt(p)\nW(p) = Theta(p^1.5)'},
+  {id:3,name:'Gauss / LU (2D)',note:'Theta(p^1.5 log^3 p)',color:'#e17055',
+   fn:p=>Math.pow(p,1.5)*Math.pow(Math.log2(p),3),enabled:true,
+   kicker:'Gaussova eliminace',
+   title:'Eliminace na 2D mrizce s pipeline',
+   text:'Gaussova eliminace s pivotem na 2D mrizce: rotace bloku pro pivotaci pridaji faktor log^3(p) k zakladnimu Theta(p^1.5) z Cannon-type rozkladu.',
+   formula:'T_o = O(n*sqrt(p)*log^3p)\nW(p) = Theta(p^1.5 * log^3 p)\n=> vyrazne horsi nez ciste nasobeni'},
+  {id:4,name:'Prim / Dijkstra',note:'Theta(p^2 log^2 p)',color:'#a29bfe',
+   fn:p=>p*p*Math.pow(Math.log2(p),2),enabled:true,
+   kicker:'Grafove algoritmy',
+   title:'Prim / Dijkstra s 1D rozkladem',
+   text:'1D rozklad grafu: kazde kolo broadcast minimalniho vrcholu O(log p), p kol, p procesoru. Kvadraticky overhead T_o = O(p^2 log p) => isoefektivita Theta(p^2 log^2 p).',
+   formula:'T_o = O(p*log p) / kolo * p kol\n   = O(p^2 log p)\nW(p) = Theta(p^2 log^2 p)  => spatna skal.'},
+  {id:5,name:'Odd-Even Sort',note:'Theta(p * 2^p)',color:'#fd79a8',
+   fn:p=>p*Math.pow(2,Math.min(p,30)),enabled:false,
+   kicker:'Trideni',
+   title:'Bitonicke / odd-even trideni',
+   text:'Exponencialni isoefektivita: W musi rustat rychleji nez jakykoli polynom. Prakticke pro p < 15. Slouzi jako ukazka nejhorsiho mozneho chovani skalovatelnosti.',
+   formula:'T_o = O(p * 2^p)\nW(p) = Theta(p * 2^p)\n=> katastrofalni skalovatelnost'},
 ];
 
-// Build algo list
-const algoList = document.getElementById('algoList');
-algorithms.forEach((a, i) => {
-  const div = document.createElement('div');
-  div.className = 'algo-item';
-  div.innerHTML = `<div class="color-dot" style="background:${a.color}"></div>
-    <div class="checkbox-custom ${a.enabled ? 'checked' : ''}" id="chk${i}">✓</div>
-    <span>${a.name} <span style="color:#888">${a.desc}</span></span>`;
-  div.onclick = () => {
-    a.enabled = !a.enabled;
-    document.getElementById('chk'+i).className = 'checkbox-custom' + (a.enabled ? ' checked' : '');
-    draw();
-  };
-  algoList.appendChild(div);
-});
+let xsc='log', ysc='log', pMaxK=10, hoverP=null, selId=null;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+let cssW=0, cssH=0, dpr=1;
+const padL=58, padR=18, padT=18, padB=44;
 
-function updatePMax() {
-  const v = parseInt(document.getElementById('pMaxSlider').value);
-  document.getElementById('pMaxVal').textContent = Math.pow(2, v);
-  draw();
+// Scale buttons
+document.getElementById('xlog').addEventListener('click',()=>{xsc='log';document.getElementById('xlog').classList.add('active');document.getElementById('xlin').classList.remove('active');draw();});
+document.getElementById('xlin').addEventListener('click',()=>{xsc='linear';document.getElementById('xlin').classList.add('active');document.getElementById('xlog').classList.remove('active');draw();});
+document.getElementById('ylog').addEventListener('click',()=>{ysc='log';document.getElementById('ylog').classList.add('active');document.getElementById('ylin').classList.remove('active');draw();});
+document.getElementById('ylin').addEventListener('click',()=>{ysc='linear';document.getElementById('ylin').classList.add('active');document.getElementById('ylog').classList.remove('active');draw();});
+document.getElementById('pSlider').addEventListener('input',()=>{pMaxK=parseInt(document.getElementById('pSlider').value);document.getElementById('pMaxVal').textContent=Math.pow(2,pMaxK);draw();renderStats();});
+
+// Build algo list
+function buildAlgoList(){
+  const el=document.getElementById('algoList'); el.innerHTML='';
+  ALGOS.forEach(a=>{
+    const d=document.createElement('div');
+    d.className='algo-card'+(a.enabled?'':' dimmed')+(selId===a.id?' selected':'');
+    d.innerHTML=`<div class="algo-bar" style="background:${a.color}"></div>
+      <div class="algo-info"><div class="algo-name">${a.name}</div><div class="algo-note">${a.note}</div></div>
+      <div class="algo-tog ${a.enabled?'on':''}" title="Zapnout/vypnout"></div>`;
+    d.querySelector('.algo-tog').addEventListener('click',e=>{
+      e.stopPropagation(); a.enabled=!a.enabled; buildAlgoList(); draw(); renderStats();
+    });
+    d.addEventListener('click',()=>{ selId=(selId===a.id)?null:a.id; buildAlgoList(); renderInfo(); });
+    el.appendChild(d);
+  });
 }
 
-function draw() {
-  const canvas = document.getElementById('chart');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width = canvas.offsetWidth;
-  const H = canvas.height = 400;
-  const pad = { left: 60, right: 20, top: 20, bottom: 40 };
+// DPR resize
+function resizeDPR(){
+  const r=cv.getBoundingClientRect(), w=Math.max(200,Math.floor(r.width)), h=Math.max(200,Math.floor(r.height));
+  const ratio=Math.max(1,window.devicePixelRatio||1);
+  if(w===cssW&&h===cssH&&ratio===dpr) return;
+  cssW=w; cssH=h; dpr=ratio; cv.width=w*ratio; cv.height=h*ratio;
+}
 
-  ctx.fillStyle = '#252525';
-  ctx.fillRect(0, 0, W, H);
+function getPs(){ const a=[]; for(let k=1;k<=pMaxK;k++) a.push(Math.pow(2,k)); return a; }
+function getPMax(){ return Math.pow(2,pMaxK); }
 
-  const pMaxK = parseInt(document.getElementById('pMaxSlider').value);
-  const pMax = Math.pow(2, pMaxK);
-  const xscale = document.getElementById('xscale').value;
-  const yscale = document.getElementById('yscale').value;
+function getYRange(ps){
+  const v=[]; ALGOS.filter(a=>a.enabled).forEach(a=>ps.forEach(p=>{const w=a.fn(p); if(isFinite(w)&&w>0) v.push(w);}));
+  return v.length?[Math.min(...v),Math.max(...v)]:[1,1e6];
+}
 
-  // Collect all values
-  const ps = [];
-  for (let k = 1; k <= pMaxK; k++) ps.push(Math.pow(2, k));
+function toX(p){
+  const cw=cssW-padL-padR;
+  return xsc==='log'? padL+(Math.log2(p)-1)/(pMaxK-1)*cw : padL+(p-2)/(getPMax()-2)*cw;
+}
+function toY(w,yMin,yMax){
+  const ch=cssH-padT-padB;
+  const t=ysc==='log'?(Math.log10(w)-Math.log10(yMin))/(Math.log10(yMax)-Math.log10(yMin)):(w-yMin)/(yMax-yMin);
+  return cssH-padB-t*ch;
+}
+function snapP(mx){
+  const ps=getPs(); let best=ps[0],bd=Infinity;
+  ps.forEach(p=>{const d=Math.abs(toX(p)-mx); if(d<bd){bd=d;best=p;}});
+  return best;
+}
 
-  const allVals = [];
-  algorithms.filter(a => a.enabled).forEach(a => ps.forEach(p => {
-    const v = a.fn(p);
-    if (isFinite(v) && v > 0) allVals.push(v);
-  }));
+function fmtW(v){
+  if(!isFinite(v)||v<=0) return '—';
+  if(v>=1e15) return '>10^15';
+  if(v>=1e12) return (v/1e12).toFixed(1)+'T';
+  if(v>=1e9) return (v/1e9).toFixed(1)+'G';
+  if(v>=1e6) return (v/1e6).toFixed(1)+'M';
+  if(v>=1e3) return (v/1e3).toFixed(1)+'K';
+  return v.toFixed(1);
+}
 
-  if (allVals.length === 0) return;
+function draw(){
+  resizeDPR();
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
+  const bg=ctx.createLinearGradient(0,0,cssW,cssH);
+  bg.addColorStop(0,'#0b1528'); bg.addColorStop(1,'#091120');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,cssW,cssH);
 
-  const yMin = Math.min(...allVals);
-  const yMax = Math.max(...allVals);
-  const xMin = 2, xMax = pMax;
+  const ps=getPs(), [yMin,yMax]=getYRange(ps);
+  const cw=cssW-padL-padR, ch=cssH-padT-padB;
 
-  function toX(p) {
-    if (xscale === 'log') {
-      return pad.left + (Math.log2(p) - Math.log2(xMin)) / (Math.log2(xMax) - Math.log2(xMin)) * (W - pad.left - pad.right);
-    }
-    return pad.left + (p - xMin) / (xMax - xMin) * (W - pad.left - pad.right);
-  }
-  function toY(w) {
-    const yn = yscale === 'log' ? (Math.log(w) - Math.log(yMin)) / (Math.log(yMax) - Math.log(yMin))
-                                : (w - yMin) / (yMax - yMin);
-    return H - pad.bottom - yn * (H - pad.top - pad.bottom);
-  }
+  // Vertical grid (powers of 2)
+  ctx.strokeStyle='rgba(142,164,204,.07)'; ctx.lineWidth=1;
+  ps.forEach(p=>{ const x=toX(p); ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,cssH-padB); ctx.stroke(); });
 
-  // Grid
-  ctx.strokeStyle = '#3c3c3c';
-  ctx.lineWidth = 1;
-  for (let k = 1; k <= pMaxK; k++) {
-    const x = toX(Math.pow(2, k));
-    ctx.beginPath(); ctx.moveTo(x, pad.top); ctx.lineTo(x, H - pad.bottom); ctx.stroke();
+  // Horizontal grid
+  ctx.strokeStyle='rgba(142,164,204,.07)'; ctx.lineWidth=1;
+  if(ysc==='log'){
+    const lo=Math.floor(Math.log10(yMin)), hi=Math.ceil(Math.log10(yMax));
+    for(let e=lo;e<=hi;e++){const y=toY(Math.pow(10,e),yMin,yMax); if(y>=padT&&y<=cssH-padB){ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(cssW-padR,y);ctx.stroke();}}
+  } else {
+    for(let i=0;i<=5;i++){const y=padT+i*(ch/5);ctx.beginPath();ctx.moveTo(padL,y);ctx.lineTo(cssW-padR,y);ctx.stroke();}
   }
 
   // Axes
-  ctx.strokeStyle = '#555';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(pad.left, pad.top); ctx.lineTo(pad.left, H - pad.bottom);
-  ctx.lineTo(W - pad.right, H - pad.bottom);
-  ctx.stroke();
+  ctx.strokeStyle='rgba(142,164,204,.3)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(padL,padT); ctx.lineTo(padL,cssH-padB); ctx.lineTo(cssW-padR,cssH-padB); ctx.stroke();
 
   // X labels
-  ctx.fillStyle = '#888';
-  ctx.font = '11px sans-serif';
-  ctx.textAlign = 'center';
-  for (let k = 1; k <= pMaxK; k += Math.max(1, Math.floor(pMaxK/8))) {
-    const p = Math.pow(2, k);
-    const x = toX(p);
-    ctx.fillText('2^'+k, x, H - pad.bottom + 14);
+  ctx.fillStyle='rgba(154,169,200,.7)'; ctx.font='11px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='top';
+  const step=Math.max(1,Math.floor(pMaxK/8));
+  for(let k=1;k<=pMaxK;k+=step){ ctx.fillText('2^'+k,toX(Math.pow(2,k)),cssH-padB+8); }
+  ctx.fillStyle='rgba(154,169,200,.45)'; ctx.fillText('Procesory p',padL+cw/2,cssH-padB+22);
+
+  // Y labels
+  ctx.textAlign='right'; ctx.textBaseline='middle';
+  if(ysc==='log'){
+    const lo=Math.floor(Math.log10(yMin)), hi=Math.ceil(Math.log10(yMax)); let lastY=-999;
+    for(let e=lo;e<=hi;e++){
+      const y=toY(Math.pow(10,e),yMin,yMax); if(y<padT||y>cssH-padB||y-lastY<16) continue;
+      ctx.fillStyle='rgba(154,169,200,.7)'; ctx.fillText('10^'+e,padL-6,y); lastY=y;
+    }
+  } else {
+    for(let i=0;i<=5;i++){
+      const y=padT+(5-i)*(ch/5);
+      ctx.fillStyle='rgba(154,169,200,.7)'; ctx.fillText(fmtW(yMin+(yMax-yMin)*i/5),padL-6,y);
+    }
   }
-  ctx.fillText('Procesory p', pad.left + (W-pad.left-pad.right)/2, H - 2);
+  ctx.save(); ctx.translate(13,padT+ch/2); ctx.rotate(-Math.PI/2);
+  ctx.fillStyle='rgba(154,169,200,.45)'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('Velikost W',0,0); ctx.restore();
 
-  // Y label
-  ctx.save(); ctx.translate(14, pad.top + (H-pad.top-pad.bottom)/2);
-  ctx.rotate(-Math.PI/2); ctx.fillText('Velikost W', 0, 0); ctx.restore();
+  // Draw curves
+  ALGOS.filter(a=>a.enabled).forEach(a=>{
+    const isSel=selId===a.id;
+    ctx.save();
+    if(isSel){ctx.shadowColor=a.color;ctx.shadowBlur=14;}
+    ctx.strokeStyle=a.color+(isSel?'':'bb');
+    ctx.lineWidth=isSel?3:2; ctx.lineCap='round'; ctx.lineJoin='round';
+    ctx.beginPath(); let first=true;
+    ps.forEach(p=>{
+      const v=a.fn(p); if(!isFinite(v)||v<=0) return;
+      const x=toX(p), y=toY(v,yMin,yMax);
+      if(first){ctx.moveTo(x,y);first=false;} else ctx.lineTo(x,y);
+    }); ctx.stroke(); ctx.restore();
 
-  // Lines
-  algorithms.filter(a => a.enabled).forEach(a => {
-    ctx.strokeStyle = a.color;
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    let first = true;
-    ps.forEach(p => {
-      const v = a.fn(p);
-      if (!isFinite(v) || v <= 0) return;
-      const x = toX(p), y = toY(v);
-      if (first) { ctx.moveTo(x, y); first = false; }
-      else ctx.lineTo(x, y);
-    });
-    ctx.stroke();
-
-    // Label at end
-    const lastP = ps[ps.length-1];
-    const lastV = a.fn(lastP);
-    if (isFinite(lastV) && lastV > 0) {
-      const x = toX(lastP), y = Math.max(pad.top + 10, Math.min(H - pad.bottom - 4, toY(lastV)));
-      ctx.fillStyle = a.color;
-      ctx.font = 'bold 10px sans-serif';
-      ctx.textAlign = 'right';
-      ctx.fillText(a.desc, x - 4, y - 4);
+    // End label
+    const lp=ps[ps.length-1], lv=a.fn(lp);
+    if(isFinite(lv)&&lv>0){
+      const x=toX(lp), y=Math.max(padT+8,Math.min(cssH-padB-4,toY(lv,yMin,yMax)));
+      ctx.fillStyle=a.color+(isSel?'':'cc');
+      ctx.font=(isSel?'bold ':'')+'10px ui-monospace,Consolas,monospace';
+      ctx.textAlign='right'; ctx.textBaseline='bottom';
+      ctx.fillText(a.note,x-5,y-4);
     }
   });
 
-  // Stats
-  const enabled = algorithms.filter(a => a.enabled);
-  if (enabled.length > 0) {
-    const p16 = 16;
-    const vals16 = enabled.map(a => ({name: a.desc, v: a.fn(p16)})).filter(x => isFinite(x.v));
-    if (vals16.length > 0) {
-      vals16.sort((a, b) => a.v - b.v);
-      document.getElementById('statBest').textContent = vals16[0].name;
-      document.getElementById('statWorst').textContent = vals16[vals16.length-1].name;
-      document.getElementById('curP').textContent = p16;
-      document.getElementById('curW').textContent = enabled.map(a => a.fn(p16).toFixed(0)).join(' / ');
-    }
+  // Crosshair on hover
+  if(hoverP!==null){
+    const x=toX(hoverP);
+    ctx.save(); ctx.strokeStyle='rgba(86,224,220,.6)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,cssH-padB); ctx.stroke(); ctx.restore();
+    ALGOS.filter(a=>a.enabled).forEach(a=>{
+      const v=a.fn(hoverP); if(!isFinite(v)||v<=0) return;
+      const y=toY(v,yMin,yMax); if(y<padT-4||y>cssH-padB+4) return;
+      ctx.save(); ctx.shadowColor=a.color; ctx.shadowBlur=16;
+      ctx.fillStyle=a.color; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fill(); ctx.restore();
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,2,0,Math.PI*2); ctx.fill();
+    });
+    document.getElementById('hovPill').textContent='p = '+hoverP;
+  } else {
+    document.getElementById('hovPill').textContent='najet mysi';
   }
 }
 
-updatePMax();
-window.addEventListener('resize', draw);
+// Hover
+cv.addEventListener('mousemove',e=>{
+  const rect=cv.getBoundingClientRect();
+  const mx=(e.clientX-rect.left)*(cssW/rect.width);
+  hoverP=(mx>=padL&&mx<=cssW-padR)?snapP(mx):null;
+  draw(); renderStats();
+});
+cv.addEventListener('mouseleave',()=>{hoverP=null;draw();renderStats();});
+
+function renderStats(){
+  const p=hoverP||Math.pow(2,Math.min(4,pMaxK));
+  document.getElementById('statsP').textContent=p;
+  const enabled=ALGOS.filter(a=>a.enabled);
+  const baseV=enabled.length?enabled[0].fn(p):1;
+  document.getElementById('statsBody').innerHTML=enabled.map(a=>{
+    const v=a.fn(p), ratio=isFinite(v)&&isFinite(baseV)&&baseV>0?(v/baseV).toFixed(1)+'x':'—';
+    return `<tr><td><span class="sdot" style="background:${a.color}"></span><span style="font-size:10px">${a.name}</span></td>
+      <td style="text-align:right;font-family:ui-monospace;font-weight:700;color:var(--text);font-size:11px">${fmtW(v)}</td>
+      <td style="text-align:right;color:var(--muted);font-size:10px">${ratio}</td></tr>`;
+  }).join('');
+}
+
+function renderInfo(){
+  const a=selId!==null?ALGOS.find(x=>x.id===selId):null;
+  if(a){
+    document.getElementById('infoKicker').textContent=a.kicker;
+    document.getElementById('infoTitle').textContent=a.title;
+    document.getElementById('infoText').textContent=a.text;
+    document.getElementById('infoFormula').textContent=a.formula;
+  } else {
+    document.getElementById('infoKicker').textContent='Definice';
+    document.getElementById('infoTitle').textContent='Isoefektivni funkce f(p)';
+    document.getElementById('infoText').textContent='Klikni na algoritmus vlevo pro zobrazeni detailu odvozeni. Hoverni nad grafem ukazuje hodnoty W pro vsechny algoritmy pri zvolene p.';
+    document.getElementById('infoFormula').textContent='E = T_s / (p * T_p)        [efektivita]\nT_o = p*T_p - T_s            [overhead]\nE = konst. <=> W >= K*T_o(p)\n=> W(p) = isoefektivni funkce';
+  }
+}
+
+window.addEventListener('resize',()=>draw());
+buildAlgoList(); renderInfo(); renderStats(); draw();
 </script>
 </body>
 </html>
