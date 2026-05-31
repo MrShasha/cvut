@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>One-to-All Broadcast — animace</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  padding: 16px;
+  min-height: 100vh;
+}
+h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
+
+.main {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 14px;
+}
+
+/* ---- Controls ---- */
+.panel {
+  background: #2d2d2d;
+  border-radius: 8px;
+  padding: 14px;
+}
+.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+
+.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
+select, input[type=range] {
+  background: #3c3c3c; color: #d4d4d4;
+  border: 1px solid #555; border-radius: 4px;
+  padding: 4px 8px; font-size: 0.88em;
+}
+input[type=range] { padding: 2px 0; accent-color: #0984e3; width: 100px; cursor: pointer; }
+.val { color: #c3e88d; font-weight: 600; min-width: 24px; }
+
+.btn {
+  background: #0984e3; color: #fff; border: none; border-radius: 5px;
+  padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600;
+  transition: background .15s;
+}
+.btn:hover { background: #0773c5; }
+.btn:disabled { background: #444; color: #888; cursor: default; }
+.btn.secondary { background: #3c3c3c; }
+.btn.secondary:hover { background: #4a4a4a; }
+
+canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
+
+/* ---- Step info ---- */
+.step-info {
+  background: #1a1a2e;
+  border-left: 3px solid #0984e3;
+  border-radius: 0 6px 6px 0;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  font-size: 0.88em;
+  line-height: 1.6;
+  min-height: 56px;
+}
+.step-info .step-num { color: #569cd6; font-weight: 700; }
+.step-info .formula { color: #c3e88d; font-family: monospace; }
+
+/* ---- Derivation ---- */
+.deriv-box {
+  background: #252525;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 0.83em;
+  line-height: 1.7;
+}
+.deriv-box .row-d { display: flex; gap: 6px; align-items: baseline; margin-bottom: 3px; }
+.deriv-box .lbl { color: #888; min-width: 110px; font-size: 0.9em; }
+.deriv-box .expr { color: #c3e88d; font-family: monospace; }
+.deriv-box .highlight { color: #0984e3; font-weight: 700; }
+
+/* ---- Progress bar ---- */
+.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
+.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
+
+.tag {
+  display: inline-block; padding: 1px 7px; border-radius: 3px;
+  font-size: 0.78em; font-weight: 600; margin-left: 4px;
+}
+.tag.green { background: #00b89430; color: #00b894; }
+.tag.blue  { background: #0984e330; color: #0984e3; }
+.tag.orange { background: #e1705530; color: #e17055; }
+
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
+.stat.blue  { border-color: #0984e3; }
+.stat.green { border-color: #00b894; }
+.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
+.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+</style>
+</head>
+<body>
+<h1>One-to-All Broadcast — rekurzivní zdvojování</h1>
+
+<div class="main">
+<!-- LEFT: canvas + controls -->
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="row">
+      <label>Topologie:</label>
+      <select id="topo" onchange="reset()">
+        <option value="ring">Prsten (Ring)</option>
+        <option value="mesh">Mřížka (Mesh)</option>
+        <option value="hypercube" selected>Hyperkrychle</option>
+      </select>
+      <label style="margin-left:8px;">p =</label>
+      <input type="range" id="pSlider" min="1" max="4" value="3" oninput="updateP()">
+      <span class="val" id="pVal">8</span>
+      <label style="margin-left:8px;">Zdroj:</label>
+      <select id="srcNode" onchange="reset()"></select>
+    </div>
+    <div class="row">
+      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
+      <button class="btn secondary" onclick="stepBack()">◀ Krok zpět</button>
+      <button class="btn secondary" onclick="stepFwd()">▶ Krok vpřed</button>
+      <button class="btn secondary" onclick="reset()">↺ Reset</button>
+      <label style="margin-left:8px;">Rychlost:</label>
+      <input type="range" id="speed" min="200" max="2000" value="900" step="100" style="width:80px;">
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
+  </div>
+
+  <canvas id="cv" height="320"></canvas>
+
+  <div class="step-info" id="stepInfo">
+    <span class="step-num">Krok 0:</span> Stiskni ▶ nebo klikni na krok vpřed.
+  </div>
+</div>
+
+<!-- RIGHT: derivation panel -->
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <h3>Průběh přenosu</h3>
+    <div id="stepTable" style="font-size:0.82em; line-height:1.8;"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Odvození složitosti</h3>
+    <div class="deriv-box">
+      <div class="row-d">
+        <span class="lbl">Kroků celkem:</span>
+        <span class="expr" id="dSteps">log₂ p = ?</span>
+      </div>
+      <div class="row-d">
+        <span class="lbl">Zpráv za krok:</span>
+        <span class="expr">1 (na procesor)</span>
+      </div>
+      <div class="row-d">
+        <span class="lbl">Velikost zprávy:</span>
+        <span class="expr">m (konstantní)</span>
+      </div>
+      <div class="row-d">
+        <span class="lbl">Čas 1 zprávy:</span>
+        <span class="expr">tₛ + tᵥ·m</span>
+      </div>
+      <hr style="border-color:#444; margin: 8px 0;">
+      <div class="row-d">
+        <span class="lbl">T celkem:</span>
+        <span class="expr highlight" id="dTotal">(tₛ + tᵥ·m)·log p</span>
+      </div>
+      <div style="margin-top:8px; color:#888; font-size:0.9em; line-height:1.5;">
+        V každém kroku se počet procesorů se zprávou <strong style="color:#0984e3">zdvojnásobí</strong>. Po log p krocích mají zprávu všichni.
+      </div>
+    </div>
+
+    <div class="stat-grid" style="margin-top:10px;">
+      <div class="stat blue">
+        <div class="stat-lbl">Aktuální krok</div>
+        <div class="stat-val" id="sCurStep">0 / 0</div>
+      </div>
+      <div class="stat green">
+        <div class="stat-lbl">Má zprávu</div>
+        <div class="stat-val" id="sHave">1 / ?</div>
+      </div>
+      <div class="stat blue">
+        <div class="stat-lbl">Přeneseno zpráv</div>
+        <div class="stat-val" id="sMsgs">0</div>
+      </div>
+      <div class="stat green">
+        <div class="stat-lbl">Zbývá</div>
+        <div class="stat-val" id="sRemain">?</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ────────────────────────────────
+// State
+// ────────────────────────────────
+let p = 8, src = 0, topo = 'hypercube';
+let steps = [];   // [{senders: [], receivers: []}]
+let curStep = -1; // -1 = before step 0
+let have = new Set();
+let playing = false;
+let timer = null;
+
+// ────────────────────────────────
+// Topology layout
+// ────────────────────────────────
+function nodePositions(p, topo, cx, cy, R) {
+  const pos = [];
+  if (topo === 'ring') {
+    for (let i = 0; i < p; i++) {
+      const a = (2 * Math.PI * i / p) - Math.PI / 2;
+      pos.push({ x: cx + R * Math.cos(a), y: cy + R * Math.sin(a) });
+    }
+  } else if (topo === 'mesh') {
+    const sq = Math.sqrt(p);
+    const sp = R * 2 / (sq - 1 + 0.001);
+    for (let i = 0; i < sq; i++) for (let j = 0; j < sq; j++) {
+      pos.push({ x: cx - R + j * sp, y: cy - R + i * sp });
+    }
+  } else { // hypercube — project d-dim to 2d
+    const d = Math.log2(p);
+    for (let i = 0; i < p; i++) {
+      // Map bits to 2d coords using Gray-coded layout
+      let x = 0, y = 0;
+      for (let b = 0; b < d; b++) {
+        if (b % 2 === 0) x += ((i >> b) & 1) * (R * 2 / (d > 2 ? 2 : 1));
+        else             y += ((i >> b) & 1) * (R * 2 / (d > 2 ? 2 : 1));
+      }
+      pos.push({ x: cx - R + x, y: cy - R + y });
+    }
+  }
+  return pos;
+}
+
+// Edges for topology
+function edges(p, topo) {
+  const e = [];
+  if (topo === 'ring') {
+    for (let i = 0; i < p; i++) e.push([i, (i+1)%p]);
+  } else if (topo === 'mesh') {
+    const sq = Math.sqrt(p);
+    for (let i = 0; i < sq; i++) for (let j = 0; j < sq; j++) {
+      const id = i*sq+j;
+      if (j+1 < sq) e.push([id, id+1]);
+      if (i+1 < sq) e.push([id, id+sq]);
+    }
+  } else { // hypercube
+    for (let i = 0; i < p; i++)
+      for (let b = 0; b < Math.log2(p); b++)
+        if ((i >> b & 1) === 0) e.push([i, i | (1<<b)]);
+  }
+  return e;
+}
+
+// ────────────────────────────────
+// Build steps (recursive doubling)
+// ────────────────────────────────
+function buildSteps() {
+  const d = Math.log2(p);
+  steps = [];
+  const haveSet = new Set([src]);
+
+  if (topo === 'hypercube') {
+    for (let b = 0; b < d; b++) {
+      const s = [], r = [];
+      for (const nd of haveSet) {
+        if ((nd >> b & 1) === 0) { // dimension-b bit is 0 → send to nd XOR 2^b
+          const target = nd ^ (1 << b);
+          s.push(nd); r.push(target); haveSet.add(target);
+        }
+      }
+      steps.push({ senders: s, receivers: r, dim: b });
+    }
+  } else if (topo === 'ring') {
+    // Recursive doubling on ring: step k sends to node at distance 2^k
+    for (let k = 0; k < d; k++) {
+      const dist = 1 << k;
+      const s = [], r = [];
+      for (const nd of haveSet) {
+        const target = (nd + dist) % p;
+        if (!haveSet.has(target)) { s.push(nd); r.push(target); haveSet.add(target); }
+      }
+      steps.push({ senders: s, receivers: r });
+    }
+  } else { // mesh
+    // Phase 1: broadcast within root's row
+    // Phase 2: column broadcasts
+    const sq = Math.sqrt(p);
+    const rootRow = Math.floor(src / sq), rootCol = src % sq;
+    // Phase 1: row broadcast
+    const s1 = [], r1 = [];
+    for (let j = 0; j < sq; j++) {
+      const nd = rootRow * sq + j;
+      if (nd !== src) { s1.push(src); r1.push(nd); haveSet.add(nd); }
+    }
+    if (s1.length) steps.push({ senders: s1, receivers: r1, label: 'Fáze 1: broadcast v řádku' });
+    // Phase 2: column broadcasts (each col node broadcasts down)
+    for (let sub = 0; sub < Math.log2(sq); sub++) {
+      const s2 = [], r2 = [];
+      for (const nd of [...haveSet]) {
+        const col = nd % sq, row = Math.floor(nd / sq);
+        const dist = 1 << sub;
+        for (let i = 1; i <= dist; i++) {
+          const tr = row + i;
+          if (tr < sq) {
+            const target = tr * sq + col;
+            if (!haveSet.has(target)) { s2.push(nd); r2.push(target); haveSet.add(target); }
+          }
+        }
+      }
+      if (s2.length) steps.push({ senders: s2, receivers: r2, label: `Fáze 2.${sub+1}: broadcast ve sloupcích` });
+    }
+  }
+}
+
+// ────────────────────────────────
+// Draw
+// ────────────────────────────────
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+
+// Active arrows for animation
+let arrows = []; // {fx,fy,tx,ty,t,dur} t in [0,1]
+let animFrame = null;
+let lastTime = null;
+
+function draw(timestamp) {
+  const W = cv.width = cv.offsetWidth;
+  const H = cv.height = 320;
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#252525';
+  ctx.fillRect(0, 0, W, H);
+
+  const pad = 40;
+  const cx = W / 2, cy = H / 2, R = Math.min(W, H) / 2 - pad;
+
+  const pos = nodePositions(p, topo, cx, cy, R);
+  const edgeList = edges(p, topo);
+
+  // Draw edges
+  ctx.strokeStyle = '#3c3c3c';
+  ctx.lineWidth = 1.5;
+  edgeList.forEach(([a, b]) => {
+    ctx.beginPath(); ctx.moveTo(pos[a].x, pos[a].y); ctx.lineTo(pos[b].x, pos[b].y); ctx.stroke();
+  });
+
+  // Animate arrows
+  if (timestamp && lastTime) {
+    const dt = (timestamp - lastTime) / 1000;
+    arrows.forEach(a => { a.t = Math.min(1, a.t + dt / a.dur); });
+    arrows = arrows.filter(a => a.t < 1 || a.keep);
+  }
+  lastTime = timestamp;
+
+  // Draw active arrows
+  arrows.forEach(ar => {
+    const x = ar.fx + (ar.tx - ar.fx) * ar.t;
+    const y = ar.fy + (ar.ty - ar.fy) * ar.t;
+    // Trail
+    ctx.beginPath();
+    ctx.moveTo(ar.fx, ar.fy);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = '#0984e380';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    // Arrowhead
+    if (ar.t > 0.1) {
+      const ang = Math.atan2(ar.ty - ar.fy, ar.tx - ar.fx);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x - 10*Math.cos(ang-0.4), y - 10*Math.sin(ang-0.4));
+      ctx.lineTo(x - 10*Math.cos(ang+0.4), y - 10*Math.sin(ang+0.4));
+      ctx.closePath();
+      ctx.fillStyle = '#0984e3';
+      ctx.fill();
+    }
+    // Moving dot
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI*2);
+    ctx.fillStyle = '#c3e88d';
+    ctx.fill();
+  });
+
+  // Draw nodes
+  pos.forEach((p2, i) => {
+    const isHave = have.has(i);
+    const isSrc = i === src;
+    const isNew = curStep >= 0 && steps[curStep] && steps[curStep].receivers.includes(i);
+
+    ctx.beginPath();
+    ctx.arc(p2.x, p2.y, 16, 0, Math.PI*2);
+
+    if (isSrc) {
+      ctx.fillStyle = '#0984e3';
+      ctx.strokeStyle = '#569cd6';
+    } else if (isNew) {
+      ctx.fillStyle = '#c3e88d';
+      ctx.strokeStyle = '#a8d488';
+    } else if (isHave) {
+      ctx.fillStyle = '#00b894';
+      ctx.strokeStyle = '#00a381';
+    } else {
+      ctx.fillStyle = '#3c3c3c';
+      ctx.strokeStyle = '#555';
+    }
+    ctx.lineWidth = 2.5;
+    ctx.fill(); ctx.stroke();
+
+    ctx.fillStyle = isHave || isSrc ? '#fff' : '#888';
+    ctx.font = `bold 11px sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(i, p2.x, p2.y);
+  });
+
+  // Legend
+  ctx.font = '11px sans-serif'; ctx.textBaseline = 'top';
+  const legend = [
+    { color: '#0984e3', label: 'Zdroj' },
+    { color: '#00b894', label: 'Má zprávu' },
+    { color: '#c3e88d', label: 'Právě přijímá' },
+    { color: '#3c3c3c', label: 'Nemá zprávu' },
+  ];
+  legend.forEach((l, i) => {
+    const lx = 8 + i * 130;
+    ctx.beginPath(); ctx.arc(lx+7, H-14, 5, 0, Math.PI*2);
+    ctx.fillStyle = l.color; ctx.fill();
+    ctx.fillStyle = '#888'; ctx.textAlign = 'left';
+    ctx.fillText(l.label, lx+16, H-19);
+  });
+
+  if (arrows.some(a => a.t < 1)) {
+    animFrame = requestAnimationFrame(draw);
+  }
+}
+
+// ────────────────────────────────
+// Step control
+// ────────────────────────────────
+function applyStep(i) {
+  if (i < 0 || i >= steps.length) return;
+  curStep = i;
+  const st = steps[i];
+  st.receivers.forEach(r => have.add(r));
+
+  // Launch arrows
+  const pos = nodePositions(p, topo, cv.offsetWidth/2, 160, Math.min(cv.offsetWidth, 320)/2 - 40);
+  const speed = parseInt(document.getElementById('speed').value);
+  const dur = speed / 1000 * 0.6;
+  st.senders.forEach((s, idx) => {
+    const r = st.receivers[idx];
+    if (pos[s] && pos[r]) {
+      arrows.push({ fx: pos[s].x, fy: pos[s].y, tx: pos[r].x, ty: pos[r].y, t: 0, dur, keep: false });
+    }
+  });
+
+  updateUI(i);
+  if (!animFrame) animFrame = requestAnimationFrame(draw);
+}
+
+function undoStep(i) {
+  if (i < 0 || i >= steps.length) return;
+  const st = steps[i];
+  st.receivers.forEach(r => {
+    // Only remove if not the source
+    if (r !== src) have.delete(r);
+  });
+  curStep = i - 1;
+  arrows = [];
+  updateUI(curStep);
+  requestAnimationFrame(draw);
+}
+
+function updateUI(step) {
+  const total = steps.length;
+  const pct = total > 0 ? ((step + 1) / total * 100) : 0;
+  document.getElementById('progress').style.width = pct + '%';
+  document.getElementById('sCurStep').textContent = `${Math.max(0, step+1)} / ${total}`;
+  document.getElementById('sHave').textContent = `${have.size} / ${p}`;
+  document.getElementById('sMsgs').textContent = steps.slice(0, step+1).reduce((a, s) => a + s.senders.length, 0);
+  document.getElementById('sRemain').textContent = p - have.size;
+
+  // Step info
+  const info = document.getElementById('stepInfo');
+  if (step < 0) {
+    info.innerHTML = `<span class="step-num">Start:</span> Procesor <strong style="color:#0984e3">${src}</strong> má zprávu. Ostatní ${p-1} procesorů čeká. Topologie: <strong>${topo}</strong>.`;
+  } else {
+    const st = steps[step];
+    const label = st.label || (topo === 'hypercube' ? `Dimenze ${st.dim}` : `Krok ${step+1}`);
+    const slist = st.senders.map(s => `<strong style="color:#00b894">${s}</strong>`).join(', ');
+    const rlist = st.receivers.map(r => `<strong style="color:#c3e88d">${r}</strong>`).join(', ');
+    info.innerHTML = `<span class="step-num">Krok ${step+1} — ${label}:</span><br>
+      Posílají: ${slist} → Přijímají: ${rlist}<br>
+      <span class="formula">Celkem zpráv v tomto kroku: ${st.senders.length} | T_krok = tₛ + tᵥ·m</span>`;
+  }
+
+  // Step table
+  const tbl = document.getElementById('stepTable');
+  tbl.innerHTML = steps.map((s, i) => {
+    const done = i <= step;
+    const cur = i === step;
+    const col = cur ? '#c3e88d' : done ? '#00b894' : '#555';
+    return `<div style="color:${col}; padding:2px 0;">
+      ${cur ? '▶' : done ? '✓' : '·'} Krok ${i+1}: ${s.senders.length} zpráv
+      <span style="color:#666; font-size:0.85em;">(${s.label || (topo==='hypercube'?'dim '+s.dim:'')}) </span>
+    </div>`;
+  }).join('');
+}
+
+function stepFwd() {
+  if (curStep + 1 < steps.length) applyStep(curStep + 1);
+}
+
+function stepBack() {
+  if (curStep >= 0) undoStep(curStep);
+}
+
+let playInterval = null;
+function togglePlay() {
+  playing = !playing;
+  document.getElementById('playBtn').textContent = playing ? '⏸ Pauza' : '▶ Přehrát';
+  if (playing) {
+    const go = () => {
+      if (curStep + 1 < steps.length) {
+        applyStep(curStep + 1);
+        playInterval = setTimeout(go, parseInt(document.getElementById('speed').value));
+      } else {
+        playing = false;
+        document.getElementById('playBtn').textContent = '▶ Přehrát';
+      }
+    };
+    go();
+  } else {
+    clearTimeout(playInterval);
+  }
+}
+
+function reset() {
+  clearTimeout(playInterval);
+  playing = false;
+  document.getElementById('playBtn').textContent = '▶ Přehrát';
+  topo = document.getElementById('topo').value;
+  src = parseInt(document.getElementById('srcNode').value) || 0;
+  have = new Set([src]);
+  curStep = -1;
+  arrows = [];
+  buildSteps();
+  updateDerivation();
+  updateUI(-1);
+  cancelAnimationFrame(animFrame);
+  animFrame = null;
+  lastTime = null;
+  requestAnimationFrame(draw);
+}
+
+function updateP() {
+  const k = parseInt(document.getElementById('pSlider').value);
+  p = Math.pow(2, k);
+  document.getElementById('pVal').textContent = p;
+  // Rebuild src dropdown
+  const sel = document.getElementById('srcNode');
+  sel.innerHTML = '';
+  for (let i = 0; i < p; i++) sel.innerHTML += `<option value="${i}">${i}</option>`;
+  reset();
+}
+
+function updateDerivation() {
+  const d = topo === 'mesh' ? 2 * Math.log2(Math.sqrt(p)) : Math.log2(p);
+  document.getElementById('dSteps').textContent = `log₂ ${p} = ${Math.log2(p)}`;
+  document.getElementById('dTotal').textContent = `(tₛ + tᵥ·m) · ${Math.log2(p)}`;
+}
+
+// Init
+updateP();
+</script>
+</body>
+</html>

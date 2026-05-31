@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All-to-All Broadcast — animace</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
+h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
+.main { display: grid; grid-template-columns: 1fr 300px; gap: 14px; }
+.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
+.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
+select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
+input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
+.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
+.btn:hover { background: #0773c5; }
+.btn.secondary { background: #3c3c3c; }
+.btn.secondary:hover { background: #4a4a4a; }
+canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
+.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 60px; }
+.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
+.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
+.deriv-lbl { color: #888; min-width: 130px; font-size: 0.9em; }
+.deriv-val { color: #c3e88d; font-family: monospace; }
+.highlight { color: #0984e3; font-weight: 700; }
+.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
+.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
+.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; }
+.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
+.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+
+/* Data matrix visualizer */
+.data-matrix { display: grid; gap: 3px; margin-top: 8px; }
+.dm-cell { width: 24px; height: 24px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 0.7em; font-weight: 700; color: #fff; transition: background .3s; }
+.dm-row { display: flex; gap: 3px; align-items: center; }
+.dm-label { color: #888; font-size: 0.75em; min-width: 24px; text-align: right; margin-right: 4px; }
+</style>
+</head>
+<body>
+<h1>All-to-All Broadcast — každý posílá každému</h1>
+
+<div class="main">
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="row">
+      <label>Topologie:</label>
+      <select id="topo" onchange="reset()">
+        <option value="ring" selected>Prsten (Ring)</option>
+        <option value="mesh">Mřížka (Mesh)</option>
+        <option value="hypercube">Hyperkrychle</option>
+      </select>
+      <label>p =</label>
+      <input type="range" id="pSlider" min="1" max="4" value="3" style="width:80px;" oninput="updateP()">
+      <span style="color:#c3e88d; font-weight:700;" id="pVal">8</span>
+    </div>
+    <div class="row">
+      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
+      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
+      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
+      <button class="btn secondary" onclick="reset()">↺ Reset</button>
+      <label>Rychlost:</label>
+      <input type="range" id="speed" min="300" max="2000" value="900" step="100" style="width:80px;">
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
+  </div>
+
+  <canvas id="cv" height="310"></canvas>
+
+  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
+</div>
+
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <h3>Data u každého procesoru</h3>
+    <p style="font-size:0.78em; color:#888; margin-bottom:8px;">Každý procesor začíná s vlastními daty (číslo = id zdroje). Buňka se rozsvítí, když data dorazí.</p>
+    <div id="dataMatrix"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Odvození složitosti</h3>
+    <div class="deriv-box">
+      <div class="deriv-row"><span class="deriv-lbl">Topologie:</span><span class="deriv-val" id="dTopo">—</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Kroků celkem:</span><span class="deriv-val" id="dSteps">—</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Zpráv za krok:</span><span class="deriv-val" id="dMsgsPerStep">—</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Objem dat/krok:</span><span class="deriv-val" id="dData">—</span></div>
+      <hr style="border-color:#444; margin: 8px 0;">
+      <div class="deriv-row"><span class="deriv-lbl">T (tₛ složka):</span><span class="deriv-val" id="dTs">—</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">T (tᵥ složka):</span><span class="deriv-val" id="dTw">—</span></div>
+      <div class="deriv-row"><span class="deriv-lbl highlight">T celkem:</span><span class="deriv-val highlight" id="dTotal">—</span></div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat blue"><div class="stat-lbl">Krok</div><div class="stat-val" id="sCurStep">0/0</div></div>
+      <div class="stat green"><div class="stat-lbl">Celk. zpráv</div><div class="stat-val" id="sMsgs">0</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// Node colors pool
+const COLORS = ['#0984e3','#00b894','#e17055','#a29bfe','#fdcb6e','#fd79a8','#55efc4','#6c5ce7','#fab1a0','#74b9ff','#81ecec','#dfe6e9','#b2bec3','#636e72','#2d3436','#d63031'];
+
+let p = 8, topo = 'ring';
+let steps = [];
+let curStep = -1;
+// known[i] = set of data IDs that proc i has
+let known = [];
+let playing = false, playTimer = null;
+let arrows = [], animFrame = null, lastTime = null;
+
+function nodePositions(p, topo, cx, cy, R) {
+  const pos = [];
+  if (topo === 'ring') {
+    for (let i = 0; i < p; i++) {
+      const a = 2*Math.PI*i/p - Math.PI/2;
+      pos.push({ x: cx + R*Math.cos(a), y: cy + R*Math.sin(a) });
+    }
+  } else if (topo === 'mesh') {
+    const sq = Math.sqrt(p);
+    const sp = R*2/(sq-1+.001);
+    for (let i = 0; i < sq; i++) for (let j = 0; j < sq; j++)
+      pos.push({ x: cx-R+j*sp, y: cy-R+i*sp });
+  } else {
+    const d = Math.log2(p);
+    for (let i = 0; i < p; i++) {
+      let x=0, y=0;
+      for (let b=0; b<d; b++) {
+        if (b%2===0) x += ((i>>b)&1)*(R*2/(d>2?2:1));
+        else          y += ((i>>b)&1)*(R*2/(d>2?2:1));
+      }
+      pos.push({ x: cx-R+x, y: cy-R+y });
+    }
+  }
+  return pos;
+}
+
+function edges(p, topo) {
+  const e = [];
+  if (topo === 'ring') { for (let i=0;i<p;i++) e.push([i,(i+1)%p]); }
+  else if (topo === 'mesh') {
+    const sq=Math.sqrt(p);
+    for (let i=0;i<sq;i++) for (let j=0;j<sq;j++) {
+      const id=i*sq+j;
+      if (j+1<sq) e.push([id,id+1]);
+      if (i+1<sq) e.push([id,id+sq]);
+    }
+  } else {
+    for (let i=0;i<p;i++) for (let b=0;b<Math.log2(p);b++)
+      if ((i>>b&1)===0) e.push([i,i|(1<<b)]);
+  }
+  return e;
+}
+
+// Build steps for All-to-All Broadcast
+function buildSteps() {
+  steps = [];
+  if (topo === 'ring') {
+    // p-1 steps: each proc passes its accumulated data to neighbour
+    for (let k = 0; k < p-1; k++) {
+      const pairs = [];
+      for (let i = 0; i < p; i++) pairs.push({ from: i, to: (i+1)%p, data: k }); // step k: send packet originated k+1 steps ago
+      steps.push({ pairs, desc: `Krok ${k+1}: každý pošle svá data sousedovi vpravo` });
+    }
+  } else if (topo === 'mesh') {
+    // Phase 1: All-to-all broadcast in each row (p-1 steps for row of sqrt(p))
+    const sq = Math.sqrt(p);
+    for (let k = 0; k < sq-1; k++) {
+      const pairs = [];
+      for (let row = 0; row < sq; row++) {
+        for (let col = 0; col < sq; col++) {
+          const from = row*sq+col;
+          const to = row*sq+(col+1)%sq;
+          pairs.push({ from, to, data: col });
+        }
+      }
+      steps.push({ pairs, desc: `Fáze 1, krok ${k+1}: broadcast v každém řádku` });
+    }
+    // Phase 2: All-to-all broadcast in each column
+    for (let k = 0; k < sq-1; k++) {
+      const pairs = [];
+      for (let col = 0; col < sq; col++) {
+        for (let row = 0; row < sq; row++) {
+          const from = row*sq+col;
+          const to = ((row+1)%sq)*sq+col;
+          pairs.push({ from, to, data: row });
+        }
+      }
+      steps.push({ pairs, desc: `Fáze 2, krok ${k+1}: broadcast v každém sloupci` });
+    }
+  } else { // hypercube
+    const d = Math.log2(p);
+    for (let b = 0; b < d; b++) {
+      const pairs = [];
+      for (let i = 0; i < p; i++) {
+        const j = i ^ (1<<b);
+        if (i < j) { pairs.push({ from: i, to: j }); pairs.push({ from: j, to: i }); }
+      }
+      steps.push({ pairs, desc: `Krok ${b+1} (dimenze ${b}): výměna dat přes dimenzi ${b}` });
+    }
+  }
+}
+
+function initKnown() {
+  known = [];
+  for (let i = 0; i < p; i++) known.push(new Set([i]));
+}
+
+function applyStep(idx) {
+  curStep = idx;
+  const st = steps[idx];
+  // Update known sets
+  if (topo === 'ring') {
+    // each proc sends everything it has to right neighbour
+    const newKnown = known.map(s => new Set(s));
+    st.pairs.forEach(({from, to}) => {
+      known[from].forEach(d => newKnown[to].add(d));
+    });
+    for (let i=0;i<p;i++) known[i] = newKnown[i];
+  } else if (topo === 'mesh') {
+    const newKnown = known.map(s => new Set(s));
+    st.pairs.forEach(({from, to}) => {
+      known[from].forEach(d => newKnown[to].add(d));
+    });
+    for (let i=0;i<p;i++) known[i] = newKnown[i];
+  } else {
+    const newKnown = known.map(s => new Set(s));
+    st.pairs.forEach(({from, to}) => {
+      known[from].forEach(d => newKnown[to].add(d));
+      known[to].forEach(d => newKnown[from].add(d));
+    });
+    for (let i=0;i<p;i++) known[i] = newKnown[i];
+  }
+
+  // Spawn arrows
+  const pos = nodePositions(p, topo, cv.offsetWidth/2, 155, Math.min(cv.offsetWidth, 310)/2 - 35);
+  const spd = parseInt(document.getElementById('speed').value);
+  const dur = spd/1000*0.5;
+  // Show a subset of arrows (max 16) to avoid clutter
+  const shown = st.pairs.slice(0, 16);
+  shown.forEach(({from, to}) => {
+    if (pos[from] && pos[to])
+      arrows.push({ fx:pos[from].x, fy:pos[from].y, tx:pos[to].x, ty:pos[to].y, t:0, dur });
+  });
+
+  updateUI(idx);
+  cancelAnimationFrame(animFrame);
+  animFrame = requestAnimationFrame(ts => drawFrame(ts));
+}
+
+function undoStep(idx) {
+  // Rebuild from scratch up to idx-1
+  initKnown();
+  for (let i=0;i<idx;i++) applyStepSilent(i);
+  curStep = idx-1;
+  arrows = [];
+  updateUI(curStep);
+  cancelAnimationFrame(animFrame);
+  requestAnimationFrame(ts => drawFrame(ts));
+}
+
+function applyStepSilent(idx) {
+  const st = steps[idx];
+  if (topo === 'ring' || topo === 'mesh') {
+    const nk = known.map(s => new Set(s));
+    st.pairs.forEach(({from,to}) => known[from].forEach(d => nk[to].add(d)));
+    for (let i=0;i<p;i++) known[i]=nk[i];
+  } else {
+    const nk = known.map(s => new Set(s));
+    st.pairs.forEach(({from,to}) => {
+      known[from].forEach(d => nk[to].add(d));
+      known[to].forEach(d => nk[from].add(d));
+    });
+    for (let i=0;i<p;i++) known[i]=nk[i];
+  }
+}
+
+function updateUI(step) {
+  const total = steps.length;
+  document.getElementById('progress').style.width = (total>0 ? (step+1)/total*100 : 0)+'%';
+  document.getElementById('sCurStep').textContent = `${Math.max(0,step+1)}/${total}`;
+  const totalMsgs = steps.slice(0,step+1).reduce((a,s)=>a+s.pairs.length,0);
+  document.getElementById('sMsgs').textContent = totalMsgs;
+
+  // Step info
+  if (step < 0) {
+    document.getElementById('stepInfo').innerHTML = `Každý procesor má svá vlastní data. Cíl: <strong>každý dostane data od všech ostatních</strong>. Topologie: <strong>${topo}</strong>, p = <strong>${p}</strong>.`;
+  } else {
+    const st = steps[step];
+    document.getElementById('stepInfo').innerHTML = `<strong>Krok ${step+1}/${total}:</strong> ${st.desc}<br>
+    Zpráv v tomto kroku: <strong style="color:#c3e88d">${st.pairs.length}</strong>`;
+  }
+
+  // Data matrix
+  renderDataMatrix();
+
+  // Derivation
+  const d = Math.log2(p); const sq = Math.sqrt(p);
+  document.getElementById('dTopo').textContent = topo;
+  if (topo==='ring') {
+    document.getElementById('dSteps').textContent = `p−1 = ${p-1}`;
+    document.getElementById('dMsgsPerStep').textContent = `p zpráv (1 na procesor)`;
+    document.getElementById('dData').textContent = `m·k slov (roste, k = krok)`;
+    document.getElementById('dTs').textContent = `tₛ·(p−1)`;
+    document.getElementById('dTw').textContent = `tᵥ·m·(p−1)`;
+    document.getElementById('dTotal').textContent = `(tₛ + tᵥ·m)·(p−1)`;
+  } else if (topo==='mesh') {
+    document.getElementById('dSteps').textContent = `2·(√p−1) = ${2*(sq-1)}`;
+    document.getElementById('dMsgsPerStep').textContent = `p zpráv`;
+    document.getElementById('dData').textContent = `m·√p slov (po fázi 1)`;
+    document.getElementById('dTs').textContent = `2·tₛ·(√p−1)`;
+    document.getElementById('dTw').textContent = `tᵥ·m·(p−1)`;
+    document.getElementById('dTotal').textContent = `2tₛ(√p−1) + tᵥ·m·(p−1)`;
+  } else {
+    document.getElementById('dSteps').textContent = `log p = ${d}`;
+    document.getElementById('dMsgsPerStep').textContent = `p/2 párů (obousměrné)`;
+    document.getElementById('dData').textContent = `m·(p/2^k) slov klesá`;
+    document.getElementById('dTs').textContent = `tₛ·log p`;
+    document.getElementById('dTw').textContent = `tᵥ·m·(p−1)`;
+    document.getElementById('dTotal').textContent = `tₛ·log p + tᵥ·m·(p−1)`;
+  }
+}
+
+function renderDataMatrix() {
+  const el = document.getElementById('dataMatrix');
+  // Each row = one processor, each cell = one data chunk (by originator)
+  const maxShow = Math.min(p, 8);
+  let html = '';
+  // Header
+  html += '<div class="dm-row"><span class="dm-label">P\\D</span>';
+  for (let d=0; d<maxShow; d++) {
+    html += `<div class="dm-cell" style="background:#444; font-size:0.65em; width:22px; height:14px;">${d}</div>`;
+  }
+  html += '</div>';
+  for (let i=0; i<Math.min(p,8); i++) {
+    html += `<div class="dm-row"><span class="dm-label">P${i}</span>`;
+    for (let d=0; d<maxShow; d++) {
+      const has = known[i] && known[i].has(d);
+      const color = has ? COLORS[d % COLORS.length] : '#3c3c3c';
+      html += `<div class="dm-cell" style="background:${color}; opacity:${has?1:0.3}">${has?'✓':''}</div>`;
+    }
+    html += '</div>';
+  }
+  el.innerHTML = `<div class="data-matrix">${html}</div>`;
+}
+
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+
+function drawFrame(ts) {
+  const W = cv.width = cv.offsetWidth;
+  const H = cv.height = 310;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
+
+  const cx=W/2, cy=H/2, R=Math.min(W,H)/2-38;
+  const pos = nodePositions(p,topo,cx,cy,R);
+  const edgeList = edges(p,topo);
+
+  // Edges
+  ctx.strokeStyle='#3c3c3c'; ctx.lineWidth=1.5;
+  edgeList.forEach(([a,b])=>{ ctx.beginPath(); ctx.moveTo(pos[a].x,pos[a].y); ctx.lineTo(pos[b].x,pos[b].y); ctx.stroke(); });
+
+  // Animate arrows
+  if (ts && lastTime) {
+    const dt = (ts - lastTime)/1000;
+    arrows.forEach(a => a.t = Math.min(1, a.t + dt/a.dur));
+    arrows = arrows.filter(a => a.t < 1);
+  }
+  lastTime = ts;
+
+  arrows.forEach(ar => {
+    const x = ar.fx+(ar.tx-ar.fx)*ar.t, y = ar.fy+(ar.ty-ar.fy)*ar.t;
+    ctx.beginPath(); ctx.moveTo(ar.fx,ar.fy); ctx.lineTo(x,y);
+    ctx.strokeStyle='#0984e360'; ctx.lineWidth=1.5; ctx.stroke();
+    const ang = Math.atan2(ar.ty-ar.fy, ar.tx-ar.fx);
+    ctx.beginPath(); ctx.moveTo(x,y);
+    ctx.lineTo(x-9*Math.cos(ang-.4),y-9*Math.sin(ang-.4));
+    ctx.lineTo(x-9*Math.cos(ang+.4),y-9*Math.sin(ang+.4));
+    ctx.closePath(); ctx.fillStyle='#0984e3'; ctx.fill();
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fillStyle='#c3e88d'; ctx.fill();
+  });
+
+  // Nodes
+  pos.forEach((pt,i) => {
+    const cnt = known[i] ? known[i].size : 1;
+    const frac = cnt/p;
+    // Draw pie-like segments
+    const r = 16;
+    if (cnt > 0 && known[i]) {
+      const datas = [...known[i]].sort((a,b)=>a-b);
+      let angle = -Math.PI/2;
+      const slice = 2*Math.PI/p;
+      datas.forEach(d => {
+        ctx.beginPath(); ctx.moveTo(pt.x,pt.y);
+        ctx.arc(pt.x,pt.y,r,angle,angle+slice);
+        ctx.closePath();
+        ctx.fillStyle = COLORS[d%COLORS.length];
+        ctx.fill();
+        angle += slice;
+      });
+    }
+    ctx.beginPath(); ctx.arc(pt.x,pt.y,r,0,Math.PI*2);
+    ctx.strokeStyle = '#888'; ctx.lineWidth=1.5; ctx.stroke();
+
+    ctx.fillStyle='#fff'; ctx.font='bold 10px sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(i, pt.x, pt.y);
+
+    // Progress bar below node
+    ctx.fillStyle='#00b894';
+    const bw = r*2*frac; const bx = pt.x-r;
+    ctx.fillRect(bx, pt.y+r+3, bw, 3);
+    ctx.strokeStyle='#555'; ctx.lineWidth=0.5;
+    ctx.strokeRect(bx, pt.y+r+3, r*2, 3);
+  });
+
+  // Legend
+  ctx.font='10px sans-serif'; ctx.textBaseline='top'; ctx.textAlign='left'; ctx.fillStyle='#888';
+  ctx.fillText('Barevné výseče = data od různých procesorů. Pruh = % kompletnosti.', 6, H-14);
+
+  if (arrows.length > 0) animFrame = requestAnimationFrame(ts=>drawFrame(ts));
+}
+
+function stepFwd() { if (curStep+1<steps.length) applyStep(curStep+1); }
+function stepBack() { if (curStep>0) undoStep(curStep); else { initKnown(); curStep=-1; arrows=[]; updateUI(-1); cancelAnimationFrame(animFrame); requestAnimationFrame(ts=>drawFrame(ts)); } }
+
+let playTimer2=null;
+function togglePlay() {
+  playing = !playing;
+  document.getElementById('playBtn').textContent = playing ? '⏸ Pauza' : '▶ Přehrát';
+  if (playing) {
+    const go = () => {
+      if (curStep+1 < steps.length) {
+        applyStep(curStep+1);
+        playTimer2 = setTimeout(go, parseInt(document.getElementById('speed').value));
+      } else { playing=false; document.getElementById('playBtn').textContent='▶ Přehrát'; }
+    };
+    go();
+  } else clearTimeout(playTimer2);
+}
+
+function reset() {
+  clearTimeout(playTimer2); playing=false;
+  document.getElementById('playBtn').textContent='▶ Přehrát';
+  topo = document.getElementById('topo').value;
+  initKnown(); buildSteps(); curStep=-1; arrows=[];
+  updateUI(-1); cancelAnimationFrame(animFrame); lastTime=null;
+  requestAnimationFrame(ts=>drawFrame(ts));
+}
+
+function updateP() {
+  const k=parseInt(document.getElementById('pSlider').value);
+  p=Math.pow(2,k); document.getElementById('pVal').textContent=p;
+  reset();
+}
+
+updateP();
+</script>
+</body>
+</html>

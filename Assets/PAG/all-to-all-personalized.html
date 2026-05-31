@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All-to-All Personalized — animace</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
+h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
+.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
+.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
+.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
+select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
+input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
+.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
+.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
+canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
+.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 60px; }
+.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
+.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
+.deriv-lbl { color: #888; min-width: 130px; font-size: 0.9em; }
+.deriv-val { color: #c3e88d; font-family: monospace; }
+.highlight { color: #0984e3; font-weight: 700; }
+.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
+.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
+.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; }
+.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
+.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+.tab-btns { display: flex; gap: 6px; margin-bottom: 10px; }
+.tab-btn { background: #3c3c3c; color: #888; border: none; border-radius: 5px; padding: 6px 14px; font-size: 0.82em; cursor: pointer; }
+.tab-btn.active { background: #0984e3; color: #fff; font-weight: 700; }
+/* Delivery matrix */
+.dm-grid { display: grid; gap: 2px; }
+.dm-cell { width: 18px; height: 18px; border-radius: 2px; font-size: 0.6em; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; }
+.dm-row { display: flex; gap: 2px; align-items: center; }
+.dm-hdr { width: 22px; text-align: right; color: #888; font-size: 0.72em; margin-right: 2px; }
+</style>
+</head>
+<body>
+<h1>All-to-All Personalized — každý každému jiné data</h1>
+
+<div class="main">
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="tab-btns">
+      <button class="tab-btn active" id="tabRing" onclick="switchTopo('ring')">Prsten (Ring)</button>
+      <button class="tab-btn" id="tabHyper" onclick="switchTopo('hypercube')">Hyperkrychle (XOR)</button>
+    </div>
+    <div class="row">
+      <label>p = 2^</label>
+      <input type="range" id="pSlider" min="1" max="4" value="3" style="width:80px;" oninput="updateP()">
+      <span style="color:#c3e88d; font-weight:700;" id="pVal">8</span>
+    </div>
+    <div class="row">
+      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
+      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
+      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
+      <button class="btn secondary" onclick="reset()">↺ Reset</button>
+      <label>Rychlost:</label>
+      <input type="range" id="speed" min="300" max="2000" value="900" step="100" style="width:80px;">
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
+  </div>
+
+  <canvas id="cv" height="320"></canvas>
+  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
+</div>
+
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <h3>Doručovací matice M[i][j]</h3>
+    <p style="font-size:0.78em; color:#888; margin-bottom:6px;">Řádek = příjemce, sloupec = odesílatel. Buňka = data odesílatele j u příjemce i.</p>
+    <div id="deliveryMatrix"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Odvození složitosti</h3>
+    <div class="deriv-box">
+      <div class="deriv-row"><span class="deriv-lbl">Topologie:</span><span class="deriv-val" id="dTopo">Prsten</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Kroků:</span><span class="deriv-val" id="dSteps">p−1</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Zpráv/krok:</span><span class="deriv-val" id="dMsgs">p (1 na uzel)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Objem zprávy/krok:</span><span class="deriv-val" id="dVol">—</span></div>
+      <hr style="border-color:#444; margin: 8px 0;">
+      <div class="deriv-row"><span class="deriv-lbl">T (tₛ):</span><span class="deriv-val" id="dTs">—</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">T (tᵥ):</span><span class="deriv-val" id="dTw">—</span></div>
+      <div class="deriv-row"><span class="deriv-lbl highlight">T celkem:</span><span class="deriv-val highlight" id="dTotal">—</span></div>
+      <div style="color:#888; font-size:0.8em; margin-top:8px;" id="dNote">—</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat blue"><div class="stat-lbl">Krok</div><div class="stat-val" id="sCurStep">0/0</div></div>
+      <div class="stat green"><div class="stat-lbl">Doručeno M[i][j]</div><div class="stat-val" id="sDelivered">0/0</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const COLORS = ['#0984e3','#00b894','#e17055','#a29bfe','#fdcb6e','#fd79a8','#55efc4','#6c5ce7','#fab1a0','#74b9ff','#81ecec','#dfe6e9'];
+
+let p = 8, topo = 'ring';
+let steps = [];
+let curStep = -1;
+// delivered[i][j] = true if proc i has received data from proc j
+// Initially: delivered[i][i] = true (own data)
+// In ring: each step, each node passes a "packet train" to right; eventually each gets all
+let delivered = [];
+// For ring: each node carries a rotating buffer of packets
+// buffer[i][slot] = original sender id (-1 = empty). In step k, buffer rotates right.
+// Simpler: track which original packets each node has
+let nodePackets = []; // nodePackets[i] = array of senderIds (initially [i, p packets headed to different dests])
+
+// For the visualization, track which "slot" at each node contains data from whom
+// Ring: each node has p slots. slot k = data destined for proc (i-k+p)%p from original sender (i+k)%p ??? 
+// Let's simplify: just track what data each proc has received FROM whom.
+
+function buildSteps() {
+  steps = [];
+  if (topo === 'ring') {
+    // p-1 steps. Each step: all nodes send their "packet for right neighbor" and receive one from left.
+    // In step k, node i sends the packet from node (i+k)%p to node (i+1)%p.
+    // After step k, node (i+1)%p has data from node (i+k)%p... simplified:
+    // After step k, every node i has received data from nodes (i-1)%p, (i-2)%p, ... (i-k)%p
+    for (let k=1; k<p; k++) {
+      const pairs = [];
+      for (let i=0;i<p;i++) {
+        pairs.push({from:i, to:(i+1)%p, dataFrom: (i-(k-1)+p)%p, step:k});
+      }
+      steps.push({pairs, desc:`Krok ${k}/${p-1}: každý pošle balík sousedovi vpravo (rotace ${k})`});
+    }
+  } else {
+    // Hypercube XOR scheduling: p-1 steps
+    // Step j (j=1..p-1): node i communicates with node i XOR j
+    // Only pair each i < i XOR j to avoid duplicate
+    for (let j=1; j<p; j++) {
+      const pairs = [];
+      for (let i=0;i<p;i++) {
+        const partner = i^j;
+        if (i<partner) pairs.push({from:i, to:partner, fromRev:true});
+      }
+      steps.push({pairs, desc:`Krok ${j}/${p-1}: uzel i ↔ uzel i⊕${j} (XOR ${j.toString(2).padStart(Math.log2(p),'0')})`});
+    }
+  }
+}
+
+function initDelivered() {
+  delivered = Array.from({length:p}, (_,i) => new Set([i])); // each has own data
+}
+
+function applyStep(idx) {
+  curStep = idx;
+  const st = steps[idx];
+  const pos = nodePositions();
+  const dur = parseInt(document.getElementById('speed').value)/1000*0.5;
+
+  if (topo === 'ring') {
+    // Each pair: to receives dataFrom from from
+    st.pairs.forEach(({from,to,dataFrom}) => {
+      delivered[to].add(dataFrom);
+      if (pos[from]&&pos[to]) arrows.push({fx:pos[from].x,fy:pos[from].y,tx:pos[to].x,ty:pos[to].y,t:0,dur});
+    });
+  } else {
+    // Hypercube: exchange all data between partners
+    const newDel = delivered.map(s=>new Set(s));
+    st.pairs.forEach(({from,to}) => {
+      delivered[from].forEach(d=>newDel[to].add(d));
+      delivered[to].forEach(d=>newDel[from].add(d));
+      if (pos[from]&&pos[to]) {
+        arrows.push({fx:pos[from].x,fy:pos[from].y,tx:pos[to].x,ty:pos[to].y,t:0,dur});
+        arrows.push({fx:pos[to].x,fy:pos[to].y,tx:pos[from].x,ty:pos[from].y,t:0,dur});
+      }
+    });
+    for(let i=0;i<p;i++) delivered[i]=newDel[i];
+  }
+
+  updateUI(idx);
+  cancelAnimationFrame(animFrame); animFrame=requestAnimationFrame(ts=>drawFrame(ts));
+}
+
+function rebuildState(upTo) {
+  initDelivered();
+  for(let i=0;i<=upTo;i++){
+    const st=steps[i];
+    if(topo==='ring'){
+      st.pairs.forEach(({from,to,dataFrom})=>{delivered[to].add(dataFrom);});
+    } else {
+      const nD=delivered.map(s=>new Set(s));
+      st.pairs.forEach(({from,to})=>{delivered[from].forEach(d=>nD[to].add(d));delivered[to].forEach(d=>nD[from].add(d));});
+      for(let j=0;j<p;j++) delivered[j]=nD[j];
+    }
+  }
+}
+
+function nodePositions() {
+  const W=cv.offsetWidth,H=320,cx=W/2,cy=160,R=Math.min(W,H)/2-40;
+  if (topo==='ring') {
+    return Array.from({length:p},(_,i)=>{const a=2*Math.PI*i/p-Math.PI/2;return{x:cx+R*Math.cos(a),y:cy+R*Math.sin(a)};});
+  } else {
+    const d=Math.log2(p); const pos=[];
+    for(let i=0;i<p;i++){let x=0,y=0;
+      for(let b=0;b<d;b++){if(b%2===0)x+=((i>>b)&1)*(R*1.6/(d>2?2:1));else y+=((i>>b)&1)*(R*1.6/(d>2?2:1));}
+      pos.push({x:cx-R*.8+x,y:cy-R*.8+y});}
+    return pos;
+  }
+}
+
+let arrows=[], playing=false, playTimer2=null, animFrame=null, lastTime=null;
+const cv=document.getElementById('cv'); const ctx=cv.getContext('2d');
+
+function drawFrame(ts) {
+  const W=cv.width=cv.offsetWidth,H=cv.height=320;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#252525';ctx.fillRect(0,0,W,H);
+  const pos=nodePositions();
+
+  // Edges
+  ctx.strokeStyle='#3c3c3c';ctx.lineWidth=1;
+  if(topo==='ring'){for(let i=0;i<p;i++){ctx.beginPath();ctx.moveTo(pos[i].x,pos[i].y);ctx.lineTo(pos[(i+1)%p].x,pos[(i+1)%p].y);ctx.stroke();}}
+  else{const d=Math.log2(p);for(let i=0;i<p;i++)for(let b=0;b<d;b++)if((i>>b&1)===0){ctx.beginPath();ctx.moveTo(pos[i].x,pos[i].y);ctx.lineTo(pos[i|(1<<b)].x,pos[i|(1<<b)].y);ctx.stroke();}}
+
+  // Active step edges
+  if(curStep>=0){
+    const curDimOrStep = topo==='hypercube' ? curStep+1 : -1;
+    steps[curStep].pairs.forEach(({from,to})=>{
+      ctx.beginPath();ctx.moveTo(pos[from].x,pos[from].y);ctx.lineTo(pos[to].x,pos[to].y);
+      ctx.strokeStyle='#0984e3';ctx.lineWidth=2;ctx.stroke();
+    });
+  }
+
+  // Arrows
+  if(ts&&lastTime){const dt=(ts-lastTime)/1000;arrows.forEach(a=>a.t=Math.min(1,a.t+dt/a.dur));arrows=arrows.filter(a=>a.t<1);}
+  lastTime=ts;
+  arrows.forEach(ar=>{
+    const x=ar.fx+(ar.tx-ar.fx)*ar.t,y=ar.fy+(ar.ty-ar.fy)*ar.t;
+    ctx.beginPath();ctx.moveTo(ar.fx,ar.fy);ctx.lineTo(x,y);ctx.strokeStyle='#0984e360';ctx.lineWidth=2;ctx.stroke();
+    const ang=Math.atan2(ar.ty-ar.fy,ar.tx-ar.fx);
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-9*Math.cos(ang-.4),y-9*Math.sin(ang-.4));ctx.lineTo(x-9*Math.cos(ang+.4),y-9*Math.sin(ang+.4));ctx.closePath();ctx.fillStyle='#0984e3';ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='#c3e88d';ctx.fill();
+  });
+
+  // Nodes — draw pie of received data
+  pos.forEach((pt,i)=>{
+    const r=17;
+    const received=[...delivered[i]].sort((a,b)=>a-b);
+    const slice=2*Math.PI/received.length;
+    let angle=-Math.PI/2;
+    received.forEach(d=>{
+      ctx.beginPath();ctx.moveTo(pt.x,pt.y);ctx.arc(pt.x,pt.y,r,angle,angle+slice);ctx.closePath();
+      ctx.fillStyle=COLORS[d%COLORS.length];ctx.fill();angle+=slice;
+    });
+    ctx.beginPath();ctx.arc(pt.x,pt.y,r,0,Math.PI*2);ctx.strokeStyle='#555';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='rgba(0,0,0,0.6)';ctx.beginPath();ctx.arc(pt.x,pt.y,8,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(i,pt.x,pt.y);
+    ctx.font='8px monospace';ctx.fillStyle='#888';
+    ctx.fillText(`${received.length}/${p}`,pt.x,pt.y+r+10);
+  });
+
+  ctx.font='10px sans-serif';ctx.textBaseline='top';ctx.textAlign='left';ctx.fillStyle='#888';
+  ctx.fillText('Výseče = přijatá data od různých procesorů. Číslo = počet přijatých.', 6, H-14);
+
+  if(arrows.length>0) animFrame=requestAnimationFrame(ts=>drawFrame(ts));
+}
+
+function updateUI(step) {
+  const total=steps.length;
+  document.getElementById('progress').style.width=(total>0?(step+1)/total*100:0)+'%';
+  document.getElementById('sCurStep').textContent=`${Math.max(0,step+1)}/${total}`;
+  const del=delivered.reduce((s,d)=>s+d.size,0);
+  document.getElementById('sDelivered').textContent=`${del}/${p*p}`;
+
+  if(step<0){
+    document.getElementById('stepInfo').innerHTML=`Každý P<sub>i</sub> má ${p} paketů — jeden pro každý jiný procesor. Cíl: <strong>kompletní personalizovaná výměna dat.</strong><br>Topologie: <strong>${topo}</strong>, p = <strong>${p}</strong>.`;
+  } else {
+    const st=steps[step];
+    document.getElementById('stepInfo').innerHTML=`<strong>Krok ${step+1}/${total}:</strong> ${st.desc}<br>Zpráv v tomto kroku: <strong style="color:#c3e88d">${st.pairs.length*(topo==='hypercube'?2:1)}</strong>`;
+  }
+
+  // Delivery matrix
+  const maxShow=Math.min(p,8);
+  let html='<div class="dm-grid">';
+  html+='<div class="dm-row"><span class="dm-hdr">i\\j</span>';
+  for(let j=0;j<maxShow;j++) html+=`<div class="dm-cell" style="background:#444;width:16px;height:14px;font-size:0.6em">${j}</div>`;
+  html+='</div>';
+  for(let i=0;i<maxShow;i++){
+    html+=`<div class="dm-row"><span class="dm-hdr">P${i}</span>`;
+    for(let j=0;j<maxShow;j++){
+      const has=delivered[i]&&delivered[i].has(j);
+      html+=`<div class="dm-cell" style="background:${has?COLORS[j%COLORS.length]:'#2a2a2a'};opacity:${has?1:0.25}">${has?'✓':''}</div>`;
+    }
+    html+='</div>';
+  }
+  html+='</div>';
+  document.getElementById('deliveryMatrix').innerHTML=html;
+
+  // Derivation
+  const d=Math.log2(p);
+  document.getElementById('dTopo').textContent=topo==='ring'?'Prsten':'Hyperkrychle';
+  if(topo==='ring'){
+    document.getElementById('dSteps').textContent=`p−1 = ${p-1}`;
+    document.getElementById('dMsgs').textContent='p zpráv (1 na uzel)';
+    document.getElementById('dVol').textContent='m·(p−k)/p slov v kroku k (průměr ≈ m/2)';
+    document.getElementById('dTs').textContent=`tₛ·(p−1)`;
+    document.getElementById('dTw').textContent=`tᵥ·m·(p−1)/2`;
+    document.getElementById('dTotal').textContent=`tₛ(p−1) + tᵥ·m(p−1)/2 ≈ O(m·p)`;
+    document.getElementById('dNote').textContent='Ring: zprávy se předávají a zmenšují. Celkový přenesený objem ≈ m·p²/2 → suboptimální.';
+  } else {
+    document.getElementById('dSteps').textContent=`p−1 = ${p-1}`;
+    document.getElementById('dMsgs').textContent=`p/2 párů (obousměrné)`;
+    document.getElementById('dVol').textContent='m slov/zprávu (konst.)';
+    document.getElementById('dTs').textContent=`tₛ·(p−1)`;
+    document.getElementById('dTw').textContent=`tᵥ·m·(p−1)`;
+    document.getElementById('dTotal').textContent=`(tₛ + tᵥ·m)·(p−1) = O(m·p)`;
+    document.getElementById('dNote').textContent='Hyperkrychle XOR: optimální! Každý krok přenese přesně m slov, celkem p−1 kroků.';
+  }
+}
+
+function stepFwd(){if(curStep+1<steps.length)applyStep(curStep+1);}
+function stepBack(){
+  if(curStep>0){rebuildState(curStep-1);curStep--;arrows=[];updateUI(curStep);cancelAnimationFrame(animFrame);requestAnimationFrame(ts=>drawFrame(ts));}
+  else{initDelivered();curStep=-1;arrows=[];updateUI(-1);cancelAnimationFrame(animFrame);requestAnimationFrame(ts=>drawFrame(ts));}
+}
+
+function togglePlay(){
+  playing=!playing;
+  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
+  if(playing){const go=()=>{if(curStep+1<steps.length){applyStep(curStep+1);playTimer2=setTimeout(go,parseInt(document.getElementById('speed').value));}else{playing=false;document.getElementById('playBtn').textContent='▶ Přehrát';}};go();}
+  else clearTimeout(playTimer2);
+}
+
+function reset(){
+  clearTimeout(playTimer2);playing=false;document.getElementById('playBtn').textContent='▶ Přehrát';
+  initDelivered();buildSteps();curStep=-1;arrows=[];
+  updateUI(-1);cancelAnimationFrame(animFrame);lastTime=null;requestAnimationFrame(ts=>drawFrame(ts));
+}
+
+function updateP(){
+  const k=parseInt(document.getElementById('pSlider').value);
+  p=Math.pow(2,k);document.getElementById('pVal').textContent=p;reset();
+}
+
+function switchTopo(t){
+  topo=t;
+  document.getElementById('tabRing').className='tab-btn'+(t==='ring'?' active':'');
+  document.getElementById('tabHyper').className='tab-btn'+(t==='hypercube'?' active':'');
+  reset();
+}
+
+updateP();
+</script>
+</body>
+</html>
