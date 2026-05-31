@@ -270,73 +270,86 @@ function roundRect(x,y,w,h,r){
   ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
 }
 
-function drawMatrix(label, matLeft, top, cellSz, gap, totalMatH, blocks, highlightFn, fillFn, labelColor) {
-  // Matrix label
-  ctx.fillStyle = labelColor || 'rgba(154,169,200,.7)';
-  ctx.font = 'bold 13px "Segoe UI",sans-serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
-  ctx.fillText(label, matLeft + (q*cellSz+(q-1)*gap)/2, top - 4);
-  // Outer border
-  ctx.strokeStyle = 'rgba(142,164,204,.2)'; ctx.lineWidth = 1;
-  ctx.strokeRect(matLeft - 2, top - 2, q*(cellSz+gap)-gap+4, q*(cellSz+gap)-gap+4);
-
-  for (let i = 0; i < q; i++) for (let j = 0; j < q; j++) {
-    const {x, y} = cellPos(matLeft, top, i, j, cellSz, gap);
-    const hl = highlightFn ? highlightFn(i,j) : null;
-    const fill = fillFn ? fillFn(i,j) : null;
-
-    // Cell bg
-    ctx.save();
-    if (hl === 'mul') { ctx.shadowColor = '#6ee7a8'; ctx.shadowBlur = 16; }
-    ctx.fillStyle = hl === 'mul' ? 'rgba(110,231,168,.12)' : 'rgba(18,29,52,.85)';
-    roundRect(x,y,cellSz,cellSz,5); ctx.fill();
-    ctx.strokeStyle = hl==='mul'?'rgba(110,231,168,.8)':hl==='active'?'rgba(86,224,220,.5)':'rgba(142,164,204,.18)';
-    ctx.lineWidth = hl ? 2 : 1;
-    roundRect(x,y,cellSz,cellSz,5); ctx.stroke();
-    ctx.restore();
-
-    // Block color fill (for A and B)
-    if (fill !== null && fill !== undefined) {
-      const col = PAL[fill % PAL.length];
-      ctx.fillStyle = col + '30';
-      roundRect(x+1,y+1,cellSz-2,cellSz-2,4); ctx.fill();
-      // Color accent top bar
-      ctx.fillStyle = col;
-      ctx.fillRect(x+1, y+1, cellSz-2, 4);
-    }
-
-    // C cell: filled by contributions
-    if (blocks && blocks[i] && blocks[i][j] instanceof Set) {
-      const s = blocks[i][j];
-      if (s.size > 0) {
-        const sliceW = (cellSz-2) / q;
-        s.forEach(k => {
-          ctx.fillStyle = PAL[k % PAL.length] + '50';
-          ctx.fillRect(x+1+k*sliceW, y+1, sliceW, cellSz-2);
-        });
-        if (s.size === q) { // done
-          ctx.save(); ctx.shadowColor='#aa91ff'; ctx.shadowBlur=14;
-          ctx.strokeStyle='rgba(170,145,255,.7)'; ctx.lineWidth=2;
-          roundRect(x,y,cellSz,cellSz,5); ctx.stroke(); ctx.restore();
-        }
+function drawCellAt(x, y, cellSz, i, j, fill, blocks, highlightFn) {
+  const hl = highlightFn ? highlightFn(i,j) : null;
+  ctx.save();
+  if (hl === 'mul') { ctx.shadowColor = '#6ee7a8'; ctx.shadowBlur = 16; }
+  ctx.fillStyle = hl === 'mul' ? 'rgba(110,231,168,.12)' : 'rgba(18,29,52,.85)';
+  roundRect(x,y,cellSz,cellSz,5); ctx.fill();
+  ctx.strokeStyle = hl==='mul'?'rgba(110,231,168,.8)':hl==='active'?'rgba(86,224,220,.5)':'rgba(142,164,204,.18)';
+  ctx.lineWidth = hl ? 2 : 1;
+  roundRect(x,y,cellSz,cellSz,5); ctx.stroke();
+  ctx.restore();
+  if (fill !== null && fill !== undefined) {
+    const col = PAL[fill % PAL.length];
+    ctx.fillStyle = col+'30'; roundRect(x+1,y+1,cellSz-2,cellSz-2,4); ctx.fill();
+    ctx.fillStyle = col; ctx.fillRect(x+1, y+1, cellSz-2, 4);
+  }
+  if (blocks && blocks[i] && blocks[i][j] instanceof Set) {
+    const s = blocks[i][j];
+    if (s.size > 0) {
+      const sliceW = (cellSz-2)/q;
+      s.forEach(k => { ctx.fillStyle=PAL[k%PAL.length]+'50'; ctx.fillRect(x+1+k*sliceW,y+1,sliceW,cellSz-2); });
+      if (s.size===q) {
+        ctx.save(); ctx.shadowColor='#aa91ff'; ctx.shadowBlur=14;
+        ctx.strokeStyle='rgba(170,145,255,.7)'; ctx.lineWidth=2;
+        roundRect(x,y,cellSz,cellSz,5); ctx.stroke(); ctx.restore();
       }
     }
-
-    // Label text
-    ctx.fillStyle = '#edf4ff';
-    ctx.font = 'bold ' + Math.max(9, Math.floor(cellSz/3.5)) + 'px "Segoe UI",sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    let lbl = '';
-    if (fill !== null && fill !== undefined) {
-      // Show block index label
-      lbl = '['+i+']['+fill+']';
-    } else if (blocks && blocks[i] && blocks[i][j] instanceof Set) {
-      const s = blocks[i][j];
-      lbl = s.size === 0 ? '0' : s.size === q ? '\u2713' : s.size+'/'+q;
-      ctx.fillStyle = s.size === q ? '#aa91ff' : s.size > 0 ? '#56e0dc' : 'rgba(154,169,200,.4)';
-    }
-    ctx.fillText(lbl, x + cellSz/2, y + cellSz/2);
   }
+  ctx.fillStyle = '#edf4ff';
+  ctx.font = 'bold '+Math.max(9,Math.floor(cellSz/3.5))+'px "Segoe UI",sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  let lbl = '';
+  if (fill !== null && fill !== undefined) {
+    lbl = '['+i+']['+fill+']';
+  } else if (blocks && blocks[i] && blocks[i][j] instanceof Set) {
+    const s = blocks[i][j];
+    lbl = s.size===0?'0':s.size===q?'\u2713':s.size+'/'+q;
+    ctx.fillStyle = s.size===q?'#aa91ff':s.size>0?'#56e0dc':'rgba(154,169,200,.4)';
+  }
+  ctx.fillText(lbl, x+cellSz/2, y+cellSz/2);
+}
+
+// rowOffsets: per-row px x-offset (A slides left); colOffsets: per-col px y-offset (B slides up)
+function drawMatrix(label, matLeft, top, cellSz, gap, totalMatH, blocks, highlightFn, fillFn, labelColor, rowOffsets, colOffsets) {
+  const matW = q*(cellSz+gap)-gap;
+  const matH = q*(cellSz+gap)-gap;
+  ctx.fillStyle = labelColor||'rgba(154,169,200,.7)';
+  ctx.font='bold 13px "Segoe UI",sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='bottom';
+  ctx.fillText(label, matLeft+matW/2, top-4);
+  ctx.strokeStyle='rgba(142,164,204,.2)'; ctx.lineWidth=1;
+  ctx.strokeRect(matLeft-2, top-2, matW+4, matH+4);
+
+  const hasAnim = (rowOffsets && rowOffsets.some(o=>o!==0)) || (colOffsets && colOffsets.some(o=>o!==0));
+  if (hasAnim) {
+    ctx.save();
+    ctx.beginPath(); ctx.rect(matLeft, top, matW+1, matH+1); ctx.clip();
+  }
+
+  const wrap = q*(cellSz+gap);
+  for (let i=0; i<q; i++) for (let j=0; j<q; j++) {
+    const fill = fillFn ? fillFn(i,j) : null;
+    const baseX = matLeft + j*(cellSz+gap);
+    const baseY = top + i*(cellSz+gap);
+    if (hasAnim) {
+      const dx = rowOffsets ? (rowOffsets[i]||0) : 0;
+      const dy = colOffsets ? (colOffsets[j]||0) : 0;
+      for (const ox of [0, wrap, -wrap]) {
+        const x = baseX + dx + ox;
+        if (x+cellSz < matLeft || x > matLeft+matW) continue;
+        for (const oy of [0, wrap, -wrap]) {
+          const y = baseY + dy + oy;
+          if (y+cellSz < top || y > top+matH) continue;
+          drawCellAt(x, y, cellSz, i, j, fill, blocks, highlightFn);
+        }
+      }
+    } else {
+      drawCellAt(baseX, baseY, cellSz, i, j, fill, blocks, highlightFn);
+    }
+  }
+  if (hasAnim) ctx.restore();
 }
 
 function drawArrow(x0, y, x1, col, label) {
@@ -353,7 +366,7 @@ function drawArrow(x0, y, x1, col, label) {
   ctx.restore();
 }
 
-function draw(flyT) {
+function draw(flyT, rotProg) {
   resizeDPR();
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,cssW,cssH);
@@ -372,20 +385,35 @@ function draw(flyT) {
   const isMul = snap.phase === 'mul';
   const isRotate = snap.phase === 'rotate' || snap.phase === 'preshift';
 
-  // Rotation arrows outside matrices (animated)
-  const arrowAlpha = isRotate ? Math.min(1, (flyT||1)*1.5) : 0;
+  // Rotation: compute per-row (A) and per-col (B) pixel offsets
+  const rp = rotProg || 0;
+  // Use from-state block assignments during rotation animation
+  const srcSnap = (isRotate && rp > 0 && cur > 0) ? snaps[cur-1] : snap;
+  const ease = 1 - Math.pow(1-rp, 3); // cubic ease-out
+  const step = cellSz + gap;
+  let aRowOff = null, bColOff = null;
+  if (isRotate && rp > 0) {
+    if (snap.phase === 'preshift') {
+      // Row i shifts left by i cells, col j shifts up by j cells
+      aRowOff = Array.from({length:q}, (_,i) => -i * ease * step);
+      bColOff = Array.from({length:q}, (_,j) => -j * ease * step);
+    } else {
+      // Uniform 1-step left for A, 1-step up for B
+      aRowOff = Array(q).fill(-ease * step);
+      bColOff = Array(q).fill(-ease * step);
+    }
+  }
+
+  // Rotation arrows (fade in during animation; show at 0.7 when static on rotate snapshot)
+  const arrowAlpha = isRotate ? (rp > 0 ? Math.min(1, rp*2) : (flyT||0)) : 0;
   if (arrowAlpha > 0) {
     ctx.save(); ctx.globalAlpha = arrowAlpha;
-    // A: left arrow above A matrix
     ctx.fillStyle = '#56e0dc'; ctx.font = 'bold 10px "Segoe UI",sans-serif'; ctx.textAlign='center';
-    // Arrow going left over A matrix
-    const aMatRight = aLeft + totalMatW;
     const ay = top - 12;
     ctx.strokeStyle='#56e0dc'; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
     ctx.beginPath(); ctx.moveTo(aLeft+totalMatW, ay); ctx.lineTo(aLeft, ay); ctx.stroke(); ctx.setLineDash([]);
     ctx.beginPath(); ctx.moveTo(aLeft,ay); ctx.lineTo(aLeft+9,ay-4); ctx.lineTo(aLeft+9,ay+4); ctx.closePath(); ctx.fill();
     ctx.fillText('A rotuje \u2190', aLeft+totalMatW/2, ay-3);
-    // B: up arrow left of B matrix
     const bx = bLeft - 12;
     ctx.strokeStyle='#ffbd78'; ctx.fillStyle='#ffbd78'; ctx.setLineDash([4,3]);
     ctx.beginPath(); ctx.moveTo(bx, top+totalMatH); ctx.lineTo(bx, top); ctx.stroke(); ctx.setLineDash([]);
@@ -395,20 +423,16 @@ function draw(flyT) {
     ctx.restore();
   }
 
-  // A: highlight active row/col pairs when multiplying
   const hlA = (i,j) => isMul ? 'mul' : null;
   const hlB = (i,j) => isMul ? 'mul' : null;
-  const hlC = (i,j) => {
-    if (isMul) return 'mul';
-    return null;
-  };
+  const hlC = (i,j) => isMul ? 'mul' : null;
 
   drawMatrix('Matice A', aLeft, top, cellSz, gap, totalMatH,
-    null, hlA, (i,j)=>snap.aB[i][j], '#56e0dc');
+    null, hlA, (i,j)=>srcSnap.aB[i][j], '#56e0dc', aRowOff, null);
   drawMatrix('Matice B', bLeft, top, cellSz, gap, totalMatH,
-    null, hlB, (i,j)=>snap.bB[i][j], '#ffbd78');
+    null, hlB, (i,j)=>srcSnap.bB[i][j], '#ffbd78', null, bColOff);
   drawMatrix('Matice C', cLeft, top, cellSz, gap, totalMatH,
-    snap.cFill, hlC, null, '#aa91ff');
+    snap.cFill, hlC, null, '#aa91ff', null, null);
 
   // Operator arrows: A x B -> C
   const t = flyT || 1;
@@ -473,9 +497,9 @@ function animate(onDone) {
     const dt = ts - animTs; animTs = ts;
     progress = Math.min(1, progress + dt / spd);
     flights.forEach(f => { f.t = Math.min(1, f.t + dt/spd); });
-    draw(progress);
+    draw(progress, needRotArrow ? progress : 0);
     if (progress < 1 || flights.some(f=>f.t>0&&f.t<1)) animRaf = requestAnimationFrame(tick);
-    else { flights = []; draw(1); onDone && onDone(); }
+    else { flights = []; draw(1, needRotArrow ? 1 : 0); onDone && onDone(); }
   }
   animRaf = requestAnimationFrame(tick);
 }
