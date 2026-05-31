@@ -1,0 +1,193 @@
+<div class="graphics-widget" style="background:#1e1e1e; color:#e0e0e0; padding:20px; border-radius:8px; font-family:monospace; max-width:650px; box-shadow:0 4px 12px rgba(0,0,0,0.3); margin: 20px 0;">
+  <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+    <div>
+      <canvas id="pinedaCanvas" width="320" height="320" style="background:#111; border:1px solid #333; cursor:move; display:block;"></canvas>
+      <p style="font-size:11px; color:#888; margin:8px 0 0 0; text-align:center;">Tažením kruhových handle upravte vrcholy A, B, C trojúhelníku</p>
+    </div>
+    <div style="flex:1; min-width:240px; display:flex; flex-direction:column; justify-content:flex-start; font-size:12px;">
+      <div style="font-weight:bold; color:#569cd6; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:10px;">PINEDA EDGE FUNCTIONS</div>
+      <div style="margin:4px 0;">A: <span style="color:#f44747;">●</span> <span id="p-a"></span></div>
+      <div style="margin:4px 0;">B: <span style="color:#4ec9b0;">●</span> <span id="p-b"></span></div>
+      <div style="margin:4px 0;">C: <span style="color:#ce9178;">●</span> <span id="p-c"></span></div>
+      <hr style="border:0; border-top:1px solid #333; margin:10px 0;">
+      <div style="color:#888; margin-bottom:5px;">Hover pixel data (střed subpixelu):</div>
+      <div id="p-hover-data" style="background:#151515; padding:8px; border-radius:4px; border-left:4px solid #dcdcaa; min-height:75px;">
+        Najjeďte myší na pixel v mřížce...
+      </div>
+      <div style="margin-top:10px; font-size:11px; color:#aaa; line-height:1.4;">
+        <span style="color:#dcdcaa; font-weight:bold;">Top-Left Rule:</span> Pokud střed leží přesně na hraně ($E=0$), pixel je vykreslen pouze pokud je hrana buď <b>horní (top)</b> nebo <b>levá (left)</b>.
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:15px; background:#151515; padding:12px; border-radius:4px; font-size:13px; border:1px solid #2d2d2d;">
+    <div style="color:#888; margin-bottom:4px;">Matematický test vnitřního bodu:</div>
+    <div id="p-math-feedback" style="color:#b5cea8;">$$E(P) = (x_B - x_A)(y_P - y_A) - (y_B - y_A)(x_P - x_A)$$</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('pinedaCanvas');
+  const ctx = canvas.getContext('2d');
+  const gridSize = 16;
+  const cellSize = 20;
+
+  // Triangle vertices in continuous coordinate system (scaled to grid bounds)
+  let vertices = [
+    {x: 2.0, y: 3.0, color: '#f44747'}, // A
+    {x: 13.0, y: 2.0, color: '#4ec9b0'}, // B
+    {x: 8.0, y: 13.0, color: '#ce9178'}  // C
+  ];
+  
+  let activeVertex = null;
+  let hoverPixel = null;
+
+  function edgeFunction(ax, ay, bx, by, px, py) {
+    return (bx - ax) * (py - ay) - (by - ay) * (px - ax);
+  }
+
+  function isTopLeft(ax, ay, bx, by) {
+    const dx = bx - ax;
+    const dy = by - ay;
+    // Top edge: horizontal and moves left (dx < 0, dy == 0)
+    // Left edge: moves up (dy > 0)
+    return (dy > 0) || (dy === 0 && dx < 0);
+  }
+
+  function update() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 1. Rasterize grid pixels
+    for (let x = 0; x < gridSize; x++) {
+      for (let y = 0; y < gridSize; y++) {
+        // Evaluate at pixel center
+        const px = x + 0.5;
+        const py = y + 0.5;
+
+        const w0 = edgeFunction(vertices[1].x, vertices[1].y, vertices[2].x, vertices[2].y, px, py); // BC
+        const w1 = edgeFunction(vertices[2].x, vertices[2].y, vertices[0].x, vertices[0].y, px, py); // CA
+        const w2 = edgeFunction(vertices[0].x, vertices[0].y, vertices[1].x, vertices[1].y, px, py); // AB
+
+        let inside = true;
+
+        // Check edge 1: BC
+        if (w0 < 0) inside = false;
+        else if (w0 === 0 && !isTopLeft(vertices[1].x, vertices[1].y, vertices[2].x, vertices[2].y)) inside = false;
+
+        // Check edge 2: CA
+        if (w1 < 0) inside = false;
+        else if (w1 === 0 && !isTopLeft(vertices[2].x, vertices[2].y, vertices[0].x, vertices[0].y)) inside = false;
+
+        // Check edge 3: AB
+        if (w2 < 0) inside = false;
+        else if (w2 === 0 && !isTopLeft(vertices[0].x, vertices[0].y, vertices[1].x, vertices[1].y)) inside = false;
+
+        if (inside) {
+          ctx.fillStyle = 'rgba(86, 156, 214, 0.45)';
+          ctx.fillRect(x * cellSize + 1, (gridSize - 1 - y) * cellSize + 1, cellSize - 2, cellSize - 2);
+        }
+      }
+    }
+
+    // 2. Draw Grid Lines
+    ctx.strokeStyle = '#252525';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= gridSize; i++) {
+      ctx.beginPath(); ctx.moveTo(i * cellSize, 0); ctx.lineTo(i * cellSize, canvas.height); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, i * cellSize); ctx.lineTo(canvas.width, i * cellSize); ctx.stroke();
+    }
+
+    // 3. Draw Continuous Triangle Edges
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(vertices[0].x * cellSize, (gridSize - vertices[0].y) * cellSize);
+    ctx.lineTo(vertices[1].x * cellSize, (gridSize - vertices[1].y) * cellSize);
+    ctx.lineTo(vertices[2].x * cellSize, (gridSize - vertices[2].y) * cellSize);
+    ctx.closePath();
+    ctx.stroke();
+
+    // 4. Draw Interaction Handles
+    vertices.forEach(v => {
+      ctx.fillStyle = v.color;
+      ctx.beginPath();
+      ctx.arc(v.x * cellSize, (gridSize - v.y) * cellSize, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    });
+
+    // Update DOM UI elements
+    document.getElementById('p-a').innerText = `(${vertices[0].x.toFixed(1)}, ${vertices[0].y.toFixed(1)})`;
+    document.getElementById('p-b').innerText = `(${vertices[1].x.toFixed(1)}, ${vertices[1].y.toFixed(1)})`;
+    document.getElementById('p-c').innerText = `(${vertices[2].x.toFixed(1)}, ${vertices[2].y.toFixed(1)})`;
+
+    if (hoverPixel) {
+      updateHoverData(hoverPixel.x, hoverPixel.y);
+    }
+  }
+
+  function updateHoverData(x, y) {
+    const px = x + 0.5;
+    const py = y + 0.5;
+    
+    const eAB = edgeFunction(vertices[0].x, vertices[0].y, vertices[1].x, vertices[1].y, px, py);
+    const eBC = edgeFunction(vertices[1].x, vertices[1].y, vertices[2].x, vertices[2].y, px, py);
+    const eCA = edgeFunction(vertices[2].x, vertices[2].y, vertices[0].x, vertices[0].y, px, py);
+
+    document.getElementById('p-hover-data').innerHTML = 
+      `Pixel: [${x}, ${y}] (střed ${px}, ${py})<br>` +
+      `E_AB: <span style="color:${eAB >= 0 ? '#4ec9b0':'#f44747'}">${eAB.toFixed(2)}</span><br>` +
+      `E_BC: <span style="color:${eBC >= 0 ? '#4ec9b0':'#f44747'}">${eBC.toFixed(2)}</span><br>` +
+      `E_CA: <span style="color:${eCA >= 0 ? '#4ec9b0':'#f44747'}">${eCA.toFixed(2)}</span>`;
+
+    document.getElementById('p-math-feedback').innerHTML = 
+      `$$E_{AB}(P) = ${eAB.toFixed(1)},\\ E_{BC}(P) = ${eBC.toFixed(1)},\\ E_{CA}(P) = ${eCA.toFixed(1)}$$ ` + 
+      `-> ${ (eAB>=0 && eBC>=0 && eCA>=0) ? '<span style="color:#4ec9b0">UVNITŘ (Vykreslit)</span>' : '<span style="color:#f44747">VNĚ (Odmítnout)</span>'}`;
+  }
+
+  function getGridCoords(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    return {
+      x: mx / cellSize,
+      y: gridSize - (my / cellSize)
+    };
+  }
+
+  canvas.addEventListener('mousedown', (e) => {
+    const coords = getGridCoords(e);
+    // Hit test handles
+    for (let i = 0; i < vertices.length; i++) {
+      if (Math.hypot(coords.x - vertices[i].x, coords.y - vertices[i].y) < 0.6) {
+        activeVertex = vertices[i];
+        break;
+      }
+    }
+  });
+
+  canvas.addEventListener('mousemove', (e) => {
+    const coords = getGridCoords(e);
+    
+    if (activeVertex) {
+      activeVertex.x = Math.max(0, Math.min(gridSize, Math.round(coords.x * 2) / 2)); // step 0.5 for hitting boundaries easily
+      activeVertex.y = Math.max(0, Math.min(gridSize, Math.round(coords.y * 2) / 2));
+      update();
+    } else {
+      let hX = Math.floor(coords.x);
+      let hY = Math.floor(coords.y);
+      if (hX >= 0 && hX < gridSize && hY >= 0 && hY < gridSize) {
+        hoverPixel = {x: hX, y: hY};
+        updateHoverData(hX, hY);
+      }
+    }
+  });
+
+  window.addEventListener('mouseup', () => { activeVertex = null; });
+  canvas.addEventListener('mouseleave', () => { hoverPixel = null; });
+
+  update();
+})();
+</script>

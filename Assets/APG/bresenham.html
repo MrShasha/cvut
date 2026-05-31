@@ -1,0 +1,152 @@
+<div class="graphics-widget" style="background:#1e1e1e; color:#e0e0e0; padding:20px; border-radius:8px; font-family:monospace; max-width:650px; box-shadow:0 4px 12px rgba(0,0,0,0.3); margin: 20px 0;">
+  <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+    <div>
+      <canvas id="bresenhamCanvas" width="320" height="320" style="background:#111; border:1px solid #333; cursor:crosshair; display:block;"></canvas>
+      <p style="font-size:11px; color:#888; margin:8px 0 0 0; text-align:center;">Tažením myši změňte bod P2. Šedá oblast značí k &gt; 1 (neaktivní).</p>
+    </div>
+    <div style="flex:1; min-width:240px; display:flex; flex-direction:column; justify-content:space-between;">
+      <div>
+        <div style="font-weight:bold; color:#569cd6; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:10px;">BRESENHAM LIVE DATA</div>
+        <div style="margin:6px 0;">P1: <span id="b-p1" style="color:#ce9178;">(0, 0)</span> | P2: <span id="b-p2" style="color:#ce9178;">(15, 5)</span></div>
+        <div style="margin:6px 0;">ΔX: <span id="b-dx" style="color:#b5cea8;">15</span> | ΔY: <span id="b-dy" style="color:#b5cea8;">5</span></div>
+        <div style="margin:6px 0;">Směrnice k: <span id="b-k" style="color:#b5cea8;">0.33</span> (0 ≤ k ≤ 1 ✓)</div>
+        <hr style="border:0; border-top:1px solid #333; margin:10px 0;">
+        <div style="margin:6px 0;">p₀ = 2ΔY - ΔX = <span id="b-p0-calc" style="color:#4ec9b0;">-5</span></div>
+        <div style="margin:6px 0;">c₀ (p &lt; 0): 2ΔY = <span id="b-c0" style="color:#4ec9b0;">10</span></div>
+        <div style="margin:6px 0;">c₁ (p ≥ 0): 2ΔY - 2ΔX = <span id="b-c1" style="color:#4ec9b0;">-20</span></div>
+      </div>
+      <div style="background:#151515; padding:8px; border-radius:4px; font-size:12px; border-left:4px solid #569cd6; max-height:100px; overflow-y:auto;" id="b-step-log">
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:15px; background:#151515; padding:12px; border-radius:4px; font-size:13px; border:1px solid #2d2d2d;">
+    <div style="color:#888; margin-bottom:4px;">Aktuální matematický krok algoritmu:</div>
+    <div id="b-math-feedback" style="color:#dcdcaa;">p = -5 &lt; 0 → Volba: spodní pixel, p_nové = p + c₀</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('bresenhamCanvas');
+  const ctx = canvas.getContext('2d');
+  const gridSize = 16;
+  const cellSize = 20;
+  
+  let p1 = {x: 0, y: 0};
+  let p2 = {x: 15, y: 5};
+  let isDragging = false;
+
+  function drawGrid() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw background zones (Gray-out for k > 1)
+    for(let x = 0; x < gridSize; x++) {
+      for(let y = 0; y < gridSize; y++) {
+        if(y > x) {
+          ctx.fillStyle = '#1c1313'; // Subdued dark red/gray for invalid octant
+          ctx.fillRect(x * cellSize, (gridSize - 1 - y) * cellSize, cellSize, cellSize);
+        }
+      }
+    }
+
+    ctx.strokeStyle = '#252525';
+    ctx.lineWidth = 1;
+    for(let i = 0; i <= gridSize; i++) {
+      ctx.beginPath(); ctx.moveTo(i * cellSize, 0); ctx.lineTo(i * cellSize, canvas.height); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, i * cellSize); ctx.lineTo(canvas.width, i * cellSize); ctx.stroke();
+    }
+  }
+
+  function fillCell(x, y, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x * cellSize + 1, (gridSize - 1 - y) * cellSize + 1, cellSize - 2, cellSize - 2);
+  }
+
+  function drawContinuousLine() {
+    ctx.strokeStyle = 'rgba(255, 165, 0, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(p1.x * cellSize + cellSize/2, (gridSize - 1 - p1.y) * cellSize + cellSize/2);
+    ctx.lineTo(p2.x * cellSize + cellSize/2, (gridSize - 1 - p2.y) * cellSize + cellSize/2);
+    ctx.stroke();
+  }
+
+  function update() {
+    drawGrid();
+    
+    let dx = p2.x - p1.x;
+    let dy = p2.y - p1.y;
+    let c0 = 2 * dy;
+    let c1 = c0 - 2 * dx;
+    let p = c0 - dx;
+
+    document.getElementById('b-p2').innerText = `(${p2.x}, ${p2.y})`;
+    document.getElementById('b-dx').innerText = dx;
+    document.getElementById('b-dy').innerText = dy;
+    document.getElementById('b-k').innerText = dx !== 0 ? (dy/dx).toFixed(2) : '∞';
+    document.getElementById('b-p0-calc').innerText = `${2*dy} - ${dx} = ${c0 - dx}`;
+    document.getElementById('b-c0').innerText = c0;
+    document.getElementById('b-c1').innerText = c1;
+
+    let y = p1.y;
+    let logHTML = '';
+    let currentMath = '';
+
+    fillCell(p1.x, y, '#264f78');
+
+    for (let x = p1.x + 1; x <= p2.x; x++) {
+      let prevP = p;
+      let prevY = y;
+      if (p < 0) {
+        p += c0;
+        logHTML += `<div>x=${x}: p=${prevP} &lt; 0 → y=${y} (p+=${c0})</div>`;
+      } else {
+        p += c1;
+        y++;
+        logHTML += `<div>x=${x}: p=${prevP} ≥ 0 → y=${y} (p+=${c1})</div>`;
+      }
+      fillCell(x, y, '#264f78');
+      
+      if (x === p1.x + 1 || x === Math.floor(p2.x / 2)) {
+        if (prevP < 0) {
+          currentMath = `$$p = ${prevP} < 0$$ &rarr; Volba: spodní pixel $(y = ${prevY})$, $$p_{nové} = ${prevP} + ${c0} = ${p}$$`;
+        } else {
+          currentMath = `$$p = ${prevP} \\ge 0$$ &rarr; Volba: horní pixel $(y = ${y})$, $$p_{nové} = ${prevP} + (${c1}) = ${p}$$`;
+        }
+      }
+    }
+    
+    document.getElementById('b-step-log').innerHTML = logHTML || '<div>Úsečka je bod.</div>';
+    document.getElementById('b-math-feedback').innerHTML = currentMath || '$$p_0 = 2\\Delta y - \\Delta x$$';
+    
+    fillCell(p1.x, p1.y, '#4ec9b0');
+    fillCell(p2.x, p2.y, '#ce9178');
+    drawContinuousLine();
+  }
+
+  function handleInteractivity(e) {
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    let cellX = Math.floor(mouseX / cellSize);
+    let cellY = gridSize - 1 - Math.floor(mouseY / cellSize);
+
+    cellX = Math.max(0, Math.min(gridSize - 1, cellX));
+    cellY = Math.max(0, Math.min(gridSize - 1, cellY));
+
+    // Clamp STRICTLY to 1st octant (y <= x)
+    if (cellX >= p1.x && cellY >= p1.y && cellY <= cellX) {
+      p2.x = cellX;
+      p2.y = cellY;
+      update();
+    }
+  }
+
+  canvas.addEventListener('mousedown', (e) => { isDragging = true; handleInteractivity(e); });
+  canvas.addEventListener('mousemove', (e) => { if(isDragging) handleInteractivity(e); });
+  window.addEventListener('mouseup', () => { isDragging = false; });
+
+  update();
+})();
+</script>
