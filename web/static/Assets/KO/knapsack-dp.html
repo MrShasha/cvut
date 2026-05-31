@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0-1 batoh - dynamicke programovani</title>
+<style>
+:root {
+  --bg: #10131a;
+  --panel: rgba(24, 31, 43, .94);
+  --panel-2: rgba(31, 41, 55, .92);
+  --line: rgba(156, 163, 175, .24);
+  --text: #edf2f7;
+  --muted: #9ca3af;
+  --blue: #60a5fa;
+  --cyan: #22d3ee;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --rose: #fb7185;
+  --violet: #a78bfa;
+  --orange: #fb923c;
+  --speed: 760ms;
+  --capacity-cols: 9;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  min-width: 960px;
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+  background:
+    radial-gradient(circle at 0 0, rgba(34, 211, 238, .12), transparent 28rem),
+    radial-gradient(circle at 100% 100%, rgba(251, 146, 60, .10), transparent 28rem),
+    linear-gradient(135deg, #0f141d, #111827 45%, #131820);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+}
+
+button, input, select { font: inherit; }
+
+.topbar, .panel, .scene {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .22);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+
+.eyebrow, .label, .panel-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 2px 0 0;
+  font-size: 19px;
+  letter-spacing: 0;
+}
+
+.controls, .speed-control, .stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-btn, select {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: rgba(55, 65, 81, .78);
+  color: #e5e7eb;
+}
+
+.control-btn {
+  min-width: 42px;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.control-btn:hover {
+  border-color: rgba(34, 211, 238, .7);
+  transform: translateY(-1px);
+}
+
+.control-btn.primary {
+  min-width: 96px;
+  border-color: rgba(34, 211, 238, .58);
+  background: linear-gradient(135deg, rgba(8, 145, 178, .94), rgba(37, 99, 235, .88));
+  font-weight: 750;
+}
+
+.control-btn:disabled {
+  cursor: default;
+  opacity: .45;
+  transform: none;
+}
+
+input[type="range"] {
+  width: 94px;
+  accent-color: var(--cyan);
+}
+
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, .64);
+}
+
+.progress-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(55, 65, 81, .86);
+}
+
+.progress-bar {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--cyan), var(--green), var(--amber));
+  transition: width .3s ease;
+}
+
+.progress-caption {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 292px;
+  gap: 10px;
+}
+
+.scene {
+  position: relative;
+  min-height: 626px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(156, 163, 175, .04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(156, 163, 175, .04) 1px, transparent 1px),
+    rgba(17, 24, 39, .82);
+  background-size: 24px 24px;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) 250px;
+  gap: 14px;
+  padding: 16px;
+}
+
+.items {
+  display: grid;
+  gap: 9px;
+  align-content: start;
+}
+
+.item-card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 10px;
+  background: rgba(31, 41, 55, .86);
+  transition: transform .22s ease, border-color .22s ease, background .22s ease;
+}
+
+.item-card.active {
+  border-color: rgba(251, 191, 36, .9);
+  background: rgba(120, 53, 15, .42);
+  transform: translateX(4px);
+}
+
+.item-card.chosen {
+  border-color: rgba(52, 211, 153, .9);
+  background: rgba(6, 78, 59, .42);
+}
+
+.item-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+  font-weight: 800;
+}
+
+.item-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  color: #d1d5db;
+  font-size: 12px;
+}
+
+.ratio {
+  grid-column: 1 / -1;
+  color: var(--muted);
+}
+
+.dp-wrap {
+  align-self: start;
+}
+
+.capacity-labels, .dp-grid {
+  display: grid;
+  grid-template-columns: 64px repeat(var(--capacity-cols), 48px);
+  gap: 4px;
+}
+
+.capacity-labels {
+  margin-bottom: 5px;
+}
+
+.cap, .row-head, .cell {
+  display: grid;
+  place-items: center;
+  min-height: 36px;
+}
+
+.cap {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.row-head {
+  border: 1px solid rgba(156, 163, 175, .16);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, .72);
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.cell {
+  position: relative;
+  width: 48px;
+  height: 38px;
+  border: 1px solid rgba(156, 163, 175, .18);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, .72);
+  color: #e5e7eb;
+  font-family: Consolas, monospace;
+  font-weight: 850;
+  transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.cell.base {
+  color: #9ca3af;
+  background: rgba(31, 41, 55, .56);
+}
+
+.cell.current {
+  border-color: rgba(251, 191, 36, .95);
+  background: rgba(120, 53, 15, .60);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, .12);
+  transform: translateY(-2px);
+}
+
+.cell.from-skip {
+  border-color: rgba(96, 165, 250, .9);
+  background: rgba(30, 64, 175, .45);
+}
+
+.cell.from-take {
+  border-color: rgba(52, 211, 153, .9);
+  background: rgba(6, 95, 70, .48);
+}
+
+.cell.win-skip {
+  color: #bfdbfe;
+}
+
+.cell.win-take {
+  color: #bbf7d0;
+}
+
+.cell.backtrack {
+  border-color: rgba(167, 139, 250, .95);
+  background: rgba(91, 33, 182, .54);
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, .12);
+}
+
+.cell .tiny {
+  position: absolute;
+  right: 4px;
+  bottom: 2px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.decision-panel {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.formula {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px;
+  background: rgba(15, 23, 42, .72);
+}
+
+.formula-main {
+  margin-top: 5px;
+  font-family: Consolas, monospace;
+  color: #f8fafc;
+  line-height: 1.55;
+}
+
+.choice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.choice {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  min-height: 92px;
+  background: rgba(31, 41, 55, .76);
+}
+
+.choice.skip.active {
+  border-color: rgba(96, 165, 250, .9);
+  background: rgba(30, 64, 175, .45);
+}
+
+.choice.take.active {
+  border-color: rgba(52, 211, 153, .9);
+  background: rgba(6, 95, 70, .46);
+}
+
+.choice-name {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .10em;
+}
+
+.choice-value {
+  margin-top: 5px;
+  font-family: Consolas, monospace;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.choice-detail {
+  margin-top: 3px;
+  color: #cbd5e1;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.bag {
+  position: relative;
+  min-height: 168px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  background:
+    linear-gradient(180deg, rgba(2, 6, 23, .18), rgba(2, 6, 23, .40)),
+    rgba(31, 41, 55, .76);
+}
+
+.bag-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 9px;
+}
+
+.bag-meter {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(75, 85, 99, .85);
+}
+
+.bag-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), var(--amber));
+  transition: width .35s ease;
+}
+
+.bag-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.bag-chip {
+  border: 1px solid rgba(52, 211, 153, .48);
+  border-radius: 8px;
+  padding: 5px 7px;
+  background: rgba(6, 95, 70, .5);
+  color: #d1fae5;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.callout {
+  min-height: 68px;
+  border-left: 3px solid var(--cyan);
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: rgba(8, 145, 178, .12);
+  color: #dbeafe;
+  line-height: 1.45;
+}
+
+.side {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+}
+
+.panel {
+  padding: 12px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(156, 163, 175, .12);
+}
+
+.stat-row:last-child { border-bottom: 0; }
+.stat-value { font-weight: 850; color: #f8fafc; }
+
+.legend {
+  display: grid;
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.legend-item {
+  display: grid;
+  grid-template-columns: 14px 1fr;
+  gap: 7px;
+  align-items: center;
+  color: #d1d5db;
+  font-size: 12px;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.beam-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.beam {
+  position: absolute;
+  height: 3px;
+  border-radius: 999px;
+  transform-origin: left center;
+  opacity: 0;
+  animation: beam var(--speed) ease forwards;
+}
+
+.beam.skip {
+  background: linear-gradient(90deg, rgba(96, 165, 250, .05), var(--blue));
+  box-shadow: 0 0 14px rgba(96, 165, 250, .55);
+}
+
+.beam.take {
+  background: linear-gradient(90deg, rgba(52, 211, 153, .05), var(--green));
+  box-shadow: 0 0 14px rgba(52, 211, 153, .55);
+}
+
+.token {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  color: #0f172a;
+  font-family: Consolas, monospace;
+  font-size: 11px;
+  font-weight: 900;
+  opacity: 0;
+  animation: token var(--speed) ease forwards;
+}
+
+.token.skip { background: #93c5fd; }
+.token.take { background: #86efac; }
+
+@keyframes beam {
+  0% { opacity: 0; transform: scaleX(.05) rotate(var(--angle)); }
+  22% { opacity: 1; }
+  100% { opacity: 0; transform: scaleX(1) rotate(var(--angle)); }
+}
+
+@keyframes token {
+  0% { opacity: 0; transform: translate(0, 0) scale(.72); }
+  18% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1); }
+}
+
+@media (max-width: 980px) {
+  body { min-width: 900px; }
+  .layout { grid-template-columns: 1fr; }
+  .scene { min-height: 620px; }
+  .side { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Kombinatoricka optimalizace</div>
+      <h1>0-1 batoh: DP tabulka a rekonstrukce reseni</h1>
+    </div>
+    <div class="controls">
+      <button class="control-btn primary" id="playBtn">Prehrat</button>
+      <button class="control-btn" id="stepBtn">Krok</button>
+      <button class="control-btn" id="resetBtn">Reset</button>
+      <select id="exampleSelect" title="Vyber instance">
+        <option value="classic">Klasicky priklad</option>
+        <option value="trap">Greedy past</option>
+      </select>
+      <div class="speed-control">
+        <span class="label">Rychlost</span>
+        <input id="speed" type="range" min="360" max="1300" value="760">
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div>
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-caption">
+        <span id="phaseLabel">Inicializace DP tabulky</span>
+        <span id="stepLabel">0 / 0</span>
+      </div>
+    </div>
+    <div class="stats">
+      <span class="label">Kapacita</span><strong id="capacityLabel">8</strong>
+      <span class="label">Optimum</span><strong id="optimumLabel">0</strong>
+    </div>
+  </div>
+
+  <div class="layout">
+    <main class="scene" id="scene">
+      <div class="beam-layer" id="beamLayer"></div>
+      <div class="workspace">
+        <section class="items" id="items"></section>
+        <section class="dp-wrap">
+          <div class="capacity-labels" id="capacityLabels"></div>
+          <div class="dp-grid" id="dpGrid"></div>
+        </section>
+        <section class="decision-panel">
+          <div class="formula">
+            <div class="panel-title">Bellmanova rovnice</div>
+            <div class="formula-main" id="formulaText">D[i][w] = max(nevezmu, vezmu)</div>
+          </div>
+          <div class="choice-grid">
+            <div class="choice skip" id="skipChoice">
+              <div class="choice-name">Nevezmu</div>
+              <div class="choice-value" id="skipValue">0</div>
+              <div class="choice-detail" id="skipDetail">D[i-1][w]</div>
+            </div>
+            <div class="choice take" id="takeChoice">
+              <div class="choice-name">Vezmu</div>
+              <div class="choice-value" id="takeValue">-</div>
+              <div class="choice-detail" id="takeDetail">pokud se vejde</div>
+            </div>
+          </div>
+          <div class="bag">
+            <div class="bag-title">
+              <div>
+                <div class="panel-title">Rekonstruovany batoh</div>
+                <strong id="bagSummary">0 / 8 kg, hodnota 0</strong>
+              </div>
+            </div>
+            <div class="bag-meter"><div class="bag-fill" id="bagFill"></div></div>
+            <div class="bag-items" id="bagItems"></div>
+          </div>
+          <div class="callout" id="callout">
+            Vybereme bunku po bunce. Hodnota nahore znamena "predmet nevezmu"; sikmo vlevo nahore znamena "vezmu predmet a zbytek kapacity vyresim optimalne".
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <aside class="side">
+      <section class="panel">
+        <div class="panel-title">Aktualni stav</div>
+        <div class="stat-row"><span>Radek</span><span class="stat-value" id="rowStat">-</span></div>
+        <div class="stat-row"><span>Sloupec w</span><span class="stat-value" id="colStat">-</span></div>
+        <div class="stat-row"><span>Cas</span><span class="stat-value">O(nW)</span></div>
+        <div class="stat-row"><span>Pamet</span><span class="stat-value">O(nW)</span></div>
+      </section>
+      <section class="panel">
+        <div class="panel-title">Legenda</div>
+        <div class="legend">
+          <div class="legend-item"><span class="swatch" style="background:#3b82f6"></span><span>D[i-1][w]: preskocit predmet</span></div>
+          <div class="legend-item"><span class="swatch" style="background:#10b981"></span><span>D[i-1][w-w_i] + p_i: vzit predmet</span></div>
+          <div class="legend-item"><span class="swatch" style="background:#f59e0b"></span><span>Prave zapisovana bunka</span></div>
+          <div class="legend-item"><span class="swatch" style="background:#8b5cf6"></span><span>Zpetny pruchod resenim</span></div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="panel-title">Co si pamatovat</div>
+        <p style="margin:8px 0 0;color:#d1d5db;line-height:1.45">
+          DP nezkousi vsechny podmnoziny primo. Kazda bunka uklada nejlepsi hodnotu pro prefix predmetu a danou kapacitu, proto se k uz spocitanym kombinacim jen odkazujeme.
+        </p>
+      </section>
+    </aside>
+  </div>
+
+<script>
+const examples = {
+  classic: {
+    capacity: 8,
+    items: [
+      { name: "A", weight: 2, value: 3 },
+      { name: "B", weight: 3, value: 4 },
+      { name: "C", weight: 4, value: 5 },
+      { name: "D", weight: 5, value: 8 },
+      { name: "E", weight: 2, value: 3 }
+    ]
+  },
+  trap: {
+    capacity: 10,
+    items: [
+      { name: "A", weight: 1, value: 2 },
+      { name: "B", weight: 10, value: 15 },
+      { name: "C", weight: 4, value: 5 },
+      { name: "D", weight: 5, value: 6 }
+    ]
+  }
+};
+
+let instance = examples.classic;
+let dp = [];
+let steps = [];
+let backtrack = [];
+let cursor = 0;
+let playing = false;
+let timer = null;
+
+const els = {
+  scene: document.getElementById("scene"),
+  items: document.getElementById("items"),
+  capLabels: document.getElementById("capacityLabels"),
+  grid: document.getElementById("dpGrid"),
+  beamLayer: document.getElementById("beamLayer"),
+  play: document.getElementById("playBtn"),
+  step: document.getElementById("stepBtn"),
+  reset: document.getElementById("resetBtn"),
+  speed: document.getElementById("speed"),
+  select: document.getElementById("exampleSelect"),
+  progress: document.getElementById("progressBar"),
+  phase: document.getElementById("phaseLabel"),
+  stepLabel: document.getElementById("stepLabel"),
+  capacity: document.getElementById("capacityLabel"),
+  optimum: document.getElementById("optimumLabel"),
+  rowStat: document.getElementById("rowStat"),
+  colStat: document.getElementById("colStat"),
+  formula: document.getElementById("formulaText"),
+  skipChoice: document.getElementById("skipChoice"),
+  takeChoice: document.getElementById("takeChoice"),
+  skipValue: document.getElementById("skipValue"),
+  takeValue: document.getElementById("takeValue"),
+  skipDetail: document.getElementById("skipDetail"),
+  takeDetail: document.getElementById("takeDetail"),
+  bagSummary: document.getElementById("bagSummary"),
+  bagFill: document.getElementById("bagFill"),
+  bagItems: document.getElementById("bagItems"),
+  callout: document.getElementById("callout")
+};
+
+function buildModel() {
+  const n = instance.items.length;
+  const W = instance.capacity;
+  dp = Array.from({ length: n + 1 }, () => Array(W + 1).fill(0));
+  steps = [];
+
+  for (let i = 1; i <= n; i++) {
+    const item = instance.items[i - 1];
+    for (let w = 0; w <= W; w++) {
+      const skip = dp[i - 1][w];
+      let take = null;
+      if (item.weight <= w) take = dp[i - 1][w - item.weight] + item.value;
+      dp[i][w] = Math.max(skip, take ?? -Infinity);
+      steps.push({
+        type: "fill",
+        i, w,
+        item,
+        skip,
+        take,
+        rem: w - item.weight,
+        value: dp[i][w],
+        decision: take !== null && take > skip ? "take" : "skip"
+      });
+    }
+  }
+
+  backtrack = [];
+  let w = W;
+  let totalWeight = 0;
+  let totalValue = 0;
+  const picked = [];
+  for (let i = n; i >= 1; i--) {
+    const item = instance.items[i - 1];
+    const took = dp[i][w] !== dp[i - 1][w];
+    if (took) {
+      picked.push(item);
+      totalWeight += item.weight;
+      totalValue += item.value;
+      backtrack.push({ type: "backtrack", i, w, item, took, totalWeight, totalValue, picked: [...picked] });
+      w -= item.weight;
+    } else {
+      backtrack.push({ type: "backtrack", i, w, item, took, totalWeight, totalValue, picked: [...picked] });
+    }
+  }
+  steps.push(...backtrack);
+}
+
+function renderBase() {
+  const W = instance.capacity;
+  document.documentElement.style.setProperty("--capacity-cols", W + 1);
+  els.capacity.textContent = W;
+  els.items.innerHTML = "";
+  instance.items.forEach((item, idx) => {
+    const card = document.createElement("div");
+    card.className = "item-card";
+    card.dataset.item = idx + 1;
+    card.innerHTML = `
+      <div class="item-title"><span>Predmet ${item.name}</span><span>#${idx + 1}</span></div>
+      <div class="item-meta">
+        <span>w = ${item.weight}</span>
+        <span>p = ${item.value}</span>
+        <span class="ratio">p/w = ${(item.value / item.weight).toFixed(2)}</span>
+      </div>`;
+    els.items.appendChild(card);
+  });
+
+  els.capLabels.innerHTML = `<div class="cap">i \\ w</div>`;
+  for (let w = 0; w <= W; w++) {
+    els.capLabels.insertAdjacentHTML("beforeend", `<div class="cap">${w}</div>`);
+  }
+
+  els.grid.innerHTML = "";
+  for (let i = 0; i <= instance.items.length; i++) {
+    const head = document.createElement("div");
+    head.className = "row-head";
+    head.textContent = i === 0 ? "0" : `${i}: ${instance.items[i - 1].name}`;
+    els.grid.appendChild(head);
+    for (let w = 0; w <= W; w++) {
+      const cell = document.createElement("div");
+      cell.className = `cell ${i === 0 || w === 0 ? "base" : ""}`;
+      cell.dataset.i = i;
+      cell.dataset.w = w;
+      cell.textContent = "0";
+      els.grid.appendChild(cell);
+    }
+  }
+}
+
+function cell(i, w) {
+  return els.grid.querySelector(`[data-i="${i}"][data-w="${w}"]`);
+}
+
+function itemCard(i) {
+  return els.items.querySelector(`[data-item="${i}"]`);
+}
+
+function clearHighlights() {
+  els.grid.querySelectorAll(".cell").forEach(c => {
+    c.classList.remove("current", "from-skip", "from-take", "win-skip", "win-take", "backtrack");
+  });
+  els.items.querySelectorAll(".item-card").forEach(c => c.classList.remove("active"));
+  els.skipChoice.classList.remove("active");
+  els.takeChoice.classList.remove("active");
+  els.beamLayer.innerHTML = "";
+}
+
+function drawBeam(fromEl, toEl, kind, label) {
+  if (!fromEl || !toEl) return;
+  const sceneRect = els.scene.getBoundingClientRect();
+  const a = fromEl.getBoundingClientRect();
+  const b = toEl.getBoundingClientRect();
+  const x1 = a.left + a.width / 2 - sceneRect.left;
+  const y1 = a.top + a.height / 2 - sceneRect.top;
+  const x2 = b.left + b.width / 2 - sceneRect.left;
+  const y2 = b.top + b.height / 2 - sceneRect.top;
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const len = Math.hypot(dx, dy);
+  const angle = Math.atan2(dy, dx);
+
+  const beam = document.createElement("div");
+  beam.className = `beam ${kind}`;
+  beam.style.left = `${x1}px`;
+  beam.style.top = `${y1}px`;
+  beam.style.width = `${len}px`;
+  beam.style.setProperty("--angle", `${angle}rad`);
+
+  const token = document.createElement("div");
+  token.className = `token ${kind}`;
+  token.textContent = label;
+  token.style.left = `${x1 - 15}px`;
+  token.style.top = `${y1 - 15}px`;
+  token.style.setProperty("--dx", `${dx}px`);
+  token.style.setProperty("--dy", `${dy}px`);
+
+  els.beamLayer.append(beam, token);
+}
+
+function updateProgress() {
+  const total = steps.length;
+  els.stepLabel.textContent = `${Math.min(cursor, total)} / ${total}`;
+  els.progress.style.width = total ? `${Math.min(100, cursor / total * 100)}%` : "0%";
+  els.play.textContent = playing ? "Pauza" : "Prehrat";
+  els.step.disabled = cursor >= total;
+}
+
+function resetComputedCells() {
+  els.grid.querySelectorAll(".cell").forEach(c => {
+    const i = Number(c.dataset.i);
+    const w = Number(c.dataset.w);
+    c.textContent = i === 0 || w === 0 ? "0" : "";
+    c.innerHTML = c.textContent;
+  });
+}
+
+function applyStep(step, animate = true) {
+  clearHighlights();
+  if (step.type === "fill") {
+    const { i, w, item, skip, take, rem, value, decision } = step;
+    const cur = cell(i, w);
+    const skipCell = cell(i - 1, w);
+    const takeCell = take !== null ? cell(i - 1, rem) : null;
+
+    cur.classList.add("current", decision === "take" ? "win-take" : "win-skip");
+    skipCell.classList.add("from-skip");
+    if (takeCell) takeCell.classList.add("from-take");
+    itemCard(i).classList.add("active");
+
+    if (animate) {
+      drawBeam(skipCell, cur, "skip", skip);
+      if (takeCell) drawBeam(takeCell, cur, "take", take);
+    }
+
+    cur.textContent = value;
+    els.rowStat.textContent = `${i} (${item.name})`;
+    els.colStat.textContent = w;
+    els.phase.textContent = `Vyplnujeme D[${i}][${w}]`;
+    els.formula.textContent = take === null
+      ? `w_${i} = ${item.weight} > ${w}, proto D[${i}][${w}] = D[${i - 1}][${w}]`
+      : `D[${i}][${w}] = max(D[${i - 1}][${w}], D[${i - 1}][${rem}] + ${item.value})`;
+    els.skipValue.textContent = skip;
+    els.skipDetail.textContent = `D[${i - 1}][${w}]`;
+    els.takeValue.textContent = take === null ? "-" : take;
+    els.takeDetail.textContent = take === null ? `predmet se nevejde` : `D[${i - 1}][${rem}] + p_${i}`;
+    els.skipChoice.classList.toggle("active", decision === "skip");
+    els.takeChoice.classList.toggle("active", decision === "take");
+    els.callout.textContent = take === null
+      ? `Predmet ${item.name} ma vahu ${item.weight}, takze pri kapacite ${w} ho nelze vzit. Hodnota se jen zkopiruje shora.`
+      : decision === "take"
+        ? `Vzit predmet ${item.name} je lepsi: ${take} > ${skip}. Sahneme sikmo vlevo nahoru na zbyvajici kapacitu ${rem} a prictime hodnotu ${item.value}.`
+        : `Nevzit predmet ${item.name} je stejne dobre nebo lepsi: ${skip} >= ${take}. Bunka prebere hodnotu shora.`;
+  } else {
+    const { i, w, item, took, totalWeight, totalValue, picked } = step;
+    cell(i, w).classList.add("backtrack");
+    itemCard(i).classList.toggle("chosen", took);
+    els.rowStat.textContent = `${i} (${item.name})`;
+    els.colStat.textContent = w;
+    els.phase.textContent = `Rekonstrukce reseni: kontrolujeme predmet ${item.name}`;
+    els.formula.textContent = `Porovnej D[${i}][${w}] s D[${i - 1}][${w}]`;
+    els.skipValue.textContent = dp[i - 1][w];
+    els.takeValue.textContent = dp[i][w];
+    els.skipDetail.textContent = "hodnota bez predmetu";
+    els.takeDetail.textContent = "hodnota v aktualni bunce";
+    els.callout.textContent = took
+      ? `Hodnota se zmenila, predmet ${item.name} musel byt v optimalnim reseni. Snizime kapacitu o ${item.weight}.`
+      : `Hodnota je stejna jako nad bunkou, predmet ${item.name} v optimalnim reseni nepotrebujeme.`;
+    renderBag(totalWeight, totalValue, picked);
+  }
+  els.optimum.textContent = dp[instance.items.length][instance.capacity];
+}
+
+function renderBag(weight, value, picked) {
+  els.bagSummary.textContent = `${weight} / ${instance.capacity} kg, hodnota ${value}`;
+  els.bagFill.style.width = `${Math.min(100, weight / instance.capacity * 100)}%`;
+  els.bagItems.innerHTML = "";
+  [...picked].reverse().forEach(item => {
+    const chip = document.createElement("span");
+    chip.className = "bag-chip";
+    chip.textContent = `${item.name}: w${item.weight}, p${item.value}`;
+    els.bagItems.appendChild(chip);
+  });
+}
+
+function stepForward() {
+  if (cursor >= steps.length) {
+    stop();
+    return;
+  }
+  applyStep(steps[cursor], true);
+  cursor++;
+  updateProgress();
+  if (cursor >= steps.length) stop();
+}
+
+function play() {
+  if (playing) return stop();
+  playing = true;
+  updateProgress();
+  stepForward();
+  timer = setInterval(stepForward, Number(els.speed.value));
+}
+
+function stop() {
+  playing = false;
+  if (timer) clearInterval(timer);
+  timer = null;
+  updateProgress();
+}
+
+function reset() {
+  stop();
+  cursor = 0;
+  clearHighlights();
+  resetComputedCells();
+  renderBag(0, 0, []);
+  els.phase.textContent = "Inicializace DP tabulky";
+  els.rowStat.textContent = "-";
+  els.colStat.textContent = "-";
+  els.formula.textContent = "D[i][w] = max(nevezmu, vezmu)";
+  els.skipValue.textContent = "0";
+  els.takeValue.textContent = "-";
+  els.skipDetail.textContent = "D[i-1][w]";
+  els.takeDetail.textContent = "pokud se vejde";
+  els.callout.textContent = "Vybereme bunku po bunce. Hodnota nahore znamena \"predmet nevezmu\"; sikmo vlevo nahore znamena \"vezmu predmet a zbytek kapacity vyresim optimalne\".";
+  els.optimum.textContent = dp[instance.items.length][instance.capacity];
+  updateProgress();
+}
+
+function boot(exampleKey = "classic") {
+  instance = examples[exampleKey];
+  buildModel();
+  renderBase();
+  reset();
+}
+
+els.play.addEventListener("click", play);
+els.step.addEventListener("click", stepForward);
+els.reset.addEventListener("click", reset);
+els.speed.addEventListener("input", () => {
+  document.documentElement.style.setProperty("--speed", `${els.speed.value}ms`);
+  if (playing) {
+    stop();
+    play();
+  }
+});
+els.select.addEventListener("change", e => boot(e.target.value));
+
+boot();
+</script>
+</body>
+</html>
