@@ -19,7 +19,7 @@
 }
 * { box-sizing: border-box; }
 body {
-  min-width: 940px;
+  min-width: 1100px;
   margin: 0;
   padding: 14px;
   overflow-x: auto;
@@ -105,7 +105,7 @@ h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
   gap: 10px;
 }
 .scene {
-  min-height: 680px;
+  min-height: 760px;
   overflow: hidden;
   background:
     linear-gradient(rgba(156, 163, 175, .04) 1px, transparent 1px),
@@ -136,7 +136,7 @@ h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
 .item-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; color: #d1d5db; font-size: 12px; }
 .value-labels, .dp-grid {
   display: grid;
-  grid-template-columns: 64px repeat(var(--value-cols), 43px);
+  grid-template-columns: 64px repeat(var(--value-cols), 34px);
   gap: 4px;
 }
 .value-labels { margin-bottom: 5px; }
@@ -155,7 +155,7 @@ h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
   font-weight: 850;
 }
 .cell {
-  width: 43px;
+  width: 34px;
   height: 36px;
   border: 1px solid rgba(156, 163, 175, .18);
   border-radius: 8px;
@@ -182,19 +182,20 @@ h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
 .cell.feasible {
   color: #bbf7d0;
 }
-.explain {
+.decision-panel {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: minmax(260px, 1fr) minmax(260px, 1fr) minmax(220px, .8fr);
+  grid-template-columns: minmax(210px, .85fr) minmax(260px, 1fr) minmax(220px, .85fr) minmax(250px, 1fr);
   gap: 10px;
+  align-content: start;
 }
-.box {
+.formula, .result-panel {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 11px;
   background: rgba(15, 23, 42, .72);
 }
-.formula {
+.formula-main {
   margin-top: 5px;
   font-family: Consolas, monospace;
   color: #f8fafc;
@@ -205,6 +206,7 @@ h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 10px;
+  min-height: 92px;
   background: rgba(31, 41, 55, .76);
 }
 .choice.active.take { border-color: rgba(52, 211, 153, .9); background: rgba(6, 95, 70, .46); }
@@ -213,7 +215,7 @@ h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
 .choice-value { margin-top: 5px; font-family: Consolas, monospace; font-size: 24px; font-weight: 900; }
 .choice-detail { margin-top: 3px; color: #cbd5e1; font-size: 12px; line-height: 1.35; }
 .callout {
-  grid-column: 1 / -1;
+  min-height: 132px;
   border-left: 3px solid var(--cyan);
   border-radius: 8px;
   padding: 10px 11px;
@@ -233,6 +235,13 @@ h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
 .stat-row:last-child { border-bottom: 0; }
 .stat-value { font-weight: 900; color: #f8fafc; }
 .note { margin: 8px 0 0; color: #d1d5db; line-height: 1.45; }
+@media (max-width: 980px) {
+  body { min-width: 1000px; }
+  .layout { grid-template-columns: 1fr; }
+  .scene { min-height: 820px; }
+  .decision-panel { grid-template-columns: 1fr; }
+  .side { grid-template-columns: repeat(2, 1fr); }
+}
 </style>
 </head>
 <body>
@@ -264,10 +273,10 @@ h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
           <div class="value-labels" id="valueLabels"></div>
           <div class="dp-grid" id="dpGrid"></div>
         </section>
-        <section class="explain">
-          <div class="box">
+        <section class="decision-panel">
+          <div class="formula">
             <div class="panel-title">Rekurence</div>
-            <div class="formula" id="formulaText">D[i][v] = min(nevezmu, vezmu)</div>
+            <div class="formula-main" id="formulaText">D[i][v] = min(nevezmu, vezmu)</div>
           </div>
           <div class="choice-grid">
             <div class="choice skip" id="skipChoice">
@@ -281,9 +290,9 @@ h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
               <div class="choice-detail" id="takeDetail">D[i-1][v-p_i] + w_i</div>
             </div>
           </div>
-          <div class="box">
+          <div class="result-panel">
             <div class="panel-title">Nejlepsi dosažitelna hodnota</div>
-            <div class="formula" id="bestText">v = 0, váha 0</div>
+            <div class="formula-main" id="bestText">v = 0, vaha 0</div>
           </div>
           <div class="callout" id="callout">
             Tady osa tabulky neni kapacita, ale cilova hodnota v. Do bunky zapisujeme minimalni vahu nutnou k dosazeni presne teto hodnoty.
