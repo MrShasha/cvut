@@ -137,8 +137,8 @@
       "generatedRel": "pocitacova-grafika/gvg/0-obsah-gvg.md",
       "summary": "1. Prostorová geometrie (Spatial geometry)1. Prostorová geometrie (Spatial geometry) 2. Image projection and perspective camera model for 3D reconstruction2. Image projection and perspective camera model for 3D reconstru",
       "incoming": 0,
-      "outgoing": 4,
-      "degree": 4
+      "outgoing": 13,
+      "degree": 13
     },
     {
       "id": "doc:pocitacova-grafika/gvg/1-prostorova-geometrie-spatial-geometry.md",
@@ -165,8 +165,22 @@
       "generatedRel": "pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
       "summary": "Mathematical model of a perspective camera: projection matrix Perspektivní kamera Perspektivní kamera se geometricky skládá z: - projekčního centra $C$, - obrazové roviny $\\pi$, - projekčního paprsku $p$. Bod $X$ z 3D pr",
       "incoming": 1,
-      "outgoing": 2,
-      "degree": 3
+      "outgoing": 13,
+      "degree": 14
+    },
+    {
+      "id": "doc:pocitacova-grafika/gvg/4-visual-odometry-and-slam.md",
+      "title": "4. Visual odometry and SLAM",
+      "type": "document",
+      "group": "Počítačová grafika",
+      "folder": "Počítačová grafika/GVG",
+      "url": "/pocitacova-grafika/gvg/visual-odometry-and-slam",
+      "sourceRel": "Počítačová grafika/GVG/4. Visual odometry and SLAM.md",
+      "generatedRel": "pocitacova-grafika/gvg/4-visual-odometry-and-slam.md",
+      "summary": "Computing camera motion and scene structure from image correspondences Tato část popisuje základní problém Structure-from-Motion: z překrývajících se obrazů a jejich korespondencí chceme odhadnout: - pohyb kamer, - 3D st",
+      "incoming": 1,
+      "outgoing": 0,
+      "degree": 1
     },
     {
       "id": "doc:index.md",
@@ -1736,6 +1750,126 @@
       "group": "Počítačová grafika",
       "folder": "Počítačová grafika/GVG",
       "url": "/pocitacova-grafika/gvg/image-projection-and-perspective-camera-model-for-3d-reconstruction#calibration-of-camera-intrinsic-parameters-from-known-objects",
+      "sourceRel": "Počítačová grafika/GVG/2. Image projection and perspective camera model for 3D reconstruction.md",
+      "parentId": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "parentTitle": "2. Image projection and perspective camera model for 3D reconstruction",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#camera-resection-from-six-points",
+      "title": "Camera resection from six points",
+      "type": "heading",
+      "group": "Počítačová grafika",
+      "folder": "Počítačová grafika/GVG",
+      "url": "/pocitacova-grafika/gvg/image-projection-and-perspective-camera-model-for-3d-reconstruction#camera-resection-from-six-points",
+      "sourceRel": "Počítačová grafika/GVG/2. Image projection and perspective camera model for 3D reconstruction.md",
+      "parentId": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "parentTitle": "2. Image projection and perspective camera model for 3D reconstruction",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#exterior-orientation-from-three-points",
+      "title": "Exterior orientation from three points",
+      "type": "heading",
+      "group": "Počítačová grafika",
+      "folder": "Počítačová grafika/GVG",
+      "url": "/pocitacova-grafika/gvg/image-projection-and-perspective-camera-model-for-3d-reconstruction#exterior-orientation-from-three-points",
+      "sourceRel": "Počítačová grafika/GVG/2. Image projection and perspective camera model for 3D reconstruction.md",
+      "parentId": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "parentTitle": "2. Image projection and perspective camera model for 3D reconstruction",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#camera-pair-models-homography",
+      "title": "Camera Pair Models: Homography",
+      "type": "heading",
+      "group": "Počítačová grafika",
+      "folder": "Počítačová grafika/GVG",
+      "url": "/pocitacova-grafika/gvg/image-projection-and-perspective-camera-model-for-3d-reconstruction#camera-pair-models-homography",
+      "sourceRel": "Počítačová grafika/GVG/2. Image projection and perspective camera model for 3D reconstruction.md",
+      "parentId": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "parentTitle": "2. Image projection and perspective camera model for 3D reconstruction",
+      "level": 2,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#epipolar-geometry-and-epipolar-constraint",
+      "title": "Epipolar geometry and epipolar constraint",
+      "type": "heading",
+      "group": "Počítačová grafika",
+      "folder": "Počítačová grafika/GVG",
+      "url": "/pocitacova-grafika/gvg/image-projection-and-perspective-camera-model-for-3d-reconstruction#epipolar-geometry-and-epipolar-constraint",
+      "sourceRel": "Počítačová grafika/GVG/2. Image projection and perspective camera model for 3D reconstruction.md",
+      "parentId": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "parentTitle": "2. Image projection and perspective camera model for 3D reconstruction",
+      "level": 2,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#3d-scene-reconstruction-from-images",
+      "title": "3D scene reconstruction from images",
+      "type": "heading",
+      "group": "Počítačová grafika",
+      "folder": "Počítačová grafika/GVG",
+      "url": "/pocitacova-grafika/gvg/image-projection-and-perspective-camera-model-for-3d-reconstruction#3d-scene-reconstruction-from-images",
+      "sourceRel": "Počítačová grafika/GVG/2. Image projection and perspective camera model for 3D reconstruction.md",
+      "parentId": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "parentTitle": "2. Image projection and perspective camera model for 3D reconstruction",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#homography-in-p2-and-the-4-point-algorithm",
+      "title": "Homography in P2 and the 4-point algorithm",
+      "type": "heading",
+      "group": "Počítačová grafika",
+      "folder": "Počítačová grafika/GVG",
+      "url": "/pocitacova-grafika/gvg/image-projection-and-perspective-camera-model-for-3d-reconstruction#homography-in-p2-and-the-4-point-algorithm",
+      "sourceRel": "Počítačová grafika/GVG/2. Image projection and perspective camera model for 3D reconstruction.md",
+      "parentId": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "parentTitle": "2. Image projection and perspective camera model for 3D reconstruction",
+      "level": 2,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#fundamental-matrix-and-the-7-point-algorithm",
+      "title": "Fundamental matrix and the 7-point algorithm",
+      "type": "heading",
+      "group": "Počítačová grafika",
+      "folder": "Počítačová grafika/GVG",
+      "url": "/pocitacova-grafika/gvg/image-projection-and-perspective-camera-model-for-3d-reconstruction#fundamental-matrix-and-the-7-point-algorithm",
+      "sourceRel": "Počítačová grafika/GVG/2. Image projection and perspective camera model for 3D reconstruction.md",
+      "parentId": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "parentTitle": "2. Image projection and perspective camera model for 3D reconstruction",
+      "level": 2,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#essential-matrix-and-the-5-point-algorithm",
+      "title": "Essential matrix and the 5-point algorithm",
+      "type": "heading",
+      "group": "Počítačová grafika",
+      "folder": "Počítačová grafika/GVG",
+      "url": "/pocitacova-grafika/gvg/image-projection-and-perspective-camera-model-for-3d-reconstruction#essential-matrix-and-the-5-point-algorithm",
       "sourceRel": "Počítačová grafika/GVG/2. Image projection and perspective camera model for 3D reconstruction.md",
       "parentId": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
       "parentTitle": "2. Image projection and perspective camera model for 3D reconstruction",
@@ -6082,6 +6216,90 @@
       "type": "heading",
       "label": "Calibration of camera intrinsic parameters from known objects",
       "anchor": "#calibration-of-camera-intrinsic-parameters-from-known-objects"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/0-obsah-gvg.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#camera-resection-from-six-points",
+      "type": "heading",
+      "label": "Camera resection from six points",
+      "anchor": "#camera-resection-from-six-points"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/0-obsah-gvg.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#exterior-orientation-from-three-points",
+      "type": "heading",
+      "label": "Eterior orientation from three points",
+      "anchor": "#exterior-orientation-from-three-points"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/0-obsah-gvg.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#camera-pair-models-homography",
+      "type": "heading",
+      "label": "Camera Pair Models: Homography",
+      "anchor": "#camera-pair-models-homography"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/0-obsah-gvg.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#epipolar-geometry-and-epipolar-constraint",
+      "type": "heading",
+      "label": "Epipolar geometry and epipolar constraint",
+      "anchor": "#epipolar-geometry-and-epipolar-constraint"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/0-obsah-gvg.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#3d-scene-reconstruction-from-images",
+      "type": "heading",
+      "label": "3D scene reconstruction from images",
+      "anchor": "#3d-scene-reconstruction-from-images"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/0-obsah-gvg.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#homography-in-p2-and-the-4-point-algorithm",
+      "type": "heading",
+      "label": "Homography in P2 and the 4-point algorithm",
+      "anchor": "#homography-in-p2-and-the-4-point-algorithm"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/0-obsah-gvg.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#fundamental-matrix-and-the-7-point-algorithm",
+      "type": "heading",
+      "label": "Fundamental matrix and the 7-point algorithm",
+      "anchor": "#fundamental-matrix-and-the-7-point-algorithm"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/0-obsah-gvg.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#essential-matrix-and-the-5-point-algorithm",
+      "type": "heading",
+      "label": "Essential matrix and the 5-point algorithm",
+      "anchor": "#essential-matrix-and-the-5-point-algorithm"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/0-obsah-gvg.md",
+      "target": "doc:pocitacova-grafika/gvg/4-visual-odometry-and-slam.md",
+      "type": "wiki",
+      "label": "Visual odometry and SLAM",
+      "anchor": ""
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#camera-pair-models-homography",
+      "type": "heading",
+      "label": "Camera Pair Models: Homography",
+      "anchor": "#camera-pair-models-homography"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#epipolar-geometry-and-epipolar-constraint",
+      "type": "heading",
+      "label": "Epipolar geometry and epipolar constraint",
+      "anchor": "#epipolar-geometry-and-epipolar-constraint"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#fundamental-matrix-and-the-7-point-algorithm",
+      "type": "heading",
+      "label": "Fundamental matrix and the 7-point algorithm",
+      "anchor": "#fundamental-matrix-and-the-7-point-algorithm"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/databaze-2/0-obsah-predmetu-databaze-2.md",
@@ -10506,6 +10724,54 @@
       "label": "obsahuje nadpis"
     },
     {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#camera-resection-from-six-points",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#exterior-orientation-from-three-points",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#camera-pair-models-homography",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#epipolar-geometry-and-epipolar-constraint",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#3d-scene-reconstruction-from-images",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#homography-in-p2-and-the-4-point-algorithm",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#fundamental-matrix-and-the-7-point-algorithm",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md",
+      "target": "heading:pocitacova-grafika/gvg/2-image-projection-and-perspective-camera-model-for-3d-reconstruction.md#essential-matrix-and-the-5-point-algorithm",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
       "source": "doc:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md",
       "target": "heading:softwarove-inzenyrstvi/databaze-2/1-uvod-do-big-data-a-nosql-databazi.md#big-data",
       "type": "contains",
@@ -12103,9 +12369,9 @@
     }
   ],
   "stats": {
-    "documents": 86,
-    "headings": 302,
+    "documents": 87,
+    "headings": 310,
     "missing": 1,
-    "links": 951
+    "links": 971
   }
 }
