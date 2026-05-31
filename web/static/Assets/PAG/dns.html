@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DNS algoritmus — animace</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
+h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
+.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
+.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
+.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
+select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
+input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
+.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
+.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
+canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
+.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 56px; }
+.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
+.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
+.deriv-lbl { color: #888; min-width: 140px; font-size: 0.9em; }
+.deriv-val { color: #c3e88d; font-family: monospace; }
+.highlight { color: #0984e3; font-weight: 700; }
+.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
+.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
+.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; }
+.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
+.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+</style>
+</head>
+<body>
+<h1>DNS algoritmus — 3D rozložení pro C = A·B</h1>
+
+<div class="main">
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="row">
+      <label>q (p = q³):</label>
+      <select id="qSel" onchange="reset()">
+        <option value="2" selected>q=2 (p=8)</option>
+        <option value="3">q=3 (p=27)</option>
+      </select>
+      <span style="color:#888;font-size:0.82em;" id="pInfo">Vrstva k: proc(i,j,k) = A[i][k]·B[k][j]</span>
+    </div>
+    <div class="row">
+      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
+      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
+      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
+      <button class="btn secondary" onclick="reset()">↺ Reset</button>
+      <label>Rychlost:</label>
+      <input type="range" id="speed" min="400" max="2500" value="1100" step="100" style="width:70px;">
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
+  </div>
+
+  <canvas id="cv" height="360"></canvas>
+  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
+</div>
+
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <h3>Fáze algoritmu</h3>
+    <div style="font-size:0.82em; line-height:1.8; color:#d4d4d4;">
+      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:4px;" id="phase0Div">
+        <strong style="color:#888;">0. Init:</strong> proc(i,j,0) má A[i][0..q-1], proc(0,j,k) má B[k][j]
+      </div>
+      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:4px;" id="phase1Div">
+        <strong>1. Broadcast A podél k:</strong> proc(i,k,0)→(i,k,*) — všechny vrstvy k dostanou A[i][k]
+      </div>
+      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:4px;" id="phase2Div">
+        <strong>2. Broadcast B podél i:</strong> proc(0,j,k)→(*,j,k) — všechny řádky dostanou B[k][j]
+      </div>
+      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:4px;" id="phase3Div">
+        <strong>3. Lokální násobení:</strong> proc(i,j,k) = A[i][k] · B[k][j]
+      </div>
+      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;" id="phase4Div">
+        <strong>4. Redukce podél k:</strong> C[i][j] = Σ_k A[i][k]·B[k][j] sečte do proc(i,j,0)
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Odvození složitosti</h3>
+    <div class="deriv-box">
+      <div class="deriv-row"><span class="deriv-lbl">3D mřížka:</span><span class="deriv-val" id="dGrid">q×q×q</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Procesory:</span><span class="deriv-val" id="dP">p = q³</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div class="deriv-row"><span class="deriv-lbl">Broadcast A:</span><span class="deriv-val">(tₛ+tᵥ)·log q</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Broadcast B:</span><span class="deriv-val">(tₛ+tᵥ)·log q</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Redukce:</span><span class="deriv-val">(tₛ+tᵥ)·log q</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">T_P (n³ proc):</span><span class="deriv-val highlight">Θ(log n)</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div style="color:#888;font-size:0.78em;margin-bottom:4px;">Pro p = q³ &lt; n³ (bloky n/q × n/q):</div>
+      <div class="deriv-row"><span class="deriv-lbl">T_P:</span><span class="deriv-val" id="dTp">n²/p^{2/3} + ...</span></div>
+      <div class="deriv-row highlight"><span class="deriv-lbl">Isoefektivita:</span><span class="deriv-val">Θ(p^{3/2})</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Max p:</span><span class="deriv-val" id="dMaxP">O(n³/log³n)</span></div>
+      <div style="color:#888;font-size:0.78em;margin-top:4px;">⬆ Klíčový rozdíl od Cannona: DNS může použít O(n³) procesorů, Cannon jen O(n²)!</div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat blue"><div class="stat-lbl">Fáze</div><div class="stat-val" id="sCurStep">0/0</div></div>
+      <div class="stat green"><div class="stat-lbl">Aktivní proc.</div><div class="stat-val" id="sActive">0</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// Phase colors and state
+let q = 2;
+let curStep = -1, playing = false, playTimer3 = null;
+const steps = [];
+
+const PHASE_COLORS = ['#0984e3','#e17055','#00b894','#a29bfe'];
+const A_COLORS = ['#0984e3','#e17055','#00b894','#a29bfe','#fdcb6e','#fd79a8'];
+const B_COLORS = ['#fd79a8','#55efc4','#6c5ce7','#fdcb6e','#fab1a0','#74b9ff'];
+
+// DNS state: for each proc(i,j,k):
+//   hasA[i][k] = which procs in (i,*,k) have A[i][k]
+//   hasB[j][k] = which procs in (*,j,k) have B[k][j]
+//   computed[i][j][k] = whether A[i][k]*B[k][j] done
+//   reduced[i][j] = whether C[i][j] is fully summed
+
+let hasA, hasB, computed, reduced;
+
+function initState() {
+  // hasA[i][k] = set of proc-row-indices who have A[i][k] (initially just proc (i,k,0))
+  hasA = Array.from({length:q},()=>Array.from({length:q},()=>new Set([0])));
+  // hasB[k][j] = set of proc-col-indices who have B[k][j] (initially just proc (0,j,k) → i=0)
+  hasB = Array.from({length:q},()=>Array.from({length:q},()=>new Set([0])));
+  computed = Array.from({length:q},()=>Array.from({length:q},()=>Array(q).fill(false)));
+  reduced = Array.from({length:q},()=>Array(q).fill(false));
+}
+
+function buildSteps() {
+  steps.length=0;
+  steps.push({ phase:1, desc:`Broadcast A podél třetí dimenze (k): proc(i,k,0) pošle A[i][k] všem proc(i,k,*). Po skončení: každá "tyč" (i,k,*) drží A[i][k]. Čas: (tₛ+tᵥ)·log q` });
+  steps.push({ phase:2, desc:`Broadcast B podél první dimenze (i): proc(0,j,k) pošle B[k][j] všem proc(*,j,k). Po skončení: každá "tyč" (*,j,k) drží B[k][j]. Čas: (tₛ+tᵥ)·log q` });
+  steps.push({ phase:3, desc:`Lokální násobení: proc(i,j,k) spočítá A[i][k] · B[k][j] = dílčí součin. Všechny q³ procesorů pracují souběžně. Čas: Θ(1)` });
+  steps.push({ phase:4, desc:`Redukce podél třetí dimenze (k): C[i][j] = Σ_k A[i][k]·B[k][j] se sečte ke proc(i,j,0). Čas: (tₛ+tᵥ)·log q. Výsledek C leží v rovině k=0.` });
+}
+
+function applyStep(idx) {
+  curStep = idx;
+  const ph = steps[idx].phase;
+  if (ph===1) { for (let i=0;i<q;i++) for (let k=0;k<q;k++) { for(let l=0;l<q;l++) hasA[i][k].add(l); } }
+  else if (ph===2) { for (let k=0;k<q;k++) for (let j=0;j<q;j++) { for(let l=0;l<q;l++) hasB[k][j].add(l); } }
+  else if (ph===3) { for (let i=0;i<q;i++) for (let j=0;j<q;j++) for (let k=0;k<q;k++) computed[i][j][k]=true; }
+  else if (ph===4) { for (let i=0;i<q;i++) for (let j=0;j<q;j++) reduced[i][j]=true; }
+  updateUI(); drawFrame();
+}
+
+function stepFwd() { if (curStep+1<steps.length) applyStep(curStep+1); }
+function stepBack() {
+  if (curStep>0) { initState(); for(let i=0;i<curStep;i++){const ph=steps[i].phase;applyPhaseSilent(ph);} curStep--; updateUI(); drawFrame(); }
+  else { initState(); curStep=-1; updateUI(); drawFrame(); }
+}
+function applyPhaseSilent(ph) {
+  if (ph===1) { for (let i=0;i<q;i++) for (let k=0;k<q;k++) { for(let l=0;l<q;l++) hasA[i][k].add(l); } }
+  else if (ph===2) { for (let k=0;k<q;k++) for (let j=0;j<q;j++) { for(let l=0;l<q;l++) hasB[k][j].add(l); } }
+  else if (ph===3) { for (let i=0;i<q;i++) for (let j=0;j<q;j++) for (let k=0;k<q;k++) computed[i][j][k]=true; }
+  else if (ph===4) { for (let i=0;i<q;i++) for (let j=0;j<q;j++) reduced[i][j]=true; }
+}
+
+function updateUI() {
+  const total=steps.length;
+  document.getElementById('progress').style.width=(total>0?(curStep+1)/total*100:0)+'%';
+  document.getElementById('sCurStep').textContent=`${Math.max(0,curStep+1)}/${total}`;
+
+  let active=0;
+  if (curStep>=0) {
+    const ph=steps[curStep].phase;
+    if (ph===1||ph===2) active=q*q; // all procs in a layer
+    else if (ph===3) active=q*q*q;
+    else active=q*q;
+  }
+  document.getElementById('sActive').textContent=active||'—';
+
+  if (curStep<0) {
+    document.getElementById('stepInfo').innerHTML=`<strong>DNS algoritmus</strong>: matice C = A·B pomocí 3D mřížky q×q×q = ${q}³ = ${q*q*q} procesorů.<br>Proc(i,j,k) bude počítat <em>A[i][k] · B[k][j]</em> — jeden člen sumy pro C[i][j].`;
+  } else {
+    const st=steps[curStep];
+    document.getElementById('stepInfo').innerHTML=`<strong>Fáze ${st.phase}/4:</strong> ${st.desc}`;
+  }
+
+  // Highlight phases
+  for (let p=0;p<4;p++) {
+    const el=document.getElementById(`phase${p}Div`);
+    if (curStep>=0 && steps[curStep].phase===p+1) {
+      el.style.borderLeftColor=PHASE_COLORS[p]; el.style.background='#1a1a2e';
+    } else if (curStep>=p) {
+      el.style.borderLeftColor='#00b89466'; el.style.background='transparent';
+    } else {
+      el.style.borderLeftColor='#3c3c3c'; el.style.background='transparent';
+    }
+  }
+
+  document.getElementById('dGrid').textContent=`${q}×${q}×${q}`;
+  document.getElementById('dP').textContent=`p = ${q}³ = ${q*q*q}`;
+  document.getElementById('dTp').textContent=`n²/p^{2/3} + (n/q)·log q`;
+  document.getElementById('dMaxP').textContent=`O(n³/log³n)`;
+}
+
+const cv=document.getElementById('cv'); const ctx=cv.getContext('2d');
+
+function drawFrame() {
+  const W=cv.width=cv.offsetWidth, H=cv.height=360;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
+
+  // Isometric-ish 3D cube projection: show q layers of q×q grids
+  // Layout: show q 2D planes side by side, labeled as "layer k"
+  const layers = q;
+  const gridN = q;
+  const padX = 20, padY = 30;
+  const availW = W - 2*padX;
+  const availH = H - padY - 60;
+  const layerW = Math.floor(availW / layers) - 10;
+  const cellW = Math.floor(layerW / gridN);
+
+  const phase = curStep>=0 ? steps[curStep].phase : 0;
+
+  for (let k=0; k<q; k++) {
+    const layerX = padX + k*(layerW + 10);
+    const layerY = padY + 14;
+
+    // Layer header
+    ctx.font='bold 11px sans-serif'; ctx.fillStyle='#9cdcfe'; ctx.textAlign='center';
+    ctx.fillText(`Vrstva k=${k}`, layerX + layerW/2, padY + 10);
+
+    for (let i=0; i<q; i++) {
+      for (let j=0; j<q; j++) {
+        const x = layerX + j*cellW;
+        const y = layerY + i*cellW;
+
+        // Determine cell state
+        const hasAik = hasA[i][k].size === q; // fully broadcast A[i][k]
+        const hasBkj = hasB[k][j].size === q; // fully broadcast B[k][j]
+        const isComputed = computed[i][j][k];
+        const isReduced = k===0 && reduced[i][j];
+
+        let bg = '#2a2a2a';
+        if (isReduced) bg = '#003322';
+        else if (isComputed) bg = '#1a2a1a';
+        else if (hasAik && hasBkj) bg = '#1a1a2e';
+
+        ctx.fillStyle=bg; ctx.fillRect(x+1,y+1,cellW-2,cellW-2);
+        let border='#3c3c3c';
+        if (isReduced) border='#00b894';
+        else if (isComputed) border='#00b89466';
+        else if (phase===1&&hasAik) border='#0984e3';
+        else if (phase===2&&hasBkj) border='#e17055';
+        ctx.strokeStyle=border; ctx.lineWidth=1.5;
+        ctx.strokeRect(x+1,y+1,cellW-2,cellW-2);
+
+        const cx2=x+cellW/2, cy2=y+cellW/2;
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+
+        // Show A and B indicators
+        if (cellW >= 28) {
+          // A[i][k] indicator (top-left mini)
+          if (hasAik || (k===0&&i<q)) {
+            ctx.fillStyle=A_COLORS[i%A_COLORS.length]+(hasAik?'cc':'44');
+            ctx.fillRect(x+2,y+2,cellW/2-2,cellW/2-2);
+            ctx.fillStyle='#fff'; ctx.font=`${Math.max(7,cellW/4-1)}px monospace`;
+            ctx.fillText(`A${i}${k}`, x+2+(cellW/2-2)/2, y+2+(cellW/2-2)/2);
+          }
+          // B[k][j] indicator (bottom-right mini)
+          if (hasBkj || (i===0&&j<q)) {
+            ctx.fillStyle=B_COLORS[j%B_COLORS.length]+(hasBkj?'cc':'44');
+            ctx.fillRect(x+cellW/2,y+cellW/2,cellW/2-2,cellW/2-2);
+            ctx.fillStyle='#fff'; ctx.font=`${Math.max(7,cellW/4-1)}px monospace`;
+            ctx.fillText(`B${k}${j}`, x+cellW/2+(cellW/2-2)/2, y+cellW/2+(cellW/2-2)/2);
+          }
+        }
+
+        if (isComputed || isReduced) {
+          ctx.fillStyle=isReduced?'#00b894':'#c3e88d'; ctx.font=`bold ${Math.max(9,cellW/3)}px monospace`;
+          ctx.fillText(isReduced?'C':'×', cx2, cy2);
+        }
+
+        // Proc label
+        ctx.fillStyle='#555'; ctx.font=`${Math.max(7,cellW/5)}px sans-serif`;
+        ctx.fillText(`${i},${j}`, cx2, y+cellW-6);
+      }
+    }
+
+    // Arrows for broadcast phases
+    if (phase===1 && k>0) {
+      // A broadcast from k=0 to k: show arrow pointing right
+      const arrowY=layerY+layerW/2;
+      ctx.beginPath();
+      ctx.moveTo(padX+(k-1)*(layerW+10)+layerW+4, arrowY);
+      ctx.lineTo(padX+k*(layerW+10)-4, arrowY);
+      ctx.strokeStyle='#0984e380'; ctx.lineWidth=2; ctx.stroke();
+    }
+    if (phase===4 && k>0) {
+      // Reduce: arrows pointing back to k=0
+      const arrowY=layerY+layerW/2;
+      ctx.beginPath();
+      ctx.moveTo(padX+k*(layerW+10)-4, arrowY);
+      ctx.lineTo(padX+(k-1)*(layerW+10)+layerW+4, arrowY);
+      ctx.strokeStyle='#00b89480'; ctx.lineWidth=2; ctx.stroke();
+      ctx.beginPath();ctx.moveTo(padX+(k-1)*(layerW+10)+layerW+8,arrowY);
+      ctx.lineTo(padX+(k-1)*(layerW+10)+layerW+4+8,arrowY-4);
+      ctx.lineTo(padX+(k-1)*(layerW+10)+layerW+4+8,arrowY+4);ctx.closePath();
+      ctx.fillStyle='#00b894';ctx.fill();
+    }
+  }
+
+  // Legend
+  const legY=padY+14+q*cellW+12;
+  ctx.font='10px sans-serif'; ctx.textAlign='left'; ctx.fillStyle='#888';
+  ctx.fillText(`A bloky: `, padX, legY);
+  for (let i=0;i<q;i++) {
+    ctx.fillStyle=A_COLORS[i]; ctx.fillRect(padX+55+i*50,legY-9,12,12);
+    ctx.fillStyle='#888'; ctx.fillText(`A[${i}][k]`, padX+70+i*50, legY);
+  }
+  ctx.fillText(`B bloky: `, padX+55+q*50+20, legY);
+  for (let j=0;j<q;j++) {
+    ctx.fillStyle=B_COLORS[j]; ctx.fillRect(padX+55+q*50+75+j*50,legY-9,12,12);
+    ctx.fillStyle='#888'; ctx.fillText(`B[k][${j}]`, padX+55+q*50+90+j*50, legY);
+  }
+  const legY2=legY+18;
+  ctx.fillStyle='#555'; ctx.font='9px sans-serif';
+  ctx.fillText('Buňka (i,j,k) = proc(i,j,k). Čísla vlevo nahoře = blok A, vpravo dole = blok B. × = vynásobeno. C = zredukováno.', padX, legY2);
+}
+
+let playTimer4=null;
+function togglePlay() {
+  playing=!playing;
+  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
+  if(playing){const go=()=>{if(curStep+1<steps.length){applyStep(curStep+1);playTimer4=setTimeout(go,parseInt(document.getElementById('speed').value));}else{playing=false;document.getElementById('playBtn').textContent='▶ Přehrát';}};go();}
+  else clearTimeout(playTimer4);
+}
+
+function reset() {
+  clearTimeout(playTimer4); playing=false; document.getElementById('playBtn').textContent='▶ Přehrát';
+  q=parseInt(document.getElementById('qSel').value);
+  document.getElementById('pInfo').textContent=`q=${q}, p=${q}³=${q*q*q} proc, proc(i,j,k)=A[i][k]·B[k][j]`;
+  initState(); buildSteps(); curStep=-1; updateUI(); drawFrame();
+}
+
+reset();
+</script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaussova eliminace — animace</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
+h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
+.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
+.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
+.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
+select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
+input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
+.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
+.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
+canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
+.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 56px; }
+.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
+.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
+.deriv-lbl { color: #888; min-width: 140px; font-size: 0.9em; }
+.deriv-val { color: #c3e88d; font-family: monospace; }
+.highlight { color: #0984e3; font-weight: 700; }
+.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
+.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
+.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; }
+.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
+.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+</style>
+</head>
+<body>
+<h1>Gaussova eliminace — 1D sloupcové rozložení s pipelinem</h1>
+
+<div class="main">
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <div class="row">
+      <label>Velikost:</label>
+      <select id="nSel" onchange="reset()">
+        <option value="6" selected>n=6, p=3</option>
+        <option value="8">n=8, p=4</option>
+        <option value="12">n=12, p=4</option>
+      </select>
+      <span style="color:#888;font-size:0.82em;" id="pInfo">Každý proc vlastní n/p sloupců</span>
+    </div>
+    <div class="row">
+      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
+      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
+      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
+      <button class="btn secondary" onclick="reset()">↺ Reset</button>
+      <label>Rychlost:</label>
+      <input type="range" id="speed" min="300" max="2000" value="900" step="100" style="width:70px;">
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
+  </div>
+
+  <canvas id="cv" height="360"></canvas>
+  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
+</div>
+
+<div>
+  <div class="panel" style="margin-bottom:10px;">
+    <h3>Timeline pipeline</h3>
+    <div style="font-size:0.78em;color:#888;margin-bottom:6px;">Každý řádek = jeden procesor. Barva = aktivita v daném kroku.</div>
+    <canvas id="timeline" height="90"></canvas>
+  </div>
+
+  <div class="panel">
+    <h3>Odvození složitosti</h3>
+    <div class="deriv-box">
+      <div class="deriv-row"><span class="deriv-lbl">Rozložení:</span><span class="deriv-val" id="dLayout">1D sloupcové</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Proc p vlastní:</span><span class="deriv-val" id="dOwns">n/p sloupců</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div style="color:#888;font-size:0.78em;margin-bottom:4px;">Bez pipelinu: T_P = n · (tₛ + tᵥ·n + n/p) = O(n²) pro tₛ=0</div>
+      <div style="color:#888;font-size:0.78em;margin-bottom:4px;">S pipelinem: všechny kroky se překrývají:</div>
+      <div class="deriv-row"><span class="deriv-lbl">Krok k (broadcast):</span><span class="deriv-val">tₛ + tᵥ·n</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Počet kroků:</span><span class="deriv-val" id="dSteps">n = 6</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Výpočet/krok:</span><span class="deriv-val">n/p eliminací</span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div class="deriv-row highlight"><span class="deriv-lbl">T_P celkem:</span><span class="deriv-val">O(n²/p + n)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Pro p=n:</span><span class="deriv-val">O(n) = O(√T_S)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Cost = p·T_P:</span><span class="deriv-val">O(n³) = Θ(T_S) ✓</span></div>
+      <div class="deriv-row highlight"><span class="deriv-lbl">→ Cenově optimální!</span><span class="deriv-val" id="dMaxP"></span></div>
+      <hr style="border-color:#444;margin:5px 0;">
+      <div class="deriv-row"><span class="deriv-lbl">T_o (overhead):</span><span class="deriv-val">O(np)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Isoefektivita:</span><span class="deriv-val">Θ(p²)</span></div>
+      <div class="deriv-row"><span class="deriv-lbl">Max p:</span><span class="deriv-val">O(n)</span></div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat blue"><div class="stat-lbl">Krok</div><div class="stat-val" id="sCurStep">0/0</div></div>
+      <div class="stat green"><div class="stat-lbl">Nulováno</div><div class="stat-val" id="sElim">0</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const BLOCK_COLORS = ['#0984e3','#e17055','#00b894','#a29bfe','#fdcb6e','#fd79a8','#55efc4'];
+
+let n=6, p=3;
+let steps=[], curStep=-1;
+let playing=false, playTimer5=null;
+
+// Matrix state: zeroed[row][col] = true if eliminated, pivotDone[k] = true if step k broadcast done, activated[col] = true if col participating in current step
+let eliminated, pivotBroadcast, currentPivotRow;
+
+// Timeline: timelineData[proc][step] = 'idle'|'bcast'|'elim'
+let timelineData;
+
+function colToProc(col) { return Math.floor(col * p / n); }
+
+function initState() {
+  eliminated = Array.from({length:n},()=>Array(n).fill(false));
+  // Mark lower-left triangle as zero from start (below diagonal)
+  pivotBroadcast = Array(n).fill(false);
+  currentPivotRow = -1;
+  timelineData = Array.from({length:p},()=>Array(n).fill('idle'));
+}
+
+function buildSteps() {
+  steps=[];
+  // Each step k corresponds to eliminating column k:
+  // - Proc owning col k broadcasts pivot row k to all procs with cols > k
+  // - All procs right of k update their columns (eliminate row k)
+  // With pipelining: we show them overlapping
+  for (let k=0; k<n-1; k++) {
+    const owner = colToProc(k);
+    steps.push({
+      k,
+      pivotRow: k,
+      owner,
+      desc: `Krok ${k+1}: Proc ${owner} vlastní sloupec ${k} — broadcastuje řádek ${k} (pivot) doprava. ` +
+        `Procs ${owner}..${p-1} eliminují řádek ${k} ze svých sloupců > ${k}. ` +
+        (k>0 ? `Pipeline: Proc ${Math.min(owner+1,p-1)} již přijímá pivot řádku ${k+1} paralelně!` : ''),
+      elimCols: Array.from({length:n},(_,c)=>c).filter(c=>c>k)
+    });
+  }
+}
+
+function applyStep(idx) {
+  curStep=idx;
+  const st=steps[idx];
+  pivotBroadcast[st.k]=true;
+  // Eliminate all cells below pivot in cols > k
+  for (let r=st.k+1; r<n; r++) {
+    for (let c=st.k+1; c<n; c++) {
+      if (!eliminated[r][c]) { /* not yet all—just mark pivot row cells as eliminated */ }
+    }
+    eliminated[r][st.k]=true;
+  }
+  // Mark the pivot col itself (everything below diagonal) as eliminated
+  currentPivotRow=st.k;
+  updateUI(); drawFrame(); drawTimeline();
+}
+
+function stepFwd() { if (curStep+1<steps.length) applyStep(curStep+1); }
+function stepBack() {
+  if (curStep>0) { initState(); for(let i=0;i<=curStep-1;i++) applyStepSilent(steps[i]); curStep--; updateUI(); drawFrame(); drawTimeline(); }
+  else { initState(); curStep=-1; updateUI(); drawFrame(); drawTimeline(); }
+}
+function applyStepSilent(st) {
+  pivotBroadcast[st.k]=true;
+  for (let r=st.k+1; r<n; r++) eliminated[r][st.k]=true;
+  currentPivotRow=st.k;
+}
+
+function updateUI() {
+  const total=steps.length;
+  document.getElementById('progress').style.width=(total>0?(curStep+1)/total*100:0)+'%';
+  document.getElementById('sCurStep').textContent=`${Math.max(0,curStep+1)}/${total}`;
+
+  let elimCount=0;
+  for (let r=0;r<n;r++) for (let c=0;c<n;c++) if (eliminated[r][c]) elimCount++;
+  document.getElementById('sElim').textContent=elimCount;
+
+  if (curStep<0) {
+    document.getElementById('stepInfo').innerHTML=`<strong>Gaussova eliminace</strong> s 1D sloupcovým rozložením: p=${p} procesorů, každý vlastní ${n/p} sloupců.<br>Procesory jsou obarveny podle vlastníka sloupce.`;
+  } else {
+    document.getElementById('stepInfo').innerHTML=`<strong>Krok ${curStep+1}/${total}:</strong> ${steps[curStep].desc}`;
+  }
+
+  document.getElementById('dLayout').textContent='1D sloupcové (cyclic ok)';
+  document.getElementById('dOwns').textContent=`${n/p} sloupců/proc`;
+  document.getElementById('dSteps').textContent=`n-1 = ${n-1}`;
+  document.getElementById('dMaxP').textContent=`Max p = O(n) = ${n}`;
+}
+
+const cv=document.getElementById('cv'); const ctx=cv.getContext('2d');
+
+function drawFrame() {
+  const W=cv.width=cv.offsetWidth, H=cv.height=360;
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
+
+  const margin=28;
+  const availW=W-2*margin-80; // leave room for proc labels
+  const availH=H-margin-80; // leave room for timeline-like bar below
+  const cellW=Math.min(Math.floor(availW/n), Math.floor(availH/n));
+  const matW=cellW*n;
+  const offX=margin+80; // proc label space
+  const offY=margin+20;
+
+  // Proc labels on left
+  ctx.font='11px monospace'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  for (let pr=0;pr<p;pr++) {
+    const startCol=Math.floor(pr*n/p), endCol=Math.floor((pr+1)*n/p)-1;
+    const yMid=offY+(startCol+endCol)/2*cellW+cellW/2; // approximate midpoint of owned row range
+    ctx.fillStyle=BLOCK_COLORS[pr];
+    ctx.fillText(`P${pr}`, offX-6, yMid);
+  }
+
+  // Column ownership bar (top)
+  for (let c=0;c<n;c++) {
+    const pr=colToProc(c);
+    ctx.fillStyle=BLOCK_COLORS[pr]+'44';
+    ctx.fillRect(offX+c*cellW,offY-14,cellW,12);
+    ctx.strokeStyle=BLOCK_COLORS[pr]; ctx.lineWidth=1;
+    ctx.strokeRect(offX+c*cellW,offY-14,cellW,12);
+    ctx.fillStyle=BLOCK_COLORS[pr]; ctx.font='8px monospace'; ctx.textAlign='center';
+    ctx.fillText(`P${pr}`,offX+c*cellW+cellW/2,offY-8);
+  }
+
+  // Draw matrix cells
+  for (let r=0;r<n;r++) {
+    for (let c=0;c<n;c++) {
+      const x=offX+c*cellW, y=offY+r*cellW;
+      const owner=colToProc(c);
+      const isElim=eliminated[r][c]||(r>c); // lower triangle is zero
+      const isPivotRow=curStep>=0&&r===steps[curStep].k;
+      const isPivotCol=curStep>=0&&c===steps[curStep].k;
+      const isDone=c<=(curStep>=0?steps[curStep].k-1:curStep);
+      const isDiag=r===c;
+
+      let bg='#1e2a1e';
+      if (isDiag && c<=Math.max(0,curStep)) bg='#0d2030'; // diagonal pivot
+      else if (r<c) bg='#252525'; // upper triangle (active)
+      else if (r===c) bg='#1a2a1e';
+      else bg='#1a1a1a'; // lower triangle (zeros)
+
+      if (isPivotRow && c>=(curStep>=0?steps[curStep].k:0)) bg='#1a1a2e';
+      if (isPivotCol && r>=(curStep>=0?steps[curStep].k:0)) bg='#0d2030';
+
+      ctx.fillStyle=bg; ctx.fillRect(x+1,y+1,cellW-2,cellW-2);
+
+      let border='#2a2a2a';
+      if (isDiag) border='#569cd680';
+      if (isPivotRow && c>=(curStep>=0?steps[curStep].k:0)) border='#0984e3';
+      if (isPivotCol) border='#a29bfe';
+      ctx.strokeStyle=border; ctx.lineWidth=1; ctx.strokeRect(x+1,y+1,cellW-2,cellW-2);
+
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      if (r>c) {
+        // Zero (eliminated)
+        ctx.fillStyle='#444'; ctx.font=`${Math.max(8,cellW/2.5)}px monospace`;
+        ctx.fillText('0',x+cellW/2,y+cellW/2);
+      } else if (isDiag) {
+        ctx.fillStyle='#9cdcfe'; ctx.font=`bold ${Math.max(8,cellW/2.5)}px monospace`;
+        ctx.fillText('p',x+cellW/2,y+cellW/2);
+      } else if (isPivotRow && c>r) {
+        ctx.fillStyle='#0984e3'; ctx.font=`bold ${Math.max(8,cellW/2.8)}px monospace`;
+        ctx.fillText('→',x+cellW/2,y+cellW/2);
+      } else {
+        ctx.fillStyle=BLOCK_COLORS[owner]+'aa'; ctx.font=`${Math.max(7,cellW/3)}px monospace`;
+        ctx.fillText('×',x+cellW/2,y+cellW/2);
+      }
+    }
+  }
+
+  // Broadcast arrows: from pivot proc to all procs right
+  if (curStep>=0) {
+    const k=steps[curStep].k;
+    const x=offX+k*cellW+cellW/2;
+    const y=offY+k*cellW+cellW/2;
+    // Horizontal arrow along pivot row
+    ctx.beginPath();
+    ctx.moveTo(x,y); ctx.lineTo(offX+n*cellW,y);
+    ctx.strokeStyle='#0984e3cc'; ctx.lineWidth=2; ctx.setLineDash([4,3]); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(offX+n*cellW,y);
+    ctx.lineTo(offX+n*cellW-8,y-4);ctx.lineTo(offX+n*cellW-8,y+4);ctx.closePath();
+    ctx.fillStyle='#0984e3';ctx.fill();
+    // Label
+    ctx.fillStyle='#0984e3'; ctx.font='bold 10px sans-serif'; ctx.textAlign='left';
+    ctx.fillText(`broadcast řádek ${k}`, offX+n*cellW+4, y+1);
+  }
+
+  // Column separator lines by proc
+  for (let pr=1;pr<p;pr++) {
+    const col=Math.floor(pr*n/p);
+    ctx.beginPath();
+    ctx.moveTo(offX+col*cellW,offY-14); ctx.lineTo(offX+col*cellW,offY+n*cellW);
+    ctx.strokeStyle=BLOCK_COLORS[pr]+'66'; ctx.lineWidth=1.5; ctx.setLineDash([3,2]); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Pipeline info bar at bottom
+  const barY=offY+n*cellW+10;
+  ctx.fillStyle='#888'; ctx.font='9px sans-serif'; ctx.textAlign='left';
+  ctx.fillText('Pipeline: P₀ broadcastuje sloupec k, P₁ zároveň eliminuje & broadcastuje k+1, ... → každý krok Θ(n/p) eliminací', offX, barY+10);
+}
+
+function drawTimeline() {
+  const tc=document.getElementById('timeline'); const tctx=tc.getContext('2d');
+  const W=tc.width=tc.offsetWidth, H=tc.height=90;
+  tctx.clearRect(0,0,W,H); tctx.fillStyle='#252525'; tctx.fillRect(0,0,W,H);
+
+  const steps2=n-1;
+  const cellW2=Math.floor((W-60)/steps2);
+  const rowH=Math.floor((H-16)/p);
+  const offX2=60, offY2=8;
+
+  // Column labels
+  tctx.fillStyle='#666'; tctx.font='8px sans-serif'; tctx.textAlign='center';
+  for (let s=0;s<steps2;s++) tctx.fillText(`k${s}`, offX2+s*cellW2+cellW2/2, offY2-2);
+
+  // Row labels
+  for (let pr=0;pr<p;pr++) {
+    tctx.fillStyle=BLOCK_COLORS[pr]; tctx.font='bold 9px sans-serif'; tctx.textAlign='right';
+    tctx.fillText(`P${pr}`, offX2-6, offY2+pr*rowH+rowH/2+3);
+  }
+
+  // Timeline cells
+  for (let pr=0;pr<p;pr++) {
+    const startCol=Math.floor(pr*n/p), endCol=Math.floor((pr+1)*n/p)-1;
+    for (let s=0;s<steps2;s++) {
+      const x=offX2+s*cellW2, y=offY2+pr*rowH;
+      // pr is broadcasting at step s if it owns col s
+      const isBcast = (s>=startCol && s<=endCol);
+      // pr is eliminating at step s if it has cols after s
+      const isElim = (endCol > s && s < startCol);
+      const isActive = curStep >= 0 && s <= curStep;
+
+      let color='#2a2a2a';
+      if (s>=startCol && s<=endCol && isActive) color=BLOCK_COLORS[pr]+'cc'; // broadcasting
+      else if (endCol>s && s<startCol && isActive) color=BLOCK_COLORS[pr]+'44'; // eliminating
+      else if (!isActive) color='#1e1e1e';
+
+      tctx.fillStyle=color; tctx.fillRect(x+1,y+1,cellW2-2,rowH-2);
+      // Highlight current step
+      if (curStep===s) { tctx.strokeStyle='#fff4'; tctx.lineWidth=1; tctx.strokeRect(x+1,y+1,cellW2-2,rowH-2); }
+
+      if (cellW2>10) {
+        tctx.fillStyle='#888'; tctx.font=`${Math.max(7,rowH/2-2)}px sans-serif`; tctx.textAlign='center';
+        const lbl=(s>=startCol&&s<=endCol)?'B':'E';
+        if (isActive) { tctx.fillStyle='#fff'; tctx.fillText(lbl, x+cellW2/2, y+rowH/2+3); }
+      }
+    }
+  }
+  tctx.fillStyle='#666'; tctx.font='8px sans-serif'; tctx.textAlign='left';
+  tctx.fillText('B=Broadcast, E=Eliminace', offX2, H-2);
+}
+
+let playTimer6=null;
+function togglePlay() {
+  playing=!playing;
+  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
+  if(playing){const go=()=>{if(curStep+1<steps.length){applyStep(curStep+1);playTimer6=setTimeout(go,parseInt(document.getElementById('speed').value));}else{playing=false;document.getElementById('playBtn').textContent='▶ Přehrát';}};go();}
+  else clearTimeout(playTimer6);
+}
+
+function reset() {
+  clearTimeout(playTimer6); playing=false; document.getElementById('playBtn').textContent='▶ Přehrát';
+  const opt=document.getElementById('nSel').value.split(',');
+  n=parseInt(opt[0]); p=parseInt(opt.length>1?opt[1]:Math.floor(n/2));
+  // Parse from select option value
+  const sel=document.getElementById('nSel');
+  const v=sel.options[sel.selectedIndex].value;
+  if (v==='6'){n=6;p=3;} else if (v==='8'){n=8;p=4;} else if (v==='12'){n=12;p=4;}
+  document.getElementById('pInfo').textContent=`p=${p}, každý proc vlastní ${n/p} sloupců`;
+  initState(); buildSteps(); curStep=-1; updateUI(); drawFrame(); drawTimeline();
+}
+
+reset();
+window.addEventListener('resize',()=>{drawFrame();drawTimeline();});
+</script>
+</body>
+</html>
