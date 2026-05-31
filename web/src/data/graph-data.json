@@ -11,8 +11,8 @@
       "generatedRel": "pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
       "summary": "Kapitoly 1. Rastrová grafika1. Rastrová grafika - Základy rastrové grafiky1. Rastrová grafika - Algoritmy pro kreslení přímek1. Rastrová grafika - Algoritmy vyplňování polygonů1. Rastrová grafika - Ořezávání (Clipping)1.",
       "incoming": 0,
-      "outgoing": 34,
-      "degree": 34
+      "outgoing": 10,
+      "degree": 10
     },
     {
       "id": "doc:pocitacova-grafika/apg/1-rastrova-grafika.md",
@@ -23,10 +23,10 @@
       "url": "/pocitacova-grafika/apg/rastrova-grafika",
       "sourceRel": "Počítačová grafika/APG/1. Rastrová grafika.md",
       "generatedRel": "pocitacova-grafika/apg/1-rastrova-grafika.md",
-      "summary": "Rastrová grafika > Ke státnicím: Raster graphics. Line drawing algorithms: DDA, Bresenham Algorithm. Filling algorithms: Polygon filling, Raster seed-based algorithms. Clipping lines and polygons. Základy rastrové grafik",
+      "summary": "🗺️ High-level mapa tématu Rastrová grafika ├── 1. Kreslení čar │ ├── DDA — float, přičítání směrnice k po hlavní ose │ └── Bresenham — int only, rozhodovací proměnná p │ ├── 2. Vyplňování oblastí │ ├── Scan-line filling",
       "incoming": 1,
-      "outgoing": 4,
-      "degree": 5
+      "outgoing": 0,
+      "degree": 1
     },
     {
       "id": "doc:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md",
@@ -37,10 +37,10 @@
       "url": "/pocitacova-grafika/apg/reprezentace-3d-objektu-a-scen",
       "sourceRel": "Počítačová grafika/APG/2. Reprezentace 3D objektů a scén.md",
       "generatedRel": "pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md",
-      "summary": "Reprezentace 3D objektů a scén > Ke státnicím: 3D object representations: boundary and volumetric representations, mesh representation (geometrical and topological data and their efficient encoding), representing a 3D sc",
+      "summary": "> Pokrývá všechny reprezentace: B-rep (polygonální síť, winged-edge, manifoldy, hladké povrchy, výšková pole, billboardy) + Volumetrická (voxely, octree) + Graf scény + CSG + Implicitní plochy. |---|---|---|---| |B-rep (",
       "incoming": 1,
-      "outgoing": 3,
-      "degree": 4
+      "outgoing": 0,
+      "degree": 1
     },
     {
       "id": "doc:pocitacova-grafika/apg/3-transformace.md",
@@ -51,10 +51,10 @@
       "url": "/pocitacova-grafika/apg/transformace",
       "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
       "generatedRel": "pocitacova-grafika/apg/3-transformace.md",
-      "summary": "Transformace > Ke státnicím: Transformations: representing transformations (matrices, quaternions), composing transformations, applying transformations, associated computational costs. > Transformace jsou základním nástr",
+      "summary": "Homogenní souřadnice Proč? Translace není lineární → nelze zapsat jako 3×3 matici. Přidáme 4. složku w → vše jako násobení 4×4. Bod: [x, y, z, 1] → translace funguje Směr: [x, y, z, 0] → translace se NEaplikuje (správně!",
       "incoming": 1,
-      "outgoing": 20,
-      "degree": 21
+      "outgoing": 2,
+      "degree": 3
     },
     {
       "id": "doc:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md",
@@ -65,10 +65,10 @@
       "url": "/pocitacova-grafika/apg/algoritmy-viditelnosti",
       "sourceRel": "Počítačová grafika/APG/4. Algoritmy viditelnosti.md",
       "generatedRel": "pocitacova-grafika/apg/4-algoritmy-viditelnosti.md",
-      "summary": "Algoritmy viditelnosti > Ke státnicím: z-buffer (princip, vlastnosti, problémy jako z-fighting), painterův algoritmus, BSP stromy, ray casting a srovnání se z-bufferem. Z-buffer Painterův algoritmus BSP stromy Ray castin",
+      "summary": "Úvod Problém: ze 3D scény s N objekty a P pixely najdi pro každý pixel nejbližší objekt. Dva přístupy: - Rastrové (image space): viditelnost per-pixel → z-buffer, ray casting, malířův alg. → O(P·N) - Vektorové (object sp",
       "incoming": 1,
-      "outgoing": 4,
-      "degree": 5
+      "outgoing": 0,
+      "degree": 1
     },
     {
       "id": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
@@ -79,10 +79,10 @@
       "url": "/pocitacova-grafika/apg/osvetlovaci-metody",
       "sourceRel": "Počítačová grafika/APG/5. Osvětlovací metody.md",
       "generatedRel": "pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "summary": "Osvětlovací metody > Ke státnicím: radiometrické veličiny a jejich vztahy, rovnice odrazivosti, BRDF (Phong, Cook-Torrance), renderovací rovnice, Whittedův ray tracing, path tracing, radiozita. Radiometrie Rovnice odrazi",
+      "summary": "1. Radiometrie Hlavní myšlenka: Abychom mohli fyzikálně správně simulovat světlo, potřebujeme přesně definovat, co měříme. Radiometrie je věda o měření elektromagnetického záření — definuje veličiny a vztahy mezi nimi. V",
       "incoming": 1,
-      "outgoing": 7,
-      "degree": 8
+      "outgoing": 0,
+      "degree": 1
     },
     {
       "id": "doc:pocitacova-grafika/apg/6-stiny.md",
@@ -93,10 +93,10 @@
       "url": "/pocitacova-grafika/apg/stiny",
       "sourceRel": "Počítačová grafika/APG/6. Stíny.md",
       "generatedRel": "pocitacova-grafika/apg/6-stiny.md",
-      "summary": "Stíny > Ke státnicím: shadow ray v ray tracingu, shadow map algoritmus – princip, artefakty (shadow acne, peter panning), opravy (bias, PCF). Stíny pomocí ray castingu Shadow map algoritmus",
+      "summary": "High-level přehled Stín vzniká, když bod na povrchu objektu nemá přímou viditelnost ke světelnému zdroji. Všechny algoritmy tento test řeší různými způsoby — buď přímo z pohledu bodu (objektový prostor), nebo nepřímo pře",
       "incoming": 1,
-      "outgoing": 2,
-      "degree": 3
+      "outgoing": 0,
+      "degree": 1
     },
     {
       "id": "doc:pocitacova-grafika/apg/7-texturovani.md",
@@ -107,10 +107,10 @@
       "url": "/pocitacova-grafika/apg/texturovani",
       "sourceRel": "Počítačová grafika/APG/7. Texturování.md",
       "generatedRel": "pocitacova-grafika/apg/7-texturovani.md",
-      "summary": "Texturování > Ke státnicím: UV mapování, typy textur (difúzní, bump map, normal map, alpha maska), MIP mapping – důvod a princip. Principy texture mappingu UV mapy Typy textur MIP mapping",
+      "summary": "High-level přehled Textura je levný podvod — místo modelování mikrostruktury povrchu geometrií (letokruhy, póry, spáry) uložíš data do obrazu a při renderování se \"podíváš\" do správného místa. Celý mechanismus stojí na i",
       "incoming": 1,
-      "outgoing": 4,
-      "degree": 5
+      "outgoing": 0,
+      "degree": 1
     },
     {
       "id": "doc:pocitacova-grafika/apg/8-shrnuti-pro-statnice.md",
@@ -1219,177 +1219,12 @@
       "degree": 5
     },
     {
-      "id": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#základy-rastrové-grafiky",
-      "title": "Základy rastrové grafiky",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/rastrova-grafika#základy-rastrové-grafiky",
-      "sourceRel": "Počítačová grafika/APG/1. Rastrová grafika.md",
-      "parentId": "doc:pocitacova-grafika/apg/1-rastrova-grafika.md",
-      "parentTitle": "1. Rastrová grafika",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#algoritmy-pro-kreslení-přímek",
-      "title": "Algoritmy pro kreslení přímek",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/rastrova-grafika#algoritmy-pro-kreslení-přímek",
-      "sourceRel": "Počítačová grafika/APG/1. Rastrová grafika.md",
-      "parentId": "doc:pocitacova-grafika/apg/1-rastrova-grafika.md",
-      "parentTitle": "1. Rastrová grafika",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#algoritmy-vyplňování-polygonů",
-      "title": "Algoritmy vyplňování polygonů",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/rastrova-grafika#algoritmy-vyplňování-polygonů",
-      "sourceRel": "Počítačová grafika/APG/1. Rastrová grafika.md",
-      "parentId": "doc:pocitacova-grafika/apg/1-rastrova-grafika.md",
-      "parentTitle": "1. Rastrová grafika",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#ořezávání-clipping",
-      "title": "Ořezávání (Clipping)",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/rastrova-grafika#ořezávání-clipping",
-      "sourceRel": "Počítačová grafika/APG/1. Rastrová grafika.md",
-      "parentId": "doc:pocitacova-grafika/apg/1-rastrova-grafika.md",
-      "parentTitle": "1. Rastrová grafika",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md#geometrická-a-topologická-data",
-      "title": "Geometrická a topologická data",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/reprezentace-3d-objektu-a-scen#geometrická-a-topologická-data",
-      "sourceRel": "Počítačová grafika/APG/2. Reprezentace 3D objektů a scén.md",
-      "parentId": "doc:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md",
-      "parentTitle": "2. Reprezentace 3D objektů a scén",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md#efektivní-kódování-meshů",
-      "title": "Efektivní kódování meshů",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/reprezentace-3d-objektu-a-scen#efektivní-kódování-meshů",
-      "sourceRel": "Počítačová grafika/APG/2. Reprezentace 3D objektů a scén.md",
-      "parentId": "doc:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md",
-      "parentTitle": "2. Reprezentace 3D objektů a scén",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md#graf-scény",
-      "title": "Graf scény",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/reprezentace-3d-objektu-a-scen#graf-scény",
-      "sourceRel": "Počítačová grafika/APG/2. Reprezentace 3D objektů a scén.md",
-      "parentId": "doc:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md",
-      "parentTitle": "2. Reprezentace 3D objektů a scén",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
       "id": "heading:pocitacova-grafika/apg/3-transformace.md#homogenní-souřadnice",
       "title": "Homogenní souřadnice",
       "type": "heading",
       "group": "Počítačová grafika",
       "folder": "Počítačová grafika/APG",
       "url": "/pocitacova-grafika/apg/transformace#homogenní-souřadnice",
-      "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
-      "parentId": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "parentTitle": "3. Transformace",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/3-transformace.md#základní-lineární-transformace",
-      "title": "Základní lineární transformace",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/transformace#základní-lineární-transformace",
-      "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
-      "parentId": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "parentTitle": "3. Transformace",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/3-transformace.md#transformace-normál",
-      "title": "Transformace normál",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/transformace#transformace-normál",
-      "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
-      "parentId": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "parentTitle": "3. Transformace",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/3-transformace.md#skládání-transformací",
-      "title": "Skládání transformací",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/transformace#skládání-transformací",
-      "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
-      "parentId": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "parentTitle": "3. Transformace",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/3-transformace.md#souřadnicové-systémy-a-renderovací-pipeline",
-      "title": "Souřadnicové systémy a renderovací pipeline",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/transformace#souřadnicové-systémy-a-renderovací-pipeline",
       "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
       "parentId": "doc:pocitacova-grafika/apg/3-transformace.md",
       "parentTitle": "3. Transformace",
@@ -1408,322 +1243,7 @@
       "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
       "parentId": "doc:pocitacova-grafika/apg/3-transformace.md",
       "parentTitle": "3. Transformace",
-      "level": 2,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/3-transformace.md#interpolace-rotací-lerp-a-slerp",
-      "title": "Interpolace rotací – LERP a SLERP",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/transformace#interpolace-rotací-lerp-a-slerp",
-      "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
-      "parentId": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "parentTitle": "3. Transformace",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/3-transformace.md#reprezentace-sqt",
-      "title": "Reprezentace SQT",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/transformace#reprezentace-sqt",
-      "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
-      "parentId": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "parentTitle": "3. Transformace",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/3-transformace.md#srovnání-reprezentací-transformací",
-      "title": "Srovnání reprezentací transformací",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/transformace#srovnání-reprezentací-transformací",
-      "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
-      "parentId": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "parentTitle": "3. Transformace",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/3-transformace.md#-časté-státnicové-chytáky",
-      "title": "⚠️ Časté státnicové chytáky",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/transformace#-časté-státnicové-chytáky",
-      "sourceRel": "Počítačová grafika/APG/3. Transformace.md",
-      "parentId": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "parentTitle": "3. Transformace",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#z-buffer",
-      "title": "Z-buffer",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/algoritmy-viditelnosti#z-buffer",
-      "sourceRel": "Počítačová grafika/APG/4. Algoritmy viditelnosti.md",
-      "parentId": "doc:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md",
-      "parentTitle": "4. Algoritmy viditelnosti",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#painterův-algoritmus",
-      "title": "Painterův algoritmus",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/algoritmy-viditelnosti#painterův-algoritmus",
-      "sourceRel": "Počítačová grafika/APG/4. Algoritmy viditelnosti.md",
-      "parentId": "doc:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md",
-      "parentTitle": "4. Algoritmy viditelnosti",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#bsp-stromy",
-      "title": "BSP stromy",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/algoritmy-viditelnosti#bsp-stromy",
-      "sourceRel": "Počítačová grafika/APG/4. Algoritmy viditelnosti.md",
-      "parentId": "doc:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md",
-      "parentTitle": "4. Algoritmy viditelnosti",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#ray-casting-a-srovnání-se-z-bufferem",
-      "title": "Ray casting a srovnání se z-bufferem",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/algoritmy-viditelnosti#ray-casting-a-srovnání-se-z-bufferem",
-      "sourceRel": "Počítačová grafika/APG/4. Algoritmy viditelnosti.md",
-      "parentId": "doc:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md",
-      "parentTitle": "4. Algoritmy viditelnosti",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#radiometrie",
-      "title": "Radiometrie",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/osvetlovaci-metody#radiometrie",
-      "sourceRel": "Počítačová grafika/APG/5. Osvětlovací metody.md",
-      "parentId": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "parentTitle": "5. Osvětlovací metody",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#rovnice-odrazivosti-a-brdf",
-      "title": "Rovnice odrazivosti a BRDF",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/osvetlovaci-metody#rovnice-odrazivosti-a-brdf",
-      "sourceRel": "Počítačová grafika/APG/5. Osvětlovací metody.md",
-      "parentId": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "parentTitle": "5. Osvětlovací metody",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#modely-brdf-phong-a-cook-torrance",
-      "title": "Modely BRDF – Phong a Cook-Torrance",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/osvetlovaci-metody#modely-brdf-phong-a-cook-torrance",
-      "sourceRel": "Počítačová grafika/APG/5. Osvětlovací metody.md",
-      "parentId": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "parentTitle": "5. Osvětlovací metody",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#renderovací-rovnice",
-      "title": "Renderovací rovnice",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/osvetlovaci-metody#renderovací-rovnice",
-      "sourceRel": "Počítačová grafika/APG/5. Osvětlovací metody.md",
-      "parentId": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "parentTitle": "5. Osvětlovací metody",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#whittedův-ray-tracing",
-      "title": "Whittedův ray tracing",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/osvetlovaci-metody#whittedův-ray-tracing",
-      "sourceRel": "Počítačová grafika/APG/5. Osvětlovací metody.md",
-      "parentId": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "parentTitle": "5. Osvětlovací metody",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#path-tracing",
-      "title": "Path tracing",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/osvetlovaci-metody#path-tracing",
-      "sourceRel": "Počítačová grafika/APG/5. Osvětlovací metody.md",
-      "parentId": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "parentTitle": "5. Osvětlovací metody",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#radiozita",
-      "title": "Radiozita",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/osvetlovaci-metody#radiozita",
-      "sourceRel": "Počítačová grafika/APG/5. Osvětlovací metody.md",
-      "parentId": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "parentTitle": "5. Osvětlovací metody",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/6-stiny.md#stíny-pomocí-ray-castingu",
-      "title": "Stíny pomocí ray castingu",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/stiny#stíny-pomocí-ray-castingu",
-      "sourceRel": "Počítačová grafika/APG/6. Stíny.md",
-      "parentId": "doc:pocitacova-grafika/apg/6-stiny.md",
-      "parentTitle": "6. Stíny",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/6-stiny.md#shadow-map-algoritmus",
-      "title": "Shadow map algoritmus",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/stiny#shadow-map-algoritmus",
-      "sourceRel": "Počítačová grafika/APG/6. Stíny.md",
-      "parentId": "doc:pocitacova-grafika/apg/6-stiny.md",
-      "parentTitle": "6. Stíny",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/7-texturovani.md#principy-texture-mappingu",
-      "title": "Principy texture mappingu",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/texturovani#principy-texture-mappingu",
-      "sourceRel": "Počítačová grafika/APG/7. Texturování.md",
-      "parentId": "doc:pocitacova-grafika/apg/7-texturovani.md",
-      "parentTitle": "7. Texturování",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/7-texturovani.md#uv-mapy",
-      "title": "UV mapy",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/texturovani#uv-mapy",
-      "sourceRel": "Počítačová grafika/APG/7. Texturování.md",
-      "parentId": "doc:pocitacova-grafika/apg/7-texturovani.md",
-      "parentTitle": "7. Texturování",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/7-texturovani.md#typy-textur",
-      "title": "Typy textur",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/texturovani#typy-textur",
-      "sourceRel": "Počítačová grafika/APG/7. Texturování.md",
-      "parentId": "doc:pocitacova-grafika/apg/7-texturovani.md",
-      "parentTitle": "7. Texturování",
-      "level": 2,
-      "incoming": 2,
-      "outgoing": 0,
-      "degree": 2
-    },
-    {
-      "id": "heading:pocitacova-grafika/apg/7-texturovani.md#mip-mapping",
-      "title": "MIP mapping",
-      "type": "heading",
-      "group": "Počítačová grafika",
-      "folder": "Počítačová grafika/APG",
-      "url": "/pocitacova-grafika/apg/texturovani#mip-mapping",
-      "sourceRel": "Počítačová grafika/APG/7. Texturování.md",
-      "parentId": "doc:pocitacova-grafika/apg/7-texturovani.md",
-      "parentTitle": "7. Texturování",
-      "level": 2,
+      "level": 3,
       "incoming": 2,
       "outgoing": 0,
       "degree": 2
@@ -5890,59 +5410,10 @@
     },
     {
       "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#základy-rastrové-grafiky",
-      "type": "heading",
-      "label": "Základy rastrové grafiky",
-      "anchor": "#základy-rastrové-grafiky"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#algoritmy-pro-kreslení-přímek",
-      "type": "heading",
-      "label": "Algoritmy pro kreslení přímek",
-      "anchor": "#algoritmy-pro-kreslení-přímek"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#algoritmy-vyplňování-polygonů",
-      "type": "heading",
-      "label": "Algoritmy vyplňování polygonů",
-      "anchor": "#algoritmy-vyplňování-polygonů"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#ořezávání-clipping",
-      "type": "heading",
-      "label": "Ořezávání (Clipping)",
-      "anchor": "#ořezávání-clipping"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
       "target": "doc:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md",
       "type": "wiki",
       "label": "Reprezentace 3D objektů a scén",
       "anchor": ""
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md#geometrická-a-topologická-data",
-      "type": "heading",
-      "label": "Geometrická a topologická data",
-      "anchor": "#geometrická-a-topologická-data"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md#efektivní-kódování-meshů",
-      "type": "heading",
-      "label": "Efektivní kódování meshů",
-      "anchor": "#efektivní-kódování-meshů"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md#graf-scény",
-      "type": "heading",
-      "label": "Graf scény",
-      "anchor": "#graf-scény"
     },
     {
       "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
@@ -5974,87 +5445,10 @@
     },
     {
       "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#z-buffer",
-      "type": "heading",
-      "label": "Z-buffer",
-      "anchor": "#z-buffer"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#painterův-algoritmus",
-      "type": "heading",
-      "label": "Painterův algoritmus",
-      "anchor": "#painterův-algoritmus"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#bsp-stromy",
-      "type": "heading",
-      "label": "BSP stromy",
-      "anchor": "#bsp-stromy"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#ray-casting-a-srovnání-se-z-bufferem",
-      "type": "heading",
-      "label": "Ray casting a srovnání se z-bufferem",
-      "anchor": "#ray-casting-a-srovnání-se-z-bufferem"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
       "target": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
       "type": "wiki",
       "label": "Osvětlovací metody",
       "anchor": ""
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#radiometrie",
-      "type": "heading",
-      "label": "Radiometrie",
-      "anchor": "#radiometrie"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#rovnice-odrazivosti-a-brdf",
-      "type": "heading",
-      "label": "Rovnice odrazivosti a BRDF",
-      "anchor": "#rovnice-odrazivosti-a-brdf"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#modely-brdf-phong-a-cook-torrance",
-      "type": "heading",
-      "label": "Modely BRDF – Phong a Cook-Torrance",
-      "anchor": "#modely-brdf-phong-a-cook-torrance"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#renderovací-rovnice",
-      "type": "heading",
-      "label": "Renderovací rovnice",
-      "anchor": "#renderovací-rovnice"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#whittedův-ray-tracing",
-      "type": "heading",
-      "label": "Whittedův ray tracing",
-      "anchor": "#whittedův-ray-tracing"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#path-tracing",
-      "type": "heading",
-      "label": "Path tracing",
-      "anchor": "#path-tracing"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#radiozita",
-      "type": "heading",
-      "label": "Radiozita",
-      "anchor": "#radiozita"
     },
     {
       "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
@@ -6065,20 +5459,6 @@
     },
     {
       "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/6-stiny.md#stíny-pomocí-ray-castingu",
-      "type": "heading",
-      "label": "Stíny pomocí ray castingu",
-      "anchor": "#stíny-pomocí-ray-castingu"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/6-stiny.md#shadow-map-algoritmus",
-      "type": "heading",
-      "label": "Shadow map algoritmus",
-      "anchor": "#shadow-map-algoritmus"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
       "target": "doc:pocitacova-grafika/apg/7-texturovani.md",
       "type": "wiki",
       "label": "Texturování",
@@ -6086,108 +5466,10 @@
     },
     {
       "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/7-texturovani.md#principy-texture-mappingu",
-      "type": "heading",
-      "label": "Principy texture mappingu",
-      "anchor": "#principy-texture-mappingu"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/7-texturovani.md#uv-mapy",
-      "type": "heading",
-      "label": "UV mapy",
-      "anchor": "#uv-mapy"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/7-texturovani.md#typy-textur",
-      "type": "heading",
-      "label": "Typy textur",
-      "anchor": "#typy-textur"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
-      "target": "heading:pocitacova-grafika/apg/7-texturovani.md#mip-mapping",
-      "type": "heading",
-      "label": "MIP mapping",
-      "anchor": "#mip-mapping"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/0-obsah-predmetu-apg.md",
       "target": "doc:softwarove-inzenyrstvi/paralelni-algoritmy/8-shrnuti-pro-statnice.md",
       "type": "wiki",
       "label": "Shrnutí pro státnice",
       "anchor": ""
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#homogenní-souřadnice",
-      "type": "heading",
-      "label": "Homogenní souřadnice",
-      "anchor": "#homogenní-souřadnice"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#základní-lineární-transformace",
-      "type": "heading",
-      "label": "Základní lineární transformace",
-      "anchor": "#základní-lineární-transformace"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#transformace-normál",
-      "type": "heading",
-      "label": "Transformace normál",
-      "anchor": "#transformace-normál"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#skládání-transformací",
-      "type": "heading",
-      "label": "Skládání transformací",
-      "anchor": "#skládání-transformací"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#souřadnicové-systémy-a-renderovací-pipeline",
-      "type": "heading",
-      "label": "Souřadnicové systémy a renderovací pipeline",
-      "anchor": "#souřadnicové-systémy-a-renderovací-pipeline"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#kvaterniony",
-      "type": "heading",
-      "label": "Kvaterniony",
-      "anchor": "#kvaterniony"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#interpolace-rotací-lerp-a-slerp",
-      "type": "heading",
-      "label": "Interpolace rotací – LERP a SLERP",
-      "anchor": "#interpolace-rotací-lerp-a-slerp"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#reprezentace-sqt",
-      "type": "heading",
-      "label": "Reprezentace SQT",
-      "anchor": "#reprezentace-sqt"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#srovnání-reprezentací-transformací",
-      "type": "heading",
-      "label": "Srovnání reprezentací transformací",
-      "anchor": "#srovnání-reprezentací-transformací"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#-časté-státnicové-chytáky",
-      "type": "heading",
-      "label": "⚠️ Časté státnicové chytáky",
-      "anchor": "#-časté-státnicové-chytáky"
     },
     {
       "source": "doc:pocitacova-grafika/gvg/0-obsah-gvg.md",
@@ -10508,48 +9790,6 @@
       "anchor": "#co-není-známo"
     },
     {
-      "source": "doc:pocitacova-grafika/apg/1-rastrova-grafika.md",
-      "target": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#základy-rastrové-grafiky",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/1-rastrova-grafika.md",
-      "target": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#algoritmy-pro-kreslení-přímek",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/1-rastrova-grafika.md",
-      "target": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#algoritmy-vyplňování-polygonů",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/1-rastrova-grafika.md",
-      "target": "heading:pocitacova-grafika/apg/1-rastrova-grafika.md#ořezávání-clipping",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md",
-      "target": "heading:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md#geometrická-a-topologická-data",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md",
-      "target": "heading:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md#efektivní-kódování-meshů",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md",
-      "target": "heading:pocitacova-grafika/apg/2-reprezentace-3d-objektu-a-scen.md#graf-scény",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
       "source": "doc:pocitacova-grafika/apg/3-transformace.md",
       "target": "heading:pocitacova-grafika/apg/3-transformace.md#homogenní-souřadnice",
       "type": "contains",
@@ -10557,157 +9797,7 @@
     },
     {
       "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#základní-lineární-transformace",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#transformace-normál",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#skládání-transformací",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#souřadnicové-systémy-a-renderovací-pipeline",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
       "target": "heading:pocitacova-grafika/apg/3-transformace.md#kvaterniony",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#interpolace-rotací-lerp-a-slerp",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#reprezentace-sqt",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#srovnání-reprezentací-transformací",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/3-transformace.md",
-      "target": "heading:pocitacova-grafika/apg/3-transformace.md#-časté-státnicové-chytáky",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md",
-      "target": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#z-buffer",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md",
-      "target": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#painterův-algoritmus",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md",
-      "target": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#bsp-stromy",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md",
-      "target": "heading:pocitacova-grafika/apg/4-algoritmy-viditelnosti.md#ray-casting-a-srovnání-se-z-bufferem",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#radiometrie",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#rovnice-odrazivosti-a-brdf",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#modely-brdf-phong-a-cook-torrance",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#renderovací-rovnice",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#whittedův-ray-tracing",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#path-tracing",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/5-osvetlovaci-metody.md",
-      "target": "heading:pocitacova-grafika/apg/5-osvetlovaci-metody.md#radiozita",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/6-stiny.md",
-      "target": "heading:pocitacova-grafika/apg/6-stiny.md#stíny-pomocí-ray-castingu",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/6-stiny.md",
-      "target": "heading:pocitacova-grafika/apg/6-stiny.md#shadow-map-algoritmus",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/7-texturovani.md",
-      "target": "heading:pocitacova-grafika/apg/7-texturovani.md#principy-texture-mappingu",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/7-texturovani.md",
-      "target": "heading:pocitacova-grafika/apg/7-texturovani.md#uv-mapy",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/7-texturovani.md",
-      "target": "heading:pocitacova-grafika/apg/7-texturovani.md#typy-textur",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:pocitacova-grafika/apg/7-texturovani.md",
-      "target": "heading:pocitacova-grafika/apg/7-texturovani.md#mip-mapping",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
@@ -12370,8 +11460,8 @@
   ],
   "stats": {
     "documents": 87,
-    "headings": 310,
+    "headings": 278,
     "missing": 1,
-    "links": 971
+    "links": 905
   }
 }
