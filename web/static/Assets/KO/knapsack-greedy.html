@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batoh - greedy a frakcni varianta</title>
+<style>
+:root {
+  --bg: #10131a;
+  --panel: rgba(24, 31, 43, .94);
+  --line: rgba(156, 163, 175, .24);
+  --text: #edf2f7;
+  --muted: #9ca3af;
+  --cyan: #22d3ee;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --rose: #fb7185;
+  --blue: #60a5fa;
+  --speed: 780ms;
+}
+* { box-sizing: border-box; }
+body {
+  min-width: 860px;
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+  background:
+    radial-gradient(circle at 0 0, rgba(34, 211, 238, .13), transparent 27rem),
+    radial-gradient(circle at 100% 100%, rgba(251, 191, 36, .10), transparent 28rem),
+    #111827;
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+}
+button, select, input { font: inherit; }
+.topbar, .panel, .scene {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .22);
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.eyebrow, .label, .panel-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
+.controls { display: flex; align-items: center; gap: 8px; }
+.control-btn, select {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: rgba(55, 65, 81, .78);
+  color: #e5e7eb;
+}
+.control-btn { cursor: pointer; transition: .18s ease; }
+.control-btn:hover { border-color: rgba(34, 211, 238, .72); transform: translateY(-1px); }
+.control-btn.primary {
+  min-width: 96px;
+  border-color: rgba(34, 211, 238, .6);
+  background: linear-gradient(135deg, rgba(8, 145, 178, .96), rgba(37, 99, 235, .90));
+  font-weight: 800;
+}
+input[type="range"] { width: 92px; accent-color: var(--cyan); }
+.toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, .64);
+}
+.progress-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(55, 65, 81, .86);
+}
+.progress-bar {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green), var(--amber));
+  transition: width .25s ease;
+}
+.progress-caption {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 10px;
+}
+.scene {
+  position: relative;
+  min-height: 545px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(156, 163, 175, .04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(156, 163, 175, .04) 1px, transparent 1px),
+    rgba(17, 24, 39, .84);
+  background-size: 24px 24px;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 235px minmax(0, 1fr) 230px;
+  gap: 14px;
+  padding: 16px;
+}
+.items { display: grid; gap: 9px; align-content: start; }
+.item-card {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 10px;
+  background: rgba(31, 41, 55, .86);
+  transition: transform .22s ease, border-color .22s ease, background .22s ease;
+}
+.item-card.active {
+  border-color: rgba(251, 191, 36, .92);
+  background: rgba(120, 53, 15, .42);
+  transform: translateX(5px);
+}
+.item-card.taken {
+  border-color: rgba(52, 211, 153, .9);
+  background: rgba(6, 78, 59, .45);
+}
+.item-card.partial {
+  border-color: rgba(96, 165, 250, .9);
+  background: rgba(30, 64, 175, .42);
+}
+.item-card.rejected {
+  border-color: rgba(251, 113, 133, .75);
+  background: rgba(127, 29, 29, .34);
+  opacity: .7;
+}
+.item-title { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 5px; font-weight: 850; }
+.item-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  color: #d1d5db;
+  font-size: 12px;
+}
+.ratio { grid-column: 1 / -1; color: var(--muted); }
+.market {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 11px;
+}
+.sort-strip {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(15, 23, 42, .72);
+}
+.rank-row {
+  display: grid;
+  grid-template-columns: 34px 1fr 58px;
+  gap: 8px;
+  align-items: center;
+  margin-top: 7px;
+  color: #d1d5db;
+  font-size: 12px;
+}
+.rank-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(75, 85, 99, .78);
+  overflow: hidden;
+}
+.rank-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), var(--amber));
+  transition: width .4s ease;
+}
+.bag {
+  position: relative;
+  min-height: 318px;
+  border: 1px solid var(--line);
+  border-radius: 16px 16px 28px 28px;
+  padding: 16px 14px;
+  background:
+    linear-gradient(180deg, rgba(2, 6, 23, .18), rgba(2, 6, 23, .44)),
+    rgba(31, 41, 55, .80);
+}
+.bag-neck {
+  width: 58%;
+  height: 24px;
+  margin: -4px auto 12px;
+  border: 2px solid rgba(156, 163, 175, .34);
+  border-bottom: 0;
+  border-radius: 22px 22px 0 0;
+}
+.meter {
+  height: 14px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(75, 85, 99, .85);
+}
+.meter-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), var(--amber));
+  transition: width .35s ease;
+}
+.bag-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 8px;
+  min-height: 158px;
+  margin-top: 14px;
+}
+.bag-chip {
+  border: 1px solid rgba(52, 211, 153, .52);
+  border-radius: 8px;
+  padding: 6px 8px;
+  background: rgba(6, 95, 70, .54);
+  color: #d1fae5;
+  font-size: 12px;
+  font-weight: 850;
+}
+.bag-chip.partial {
+  border-color: rgba(96, 165, 250, .56);
+  background: rgba(30, 64, 175, .52);
+  color: #dbeafe;
+}
+.summary { display: grid; gap: 10px; align-content: start; }
+.stat {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px;
+  background: rgba(15, 23, 42, .72);
+}
+.stat strong { display: block; margin-top: 4px; font-size: 24px; }
+.callout {
+  min-height: 94px;
+  border-left: 3px solid var(--cyan);
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: rgba(8, 145, 178, .12);
+  color: #dbeafe;
+  line-height: 1.45;
+}
+.side { display: grid; gap: 10px; align-content: start; }
+.panel { padding: 12px; }
+.compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 9px;
+}
+.box {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  background: rgba(31, 41, 55, .74);
+}
+.box.good { border-color: rgba(52, 211, 153, .62); }
+.box.bad { border-color: rgba(251, 113, 133, .62); }
+.box-value { margin-top: 4px; font-size: 23px; font-weight: 900; }
+.note { margin: 8px 0 0; color: #d1d5db; line-height: 1.45; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Kombinatoricka optimalizace</div>
+      <h1>Frakcni batoh vs. 0-1 greedy past</h1>
+    </div>
+    <div class="controls">
+      <button class="control-btn primary" id="playBtn">Prehrat</button>
+      <button class="control-btn" id="stepBtn">Krok</button>
+      <button class="control-btn" id="resetBtn">Reset</button>
+      <select id="modeSelect">
+        <option value="fractional">Frakcni optimum</option>
+        <option value="zeroone">0-1 greedy past</option>
+      </select>
+      <span class="label">Rychlost</span>
+      <input id="speed" type="range" min="360" max="1250" value="780">
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div>
+      <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-caption"><span id="phaseLabel">Seradime podle p/w</span><span id="stepLabel">0 / 0</span></div>
+    </div>
+    <div><span class="label">Kapacita</span> <strong id="capacityLabel">10</strong></div>
+  </div>
+
+  <div class="layout">
+    <main class="scene">
+      <div class="workspace">
+        <section class="items" id="items"></section>
+        <section class="market">
+          <div class="sort-strip">
+            <div class="panel-title">Poradi podle hodnoty na kg</div>
+            <div id="rankRows"></div>
+          </div>
+          <div class="bag">
+            <div class="bag-neck"></div>
+            <div class="panel-title">Batoh</div>
+            <strong id="bagSummary">0 / 10 kg, hodnota 0</strong>
+            <div class="meter" style="margin-top:8px"><div class="meter-fill" id="meterFill"></div></div>
+            <div class="bag-items" id="bagItems"></div>
+          </div>
+        </section>
+        <section class="summary">
+          <div class="stat">
+            <div class="panel-title">Aktualni hodnota</div>
+            <strong id="valueStat">0</strong>
+          </div>
+          <div class="stat">
+            <div class="panel-title">Zbyvajici kapacita</div>
+            <strong id="remainingStat">10</strong>
+          </div>
+          <div class="callout" id="callout">
+            Greedy nejdrive seradi predmety podle pomeru p/w. U frakcni varianty je to optimalni, protoze posledni predmet muzeme vzit jen zcasti.
+          </div>
+        </section>
+      </div>
+    </main>
+    <aside class="side">
+      <section class="panel">
+        <div class="panel-title">Pointa</div>
+        <p class="note" id="pointText">Frakcni batoh je presne situace, kde lokalne nejlepsi volba podle p/w vede ke globalnimu optimu.</p>
+      </section>
+      <section class="panel">
+        <div class="panel-title">Srovnani</div>
+        <div class="compare">
+          <div class="box good"><div class="label">Greedy</div><div class="box-value" id="greedyValue">0</div></div>
+          <div class="box" id="optBox"><div class="label">Optimum</div><div class="box-value" id="optValue">0</div></div>
+        </div>
+        <p class="note" id="compareText">U frakcni varianty se tyto hodnoty potkaji.</p>
+      </section>
+      <section class="panel">
+        <div class="panel-title">Ke statnicim</div>
+        <p class="note">Frakcni KP: greedy podle p/w, O(n log n), optimalni. 0-1 KP: stejna intuice muze selhat, proto potrebujeme DP, B&B nebo FPTAS.</p>
+      </section>
+    </aside>
+  </div>
+
+<script>
+const data = {
+  fractional: {
+    capacity: 10,
+    optimum: 31,
+    point: "Frakcni batoh je presne situace, kde lokalne nejlepsi volba podle p/w vede ke globalnimu optimu.",
+    compare: "Greedy je optimalni, protoze posledni predmet lze rozriznout a dobrat presne zbyvajici kapacitu.",
+    items: [
+      { name: "Zlato", weight: 3, value: 15 },
+      { name: "Striebro", weight: 4, value: 16 },
+      { name: "Mena", weight: 6, value: 18 },
+      { name: "Knihy", weight: 5, value: 10 }
+    ]
+  },
+  zeroone: {
+    capacity: 10,
+    optimum: 15,
+    point: "U 0-1 batohu nelze vzit zlomek. Greedy po p/w muze spotrebovat kapacitu na malem predmetu a zahodit skutecne optimum.",
+    compare: "Greedy vrati hodnotu 2, ale optimum je vzit samotny tezky predmet s hodnotou 15.",
+    items: [
+      { name: "A", weight: 1, value: 2 },
+      { name: "B", weight: 10, value: 15 },
+      { name: "C", weight: 9, value: 1 }
+    ]
+  }
+};
+
+let mode = "fractional";
+let steps = [];
+let cursor = 0;
+let timer = null;
+let playing = false;
+let state = { weight: 0, value: 0, chips: [] };
+
+const els = {
+  items: document.getElementById("items"),
+  ranks: document.getElementById("rankRows"),
+  play: document.getElementById("playBtn"),
+  step: document.getElementById("stepBtn"),
+  reset: document.getElementById("resetBtn"),
+  mode: document.getElementById("modeSelect"),
+  speed: document.getElementById("speed"),
+  progress: document.getElementById("progressBar"),
+  phase: document.getElementById("phaseLabel"),
+  stepLabel: document.getElementById("stepLabel"),
+  capacity: document.getElementById("capacityLabel"),
+  bagSummary: document.getElementById("bagSummary"),
+  meter: document.getElementById("meterFill"),
+  bagItems: document.getElementById("bagItems"),
+  value: document.getElementById("valueStat"),
+  remaining: document.getElementById("remainingStat"),
+  callout: document.getElementById("callout"),
+  greedy: document.getElementById("greedyValue"),
+  opt: document.getElementById("optValue"),
+  optBox: document.getElementById("optBox"),
+  point: document.getElementById("pointText"),
+  compare: document.getElementById("compareText")
+};
+
+function sortedItems() {
+  return data[mode].items
+    .map((item, idx) => ({ ...item, idx, ratio: item.value / item.weight }))
+    .sort((a, b) => b.ratio - a.ratio);
+}
+
+function buildSteps() {
+  const inst = data[mode];
+  let remaining = inst.capacity;
+  steps = [];
+  sortedItems().forEach(item => {
+    if (mode === "fractional") {
+      if (remaining <= 0) {
+        steps.push({ type: "reject", item, reason: "Batoh uz je plny." });
+      } else if (item.weight <= remaining) {
+        steps.push({ type: "take", item, fraction: 1, addWeight: item.weight, addValue: item.value });
+        remaining -= item.weight;
+      } else {
+        const fraction = remaining / item.weight;
+        steps.push({ type: "take", item, fraction, addWeight: remaining, addValue: item.value * fraction });
+        remaining = 0;
+      }
+    } else {
+      if (item.weight <= remaining) {
+        steps.push({ type: "take", item, fraction: 1, addWeight: item.weight, addValue: item.value });
+        remaining -= item.weight;
+      } else {
+        steps.push({ type: "reject", item, reason: `Nevleze se: potrebuje ${item.weight}, zbyva ${remaining}.` });
+      }
+    }
+  });
+}
+
+function renderBase() {
+  const inst = data[mode];
+  els.capacity.textContent = inst.capacity;
+  els.point.textContent = inst.point;
+  els.compare.textContent = inst.compare;
+  els.opt.textContent = inst.optimum;
+  els.optBox.classList.toggle("bad", mode === "zeroone");
+  els.optBox.classList.toggle("good", mode === "fractional");
+  els.items.innerHTML = "";
+  inst.items.forEach((item, idx) => {
+    els.items.insertAdjacentHTML("beforeend", `
+      <div class="item-card" data-idx="${idx}">
+        <div class="item-title"><span>${item.name}</span><span>#${idx + 1}</span></div>
+        <div class="item-meta">
+          <span>w = ${item.weight}</span><span>p = ${item.value}</span>
+          <span class="ratio">p/w = ${(item.value / item.weight).toFixed(2)}</span>
+        </div>
+      </div>`);
+  });
+  els.ranks.innerHTML = "";
+  const maxRatio = Math.max(...inst.items.map(i => i.value / i.weight));
+  sortedItems().forEach((item, rank) => {
+    els.ranks.insertAdjacentHTML("beforeend", `
+      <div class="rank-row">
+        <strong>${rank + 1}. ${item.name}</strong>
+        <div class="rank-bar"><div class="rank-fill" style="width:${item.ratio / maxRatio * 100}%"></div></div>
+        <span>${item.ratio.toFixed(2)}</span>
+      </div>`);
+  });
+}
+
+function clearCards() {
+  document.querySelectorAll(".item-card").forEach(card => card.classList.remove("active"));
+}
+
+function card(item) {
+  return document.querySelector(`.item-card[data-idx="${item.idx}"]`);
+}
+
+function renderState() {
+  const inst = data[mode];
+  els.bagSummary.textContent = `${format(state.weight)} / ${inst.capacity} kg, hodnota ${format(state.value)}`;
+  els.meter.style.width = `${Math.min(100, state.weight / inst.capacity * 100)}%`;
+  els.value.textContent = format(state.value);
+  els.remaining.textContent = format(inst.capacity - state.weight);
+  els.greedy.textContent = format(state.value);
+  els.bagItems.innerHTML = "";
+  state.chips.forEach(chip => {
+    const el = document.createElement("span");
+    el.className = `bag-chip ${chip.partial ? "partial" : ""}`;
+    el.textContent = chip.label;
+    els.bagItems.appendChild(el);
+  });
+}
+
+function applyStep(step) {
+  clearCards();
+  const c = card(step.item);
+  c.classList.add("active");
+  if (step.type === "take") {
+    state.weight += step.addWeight;
+    state.value += step.addValue;
+    const partial = step.fraction < 1;
+    c.classList.add(partial ? "partial" : "taken");
+    state.chips.push({
+      partial,
+      label: partial ? `${step.item.name} ${(step.fraction * 100).toFixed(0)}%` : `${step.item.name}`
+    });
+    els.phase.textContent = partial ? `Bereme cast predmetu ${step.item.name}` : `Bereme cely predmet ${step.item.name}`;
+    els.callout.textContent = partial
+      ? `Zbyva jen ${format(step.addWeight)} kg, proto u frakcni varianty vezmeme ${(step.fraction * 100).toFixed(0)} % predmetu ${step.item.name}. Tady greedy dokonci optimum.`
+      : `Predmet ${step.item.name} ma nejlepsi dostupny pomer p/w a vejde se, proto ho greedy vlozi do batohu.`;
+  } else {
+    c.classList.add("rejected");
+    els.phase.textContent = `Preskakujeme ${step.item.name}`;
+    els.callout.textContent = mode === "zeroone"
+      ? `${step.reason} Proto 0-1 greedy muze prijit o lepsi celou kombinaci.`
+      : step.reason;
+  }
+  renderState();
+}
+
+function format(n) {
+  return Number.isInteger(n) ? String(n) : n.toFixed(1);
+}
+
+function updateProgress() {
+  els.stepLabel.textContent = `${Math.min(cursor, steps.length)} / ${steps.length}`;
+  els.progress.style.width = steps.length ? `${cursor / steps.length * 100}%` : "0%";
+  els.play.textContent = playing ? "Pauza" : "Prehrat";
+  els.step.disabled = cursor >= steps.length;
+}
+
+function stepForward() {
+  if (cursor >= steps.length) return stop();
+  applyStep(steps[cursor]);
+  cursor++;
+  updateProgress();
+  if (cursor >= steps.length) stop();
+}
+
+function play() {
+  if (playing) return stop();
+  playing = true;
+  updateProgress();
+  stepForward();
+  timer = setInterval(stepForward, Number(els.speed.value));
+}
+
+function stop() {
+  playing = false;
+  if (timer) clearInterval(timer);
+  timer = null;
+  updateProgress();
+}
+
+function reset() {
+  stop();
+  cursor = 0;
+  state = { weight: 0, value: 0, chips: [] };
+  document.querySelectorAll(".item-card").forEach(card => card.className = "item-card");
+  els.phase.textContent = "Seradime podle p/w";
+  els.callout.textContent = mode === "fractional"
+    ? "Greedy nejdrive seradi predmety podle pomeru p/w. U frakcni varianty je to optimalni, protoze posledni predmet muzeme vzit jen zcasti."
+    : "Stejne serazeni podle p/w ted pouzijeme na 0-1 batoh. Sleduj, kde intuice selze.";
+  renderState();
+  updateProgress();
+}
+
+function boot() {
+  buildSteps();
+  renderBase();
+  reset();
+}
+
+els.play.addEventListener("click", play);
+els.step.addEventListener("click", stepForward);
+els.reset.addEventListener("click", reset);
+els.speed.addEventListener("input", () => {
+  document.documentElement.style.setProperty("--speed", `${els.speed.value}ms`);
+  if (playing) { stop(); play(); }
+});
+els.mode.addEventListener("change", e => {
+  mode = e.target.value;
+  boot();
+});
+boot();
+</script>
+</body>
+</html>
