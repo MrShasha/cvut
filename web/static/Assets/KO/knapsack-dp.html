@@ -316,7 +316,7 @@ input[type="range"] {
 .decision-panel {
   display: grid;
   grid-column: 1 / -1;
-  grid-template-columns: minmax(210px, .9fr) minmax(260px, 1fr) minmax(230px, .9fr);
+  grid-template-columns: minmax(210px, .85fr) minmax(260px, 1fr) minmax(220px, .85fr) minmax(250px, 1fr);
   gap: 10px;
   align-content: start;
 }
@@ -432,8 +432,7 @@ input[type="range"] {
 }
 
 .callout {
-  grid-column: 1 / -1;
-  min-height: 68px;
+  min-height: 132px;
   border-left: 3px solid var(--cyan);
   border-radius: 8px;
   padding: 10px 11px;
@@ -546,7 +545,6 @@ input[type="range"] {
   .layout { grid-template-columns: 1fr; }
   .scene { min-height: 820px; }
   .decision-panel { grid-template-columns: 1fr; }
-  .callout { grid-column: auto; }
   .side { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
