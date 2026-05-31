@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C10k Architektonický Simulátor</title>
+    <style>
+        :root {
+            --bg-color: #1e1e1e;
+            --panel-bg: #2d2d2d;
+            --text-main: #d4d4d4;
+            --text-muted: #858585;
+            --accent: #007acc;
+            --danger: #f14c4c;
+            --success: #89d185;
+            --core-bg: #3c3c3c;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-sizing: border-box;
+        }
+
+        .header { text-align: center; }
+        .header h2 { margin: 0 0 5px 0; color: #fff; }
+        .header p { margin: 0; color: var(--text-muted); font-size: 0.9em; }
+
+        .controls {
+            background-color: var(--panel-bg);
+            padding: 20px;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            border: 1px solid #444;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-weight: bold; font-size: 0.9em; color: #ccc; }
+        
+        input[type="range"] { width: 100%; cursor: pointer; }
+        select {
+            padding: 8px;
+            background-color: #3c3c3c;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .visualization {
+            background-color: var(--panel-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-height: 200px;
+        }
+
+        .cores-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .core {
+            background-color: var(--core-bg);
+            border: 2px solid #555;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .core-title { font-size: 0.8em; color: var(--text-muted); margin-bottom: 5px; }
+        
+        .work-indicator {
+            width: 100%;
+            height: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .thread-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .metric-card {
+            background-color: var(--panel-bg);
+            border: 1px solid #444;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-val { font-size: 1.5em; font-weight: bold; margin-top: 5px; }
+        .metric-title { font-size: 0.85em; color: var(--text-muted); text-transform: uppercase;}
+
+        .queue-info { text-align: center; font-size: 0.9em; color: var(--accent); }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>Architektura vs. 10 000 spojení (C10k)</h2>
+        <p>Interaktivní vizualizace spotřeby hardwaru při různých modelech obsluhy spojení.</p>
+    </div>
+
+    <div class="controls">
+        <div class="control-group">
+            <label for="modelSelect">Architektonický model (System Design)</label>
+            <select id="modelSelect">
+                <option value="os">Model 1: 1 Vlákno = 1 Spojení (Legacy/Tomcat)</option>
+                <option value="epoll">Model 2: Event Loop / epoll (Node.js/Netty)</option>
+                <option value="virtual">Model 3: Virtuální vlákna (Java Loom / Go)</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="loadSlider">Počet paralelních spojení: <span id="loadVal">100</span></label>
+            <input type="range" id="loadSlider" min="10" max="10000" step="10" value="100">
+        </div>
+    </div>
+
+    <div class="visualization">
+        <div class="queue-info" id="queueInfo">Zpracovává se 100 aktivních socketů...</div>
+        <div class="cores-container" id="cores">
+            </div>
+    </div>
+
+    <div class="metrics">
+        <div class="metric-card">
+            <div class="metric-title">Spotřeba paměti (RAM)</div>
+            <div class="metric-val" id="ramMetric">100 MB</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Context Switch Režie</div>
+            <div class="metric-val" id="cpuMetric">Nízká</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-title">Status Serveru</div>
+            <div class="metric-val" id="statusMetric" style="color: var(--success)">Stabilní</div>
+        </div>
+    </div>
+
+    <script>
+        const slider = document.getElementById('loadSlider');
+        const loadVal = document.getElementById('loadVal');
+        const modelSelect = document.getElementById('modelSelect');
+        const coresContainer = document.getElementById('cores');
+        const ramMetric = document.getElementById('ramMetric');
+        const cpuMetric = document.getElementById('cpuMetric');
+        const statusMetric = document.getElementById('statusMetric');
+        const queueInfo = document.getElementById('queueInfo');
+
+        const NUM_CORES = 4;
+        const THREAD_MB = 1; // 1 MB per OS thread
+
+        function renderCores() {
+            coresContainer.innerHTML = '';
+            for(let i=0; i<NUM_CORES; i++) {
+                coresContainer.innerHTML += `
+                    <div class="core" id="core-${i}">
+                        <div class="core-title">Fyzické Jádro ${i}</div>
+                        <div class="work-indicator" id="work-${i}"></div>
+                    </div>
+                `;
+            }
+        }
+
+        function updateSimulation() {
+            const load = parseInt(slider.value);
+            const model = modelSelect.value;
+            loadVal.innerText = load.toLocaleString();
+
+            let ramStr = "";
+            let contextSwitch = "";
+            let status = "Stabilní";
+            let statusColor = "var(--success)";
+            let vizColor = "";
+
+            // Ošetření vizualizace (nebudeme kreslit 10k divů)
+            const visualDots = Math.min(load, 200); 
+            const dotsPerCore = Math.ceil(visualDots / NUM_CORES);
+
+            if (model === 'os') {
+                const ramMB = load * THREAD_MB + 50; // Base 50MB
+                ramStr = ramMB > 1000 ? (ramMB/1000).toFixed(2) + " GB" : ramMB + " MB";
+                vizColor = "#f14c4c"; // Red for heavy threads
+
+                if (load > 4000) {
+                    status = "Přetíženo (Thrashing)";
+                    statusColor = "var(--danger)";
+                    contextSwitch = "Kritická (100% CPU)";
+                    queueInfo.innerText = "Chyba: Nedostatek paměti a vláken!";
+                } else if (load > 1500) {
+                    status = "Zpomalený (Vysoká latence)";
+                    statusColor = "orange";
+                    contextSwitch = "Vysoká";
+                    queueInfo.innerText = "Plánovač OS (Scheduler) nestíhá přepínat kontext...";
+                } else {
+                    contextSwitch = "Střední";
+                    queueInfo.innerText = `OS spravuje ${load} těžkých vláken.`;
+                }
+
+            } else if (model === 'epoll') {
+                const ramMB = 50 + (load * 0.005); // Tiny object per connection
+                ramStr = ramMB.toFixed(1) + " MB";
+                vizColor = "#007acc"; // Blue for event loop
+                contextSwitch = "Téměř nulová";
+                status = "Stabilní";
+                statusColor = "var(--success)";
+                queueInfo.innerText = `epoll_wait sleduje ${load} socketů na 4 vláknech.`;
+
+            } else if (model === 'virtual') {
+                const ramMB =
