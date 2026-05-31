@@ -1,183 +1,244 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paralelní Prim / Dijkstra — 1D rozložení</title>
+<title>Paralelni Prim / Dijkstra | PAG</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
-h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
-.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
-.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
-.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
-.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
-select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
-input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
-.tab-row { display: flex; gap: 4px; margin-bottom: 10px; }
-.tab { background: #3c3c3c; color: #aaa; border: none; border-radius: 5px; padding: 6px 14px; font-size: 0.85em; cursor: pointer; }
-.tab.active { background: #0984e3; color: #fff; font-weight: 700; }
-.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
-.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
-canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
-.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 60px; }
-.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
-.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
-.deriv-lbl { color: #888; min-width: 130px; font-size: 0.9em; }
-.deriv-val { color: #c3e88d; font-family: monospace; }
-.highlight { color: #0984e3; font-weight: 700; }
-.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
-.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
-.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; } .stat.yellow { border-color: #fdcb6e; }
-.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
-.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+:root{
+  --bg:#09101f;--panel:rgba(18,29,52,.94);--line:rgba(142,164,204,.2);
+  --text:#edf4ff;--muted:#9aa9c8;--cyan:#56e0dc;--green:#6ee7a8;
+  --orange:#ffbd78;--violet:#aa91ff;--blue:#62a9ff;--shadow:0 18px 45px rgba(0,0,0,.22);
+}
+*{box-sizing:border-box;}
+body{margin:0;min-height:100vh;padding:18px;color:var(--text);
+  background:radial-gradient(circle at 10% 5%,rgba(64,114,221,.18),transparent 28rem),
+             radial-gradient(circle at 92% 90%,rgba(52,207,187,.12),transparent 30rem),
+             var(--bg);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif;font-size:14px;}
+button,select,input{font:inherit;}button{cursor:pointer;}
+.shell{width:min(1420px,100%);margin:0 auto;}
+
+.hero{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:14px;}
+.eyebrow{color:var(--cyan);font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;}
+h1{margin:5px 0 0;font-size:clamp(20px,2.8vw,28px);letter-spacing:-.04em;}
+.hero p{max-width:700px;margin:6px 0 0;color:var(--muted);line-height:1.55;font-size:13px;}
+.hero-badge{flex:0 0 auto;padding:10px 13px;border:1px solid rgba(86,224,220,.35);border-radius:14px;
+  color:var(--cyan);background:rgba(86,224,220,.08);font-size:12px;font-weight:800;white-space:nowrap;text-align:center;}
+
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;
+  padding:11px 13px;border:1px solid var(--line);border-radius:15px;background:var(--panel);
+  box-shadow:var(--shadow);flex-wrap:wrap;}
+.tb-group{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.tab-btn,.icon-btn,.play-btn{border:1px solid transparent;border-radius:10px;font-size:12px;font-weight:800;
+  transition:transform .18s,border-color .18s,background .18s,color .18s;}
+.tab-btn,.icon-btn{padding:7px 11px;color:var(--muted);background:rgba(255,255,255,.045);}
+.tab-btn:hover,.icon-btn:hover{transform:translateY(-1px);border-color:rgba(98,169,255,.55);color:var(--text);}
+.tab-btn.active{border-color:rgba(86,224,220,.6);color:#dffefd;background:rgba(86,224,220,.13);}
+.play-btn{padding:7px 13px;color:#07172c;background:linear-gradient(135deg,var(--cyan),#79b9ff);}
+.play-btn:hover{transform:translateY(-1px);}
+.ctrl-grp{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;}
+select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.06);color:var(--text);font-size:12px;}
+input[type="range"]{width:72px;accent-color:var(--cyan);}
+
+.scene-card{border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px;}
+.canvas-wrap{padding:10px;}
+canvas{display:block;width:100%;border:1px solid rgba(142,164,204,.14);border-radius:13px;background:#0b1528;}
+
+.lesson{display:grid;gap:6px;padding:12px 15px 14px;border-top:1px solid var(--line);background:rgba(8,16,31,.55);}
+.lesson-kicker{color:var(--cyan);font-size:10px;font-weight:850;letter-spacing:.15em;text-transform:uppercase;}
+.lesson-title{font-size:15px;font-weight:850;margin-top:2px;}
+.lesson-text{color:var(--muted);font-size:12px;line-height:1.55;}
+
+.phase-track{display:flex;gap:6px;flex-wrap:wrap;padding:10px 15px;border-top:1px solid var(--line);background:rgba(8,16,31,.4);}
+.ph-pill{padding:5px 12px;border-radius:20px;border:1px solid rgba(142,164,204,.2);font-size:11px;font-weight:700;color:var(--muted);background:rgba(255,255,255,.025);transition:all .2s;}
+.ph-pill.active{border-color:rgba(255,189,120,.6);color:var(--orange);background:rgba(255,189,120,.1);}
+.ph-pill.done{border-color:rgba(110,231,168,.35);color:var(--green);background:rgba(110,231,168,.06);}
+
+.analysis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px;}
+.side-card{padding:13px;border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:var(--shadow);}
+.side-card h2{margin:0 0 10px;color:#d8e8ff;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;}
+.formula-box{padding:9px 11px;border:1px solid rgba(86,224,220,.22);border-radius:8px;color:var(--cyan);
+  background:rgba(86,224,220,.07);font:750 11px/1.7 ui-monospace,Consolas,monospace;white-space:pre-line;}
+.note{color:var(--muted);font-size:11px;line-height:1.55;margin-top:6px;}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.stat{padding:8px 6px;border:1px solid rgba(142,164,204,.15);border-radius:9px;background:rgba(255,255,255,.03);text-align:center;}
+.stat-value{color:var(--text);font-size:18px;font-weight:900;}
+.stat-label{margin-top:2px;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.08em;}
+
+.deriv-list{display:grid;gap:4px;}
+.deriv-row{display:flex;align-items:baseline;gap:8px;font-size:12px;}
+.deriv-lbl{color:var(--muted);min-width:110px;}
+.deriv-val{color:var(--green);font-family:ui-monospace,Consolas,monospace;font-weight:700;}
+.deriv-row.hl .deriv-val{color:var(--cyan);}
+hr.sep{border:none;border-top:1px solid var(--line);margin:6px 0;}
+
+@media(max-width:900px){.analysis{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.analysis{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-<h1>Paralelní Prim (MST) / Dijkstra (SSSP) — 1D rozložení</h1>
+<main class="shell">
 
-<div class="main">
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <div class="tab-row">
-      <button class="tab active" id="tabPrim" onclick="setMode('prim')">🌲 Prim (MST)</button>
-      <button class="tab" id="tabDijk" onclick="setMode('dijkstra')">📍 Dijkstra (SSSP)</button>
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Paralelni algoritmy / grafove algoritmy</div>
+      <h1>Paralelni Prim (MST) / Dijkstra (SSSP) &#8212; 1D rozlozeni</h1>
+      <p>Matice adjacence rozdělena po řádcích na <em>p</em> procesorů. Každá iterace: lokální min &#8594; All-Reduce &#8594; Broadcast v* &#8594; lokální update.</p>
     </div>
-    <div class="row">
-      <label>Uzlů n:</label>
-      <select id="nSel" onchange="reset()">
-        <option value="8" selected>8</option>
-        <option value="10">10</option>
-        <option value="12">12</option>
-      </select>
-      <label>Proc p:</label>
-      <select id="pSel" onchange="reset()">
-        <option value="2" selected>2</option>
-        <option value="4">4</option>
-      </select>
-      <label>Graf:</label>
-      <select id="gSel" onchange="reset()">
-        <option value="random">Náhodný</option>
-        <option value="grid">Mřížka</option>
-      </select>
-    </div>
-    <div class="row">
-      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
-      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
-      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
-      <button class="btn secondary" onclick="reset()">↺ Reset</button>
-      <label>Rychlost:</label>
-      <input type="range" id="speed" min="400" max="3000" value="1200" step="100" style="width:70px;">
-    </div>
-    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
-  </div>
+    <div class="hero-badge" id="heroBadge">n=8 &middot; p=2<br><span style="font-size:10px;color:var(--muted);font-weight:600">7 iteraci</span></div>
+  </header>
 
-  <canvas id="cv" height="380"></canvas>
-  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
-</div>
+  <section class="toolbar">
+    <div class="tb-group">
+      <button class="tab-btn active" data-mode="prim">&#127795; Prim (MST)</button>
+      <button class="tab-btn" data-mode="dijkstra">&#128205; Dijkstra (SSSP)</button>
+    </div>
+    <div class="tb-group">
+      <label class="ctrl-grp">Uzlu n:
+        <select id="nSel">
+          <option value="8" selected>8</option>
+          <option value="10">10</option>
+          <option value="12">12</option>
+        </select>
+      </label>
+      <label class="ctrl-grp">Proc p:
+        <select id="pSel">
+          <option value="2" selected>2</option>
+          <option value="4">4</option>
+        </select>
+      </label>
+      <label class="ctrl-grp">Graf:
+        <select id="gSel">
+          <option value="random">Nahodny</option>
+          <option value="grid">Mrizka</option>
+        </select>
+      </label>
+    </div>
+    <div class="tb-group">
+      <button class="icon-btn" id="resetBtn">&#8635; Reset</button>
+      <button class="icon-btn" id="backBtn">&#9664; Zpet</button>
+      <button class="icon-btn" id="nextBtn">Dalsi &#9654;</button>
+      <button class="play-btn" id="playBtn">&#9654; Prehrat</button>
+      <label class="ctrl-grp">Rychlost
+        <input type="range" id="speed" min="300" max="2500" value="900" step="100">
+      </label>
+    </div>
+  </section>
 
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <h3>Průběh iterace</h3>
-    <div style="font-size:0.79em;line-height:1.9;color:#d4d4d4;">
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph0">1. Lokální minimum (každý proc prochází své řádky)</div>
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph1">2. All-Reduce: globální minimum přes všechny proc</div>
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph2">3. Broadcast: nový uzel v* ke všem proc</div>
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;" id="ph3">4. Lokální update vzdáleností / MST key</div>
+  <section class="scene-card">
+    <div class="canvas-wrap"><canvas id="cv"></canvas></div>
+    <div class="phase-track" id="phaseTrack">
+      <span class="ph-pill" data-ph="0">1. Lok. minimum</span>
+      <span class="ph-pill" data-ph="1">2. All-Reduce</span>
+      <span class="ph-pill" data-ph="2">3. Broadcast v*</span>
+      <span class="ph-pill" data-ph="3">4. Lok. update</span>
     </div>
-  </div>
+    <div class="lesson">
+      <div>
+        <div class="lesson-kicker" id="lessonKicker">START</div>
+        <div class="lesson-title" id="lessonTitle">Inicializace</div>
+      </div>
+      <div class="lesson-text" id="lessonText"></div>
+    </div>
+  </section>
 
-  <div class="panel">
-    <h3>Analýza</h3>
-    <div class="deriv-box">
-      <div class="deriv-row"><span class="deriv-lbl">Uzlů / proc:</span><span class="deriv-val" id="dNperP">n/p</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Lok. min/iter:</span><span class="deriv-val">Θ(n/p)</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">All-Reduce:</span><span class="deriv-val">Θ(log p)</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Lok. update:</span><span class="deriv-val">Θ(n/p)</span></div>
-      <hr style="border-color:#444;margin:5px 0;">
-      <div class="deriv-row"><span class="deriv-lbl">Iterací celkem:</span><span class="deriv-val">n-1</span></div>
-      <div class="deriv-row highlight"><span class="deriv-lbl">T_P:</span><span class="deriv-val">O(n²/p + n·log p)</span></div>
-      <hr style="border-color:#444;margin:5px 0;">
-      <div class="deriv-row"><span class="deriv-lbl">T_overhead:</span><span class="deriv-val">Θ(n·p·log p)</span></div>
-      <div class="deriv-row highlight"><span class="deriv-lbl">Isoefektivita:</span><span class="deriv-val">Θ(p²·log²p)</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Max p (cost-opt):</span><span class="deriv-val">O(n/log n)</span></div>
+  <section class="analysis">
+    <div class="side-card">
+      <h2>Stats</h2>
+      <div class="stats">
+        <div class="stat"><div class="stat-value" id="sIter">0/0</div><div class="stat-label">Iterace</div></div>
+        <div class="stat"><div class="stat-value" id="sInTree">0</div><div class="stat-label">Ve strome</div></div>
+        <div class="stat"><div class="stat-value" id="sEdge">&#8212;</div><div class="stat-label">Vaha hrany</div></div>
+      </div>
     </div>
-    <div class="stat-grid">
-      <div class="stat blue"><div class="stat-lbl">Iterace</div><div class="stat-val" id="sIter">0/0</div></div>
-      <div class="stat green"><div class="stat-lbl">V MST/SP</div><div class="stat-val" id="sInTree">0</div></div>
-      <div class="stat yellow" style="grid-column:1/-1"><div class="stat-lbl">Vybraná hrana (váha)</div><div class="stat-val" id="sEdge">—</div></div>
+
+    <div class="side-card">
+      <h2>Slozitost T_p</h2>
+      <div class="deriv-list">
+        <div class="deriv-row"><span class="deriv-lbl">Iteraci celkem:</span><span class="deriv-val">n &minus; 1</span></div>
+        <div class="deriv-row"><span class="deriv-lbl">Lok. min / iter:</span><span class="deriv-val">&Theta;(n/p)</span></div>
+        <div class="deriv-row"><span class="deriv-lbl">All-Reduce:</span><span class="deriv-val">&Theta;(log p)</span></div>
+        <div class="deriv-row"><span class="deriv-lbl">Lok. update:</span><span class="deriv-val">&Theta;(n/p)</span></div>
+        <hr class="sep">
+        <div class="deriv-row hl"><span class="deriv-lbl">T_P:</span><span class="deriv-val">O(n&sup2;/p + n&middot;log p)</span></div>
+      </div>
     </div>
-  </div>
-</div>
-</div>
+
+    <div class="side-card">
+      <h2>Isoefektivita</h2>
+      <div class="formula-box">T_o = n*(n-1)*log p
+   = Theta(n^2 * log p)
+W  = n^2  (sekvencne)
+=> p^2 * log^2(p)</div>
+      <div class="note">Max cost-opt p: O(n / log n). Pamet/proc: &Theta;(n&sup2;/p) (radky matice adj).</div>
+    </div>
+  </section>
+
+</main>
 
 <script>
-const PROC_COLORS = ['#0984e3','#e17055','#00b894','#a29bfe'];
+const PROC_PAL = ['#0984e3','#e17055','#00b894','#a29bfe','#fdcb6e','#fd79a8'];
 
-let mode = 'prim'; // 'prim' or 'dijkstra'
-let n, p, steps = [], curStep = -1, playing = false, playTimer = null;
+let mode = 'prim';
+let n, p, steps = [], curStep = 0, playing = false, playTimer = null;
 let nodes = [], edges = [], adjMatrix = [];
+let animRaf = null, animTs = null, animProgress = 0;
 
-function setMode(m) {
-  mode = m;
-  document.getElementById('tabPrim').className = 'tab' + (m==='prim'?' active':'');
-  document.getElementById('tabDijk').className = 'tab' + (m==='dijkstra'?' active':'');
-  reset();
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+let cssW = 0, cssH = 0, dpr = 1;
+
+function resizeDPR() {
+  const r = cv.getBoundingClientRect();
+  const w = Math.max(200, Math.floor(r.width));
+  const h = Math.max(300, Math.floor(w * 0.5));
+  const ratio = Math.max(1, window.devicePixelRatio || 1);
+  if (w === cssW && h === cssH && ratio === dpr) return;
+  cssW = w; cssH = h; dpr = ratio;
+  cv.width = w * ratio; cv.height = h * ratio;
+  cv.style.height = h + 'px';
 }
 
 function buildGraph(n, type) {
-  // Nodes arranged in a circle
   const nodes = [];
-  const R = 130;
-  const cx = 0, cy = 0;
-  for (let i=0;i<n;i++) {
-    const a = (i/n)*2*Math.PI - Math.PI/2;
-    nodes.push({x: cx + R*Math.cos(a), y: cy + R*Math.sin(a), id: i});
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * 2 * Math.PI - Math.PI / 2;
+    nodes.push({ x: Math.cos(a), y: Math.sin(a), id: i });
   }
-
-  // Build adjacency matrix with random weights 1-20
-  const adj = Array.from({length:n},()=>Array(n).fill(Infinity));
-  for (let i=0;i<n;i++) adj[i][i]=0;
+  const adj = Array.from({ length: n }, () => Array(n).fill(Infinity));
+  for (let i = 0; i < n; i++) adj[i][i] = 0;
 
   if (type === 'grid') {
     const rows = Math.round(Math.sqrt(n));
-    for (let i=0;i<n;i++) {
-      const r=Math.floor(i/rows), c=i%rows;
-      const right=i+1, down=i+rows;
-      if (c<rows-1 && right<n) { const w=Math.floor(Math.random()*15)+1; adj[i][right]=adj[right][i]=w; }
-      if (down<n) { const w=Math.floor(Math.random()*15)+1; adj[i][down]=adj[down][i]=w; }
+    for (let i = 0; i < n; i++) {
+      const c = i % rows;
+      if (c < rows - 1 && i + 1 < n) { const w = Math.floor(Math.random()*14)+1; adj[i][i+1]=adj[i+1][i]=w; }
+      if (i + rows < n) { const w = Math.floor(Math.random()*14)+1; adj[i][i+rows]=adj[i+rows][i]=w; }
     }
-    // Rearrange nodes in grid layout
-    for (let i=0;i<n;i++) {
-      const r=Math.floor(i/rows), c=i%rows;
-      nodes[i].x = (c/(rows-1)||0)*220-110;
-      nodes[i].y = (r/(Math.ceil(n/rows)-1)||0)*180-90;
+    const rowCnt = Math.ceil(n / rows);
+    for (let i = 0; i < n; i++) {
+      const r = Math.floor(i / rows), c = i % rows;
+      nodes[i].x = (rows > 1 ? c / (rows - 1) : 0.5) * 1.6 - 0.8;
+      nodes[i].y = (rowCnt > 1 ? r / (rowCnt - 1) : 0.5) * 1.2 - 0.6;
     }
   } else {
-    // Random connected graph
-    // First, connect as a path
-    const perm = [...Array(n).keys()].sort(()=>Math.random()-0.5);
-    for (let i=0;i<n-1;i++) {
-      const u=perm[i], v=perm[i+1];
-      const w=Math.floor(Math.random()*15)+1;
+    const perm = [...Array(n).keys()].sort(() => Math.random() - 0.5);
+    for (let i = 0; i < n - 1; i++) {
+      const u = perm[i], v = perm[i+1];
+      const w = Math.floor(Math.random()*15)+1;
       adj[u][v]=adj[v][u]=w;
     }
-    // Add extra edges
-    for (let i=0;i<n;i++) for (let j=i+1;j<n;j++) {
-      if (adj[i][j]===Infinity && Math.random()<0.3) {
-        const w=Math.floor(Math.random()*18)+1;
-        adj[i][j]=adj[j][i]=w;
+    for (let i = 0; i < n; i++) for (let j = i+1; j < n; j++) {
+      if (adj[i][j]===Infinity && Math.random()<0.32) {
+        const w=Math.floor(Math.random()*18)+1; adj[i][j]=adj[j][i]=w;
       }
     }
   }
-
-  // Extract edge list
   const edgeList = [];
-  for (let i=0;i<n;i++) for (let j=i+1;j<n;j++) if (adj[i][j]!==Infinity) edgeList.push({u:i,v:j,w:adj[i][j]});
-
+  for (let i = 0; i < n; i++) for (let j = i+1; j < n; j++)
+    if (adj[i][j]!==Infinity) edgeList.push({u:i,v:j,w:adj[i][j]});
   return {nodes, adj, edges:edgeList};
 }
 
@@ -185,260 +246,311 @@ function buildSteps(nodes, adj, p, mode) {
   const n = nodes.length;
   const perProc = Math.ceil(n/p);
   const steps = [];
-  
-  // Initial
   const inTree = new Array(n).fill(false);
-  const key = new Array(n).fill(Infinity); // MST key or dist
+  const key = new Array(n).fill(Infinity);
   const parent = new Array(n).fill(-1);
   const treeEdges = [];
-  
-  const src = 0;
-  inTree[src] = false;
-  key[src] = 0;
-  
-  steps.push({
-    type:'start', inTree:[...inTree], key:[...key], parent:[...parent], treeEdges:[...treeEdges],
-    phase:-1, selectedNode:-1, selectedEdge:null, procMins:[],
-    desc: mode==='prim'
-      ? `Start Prim MST. Uzel 0 jako startovní bod. ${p} procesorů, každý vlastní ${perProc} řádků matice adjacence (${Math.ceil(n/p)} uzlů).`
-      : `Start Dijkstra SSSP od uzlu 0. ${p} procesorů, každý vlastní ${perProc} řádků matice. dist[0]=0, ostatní=∞.`
+  key[0] = 0;
+
+  const mk = (extra) => ({
+    inTree:[...inTree], key:[...key], parent:[...parent],
+    treeEdges: treeEdges.map(e=>({...e})),
+    selectedNode:-1, selectedEdge:null, procMins:[], phase:-1, iter:0, ...extra
   });
 
-  for (let iter=0; iter<n-1; iter++) {
-    // Phase 0: Local min per proc
+  steps.push(mk({
+    kicker:'START', title:'Inicializace',
+    text:`${n} uzlu, ${p} procesoru. Kazdy proc vlastni ${perProc} radku matice adjacence. `
+        +(mode==='prim'?'Klic[0]=0, ostatni=nekonecno.':'dist[0]=0, ostatni=nekonecno.')
+  }));
+
+  for (let iter = 0; iter < n-1; iter++) {
     const procMins = [];
-    for (let proc=0; proc<p; proc++) {
+    for (let proc = 0; proc < p; proc++) {
       let bestNode=-1, bestKey=Infinity;
       for (let i=proc*perProc; i<Math.min((proc+1)*perProc,n); i++) {
-        if (!inTree[i] && key[i] < bestKey) { bestKey=key[i]; bestNode=i; }
+        if (!inTree[i] && key[i]<bestKey) { bestKey=key[i]; bestNode=i; }
       }
       procMins.push({proc, node:bestNode, key:bestKey});
     }
+    steps.push(mk({
+      phase:0, iter:iter+1, procMins:[...procMins],
+      kicker:`ITERACE ${iter+1} / ${n-1} -- FAZE 1`, title:'Lokalni minimum',
+      text:`Kazdy proc prechazi svych ${perProc} uzlu a hleda minimum mimo strom. Cas: Theta(n/p).`
+    }));
 
-    steps.push({
-      type:'phase', phase:0, iter, inTree:[...inTree], key:[...key], parent:[...parent], treeEdges:[...treeEdges],
-      procMins:[...procMins], selectedNode:-1, selectedEdge:null,
-      desc:`Iterace ${iter+1}: Každý proc prochází svých ${perProc} uzlů a hledá lokální minimum (uzel s nejmenším key/dist mimo strom). Čas: Θ(n/p).`
-    });
+    let globalMin=Infinity, globalNode=-1;
+    procMins.forEach(pm=>{ if(pm.key<globalMin){globalMin=pm.key;globalNode=pm.node;} });
+    steps.push(mk({
+      phase:1, iter:iter+1, procMins:[...procMins], selectedNode:globalNode,
+      kicker:`ITERACE ${iter+1} / ${n-1} -- FAZE 2`, title:'All-Reduce: globalni minimum',
+      text:`Globalni minimum: uzel ${globalNode} (${mode==='prim'?'key':'dist'}=${globalMin}). Komunikace Theta(log p) kroku.`
+    }));
 
-    // Phase 1: All-Reduce
-    let globalMin = Infinity, globalNode = -1;
-    procMins.forEach(pm => { if (pm.key < globalMin) { globalMin=pm.key; globalNode=pm.node; } });
-
-    steps.push({
-      type:'phase', phase:1, iter, inTree:[...inTree], key:[...key], parent:[...parent], treeEdges:[...treeEdges],
-      procMins:[...procMins], selectedNode:globalNode, selectedEdge:null,
-      desc:`All-Reduce: globální minimum je uzel ${globalNode} (${mode==='prim'?'key':'dist'}=${globalMin}). Trvá Θ(log p) komunikační kroky.`
-    });
-
-    // Phase 2: Broadcast + add to tree
-    inTree[globalNode] = true;
-    const edge = parent[globalNode] >= 0 ? {u:parent[globalNode], v:globalNode, w:key[globalNode]} : null;
+    inTree[globalNode]=true;
+    const edge=parent[globalNode]>=0?{u:parent[globalNode],v:globalNode,w:key[globalNode]}:null;
     if (edge) treeEdges.push({...edge});
+    steps.push(mk({
+      phase:2, iter:iter+1, procMins:[...procMins], selectedNode:globalNode, selectedEdge:edge,
+      kicker:`ITERACE ${iter+1} / ${n-1} -- FAZE 3`, title:`Broadcast v*=${globalNode}`,
+      text:`Uzel ${globalNode} pridan do stromu.${edge?` Hrana ${edge.u}->${edge.v} (w=${edge.w}).`:' Startovaci uzel.'}`
+    }));
 
-    steps.push({
-      type:'phase', phase:2, iter, inTree:[...inTree], key:[...key], parent:[...parent], treeEdges:[...treeEdges],
-      procMins:[...procMins], selectedNode:globalNode, selectedEdge:edge,
-      desc:`Broadcast v*=${globalNode}. Proc vlastnící uzel ${globalNode} broadcastuje info ke všem.${edge?` Přidána hrana ${edge.u}→${edge.v} (váha ${edge.w}).`:' Startovní uzel přidán.'}`
-    });
-
-    // Phase 3: Update keys
     for (let j=0; j<n; j++) {
-      if (!inTree[j] && adj[globalNode][j] !== Infinity) {
-        const newKey = mode==='prim' ? adj[globalNode][j] : key[globalNode]+adj[globalNode][j];
-        if (newKey < key[j]) { key[j]=newKey; parent[j]=globalNode; }
+      if (!inTree[j] && adj[globalNode][j]!==Infinity) {
+        const newKey=mode==='prim'?adj[globalNode][j]:key[globalNode]+adj[globalNode][j];
+        if (newKey<key[j]) { key[j]=newKey; parent[j]=globalNode; }
       }
     }
-
-    steps.push({
-      type:'phase', phase:3, iter, inTree:[...inTree], key:[...key], parent:[...parent], treeEdges:[...treeEdges],
-      procMins:[...procMins], selectedNode:globalNode, selectedEdge:edge,
-      desc:`Lokální update: každý proc aktualizuje key[j] pro uzly j ve svém bloku (sousedé v*=${globalNode}). Čas: Θ(n/p).`
-    });
+    steps.push(mk({
+      phase:3, iter:iter+1, procMins:[...procMins], selectedNode:globalNode, selectedEdge:edge,
+      kicker:`ITERACE ${iter+1} / ${n-1} -- FAZE 4`, title:'Lokalni update',
+      text:`Kazdy proc aktualizuje key/dist pro sve uzly sousedici s v*=${globalNode}. Cas: Theta(n/p).`
+    }));
   }
 
-  // Final state
-  steps.push({
-    type:'done', inTree:new Array(n).fill(true), key:[...key], parent:[...parent], treeEdges:[...treeEdges],
-    phase:-1, selectedNode:-1, selectedEdge:null, procMins:[],
-    desc: mode==='prim'
-      ? `MST dokončen! ${n-1} hran přidáno. T_P = O(n²/p + n·log p) — paralelní efektivita při p ≤ O(n/log n).`
-      : `SSSP dokončen! Nejkratší vzdálenosti od uzlu 0 spočítány. T_P = O(n²/p + n·log p) — identická analýza jako Prim.`
-  });
+  steps.push(mk({
+    inTree:new Array(n).fill(true),
+    kicker:'DOKONCENO',
+    title: mode==='prim'?'MST hotov':'SSSP hotov',
+    text: mode==='prim'
+      ?`MST sestaven z ${n-1} hran. T_P = O(n^2/p + n*log p).`
+      :`Nejkratsi vzdalenosti od uzlu 0 vypocteny. T_P = O(n^2/p + n*log p).`
+  }));
 
   return steps;
 }
 
-function reset() {
-  clearTimeout(playTimer); playing=false; document.getElementById('playBtn').textContent='▶ Přehrát';
-  n = parseInt(document.getElementById('nSel').value);
-  p = parseInt(document.getElementById('pSel').value);
-  const gt = document.getElementById('gSel').value;
-  const g = buildGraph(n, gt);
-  nodes = g.nodes; adjMatrix = g.adj; edges = g.edges;
-  steps = buildSteps(nodes, adjMatrix, p, mode);
-  curStep = -1;
-  document.getElementById('dNperP').textContent = `${Math.ceil(n/p)} uzlů`;
-  updateUI(); drawFrame(steps[0]);
+function getPos(i) {
+  const barH=28, margin=18;
+  const graphH = cssH - barH - 10;
+  const nd = nodes[i];
+  const scale = Math.min((cssW*0.44-margin), (graphH*0.46-margin));
+  return { x: cssW/2 + nd.x*scale, y: graphH/2 + nd.y*scale };
 }
 
-function applyStep(idx) { curStep=idx; updateUI(); drawFrame(steps[idx]); }
-function stepFwd() { if (curStep+1<steps.length) applyStep(curStep+1); }
-function stepBack() { if (curStep>0) applyStep(curStep-1); else { curStep=-1; updateUI(); drawFrame(steps[0]); } }
-
-function updateUI() {
-  const total = steps.length;
-  document.getElementById('progress').style.width = (total>0?(curStep+1)/total*100:0)+'%';
-  const st = curStep>=0 ? steps[curStep] : null;
-  const inTreeCount = st ? st.inTree.filter(Boolean).length : 0;
-  const iter = st ? (st.iter !== undefined ? st.iter+1 : (st.type==='done'?n-1:0)) : 0;
-  document.getElementById('sIter').textContent = `${iter}/${n-1}`;
-  document.getElementById('sInTree').textContent = inTreeCount;
-  document.getElementById('sEdge').textContent = st?.selectedEdge ? `${st.selectedEdge.u}→${st.selectedEdge.v} (w=${st.selectedEdge.w})` : '—';
-  document.getElementById('stepInfo').innerHTML = `<strong>${st ? `Krok ${curStep+1}/${total}` : 'Start'}:</strong> ${(st||steps[0]).desc}`;
-
-  for (let ph=0;ph<4;ph++) {
-    const el = document.getElementById(`ph${ph}`);
-    const active = st?.phase===ph;
-    const done = false; // phases repeat each iteration
-    el.style.borderLeftColor = active ? '#0984e3' : '#3c3c3c';
-    el.style.background = active ? '#1a1a2e' : 'transparent';
-    el.style.color = active ? '#d4d4d4' : '#888';
-  }
+function rrect(x,y,w,h,r) {
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);ctx.lineTo(x+r,y+h);
+  ctx.arcTo(x,y+h,x,y+h-r,r);ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
 }
 
-const cv = document.getElementById('cv'); const ctx = cv.getContext('2d');
+function lerp(a,b,t){return a+(b-a)*t;}
+function ease3(t){return 1-Math.pow(1-t,3);}
 
-function drawFrame(st) {
-  const W = cv.width = cv.offsetWidth, H = cv.height = 380;
-  ctx.clearRect(0,0,W,H); ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
+function draw(st, t) {
+  resizeDPR();
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
+  const bg=ctx.createLinearGradient(0,0,cssW,cssH);
+  bg.addColorStop(0,'#0b1528');bg.addColorStop(1,'#091120');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,cssW,cssH);
+  ctx.strokeStyle='rgba(142,164,204,.04)';ctx.lineWidth=1;
+  for(let x=35;x<cssW;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cssH);ctx.stroke();}
+  for(let y=35;y<cssH;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cssW,y);ctx.stroke();}
+
   if (!st) return;
-
-  const n = nodes.length;
+  const et = ease3(t);
   const perProc = Math.ceil(n/p);
+  const barH=20, barY=cssH-barH-8;
 
-  // Center the graph in left portion (leaving bottom for proc bar)
-  const gCX = W * 0.5, gCY = H * 0.45;
-  const scale = Math.min(W, H*0.8) * 0.38;
-
-  // Node positions
-  const pos = nodes.map(nd => ({x: gCX + nd.x/150*scale, y: gCY + nd.y/150*scale}));
-
-  // Draw edges
-  edges.forEach(e => {
-    const {u,v,w} = e;
-    const inMST = st.treeEdges.some(te => (te.u===u&&te.v===v)||(te.u===v&&te.v===u));
-    const isSelected = st.selectedEdge && ((st.selectedEdge.u===u&&st.selectedEdge.v===v)||(st.selectedEdge.u===v&&st.selectedEdge.v===u));
-    
-    ctx.beginPath(); ctx.moveTo(pos[u].x,pos[u].y); ctx.lineTo(pos[v].x,pos[v].y);
-    ctx.strokeStyle = isSelected ? '#fdcb6e' : (inMST ? '#00b894' : '#444');
-    ctx.lineWidth = isSelected ? 3 : (inMST ? 2.5 : 1);
-    ctx.stroke();
-
-    // Weight label
-    const mx = (pos[u].x+pos[v].x)/2, my = (pos[u].y+pos[v].y)/2;
-    ctx.fillStyle = isSelected ? '#fdcb6e' : (inMST ? '#00b894' : '#666');
-    ctx.font = '9px sans-serif'; ctx.textAlign='center';
-    ctx.fillText(w, mx, my-3);
-  });
-
-  // Draw proc ownership bar at bottom
-  const barY = H-58, barH = 18;
-  const procW = (W-20)/n;
-  ctx.font = '8px sans-serif';
+  // Proc ownership bar
+  const barX0=12, barW=cssW-24, cellW=barW/n;
   for (let i=0;i<n;i++) {
-    const proc = Math.floor(i/perProc);
-    const bx = 10+i*procW;
-    ctx.fillStyle = PROC_COLORS[proc%PROC_COLORS.length]+'66';
-    ctx.fillRect(bx, barY, procW, barH);
-    // Highlight local min of this proc
-    if (st.procMins) {
-      const pm = st.procMins.find(pm=>pm.node===i);
-      if (pm && pm.node>=0) {
-        ctx.strokeStyle = '#fdcb6e'; ctx.lineWidth=1.5;
-        ctx.strokeRect(bx+0.5,barY+0.5,procW-1,barH-1);
-      }
+    const proc=Math.floor(i/perProc);
+    const col=PROC_PAL[proc%PROC_PAL.length];
+    const bx=barX0+i*cellW;
+    ctx.fillStyle=col+'28'; rrect(bx+1,barY,cellW-2,barH,3); ctx.fill();
+    if (st.procMins && st.procMins.some(pm=>pm.node===i)) {
+      ctx.save();ctx.shadowColor='#ffbd78';ctx.shadowBlur=8;
+      ctx.strokeStyle='#ffbd78';ctx.lineWidth=1.5;
+      rrect(bx+1,barY,cellW-2,barH,3);ctx.stroke();ctx.restore();
     }
-    ctx.fillStyle = '#bbb'; ctx.textAlign='center';
-    ctx.fillText(i, bx+procW/2, barY+12);
+    ctx.fillStyle='rgba(154,169,200,.5)';ctx.font='9px "Segoe UI",sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(i,bx+cellW/2,barY+barH/2);
   }
-  // Proc labels
   for (let proc=0;proc<p;proc++) {
-    const start=proc*perProc, end=Math.min((proc+1)*perProc,n);
-    const bx = 10+start*procW, bw = (end-start)*procW;
-    ctx.fillStyle = PROC_COLORS[proc%PROC_COLORS.length];
-    ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
-    ctx.fillText(`P${proc}`, bx+bw/2, barY+barH+11);
+    const start=proc*perProc,end=Math.min((proc+1)*perProc,n);
+    const bx=barX0+start*cellW,bw=(end-start)*cellW;
+    ctx.fillStyle=PROC_PAL[proc%PROC_PAL.length];
+    ctx.font='bold 9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
+    ctx.fillText('P'+proc,bx+bw/2,barY+barH+2);
   }
 
-  // Draw proc label bar header
-  ctx.fillStyle='#666'; ctx.font='8px sans-serif'; ctx.textAlign='left';
-  ctx.fillText('1D rozložení uzlů:', 10, barY-5);
+  // Edges
+  edges.forEach(e=>{
+    const {u,v,w}=e;
+    const pu=getPos(u),pv=getPos(v);
+    const inMST=st.treeEdges.some(te=>(te.u===u&&te.v===v)||(te.u===v&&te.v===u));
+    const isSel=st.selectedEdge&&((st.selectedEdge.u===u&&st.selectedEdge.v===v)||(st.selectedEdge.u===v&&st.selectedEdge.v===u));
+    ctx.save();
+    if(isSel){ctx.shadowColor='#ffbd78';ctx.shadowBlur=14;}
+    else if(inMST){ctx.shadowColor='#6ee7a8';ctx.shadowBlur=8;}
+    ctx.beginPath();ctx.moveTo(pu.x,pu.y);ctx.lineTo(pv.x,pv.y);
+    ctx.strokeStyle=isSel?'#ffbd78':inMST?'#6ee7a8':'rgba(142,164,204,.18)';
+    ctx.lineWidth=isSel?2.5:inMST?2:1;ctx.stroke();ctx.restore();
+    const mx=(pu.x+pv.x)/2,my=(pu.y+pv.y)/2;
+    ctx.fillStyle=isSel?'#ffbd78':inMST?'#6ee7a8':'rgba(154,169,200,.4)';
+    ctx.font='9px "Segoe UI",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(w,mx,my-5);
+  });
 
-  // Draw nodes
-  const R = Math.max(12, Math.min(18, scale*0.12));
-  nodes.forEach((nd,i) => {
-    const proc = Math.floor(i/perProc);
-    const color = PROC_COLORS[proc%PROC_COLORS.length];
-    const inT = st.inTree[i];
-    const isSelected = st.selectedNode===i;
-    const isLocalMin = st.procMins && st.procMins.some(pm=>pm.node===i);
+  // All-Reduce animation: particles converge toward global min
+  if (st.phase===1 && t<1) {
+    const gpos = st.selectedNode>=0 ? getPos(st.selectedNode) : null;
+    (st.procMins||[]).forEach(pm=>{
+      if (pm.node<0||!gpos) return;
+      const from=getPos(pm.node);
+      if (Math.abs(from.x-gpos.x)<1&&Math.abs(from.y-gpos.y)<1) return;
+      const px=lerp(from.x,gpos.x,et);
+      const py=lerp(from.y,gpos.y,et)+Math.sin(et*Math.PI)*-28;
+      ctx.save();ctx.shadowColor='#ffbd78';ctx.shadowBlur=14;
+      ctx.fillStyle='#ffbd78';ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.arc(px,py,2,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    });
+  }
 
-    // Outer ring for local min
-    if (isLocalMin && !isSelected) {
-      ctx.beginPath(); ctx.arc(pos[i].x,pos[i].y,R+4,0,2*Math.PI);
-      ctx.strokeStyle='#fdcb6e'; ctx.lineWidth=2; ctx.stroke();
+  // Broadcast animation: expanding ring
+  if (st.phase===2 && st.selectedNode>=0) {
+    const cp=getPos(st.selectedNode);
+    const maxR=Math.max(cssW,cssH)*0.75;
+    const ring=et*maxR;
+    ctx.save();
+    ctx.strokeStyle='rgba(86,224,220,'+(0.4*(1-et))+')';ctx.lineWidth=2;
+    ctx.beginPath();ctx.arc(cp.x,cp.y,ring,0,Math.PI*2);ctx.stroke();
+    // inner pulse
+    const ring2=et*maxR*0.5;
+    ctx.strokeStyle='rgba(170,145,255,'+(0.3*(1-et))+')';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.arc(cp.x,cp.y,ring2,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+  }
+
+  // Nodes
+  const NR=Math.max(13,Math.min(22,cssH*0.046));
+  nodes.forEach((nd,i)=>{
+    const proc=Math.floor(i/perProc);
+    const col=PROC_PAL[proc%PROC_PAL.length];
+    const inT=st.inTree[i];
+    const isSel=st.selectedNode===i;
+    const isLok=st.procMins&&st.procMins.some(pm=>pm.node===i);
+    const pos=getPos(i);
+
+    if (isSel) {
+      ctx.save();
+      const pr=NR+5+(1-et)*12;
+      ctx.strokeStyle=`rgba(255,189,120,${0.4+0.5*et})`;ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(pos.x,pos.y,pr,0,Math.PI*2);ctx.stroke();
+      ctx.restore();
+    } else if (isLok) {
+      ctx.save();ctx.strokeStyle='rgba(255,189,120,.55)';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(pos.x,pos.y,NR+4,0,Math.PI*2);ctx.stroke();ctx.restore();
     }
-    if (isSelected) {
-      ctx.beginPath(); ctx.arc(pos[i].x,pos[i].y,R+5,0,2*Math.PI);
-      ctx.strokeStyle='#fdcb6e'; ctx.lineWidth=3; ctx.stroke();
-    }
 
-    // Node fill
-    ctx.beginPath(); ctx.arc(pos[i].x,pos[i].y,R,0,2*Math.PI);
-    ctx.fillStyle = inT ? (isSelected ? '#fdcb6e' : '#00b894') : (color+'aa');
-    ctx.fill();
-    ctx.strokeStyle = isSelected ? '#fdcb6e' : (inT ? '#00b894' : color);
-    ctx.lineWidth = inT?2.5:1.5; ctx.stroke();
+    ctx.save();
+    if(inT){ctx.shadowColor=isSel?'#ffbd78':'#6ee7a8';ctx.shadowBlur=16;}
+    ctx.beginPath();ctx.arc(pos.x,pos.y,NR,0,Math.PI*2);
+    ctx.fillStyle=inT?(isSel?'#ffbd78':'#6ee7a8'):(col+'aa');ctx.fill();
+    ctx.strokeStyle=inT?(isSel?'#ffbd78cc':'#6ee7a8cc'):col;
+    ctx.lineWidth=2;ctx.stroke();ctx.restore();
 
-    // Node label
-    ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.max(9,R*0.65)}px sans-serif`; ctx.textAlign='center';
-    ctx.fillText(i, pos[i].x, pos[i].y+4);
+    ctx.fillStyle=inT?'#09101f':'#edf4ff';
+    ctx.font=`bold ${Math.max(10,Math.floor(NR*0.72))}px "Segoe UI",sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(i,pos.x,pos.y+1);
 
-    // Key/dist label above node
-    if (st.key[i] !== Infinity) {
-      ctx.fillStyle = inT ? '#00b894' : '#fdcb6e';
-      ctx.font='8px monospace'; ctx.textAlign='center';
-      const label = mode==='dijkstra' ? `d=${st.key[i]}` : `k=${st.key[i]}`;
-      ctx.fillText(label, pos[i].x, pos[i].y-R-4);
+    if (st.key[i]!==Infinity) {
+      ctx.fillStyle=inT?'#6ee7a8':(isLok?'#ffbd78':'rgba(154,169,200,.65)');
+      ctx.font='9px ui-monospace,Consolas,monospace';
+      ctx.textAlign='center';ctx.textBaseline='bottom';
+      ctx.fillText((mode==='dijkstra'?'d=':'k=')+st.key[i],pos.x,pos.y-NR-3);
     }
   });
 
-  // Title bar
-  ctx.fillStyle = mode==='prim'?'#00b894':'#0984e3';
-  ctx.font='bold 11px sans-serif'; ctx.textAlign='center';
-  ctx.fillText(mode==='prim'?'Prim MST — zelené hrany = strom':'Dijkstra SSSP — zelené hrany = SP strom', W/2, 14);
-
-  // Legend
-  ctx.fillStyle='#00b894'; ctx.fillRect(10,20,10,10);
-  ctx.fillStyle='#aaa'; ctx.font='9px sans-serif'; ctx.textAlign='left'; ctx.fillText('V stromu', 24,29);
-  ctx.fillStyle='#fdcb6e'; ctx.fillRect(80,20,10,10);
-  ctx.fillText('Vybraný / lok. min', 94,29);
+  // Mode label
+  ctx.fillStyle=mode==='prim'?'#6ee7a8':'#62a9ff';
+  ctx.font='bold 11px "Segoe UI",sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText(mode==='prim'?'Prim MST \u2014 zelene = MST hrany':'Dijkstra SSSP \u2014 zelene = SP strom',14,10);
 }
 
+function animateTo(idx, onDone) {
+  cancelAnimationFrame(animRaf); animTs=null; animProgress=0;
+  const spd=parseInt(document.getElementById('speed').value);
+  const st=steps[idx];
+  // Skip animation for static phases or fast speed
+  if (st.phase<0) { draw(st,1); onDone&&onDone(); return; }
+  function tick(ts) {
+    if(!animTs) animTs=ts;
+    const dt=ts-animTs; animTs=ts;
+    animProgress=Math.min(1,animProgress+dt/spd);
+    draw(st,animProgress);
+    if(animProgress<1) animRaf=requestAnimationFrame(tick);
+    else { draw(st,1); onDone&&onDone(); }
+  }
+  animRaf=requestAnimationFrame(tick);
+}
+
+function renderUI() {
+  const st=steps[curStep];
+  document.getElementById('lessonKicker').textContent=st.kicker||'';
+  document.getElementById('lessonTitle').textContent=st.title||'';
+  document.getElementById('lessonText').textContent=st.text||'';
+  document.getElementById('sIter').textContent=(st.iter||0)+'/'+(n-1);
+  document.getElementById('sInTree').textContent=st.inTree.filter(Boolean).length;
+  document.getElementById('sEdge').textContent=st.selectedEdge?st.selectedEdge.w:'\u2014';
+  document.getElementById('heroBadge').innerHTML='n='+n+' &middot; p='+p+'<br><span style="font-size:10px;color:var(--muted);font-weight:600">'+(n-1)+' iteraci</span>';
+  document.getElementById('playBtn').textContent=playing?'\u23f8 Pauza':curStep>=steps.length-1?'\u21ba Prehrat':'\u25b6 Prehrat';
+  document.querySelectorAll('.ph-pill').forEach(el=>{
+    const ph=parseInt(el.dataset.ph);
+    el.classList.remove('active','done');
+    if(st.phase===ph) el.classList.add('active');
+    else if(st.phase>ph||(st.kicker&&st.kicker.startsWith('DOK'))) el.classList.add('done');
+  });
+}
+
+function applyStep(idx) { curStep=idx; renderUI(); animateTo(idx); }
+function stepFwd() { if(curStep+1<steps.length) applyStep(curStep+1); }
+function stepBack() {
+  cancelAnimationFrame(animRaf); playing=false; clearTimeout(playTimer);
+  if(curStep>0){curStep--;renderUI();draw(steps[curStep],1);}
+}
 function togglePlay() {
-  playing=!playing;
-  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
-  if (playing) {
-    const go=()=>{
-      if (curStep+1<steps.length) { applyStep(curStep+1); playTimer=setTimeout(go,parseInt(document.getElementById('speed').value)); }
-      else { playing=false; document.getElementById('playBtn').textContent='▶ Přehrát'; }
-    };
-    go();
-  } else clearTimeout(playTimer);
+  if(playing){playing=false;clearTimeout(playTimer);cancelAnimationFrame(animRaf);renderUI();return;}
+  if(curStep>=steps.length-1) curStep=0;
+  playing=true; renderUI();
+  const step=()=>{
+    if(!playing||curStep>=steps.length-1){playing=false;renderUI();return;}
+    curStep++; renderUI();
+    animateTo(curStep,()=>{if(playing) playTimer=setTimeout(step,60);});
+  };
+  step();
+}
+function reset() {
+  cancelAnimationFrame(animRaf);playing=false;clearTimeout(playTimer);
+  n=parseInt(document.getElementById('nSel').value);
+  p=parseInt(document.getElementById('pSel').value);
+  const g=buildGraph(n,document.getElementById('gSel').value);
+  nodes=g.nodes;adjMatrix=g.adj;edges=g.edges;
+  steps=buildSteps(nodes,adjMatrix,p,mode);
+  curStep=0; renderUI(); draw(steps[0],1);
 }
 
-window.addEventListener('resize',()=>{ if(curStep>=0) drawFrame(steps[curStep]); else drawFrame(steps[0]); });
+document.querySelectorAll('[data-mode]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    mode=btn.dataset.mode;
+    document.querySelectorAll('[data-mode]').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active'); reset();
+  });
+});
+document.getElementById('nSel').addEventListener('change',reset);
+document.getElementById('pSel').addEventListener('change',reset);
+document.getElementById('gSel').addEventListener('change',reset);
+document.getElementById('resetBtn').addEventListener('click',reset);
+document.getElementById('backBtn').addEventListener('click',stepBack);
+document.getElementById('nextBtn').addEventListener('click',stepFwd);
+document.getElementById('playBtn').addEventListener('click',togglePlay);
+window.addEventListener('resize',()=>{resizeDPR();draw(steps[curStep],1);});
 reset();
 </script>
 </body>
