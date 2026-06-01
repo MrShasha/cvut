@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GVG - doplneni baze v R3</title>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: #14171c;
+    color: #e6edf3;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    padding: 14px;
+    overflow: hidden;
+  }
+  button { font: inherit; }
+  .widget {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 270px;
+    gap: 12px;
+    height: 100%;
+    min-height: 560px;
+  }
+  .scene, .panel {
+    border: 1px solid #343b46;
+    border-radius: 8px;
+    background: #1d222b;
+  }
+  .scene {
+    position: relative;
+    overflow: hidden;
+  }
+  .scene canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    cursor: grab;
+  }
+  .scene canvas:active { cursor: grabbing; }
+  .hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    color: rgba(203, 213, 225, .55);
+    font-size: 12px;
+    text-align: center;
+    pointer-events: none;
+    user-select: none;
+  }
+  .loader {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #1d222b;
+    color: #94a3b8;
+    z-index: 2;
+  }
+  .panel {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
+  h1 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 18px;
+    line-height: 1.25;
+  }
+  .muted {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .choices {
+    display: grid;
+    gap: 8px;
+  }
+  .choice {
+    border: 1px solid #3c4655;
+    border-radius: 6px;
+    background: #252c37;
+    color: #e5e7eb;
+    padding: 8px 10px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .choice:hover, .choice.active {
+    border-color: #60a5fa;
+    background: #17304e;
+  }
+  .stats {
+    display: grid;
+    gap: 8px;
+    margin-top: auto;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px solid #303743;
+    padding-bottom: 7px;
+    color: #aeb8c5;
+    font-size: 13px;
+  }
+  .row strong {
+    color: #f8fafc;
+    font-family: Consolas, monospace;
+    text-align: right;
+  }
+  .legend {
+    display: grid;
+    gap: 6px;
+    padding: 10px;
+    border: 1px solid #303743;
+    border-radius: 7px;
+    background: #171c24;
+    color: #aeb8c5;
+    font-size: 13px;
+  }
+  .legend span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .swatch {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+  .status {
+    border-radius: 7px;
+    padding: 10px;
+    background: rgba(34, 197, 94, .12);
+    color: #bbf7d0;
+    border: 1px solid rgba(34, 197, 94, .35);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .status.bad {
+    background: rgba(248, 113, 113, .12);
+    color: #fecaca;
+    border-color: rgba(248, 113, 113, .35);
+  }
+  @media (max-width: 780px) {
+    body { padding: 10px; overflow: auto; }
+    .widget { grid-template-columns: 1fr; height: auto; }
+    .scene { min-height: 420px; }
+  }
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene" id="sceneWrap" aria-label="Vizualizace baze v R3">
+    <div class="loader" id="loader">Načítám Three.js...</div>
+    <div class="hint">Táhni = rotace | Scroll = zoom | Pravé tlačítko = posun</div>
+  </section>
+  <aside class="panel">
+    <h1>Doplnění báze v R3</h1>
+    <p class="muted">Pevný je vektor b1 = (1, 1, 0). Vyber dvojici b2, b3 a sleduj, jestli vznikne nenulový objem rovnoběžnostěnu.</p>
+    <div class="legend" aria-label="Legenda">
+      <span><i class="swatch" style="background:#ef4444"></i>osa x</span>
+      <span><i class="swatch" style="background:#22c55e"></i>osa y</span>
+      <span><i class="swatch" style="background:#60a5fa"></i>osa z</span>
+      <span><i class="swatch" style="background:#5eead4"></i>b1 = (1, 1, 0)</span>
+      <span><i class="swatch" style="background:#93c5fd"></i>b2</span>
+      <span><i class="swatch" style="background:#fbbf24"></i>b3</span>
+    </div>
+    <div class="choices" id="choices"></div>
+    <div class="stats">
+      <div class="row"><span>det[b1 b2 b3]</span><strong id="detVal">0</strong></div>
+      <div class="row"><span>rank</span><strong id="rankVal">0</strong></div>
+      <div class="status" id="statusBox">Vyber variantu.</div>
+    </div>
+  </aside>
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const options = [
+  {
+    label: 'Správná báze',
+    b2: [0, 1, 0],
+    b3: [0, 0, 1],
+    note: 'Vektory nejsou v jedné rovině. Det je nenulový, proto tvoří bázi R3.'
+  },
+  {
+    label: 'Špatně: závislé vektory',
+    b2: [2, 2, 0],
+    b3: [0, 0, 1],
+    note: 'b2 je jen násobek b1. Jeden směr se opakuje, proto rank klesne.'
+  },
+  {
+    label: 'Špatně: vše v rovině z=0',
+    b2: [1, 0, 0],
+    b3: [0, 1, 0],
+    note: 'Všechny tři vektory leží v rovině z=0. Objem je nulový.'
+  }
+];
+
+const b1 = [1, 1, 0];
+let selected = 0;
+let graphGroup = null;
+
+const wrap = document.getElementById('sceneWrap');
+const loader = document.getElementById('loader');
+const choices = document.getElementById('choices');
+const detVal = document.getElementById('detVal');
+const rankVal = document.getElementById('rankVal');
+const statusBox = document.getElementById('statusBox');
+const labelObjects = [];
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x14171c);
+wrap.appendChild(renderer.domElement);
+loader.style.display = 'none';
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x14171c, 0.045);
+
+const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+camera.position.set(5.5, 4.5, 6.5);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(0.65, 0.45, 0.45);
+controls.minDistance = 2.5;
+controls.maxDistance = 18;
+
+scene.add(new THREE.AmbientLight(0x7b879b, 3));
+const key = new THREE.DirectionalLight(0xffffff, 2.4);
+key.position.set(5, 7, 6);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x93c5fd, 1.1);
+fill.position.set(-4, 2, -5);
+scene.add(fill);
+
+const grid = new THREE.GridHelper(7, 14, 0x475569, 0x27313f);
+grid.position.set(0, 0, 0);
+scene.add(grid);
+
+const axisLength = 2.8;
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), axisLength, 0xef4444, 0.18, 0.1));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), axisLength, 0x22c55e, 0.18, 0.1));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), axisLength, 0x60a5fa, 0.18, 0.1));
+
+function makeLabel(text, color) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 192;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  ctx.font = '700 32px Segoe UI, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(20, 23, 28, 0.82)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+  roundRect(ctx, 42, 10, 108, 44, 10);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = color;
+  ctx.fillText(text, 96, 33);
+  const texture = new THREE.CanvasTexture(canvas);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true }));
+  sprite.scale.set(0.72, 0.24, 1);
+  labelObjects.push(sprite);
+  return sprite;
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, radius);
+  ctx.arcTo(x + width, y + height, x, y + height, radius);
+  ctx.arcTo(x, y + height, x, y, radius);
+  ctx.arcTo(x, y, x + width, y, radius);
+  ctx.closePath();
+}
+
+const xLabel = makeLabel('x', '#fecaca');
+xLabel.position.set(axisLength + 0.34, 0, 0);
+scene.add(xLabel);
+const yLabel = makeLabel('y', '#bbf7d0');
+yLabel.position.set(0, axisLength + 0.34, 0);
+scene.add(yLabel);
+const zLabel = makeLabel('z', '#bfdbfe');
+zLabel.position.set(0, 0, axisLength + 0.34);
+scene.add(zLabel);
+
+function det3(a, b, c) {
+  return a[0] * (b[1] * c[2] - b[2] * c[1])
+    - b[0] * (a[1] * c[2] - a[2] * c[1])
+    + c[0] * (a[1] * b[2] - a[2] * b[1]);
+}
+
+function vector(values) {
+  return new THREE.Vector3(values[0], values[1], values[2]);
+}
+
+function addVector(group, values, color) {
+  const end = vector(values);
+  const length = end.length();
+  if (length < 0.001) return;
+  const arrow = new THREE.ArrowHelper(end.clone().normalize(), new THREE.Vector3(0, 0, 0), length, color, 0.2, 0.11);
+  arrow.line.material.linewidth = 4;
+  group.add(arrow);
+}
+
+function addSphere(group, values, color, radius = 0.065) {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 24, 16),
+    new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.08 })
+  );
+  mesh.position.copy(vector(values));
+  group.add(mesh);
+}
+
+function addVectorLabel(group, values, text, color) {
+  const label = makeLabel(text, color);
+  label.position.copy(vector(values).multiplyScalar(1.08));
+  group.add(label);
+}
+
+function addParallelepiped(group, a, b, c) {
+  const points = [
+    [0, 0, 0], a, b, c,
+    [a[0] + b[0], a[1] + b[1], a[2] + b[2]],
+    [a[0] + c[0], a[1] + c[1], a[2] + c[2]],
+    [b[0] + c[0], b[1] + c[1], b[2] + c[2]],
+    [a[0] + b[0] + c[0], a[1] + b[1] + c[1], a[2] + b[2] + c[2]]
+  ].map(vector);
+  const faces = [
+    [0, 1, 4], [0, 4, 2],
+    [0, 1, 5], [0, 5, 3],
+    [0, 2, 6], [0, 6, 3],
+    [7, 4, 1], [7, 1, 5],
+    [7, 4, 2], [7, 2, 6],
+    [7, 5, 3], [7, 3, 6]
+  ];
+  const positions = [];
+  for (const face of faces) {
+    for (const index of face) {
+      positions.push(points[index].x, points[index].y, points[index].z);
+    }
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.computeVertexNormals();
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x93c5fd,
+    transparent: true,
+    opacity: 0.18,
+    side: THREE.DoubleSide,
+    roughness: 0.75
+  });
+  group.add(new THREE.Mesh(geometry, material));
+
+  const edges = new THREE.EdgesGeometry(geometry);
+  group.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.55 })));
+}
+
+function clearGraph() {
+  if (!graphGroup) return;
+  graphGroup.traverse((object) => {
+    object.geometry?.dispose?.();
+    if (Array.isArray(object.material)) object.material.forEach((mat) => mat.dispose?.());
+    else object.material?.dispose?.();
+  });
+  scene.remove(graphGroup);
+}
+
+function rebuild() {
+  clearGraph();
+  const opt = options[selected];
+  const det = det3(b1, opt.b2, opt.b3);
+
+  graphGroup = new THREE.Group();
+  if (Math.abs(det) > 1e-9) addParallelepiped(graphGroup, b1, opt.b2, opt.b3);
+  addVector(graphGroup, b1, 0x5eead4);
+  addVector(graphGroup, opt.b2, 0x93c5fd);
+  addVector(graphGroup, opt.b3, 0xfbbf24);
+  addSphere(graphGroup, b1, 0x5eead4);
+  addSphere(graphGroup, opt.b2, 0x93c5fd);
+  addSphere(graphGroup, opt.b3, 0xfbbf24);
+  addVectorLabel(graphGroup, b1, 'b1', '#99f6e4');
+  addVectorLabel(graphGroup, opt.b2, 'b2', '#bfdbfe');
+  addVectorLabel(graphGroup, opt.b3, 'b3', '#fde68a');
+  scene.add(graphGroup);
+
+  detVal.textContent = det.toFixed(0);
+  rankVal.textContent = Math.abs(det) > 1e-9 ? '3' : '2';
+  statusBox.textContent = opt.note;
+  statusBox.classList.toggle('bad', Math.abs(det) <= 1e-9);
+  [...choices.children].forEach((button, index) => button.classList.toggle('active', index === selected));
+}
+
+function resize() {
+  const rect = wrap.getBoundingClientRect();
+  renderer.setSize(Math.max(1, rect.width), Math.max(1, rect.height), false);
+  camera.aspect = Math.max(1, rect.width) / Math.max(1, rect.height);
+  camera.updateProjectionMatrix();
+}
+
+for (const [index, option] of options.entries()) {
+  const button = document.createElement('button');
+  button.className = 'choice';
+  button.type = 'button';
+  button.textContent = option.label;
+  button.addEventListener('click', () => {
+    selected = index;
+    rebuild();
+  });
+  choices.appendChild(button);
+}
+
+window.addEventListener('resize', resize);
+resize();
+rebuild();
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+</body>
+</html>
