@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Min-cost flow</title>
+  <style>
+    :root{--bg:#0f172a;--panel:#172033;--ink:#e5e7eb;--muted:#94a3b8;--line:#334155;--green:#34d399;--red:#fb7185;--amber:#fbbf24;--blue:#38bdf8}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,Segoe UI,Arial,sans-serif}.wrap{max-width:1180px;margin:0 auto;padding:18px;display:grid;grid-template-columns:1fr 360px;gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
+    h1{font-size:22px;margin:0 0 4px}.muted{color:var(--muted);margin:0 0 12px}svg{width:100%;height:410px;background:#0b1220;border:1px solid var(--line);border-radius:8px}.edge{stroke:#64748b;stroke-width:3;fill:none;marker-end:url(#arrow)}.edge.neg{stroke:var(--red);stroke-width:5}.edge.pos{stroke:var(--green);stroke-width:5}.edge.hot{stroke:var(--amber);stroke-width:6;filter:url(#glow)}
+    .node{fill:#1e293b;stroke:#64748b;stroke-width:2}.txt{fill:var(--ink);font-weight:800;text-anchor:middle;dominant-baseline:middle}.label rect{fill:#0b1220;stroke:#475569}.label text{fill:#e5e7eb;font:800 12px Consolas,monospace;text-anchor:middle}button{background:#24324a;color:var(--ink);border:1px solid #475569;border-radius:7px;padding:9px 12px;cursor:pointer}.primary{background:#0e7490;border-color:#22d3ee}.controls{display:flex;gap:8px;margin-top:12px}.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#26364f;color:#cbd5e1;font-size:12px;margin-bottom:8px}.formula{background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font:800 13px Consolas,monospace;color:#dbeafe;margin-top:10px;white-space:pre-line}
+    @media(max-width:860px){.wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="panel">
+      <h1>Min-cost flow: cycle-canceling</h1>
+      <p class="muted">Záporný cyklus v reziduálním grafu znamená možnost zlevnit aktuální tok.</p>
+      <svg id="svg" viewBox="0 0 780 410"></svg>
+      <div class="controls"><button id="prev">← zpět</button><button class="primary" id="next">další krok →</button><button id="reset">reset</button></div>
+    </main>
+    <aside class="panel">
+      <span class="badge" id="badge"></span><h2 id="title"></h2><p id="text"></p><div class="formula" id="formula"></div>
+    </aside>
+  </div>
+  <script>
+    const NS="http://www.w3.org/2000/svg", nodes={A:[185,205],B:[390,100],C:[585,205],D:[390,320]};
+    const cycles=[
+      {from:"A",to:"B",cost:-4,cap:2,label:[285,135]},
+      {from:"B",to:"C",cost:1,cap:3,label:[492,135]},
+      {from:"C",to:"A",cost:1,cap:2,label:[385,225],curve:[390,285]}
+    ];
+    const other=[{from:"A",to:"D",cost:3,cap:4,label:[278,290]},{from:"D",to:"C",cost:2,cap:4,label:[498,290]}];
+    const steps=[
+      {title:"1. Máme přípustný tok",text:"Tok splňuje bilance i kapacity, ale nemusí mít minimální cenu.",formula:"cena toku = 28",hot:[]},
+      {title:"2. Sestavíme reziduální graf",text:"Vpřední hrana má cenu c(e). Zpětná hrana má cenu -c(e), protože snížení toku na drahé hraně šetří peníze.",formula:"u_f(i,j)=u-f\nu_f(j,i)=f-l\nc_f(j,i)=-c(i,j)",hot:[]},
+      {title:"3. Najdeme záporný cyklus",text:"Cyklus A→B→C→A má součet cen -4+1+1=-2. Každá jednotka toku po tomto cyklu sníží cenu o 2.",formula:"c(C) = -4 + 1 + 1 = -2",hot:["A-B","B-C","C-A"]},
+      {title:"4. Augmentujeme po cyklu",text:"Pošleme γ = 2, protože nejmenší reziduální kapacita na cyklu je 2. Cena klesne o 4.",formula:"γ = min(2,3,2)=2\nΔ cena = 2 · (-2) = -4",hot:["A-B","B-C","C-A"]},
+      {title:"5. Optimum",text:"Když už reziduální graf neobsahuje záporný cyklus, aktuální přípustný tok je min-cost flow.",formula:"žádný záporný cyklus\n⇔ tok má minimální cenu",hot:[]}
+    ];
+    let step=0;
+    function el(n,a={}){const e=document.createElementNS(NS,n);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));return e}
+    function d(e){const [x1,y1]=nodes[e.from], [x2,y2]=nodes[e.to]; if(e.curve){const [cx,cy]=e.curve;return `M${x1},${y1} Q${cx},${cy} ${x2},${y2}`} return `M${x1},${y1} L${x2},${y2}`}
+    function drawEdge(svg,e){const id=`${e.from}-${e.to}`, hot=steps[step].hot.includes(id); svg.append(el("path",{d:d(e),class:"edge "+(hot?"hot":e.cost<0?"neg":"")})); const g=el("g",{class:"label"});g.append(el("rect",{x:e.label[0]-42,y:e.label[1]-14,width:84,height:26,rx:6}));const t=el("text",{x:e.label[0],y:e.label[1]+4});t.textContent=`c=${e.cost}, u=${e.cap}`;g.append(t);svg.append(g)}
+    function render(){const s=steps[step], svg=document.getElementById("svg"); svg.innerHTML=""; const defs=el("defs"); defs.innerHTML='<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#64748b"/></marker><filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';svg.append(defs);[...cycles,...other].forEach(e=>drawEdge(svg,e));Object.entries(nodes).forEach(([id,[x,y]])=>{svg.append(el("circle",{cx:x,cy:y,r:28,class:"node"}));const t=el("text",{x,y:y+1,class:"txt"});t.textContent=id;svg.append(t)});document.getElementById("badge").textContent=`${step+1} / ${steps.length}`;document.getElementById("title").textContent=s.title;document.getElementById("text").textContent=s.text;document.getElementById("formula").textContent=s.formula}
+    document.getElementById("next").onclick=()=>{step=Math.min(steps.length-1,step+1);render()};
+    document.getElementById("prev").onclick=()=>{step=Math.max(0,step-1);render()};
+    document.getElementById("reset").onclick=()=>{step=0;render()};
+    render();
+  </script>
+</body>
+</html>

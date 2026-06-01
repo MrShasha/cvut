@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bipartitni parovani jako max-flow</title>
+  <style>
+    :root{--bg:#111827;--panel:#172033;--ink:#e5e7eb;--muted:#9ca3af;--line:#334155;--blue:#38bdf8;--green:#34d399;--amber:#fbbf24}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,Segoe UI,Arial,sans-serif}.wrap{max-width:1180px;margin:0 auto;padding:18px;display:grid;grid-template-columns:1fr 360px;gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}h1{font-size:22px;margin:0 0 4px}.muted{color:var(--muted);margin:0 0 12px}svg{width:100%;height:430px;background:#0b1220;border:1px solid var(--line);border-radius:8px}
+    .edge{stroke:#475569;stroke-width:2.5;fill:none;marker-end:url(#arrow)}.edge.match{stroke:var(--green);stroke-width:6}.edge.hot{stroke:var(--amber);stroke-width:6;filter:url(#glow)}.node{fill:#1e293b;stroke:#64748b;stroke-width:2}.node.used{stroke:var(--green);stroke-width:4}.node.source,.node.sink{stroke:var(--blue);stroke-width:4}.txt{fill:var(--ink);font-weight:800;text-anchor:middle;dominant-baseline:middle}
+    button{background:#24324a;color:var(--ink);border:1px solid #475569;border-radius:7px;padding:9px 12px;cursor:pointer}.primary{background:#0e7490;border-color:#22d3ee}.controls{display:flex;gap:8px;margin-top:12px}.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#26364f;color:#cbd5e1;font-size:12px;margin-bottom:8px}.formula{background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font:800 13px Consolas,monospace;color:#dbeafe;margin-top:10px;white-space:pre-line}
+    @media(max-width:860px){.wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="panel">
+      <h1>Bipartitní párování jako max-flow</h1>
+      <p class="muted">Kapacity 1 vynutí, že každý vrchol může být použit nejvýše jednou.</p>
+      <svg id="svg" viewBox="0 0 780 430"></svg>
+      <div class="controls"><button id="prev">← zpět</button><button class="primary" id="next">další krok →</button><button id="reset">reset</button></div>
+    </main>
+    <aside class="panel">
+      <span class="badge" id="badge"></span><h2 id="title"></h2><p id="text"></p><div class="formula" id="formula"></div>
+    </aside>
+  </div>
+  <script>
+    const NS="http://www.w3.org/2000/svg";
+    const nodes={s:[70,215],x1:[230,105],x2:[230,215],x3:[230,325],y1:[520,105],y2:[520,215],y3:[520,325],t:[700,215]};
+    const compat=[["x1","y2"],["x1","y3"],["x2","y1"],["x2","y2"],["x3","y2"],["x3","y3"]];
+    const steps=[
+      {title:"1. Transformace grafu",text:"Přidáme zdroj s, odpad t, hrany s→X a Y→t s kapacitou 1. Kompatibilní hrany orientujeme X→Y.",formula:"všechny kapacity = 1",m:[],hot:[]},
+      {title:"2. První augmentace",text:"Tok 1 po cestě s→x1→y2→t vytvoří pár x1-y2.",formula:"matching = {x1-y2}",m:[["x1","y2"]],hot:["s-x1","x1-y2","y2-t"]},
+      {title:"3. Druhá augmentace",text:"Další jednotka toku vytvoří pár x2-y1.",formula:"matching = {x1-y2, x2-y1}",m:[["x1","y2"],["x2","y1"]],hot:["s-x2","x2-y1","y1-t"]},
+      {title:"4. Třetí augmentace",text:"Poslední volný vrchol x3 může jít do y3. Máme perfektní párování velikosti 3.",formula:"matching = {x1-y2, x2-y1, x3-y3}",m:[["x1","y2"],["x2","y1"],["x3","y3"]],hot:["s-x3","x3-y3","y3-t"]},
+      {title:"5. Výsledek",text:"Hrany X→Y s tokem 1 jsou párování. Integralita toků zaručí hodnoty 0/1, ne zlomky.",formula:"max-flow = maximum matching = 3",m:[["x1","y2"],["x2","y1"],["x3","y3"]],hot:[]}
+    ];
+    let step=0;
+    function el(n,a={}){const e=document.createElementNS(NS,n);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));return e}
+    function id(a,b){return `${a}-${b}`} function isMatch(a,b){return steps[step].m.some(p=>p[0]===a&&p[1]===b)} function hot(a,b){return steps[step].hot.includes(id(a,b))}
+    function line(svg,a,b,cls="edge"){const [x1,y1]=nodes[a], [x2,y2]=nodes[b];svg.append(el("line",{x1,y1,x2,y2,class:cls+" "+(hot(a,b)?"hot":"")}))}
+    function render(){const s=steps[step], svg=document.getElementById("svg");svg.innerHTML="";const defs=el("defs");defs.innerHTML='<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#64748b"/></marker><filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';svg.append(defs);["x1","x2","x3"].forEach(x=>line(svg,"s",x));compat.forEach(([x,y])=>line(svg,x,y,isMatch(x,y)?"edge match":"edge"));["y1","y2","y3"].forEach(y=>line(svg,y,"t"));Object.entries(nodes).forEach(([n,[x,y]])=>{const used=s.m.flat().includes(n);svg.append(el("circle",{cx:x,cy:y,r:n==="s"||n==="t"?30:26,class:`node ${n==="s"?"source":n==="t"?"sink":""} ${used?"used":""}`}));const tx=el("text",{x,y:y+1,class:"txt"});tx.textContent=n;svg.append(tx)});document.getElementById("badge").textContent=`${step+1} / ${steps.length}`;document.getElementById("title").textContent=s.title;document.getElementById("text").textContent=s.text;document.getElementById("formula").textContent=s.formula}
+    document.getElementById("next").onclick=()=>{step=Math.min(steps.length-1,step+1);render()};
+    document.getElementById("prev").onclick=()=>{step=Math.max(0,step-1);render()};
+    document.getElementById("reset").onclick=()=>{step=0;render()};
+    render();
+  </script>
+</body>
+</html>
