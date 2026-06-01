@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AC-3 animace</title>
+  <style>
+    :root{--bg:#0f172a;--panel:#172033;--ink:#e5e7eb;--muted:#94a3b8;--line:#334155;--blue:#38bdf8;--green:#34d399;--red:#fb7185;--amber:#fbbf24}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,Segoe UI,Arial,sans-serif}
+    .wrap{max-width:1180px;margin:0 auto;padding:18px;display:grid;grid-template-columns:1fr 360px;gap:16px}
+    .panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}h1{font-size:22px;margin:0 0 4px}.muted{color:var(--muted);margin:0 0 10px}
+    svg{width:100%;height:280px;background:#0b1220;border:1px solid var(--line);border-radius:8px}
+    .arc{stroke:#64748b;stroke-width:3;fill:none;marker-end:url(#arrow)}.arc.active{stroke:var(--blue);stroke-width:5}.arc.changed{stroke:var(--amber);stroke-width:5}
+    .node{fill:#1e293b;stroke:#64748b;stroke-width:2}.node.active{stroke:var(--blue);stroke-width:4}.nt{font-weight:800;fill:var(--ink);text-anchor:middle;dominant-baseline:middle}
+    .domains{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}.dom{background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px}.dom b{display:block;margin-bottom:8px}
+    .vals{display:flex;gap:6px}.v{width:32px;height:32px;display:grid;place-items:center;border:1px solid #64748b;border-radius:7px;background:#1e293b;font-weight:800}.v.rem{opacity:.25;text-decoration:line-through}.v.del{background:#7f1d1d;border-color:var(--red)}
+    .queue{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.q{padding:6px 8px;border-radius:999px;background:#26364f;border:1px solid #475569;font-size:13px}.q.now{background:#075985;border-color:var(--blue)}
+    button{background:#24324a;color:var(--ink);border:1px solid #475569;border-radius:7px;padding:9px 12px;cursor:pointer}button.primary{background:#0e7490;border-color:#22d3ee}.controls{display:flex;gap:8px;margin-top:12px}
+    .log{min-height:168px;background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:12px}.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#26364f;color:#cbd5e1;font-size:12px;margin-bottom:8px}
+    @media(max-width:860px){.wrap{grid-template-columns:1fr}.domains{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="panel">
+      <h1>AC-3: fronta arcen</h1>
+      <p class="muted">Omezení: x1 = x2, x2 + 1 = x3. Domény na začátku: {1,2,3}.</p>
+      <svg viewBox="0 0 760 280" aria-label="constraint graph">
+        <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#64748b"/></marker></defs>
+        <path id="a12" class="arc" d="M190 126 C260 78 330 78 400 126"/><path id="a21" class="arc" d="M400 154 C330 204 260 204 190 154"/>
+        <path id="a23" class="arc" d="M420 126 C490 78 560 78 630 126"/><path id="a32" class="arc" d="M630 154 C560 204 490 204 420 154"/>
+        <circle id="nx1" class="node" cx="150" cy="140" r="42"/><circle id="nx2" class="node" cx="380" cy="140" r="42"/><circle id="nx3" class="node" cx="660" cy="140" r="42"/>
+        <text class="nt" x="150" y="140">x1</text><text class="nt" x="380" y="140">x2</text><text class="nt" x="660" y="140">x3</text>
+      </svg>
+      <div class="domains" id="domains"></div>
+      <div class="controls"><button id="prev">← zpět</button><button class="primary" id="next">další krok →</button><button id="reset">reset</button></div>
+    </main>
+    <aside class="panel">
+      <div class="log"><span class="badge" id="badge"></span><div id="text"></div><div class="queue" id="queue"></div></div>
+      <p class="muted">Když se doména zmenší, AC-3 vrátí do fronty jen arcy vedoucí do změněné proměnné. Nekontroluje znovu všechno.</p>
+    </aside>
+  </div>
+  <script>
+    const all=[1,2,3];
+    const steps=[
+      {arc:null,d:{x1:[1,2,3],x2:[1,2,3],x3:[1,2,3]},del:{},q:["x1→x2","x2→x1","x2→x3","x3→x2"],t:"Inicializace: ve frontě jsou všechny orientované arcy."},
+      {arc:"a12",nodes:["nx1","nx2"],d:{x1:[1,2,3],x2:[1,2,3],x3:[1,2,3]},del:{},q:["x2→x1","x2→x3","x3→x2"],t:"REVISE(x1,x2): pro každou hodnotu x1 existuje stejná hodnota v x2. Nic nemažeme."},
+      {arc:"a21",nodes:["nx2","nx1"],d:{x1:[1,2,3],x2:[1,2,3],x3:[1,2,3]},del:{},q:["x2→x3","x3→x2"],t:"REVISE(x2,x1): také bez změny."},
+      {arc:"a23",nodes:["nx2","nx3"],d:{x1:[1,2,3],x2:[1,2],x3:[1,2,3]},del:{x2:[3]},q:["x3→x2","x1→x2"],t:"REVISE(x2,x3): hodnota x2=3 nemá podporu, protože x3 by muselo být 4. Mažeme 3 z D2 a vracíme arc x1→x2."},
+      {arc:"a32",nodes:["nx3","nx2"],d:{x1:[1,2,3],x2:[1,2],x3:[2,3]},del:{x3:[1]},q:["x1→x2","x2→x3"],t:"REVISE(x3,x2): hodnota x3=1 nemá podporu, protože x2+1 nemůže být 1. Mažeme 1 z D3."},
+      {arc:"a12",nodes:["nx1","nx2"],d:{x1:[1,2],x2:[1,2],x3:[2,3]},del:{x1:[3]},q:["x2→x3"],t:"REVISE(x1,x2): po zmenšení D2 už x1=3 nemá podporu. Mažeme 3 z D1."},
+      {arc:null,d:{x1:[1,2],x2:[1,2],x3:[2,3]},del:{},q:[],t:"Fronta je prázdná. Instance je arc-consistent s doménami D1={1,2}, D2={1,2}, D3={2,3}."}
+    ];
+    let step=0;
+    function vals(name, allowed, del){return `<b>${name}</b><div class="vals">${all.map(v=>`<span class="v ${allowed.includes(v)?"":"rem"} ${(del||[]).includes(v)?"del":""}">${v}</span>`).join("")}</div>`}
+    function render(){
+      const s=steps[step]; document.getElementById("domains").innerHTML=["x1","x2","x3"].map(k=>`<div class="dom">${vals(k,s.d[k],s.del[k])}</div>`).join("");
+      document.querySelectorAll(".arc,.node").forEach(e=>e.classList.remove("active","changed")); if(s.arc)document.getElementById(s.arc).classList.add("active"); (s.nodes||[]).forEach(n=>document.getElementById(n).classList.add("active"));
+      badge.textContent=`${step+1} / ${steps.length}`; text.textContent=s.t; queue.innerHTML=s.q.map((q,i)=>`<span class="q ${i===0?"now":""}">${q}</span>`).join("");
+    }
+    next.onclick=()=>{step=Math.min(steps.length-1,step+1);render()}; prev.onclick=()=>{step=Math.max(0,step-1);render()}; reset.onclick=()=>{step=0;render()}; render();
+  </script>
+</body>
+</html>
