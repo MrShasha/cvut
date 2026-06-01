@@ -424,7 +424,7 @@ function render(){
   }).join('');
 
   const d=Math.log2(p);
-  document.getElementById('complexityFormula').textContent='T = ts \u00b7 log p + tv \u00b7 m \u00b7 (1 \u2212 1/p)\n  = ts \u00b7 '+d+' + tv \u00b7 m \u00b7 '+((1-1/p).toFixed(3))+'\n\nCelkem preneseno: m \u00b7 (1\u22121/p) \u2248 m slov\nZpravy celkem: '+steps.reduce((s,st)=>s+st.pairs.length,0)+' prenosu';
+  document.getElementById('complexityFormula').textContent='T = ts \u00b7 log p + tv \u00b7 m \u00b7 (p\u22121)\n  = ts \u00b7 '+d+' + tv \u00b7 m \u00b7 '+(p-1)+'\n\nCelkem preneseno: m \u00b7 (p\u22121) slov\nZpravy celkem: '+steps.reduce((s,st)=>s+st.pairs.length,0)+' prenosu';
   document.getElementById('complexityNote').textContent=mode==='scatter'?'V kroku k odesilaji 2^(k-1) procesoru zpravu o m/2^(k-1) slovech. Celkovy objem \u2248 m.':'Gather je presny zrcadlovy obraz scatteru \u2014 stejna slozitost, opacny smer.';
 
   document.getElementById('procStrip').innerHTML=Array.from({length:p},(_,i)=>{
