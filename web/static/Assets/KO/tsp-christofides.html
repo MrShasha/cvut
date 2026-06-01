@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSP Christofides</title>
+<style>
+:root{--bg:#111827;--panel:rgba(24,31,43,.94);--line:rgba(156,163,175,.24);--text:#edf2f7;--muted:#9ca3af;--blue:#60a5fa;--green:#34d399;--amber:#fbbf24;--violet:#a78bfa;--cyan:#22d3ee}
+*{box-sizing:border-box}body{min-width:900px;margin:0;padding:14px;overflow-x:auto;background:radial-gradient(circle at 0 0,rgba(167,139,250,.13),transparent 28rem),radial-gradient(circle at 100% 100%,rgba(52,211,153,.10),transparent 28rem),var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;font-size:14px}button{font:inherit}.topbar,.scene,.panel{border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 18px 44px rgba(0,0,0,.22)}.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 14px;margin-bottom:10px}.eyebrow,.label,.panel-title{color:var(--muted);font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}h1{margin:2px 0 0;font-size:19px;letter-spacing:0}.controls{display:flex;gap:8px}.btn{border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:rgba(55,65,81,.78);color:#e5e7eb;cursor:pointer}.btn.primary{min-width:92px;border-color:rgba(167,139,250,.7);background:linear-gradient(135deg,rgba(91,33,182,.96),rgba(37,99,235,.90));font-weight:800}.layout{display:grid;grid-template-columns:minmax(0,1fr)292px;gap:10px}.scene{min-height:585px;overflow:hidden;background:linear-gradient(rgba(156,163,175,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(156,163,175,.04) 1px,transparent 1px),rgba(17,24,39,.84);background-size:24px 24px}.stage{display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding:14px}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.step{border:1px solid var(--line);border-radius:10px;padding:9px;background:rgba(31,41,55,.76);color:#d1d5db}.step.active{border-color:rgba(167,139,250,.95);background:rgba(91,33,182,.42);color:#fff}.step strong{display:block;margin-bottom:3px}svg{width:100%;height:390px;border:1px solid var(--line);border-radius:12px;background:rgba(15,23,42,.68)}.edge{stroke:rgba(148,163,184,.18);stroke-width:2}.edge.mst{stroke:var(--green);stroke-width:5}.edge.match{stroke:var(--violet);stroke-width:6;stroke-dasharray:10 7}.edge.tour{stroke:var(--cyan);stroke-width:5}.node circle{fill:#111827;stroke:#cbd5e1;stroke-width:2}.node.odd circle{stroke:var(--amber);stroke-width:4}.node text{fill:#f8fafc;font-weight:900;font-size:13px;text-anchor:middle;dominant-baseline:middle}.caption{border-left:3px solid var(--violet);border-radius:8px;padding:10px 11px;background:rgba(124,58,237,.13);color:#ede9fe;line-height:1.45}.side{display:grid;gap:10px;align-content:start}.panel{padding:12px}.stat-row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid rgba(156,163,175,.12)}.stat-row:last-child{border-bottom:0}.stat-value{font-weight:900}.note{margin:8px 0 0;color:#d1d5db;line-height:1.45}
+</style>
+</head>
+<body>
+<div class="topbar"><div><div class="eyebrow">Metricky TSP</div><h1>Christofides: opravime jen liche stupne</h1></div><div class="controls"><button class="btn primary" id="play">Prehrat</button><button class="btn" id="step">Krok</button><button class="btn" id="reset">Reset</button></div></div>
+<div class="layout"><main class="scene"><div class="stage"><div class="steps" id="steps"></div><svg id="svg" viewBox="0 0 760 390"></svg><div class="caption" id="caption"></div></div></main><aside class="side"><section class="panel"><div class="panel-title">Cena</div><div class="stat-row"><span>MST</span><span class="stat-value">10</span></div><div class="stat-row"><span>Matching</span><span class="stat-value">5</span></div><div class="stat-row"><span>Spolu</span><span class="stat-value">15</span></div></section><section class="panel"><div class="panel-title">Garance</div><p class="note">MST <= OPT a minimalni parovani na lichych vrcholech ma cenu nejvyse OPT/2. Proto celkem 3/2 OPT pred zkratkami.</p></section></aside></div>
+<script>
+const nodes={A:[380,58],B:[170,130],C:[380,150],D:[590,130],E:[300,285],F:[480,285]};
+const all=[["A","B"],["A","C"],["A","D"],["B","C"],["C","D"],["C","E"],["C","F"],["E","F"],["B","E"],["D","F"],["A","E"],["A","F"]];
+const mst=[["A","B"],["A","C"],["A","D"],["C","E"],["C","F"]];
+const odd=["B","D","E","F"];
+const matching=[["B","E"],["D","F"]];
+const tour=[["A","B"],["B","E"],["E","C"],["C","F"],["F","D"],["D","A"]];
+const labels=[
+["MST","Nejdrive vezmeme MST. Je levne a dava dolni mez na OPT."],
+["Liche vrcholy","V MST oznacime vrcholy licheho stupne. Jen ty brani Eulerovu tahu."],
+["Matching","Na lichych vrcholech pridame minimalni perfektni parovani. Tim se vsechny stupne stanou sudymi."],
+["Zkratky","Euleruv tah z multigrafu zkratime na hamiltonovskou kruznici bez zvyseni ceny."]
+];
+let step=0,timer=null,playing=false;const svg=document.getElementById("svg"),caption=document.getElementById("caption"),stepsEl=document.getElementById("steps");
+labels.forEach((s,i)=>stepsEl.insertAdjacentHTML("beforeend",`<div class="step" data-s="${i}"><strong>${i+1}. ${s[0]}</strong><span>${s[1].split(".")[0]}.</span></div>`));
+function line([u,v],cls){const [x1,y1]=nodes[u],[x2,y2]=nodes[v];return `<line class="edge ${cls}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`}
+function draw(){svg.innerHTML="";all.forEach(e=>svg.insertAdjacentHTML("beforeend",line(e,"")));mst.forEach(e=>svg.insertAdjacentHTML("beforeend",line(e,"mst")));if(step>=2)matching.forEach(e=>svg.insertAdjacentHTML("beforeend",line(e,"match")));if(step>=3)tour.forEach(e=>svg.insertAdjacentHTML("beforeend",line(e,"tour")));Object.entries(nodes).forEach(([id,[x,y]])=>svg.insertAdjacentHTML("beforeend",`<g class="node ${step>=1&&odd.includes(id)?"odd":""}"><circle cx="${x}" cy="${y}" r="18"/><text x="${x}" y="${y+1}">${id}</text></g>`));document.querySelectorAll(".step").forEach((el,i)=>el.classList.toggle("active",i===step));caption.textContent=labels[step][1]}
+function next(){step=Math.min(step+1,3);draw();if(step===3)stop()}function play(){if(playing)return stop();playing=true;document.getElementById("play").textContent="Pauza";next();timer=setInterval(next,1300)}function stop(){playing=false;clearInterval(timer);timer=null;document.getElementById("play").textContent="Prehrat"}function reset(){stop();step=0;draw()}
+document.getElementById("play").onclick=play;document.getElementById("step").onclick=next;document.getElementById("reset").onclick=reset;draw();
+</script>
+</body>
+</html>
