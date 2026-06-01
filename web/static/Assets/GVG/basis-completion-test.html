@@ -4,20 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GVG - doplneni baze v R3</title>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
 <style>
   * { box-sizing: border-box; }
-  html, body { margin: 0; min-height: 100%; }
+  html, body { height: 100%; margin: 0; }
   body {
     background: #14171c;
     color: #e6edf3;
     font-family: "Segoe UI", system-ui, sans-serif;
     padding: 14px;
+    overflow: hidden;
   }
   button { font: inherit; }
   .widget {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 260px;
+    grid-template-columns: minmax(0, 1fr) 270px;
     gap: 12px;
+    height: 100%;
     min-height: 560px;
   }
   .scene, .panel {
@@ -29,32 +34,39 @@
     position: relative;
     overflow: hidden;
   }
-  svg {
+  .scene canvas {
     display: block;
-    width: 100%;
-    height: 100%;
-    min-height: 560px;
+    width: 100% !important;
+    height: 100% !important;
     cursor: grab;
-    touch-action: none;
   }
-  svg:active { cursor: grabbing; }
-  .grid { stroke: #2b313b; stroke-width: 1; }
-  .axis { stroke: #6b7280; stroke-width: 1.7; marker-end: url(#arrow); }
-  .basis-edge { stroke: rgba(148, 163, 184, 0.55); stroke-width: 2; stroke-dasharray: 5 5; }
-  .vector { stroke-width: 5; stroke-linecap: round; marker-end: url(#arrow); filter: drop-shadow(0 0 7px rgba(255,255,255,.15)); }
-  .v1 { stroke: #5eead4; }
-  .v2 { stroke: #93c5fd; }
-  .v3 { stroke: #fbbf24; }
-  .volume { fill: rgba(147, 197, 253, .14); stroke: rgba(147, 197, 253, .45); stroke-width: 1.5; }
-  text { fill: #cbd5e1; font-size: 13px; font-weight: 700; }
-  .label1 { fill: #5eead4; }
-  .label2 { fill: #93c5fd; }
-  .label3 { fill: #fbbf24; }
+  .scene canvas:active { cursor: grabbing; }
+  .hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    color: rgba(203, 213, 225, .55);
+    font-size: 12px;
+    text-align: center;
+    pointer-events: none;
+    user-select: none;
+  }
+  .loader {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #1d222b;
+    color: #94a3b8;
+    z-index: 2;
+  }
   .panel {
     padding: 14px;
     display: flex;
     flex-direction: column;
     gap: 12px;
+    overflow-y: auto;
   }
   h1 {
     margin: 0;
@@ -119,26 +131,21 @@
     border-color: rgba(248, 113, 113, .35);
   }
   @media (max-width: 780px) {
-    body { padding: 10px; }
-    .widget { grid-template-columns: 1fr; }
-    svg { min-height: 420px; }
+    body { padding: 10px; overflow: auto; }
+    .widget { grid-template-columns: 1fr; height: auto; }
+    .scene { min-height: 420px; }
   }
 </style>
 </head>
 <body>
 <main class="widget">
-  <section class="scene" aria-label="Vizualizace baze v R3">
-    <svg id="scene" viewBox="0 0 760 560" role="img">
-      <defs>
-        <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-          <path d="M0,0 L0,6 L8,3 z" fill="currentColor"></path>
-        </marker>
-      </defs>
-    </svg>
+  <section class="scene" id="sceneWrap" aria-label="Vizualizace baze v R3">
+    <div class="loader" id="loader">Načítám Three.js...</div>
+    <div class="hint">Táhni = rotace | Scroll = zoom | Pravé tlačítko = posun</div>
   </section>
   <aside class="panel">
     <h1>Doplnění báze v R3</h1>
-    <p class="muted">Pevný je vektor b1 = (1, 1, 0). Vyber dvojici b2, b3 a sleduj, jestli vznikne nenulový objem rovnoběžnostěnu. Scénu otočíš tažením myší, dvojklik resetuje pohled.</p>
+    <p class="muted">Pevný je vektor b1 = (1, 1, 0). Vyber dvojici b2, b3 a sleduj, jestli vznikne nenulový objem rovnoběžnostěnu.</p>
     <div class="choices" id="choices"></div>
     <div class="stats">
       <div class="row"><span>det[b1 b2 b3]</span><strong id="detVal">0</strong></div>
@@ -148,40 +155,77 @@
   </aside>
 </main>
 
-<script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
 const options = [
   {
-    label: 'Spravna baze',
+    label: 'Správná báze',
     b2: [0, 1, 0],
     b3: [0, 0, 1],
-    note: 'Vektory nejsou v jedne rovine. Det je nenulovy, proto tvori bazi R3.'
+    note: 'Vektory nejsou v jedné rovině. Det je nenulový, proto tvoří bázi R3.'
   },
   {
-    label: 'Spatne: zavisle vektory',
+    label: 'Špatně: závislé vektory',
     b2: [2, 2, 0],
     b3: [0, 0, 1],
-    note: 'b2 je jen nasobek b1. Jeden smer se opakuje, proto rank klesne.'
+    note: 'b2 je jen násobek b1. Jeden směr se opakuje, proto rank klesne.'
   },
   {
-    label: 'Spatne: vse v rovine z=0',
+    label: 'Špatně: vše v rovině z=0',
     b2: [1, 0, 0],
     b3: [0, 1, 0],
-    note: 'Vsechny tri vektory lezi v rovine z=0. Objem je nulovy.'
+    note: 'Všechny tři vektory leží v rovině z=0. Objem je nulový.'
   }
 ];
 
 const b1 = [1, 1, 0];
 let selected = 0;
-let yaw = -0.74;
-let pitch = 0.58;
-let dragging = false;
-let lastPointer = null;
+let graphGroup = null;
 
-const svg = document.getElementById('scene');
+const wrap = document.getElementById('sceneWrap');
+const loader = document.getElementById('loader');
 const choices = document.getElementById('choices');
 const detVal = document.getElementById('detVal');
 const rankVal = document.getElementById('rankVal');
 const statusBox = document.getElementById('statusBox');
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x14171c);
+wrap.appendChild(renderer.domElement);
+loader.style.display = 'none';
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x14171c, 0.045);
+
+const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 100);
+camera.position.set(5.5, 4.5, 6.5);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(0.65, 0.45, 0.45);
+controls.minDistance = 2.5;
+controls.maxDistance = 18;
+
+scene.add(new THREE.AmbientLight(0x7b879b, 3));
+const key = new THREE.DirectionalLight(0xffffff, 2.4);
+key.position.set(5, 7, 6);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x93c5fd, 1.1);
+fill.position.set(-4, 2, -5);
+scene.add(fill);
+
+const grid = new THREE.GridHelper(7, 14, 0x475569, 0x27313f);
+grid.position.set(0, 0, 0);
+scene.add(grid);
+
+const axisLength = 2.8;
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), axisLength, 0xef4444, 0.18, 0.1));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), axisLength, 0x22c55e, 0.18, 0.1));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), axisLength, 0x60a5fa, 0.18, 0.1));
 
 function det3(a, b, c) {
   return a[0] * (b[1] * c[2] - b[2] * c[1])
@@ -189,125 +233,104 @@ function det3(a, b, c) {
     + c[0] * (a[1] * b[2] - a[2] * b[1]);
 }
 
-function rankFromDet(det) {
-  return Math.abs(det) > 1e-9 ? 3 : 2;
+function vector(values) {
+  return new THREE.Vector3(values[0], values[1], values[2]);
 }
 
-function rotatePoint([x, y, z]) {
-  const cy = Math.cos(yaw);
-  const sy = Math.sin(yaw);
-  const cp = Math.cos(pitch);
-  const sp = Math.sin(pitch);
-  const x1 = x * cy - y * sy;
-  const y1 = x * sy + y * cy;
-  const z1 = z;
-  return [x1, y1 * cp - z1 * sp, y1 * sp + z1 * cp];
+function addVector(group, values, color) {
+  const end = vector(values);
+  const length = end.length();
+  if (length < 0.001) return;
+  const arrow = new THREE.ArrowHelper(end.clone().normalize(), new THREE.Vector3(0, 0, 0), length, color, 0.2, 0.11);
+  arrow.line.material.linewidth = 4;
+  group.add(arrow);
 }
 
-function project(point) {
-  const [x, y, z] = rotatePoint(point);
-  const ox = 330;
-  const oy = 310;
-  const s = 116;
-  return [ox + x * s, oy - y * s - z * s * 0.18];
+function addSphere(group, values, color, radius = 0.065) {
+  const mesh = new THREE.Mesh(
+    new THREE.SphereGeometry(radius, 24, 16),
+    new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.08 })
+  );
+  mesh.position.copy(vector(values));
+  group.add(mesh);
 }
 
-function add(tag, attrs, parent = svg) {
-  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-  for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
-  parent.appendChild(el);
-  return el;
-}
-
-function line(a, b, cls) {
-  const [x1, y1] = project(a);
-  const [x2, y2] = project(b);
-  add('line', {x1, y1, x2, y2, class: cls});
-}
-
-function textAt(point, label, cls) {
-  const [x, y] = project(point);
-  add('text', {x: x + 8, y: y - 8, class: cls}, svg).textContent = label;
-}
-
-function drawGrid() {
-  for (let i = -2; i <= 2; i++) {
-    line([-2, i, 0], [2, i, 0], 'grid');
-    line([i, -2, 0], [i, 2, 0], 'grid');
-  }
-  line([0, 0, 0], [2.2, 0, 0], 'axis');
-  line([0, 0, 0], [0, 2.2, 0], 'axis');
-  line([0, 0, 0], [0, 0, 2.2], 'axis');
-  textAt([2.25, 0, 0], 'x', '');
-  textAt([0, 2.25, 0], 'y', '');
-  textAt([0, 0, 2.25], 'z', '');
-}
-
-function drawVolume(a, b, c) {
-  const pts = [
+function addParallelepiped(group, a, b, c) {
+  const points = [
     [0, 0, 0], a, b, c,
     [a[0] + b[0], a[1] + b[1], a[2] + b[2]],
     [a[0] + c[0], a[1] + c[1], a[2] + c[2]],
     [b[0] + c[0], b[1] + c[1], b[2] + c[2]],
     [a[0] + b[0] + c[0], a[1] + b[1] + c[1], a[2] + b[2] + c[2]]
-  ].map(project);
-  const faces = [[0,1,4,2], [0,1,5,3], [0,2,6,3], [7,4,1,5], [7,4,2,6], [7,5,3,6]];
+  ].map(vector);
+  const faces = [
+    [0, 1, 4], [0, 4, 2],
+    [0, 1, 5], [0, 5, 3],
+    [0, 2, 6], [0, 6, 3],
+    [7, 4, 1], [7, 1, 5],
+    [7, 4, 2], [7, 2, 6],
+    [7, 5, 3], [7, 3, 6]
+  ];
+  const positions = [];
   for (const face of faces) {
-    add('polygon', {points: face.map(i => pts[i].join(',')).join(' '), class: 'volume'});
+    for (const index of face) {
+      positions.push(points[index].x, points[index].y, points[index].z);
+    }
   }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.computeVertexNormals();
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x93c5fd,
+    transparent: true,
+    opacity: 0.18,
+    side: THREE.DoubleSide,
+    roughness: 0.75
+  });
+  group.add(new THREE.Mesh(geometry, material));
+
+  const edges = new THREE.EdgesGeometry(geometry);
+  group.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.55 })));
 }
 
-function render() {
-  svg.innerHTML = svg.querySelector('defs').outerHTML;
+function clearGraph() {
+  if (!graphGroup) return;
+  graphGroup.traverse((object) => {
+    object.geometry?.dispose?.();
+    if (Array.isArray(object.material)) object.material.forEach((mat) => mat.dispose?.());
+    else object.material?.dispose?.();
+  });
+  scene.remove(graphGroup);
+}
+
+function rebuild() {
+  clearGraph();
   const opt = options[selected];
-  const d = det3(b1, opt.b2, opt.b3);
-  drawGrid();
-  if (Math.abs(d) > 1e-9) drawVolume(b1, opt.b2, opt.b3);
-  line([0, 0, 0], b1, 'vector v1');
-  line([0, 0, 0], opt.b2, 'vector v2');
-  line([0, 0, 0], opt.b3, 'vector v3');
-  textAt(b1, 'b1', 'label1');
-  textAt(opt.b2, 'b2', 'label2');
-  textAt(opt.b3, 'b3', 'label3');
-  detVal.textContent = d.toFixed(0);
-  rankVal.textContent = rankFromDet(d);
+  const det = det3(b1, opt.b2, opt.b3);
+
+  graphGroup = new THREE.Group();
+  if (Math.abs(det) > 1e-9) addParallelepiped(graphGroup, b1, opt.b2, opt.b3);
+  addVector(graphGroup, b1, 0x5eead4);
+  addVector(graphGroup, opt.b2, 0x93c5fd);
+  addVector(graphGroup, opt.b3, 0xfbbf24);
+  addSphere(graphGroup, b1, 0x5eead4);
+  addSphere(graphGroup, opt.b2, 0x93c5fd);
+  addSphere(graphGroup, opt.b3, 0xfbbf24);
+  scene.add(graphGroup);
+
+  detVal.textContent = det.toFixed(0);
+  rankVal.textContent = Math.abs(det) > 1e-9 ? '3' : '2';
   statusBox.textContent = opt.note;
-  statusBox.classList.toggle('bad', Math.abs(d) <= 1e-9);
-  [...choices.children].forEach((button, i) => button.classList.toggle('active', i === selected));
+  statusBox.classList.toggle('bad', Math.abs(det) <= 1e-9);
+  [...choices.children].forEach((button, index) => button.classList.toggle('active', index === selected));
 }
 
-svg.addEventListener('pointerdown', (event) => {
-  dragging = true;
-  lastPointer = {x: event.clientX, y: event.clientY};
-  svg.setPointerCapture(event.pointerId);
-});
-
-svg.addEventListener('pointermove', (event) => {
-  if (!dragging || !lastPointer) return;
-  const dx = event.clientX - lastPointer.x;
-  const dy = event.clientY - lastPointer.y;
-  lastPointer = {x: event.clientX, y: event.clientY};
-  yaw += dx * 0.012;
-  pitch = Math.max(-1.25, Math.min(1.25, pitch + dy * 0.012));
-  render();
-});
-
-svg.addEventListener('pointerup', (event) => {
-  dragging = false;
-  lastPointer = null;
-  svg.releasePointerCapture(event.pointerId);
-});
-
-svg.addEventListener('pointercancel', () => {
-  dragging = false;
-  lastPointer = null;
-});
-
-svg.addEventListener('dblclick', () => {
-  yaw = -0.74;
-  pitch = 0.58;
-  render();
-});
+function resize() {
+  const rect = wrap.getBoundingClientRect();
+  renderer.setSize(Math.max(1, rect.width), Math.max(1, rect.height), false);
+  camera.aspect = Math.max(1, rect.width) / Math.max(1, rect.height);
+  camera.updateProjectionMatrix();
+}
 
 for (const [index, option] of options.entries()) {
   const button = document.createElement('button');
@@ -316,12 +339,22 @@ for (const [index, option] of options.entries()) {
   button.textContent = option.label;
   button.addEventListener('click', () => {
     selected = index;
-    render();
+    rebuild();
   });
   choices.appendChild(button);
 }
 
-render();
+window.addEventListener('resize', resize);
+resize();
+rebuild();
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+animate();
 </script>
 </body>
 </html>
