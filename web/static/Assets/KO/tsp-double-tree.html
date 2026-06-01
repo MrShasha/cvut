@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSP double-tree</title>
+<style>
+:root{--bg:#111827;--panel:rgba(24,31,43,.94);--line:rgba(156,163,175,.24);--text:#edf2f7;--muted:#9ca3af;--blue:#60a5fa;--green:#34d399;--amber:#fbbf24;--rose:#fb7185;--cyan:#22d3ee}
+*{box-sizing:border-box}body{min-width:900px;margin:0;padding:14px;overflow-x:auto;background:radial-gradient(circle at 0 0,rgba(34,211,238,.12),transparent 28rem),radial-gradient(circle at 100% 100%,rgba(251,191,36,.10),transparent 28rem),var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;font-size:14px}
+button{font:inherit}.topbar,.scene,.panel{border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:0 18px 44px rgba(0,0,0,.22)}.topbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 14px;margin-bottom:10px}.eyebrow,.label,.panel-title{color:var(--muted);font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}h1{margin:2px 0 0;font-size:19px;letter-spacing:0}.controls{display:flex;gap:8px}.btn{border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:rgba(55,65,81,.78);color:#e5e7eb;cursor:pointer}.btn.primary{min-width:92px;border-color:rgba(34,211,238,.6);background:linear-gradient(135deg,rgba(8,145,178,.96),rgba(37,99,235,.90));font-weight:800}
+.layout{display:grid;grid-template-columns:minmax(0,1fr)292px;gap:10px}.scene{min-height:585px;overflow:hidden;background:linear-gradient(rgba(156,163,175,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(156,163,175,.04) 1px,transparent 1px),rgba(17,24,39,.84);background-size:24px 24px}.stage{display:grid;grid-template-rows:auto 1fr auto;gap:10px;padding:14px}.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.step{border:1px solid var(--line);border-radius:10px;padding:9px;background:rgba(31,41,55,.76);color:#d1d5db}.step.active{border-color:rgba(251,191,36,.9);background:rgba(120,53,15,.42);color:#fff}.step strong{display:block;margin-bottom:3px}
+svg{width:100%;height:390px;border:1px solid var(--line);border-radius:12px;background:rgba(15,23,42,.68)}.edge{stroke:rgba(148,163,184,.22);stroke-width:2}.edge.mst{stroke:var(--green);stroke-width:5}.edge.double{stroke:var(--amber);stroke-width:8;stroke-opacity:.7}.edge.tour{stroke:var(--cyan);stroke-width:5}.edge.fade{opacity:.12}.node circle{fill:#111827;stroke:#cbd5e1;stroke-width:2}.node.active circle{stroke:var(--amber);stroke-width:4}.node text{fill:#f8fafc;font-weight:900;font-size:13px;text-anchor:middle;dominant-baseline:middle}.weight rect{fill:rgba(15,23,42,.94);stroke:rgba(148,163,184,.32);rx:5}.weight text{fill:#f8fafc;font-size:12px;font-weight:900;text-anchor:middle;dominant-baseline:middle}.caption{border-left:3px solid var(--cyan);border-radius:8px;padding:10px 11px;background:rgba(8,145,178,.12);color:#dbeafe;line-height:1.45}.side{display:grid;gap:10px;align-content:start}.panel{padding:12px}.note{margin:8px 0 0;color:#d1d5db;line-height:1.45}
+</style>
+</head>
+<body>
+<div class="topbar"><div><div class="eyebrow">Metricky TSP</div><h1>Double-tree: MST -> zdvojeni -> Euler -> zkratky</h1></div><div class="controls"><button class="btn primary" id="play">Prehrat</button><button class="btn" id="step">Krok</button><button class="btn" id="reset">Reset</button></div></div>
+<div class="layout"><main class="scene"><div class="stage"><div class="steps" id="steps"></div><svg id="svg" viewBox="0 0 760 390"></svg><div class="caption" id="caption"></div></div></main><aside class="side"><section class="panel"><div class="panel-title">Hrany</div><p class="note">Cisla primo v grafu jsou vahy hran. Zelene hrany patri do MST, zlute ukazuji zdvojeni a tyrkysove vyslednou tour po zkratkach.</p></section><section class="panel"><div class="panel-title">Garance</div><p class="note">MST je dolni mez OPT. Po zdvojeni ma eulerovsky multigraf cenu 2*MST, zkratky v metrickem TSP cenu nezvysi.</p></section></aside></div>
+<script>
+const nodes={A:[380,58],B:[170,130],C:[380,150],D:[590,130],E:[300,285],F:[480,285]};
+const all=[["A","B"],["A","C"],["A","D"],["B","C"],["C","D"],["C","E"],["C","F"],["E","F"],["B","E"],["D","F"],["B","D"],["A","E"],["A","F"]];
+const weights={"A-B":2,"A-C":3,"A-D":2,"B-C":4,"C-D":4,"C-E":2,"C-F":1,"E-F":3,"B-E":6,"D-F":3,"B-D":7,"A-E":6,"A-F":5};
+const mst=[["A","B"],["A","C"],["A","D"],["C","E"],["C","F"]];
+const tour=[["A","B"],["B","C"],["C","E"],["E","F"],["F","D"],["D","A"]];
+const labels=[
+  ["MST","Najdeme minimalni kostru. Je to nejlevnejsi sit, ktera propoji vsechna mesta, a proto je dolni mezi pro OPT."],
+  ["Zdvojeni hran","Kazdou hranu MST projedeme tam i zpet. Tim ma kazdy vrchol sudy stupen, takze existuje Euleruv tah."],
+  ["Euleruv tah","Euleruv tah muze opakovat vrcholy, ale projde kazdou zdvojenou hranu prave jednou."],
+  ["Zkratky","Pri pruchodu preskocime uz navstivena mesta. Trojuhelnikova nerovnost zaruci, ze se cena nezvysi."]
+];
+let step=0,timer=null,playing=false;
+const svg=document.getElementById("svg"),caption=document.getElementById("caption"),stepsEl=document.getElementById("steps");
+labels.forEach((s,i)=>stepsEl.insertAdjacentHTML("beforeend",`<div class="step" data-s="${i}"><strong>${i+1}. ${s[0]}</strong><span>${s[1].split(".")[0]}.</span></div>`));
+function key([u,v]){return weights[`${u}-${v}`]!==undefined?`${u}-${v}`:`${v}-${u}`}
+function line([u,v],cls){const [x1,y1]=nodes[u],[x2,y2]=nodes[v];return `<line class="edge ${cls}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`}
+function weight(e){const [u,v]=e,[x1,y1]=nodes[u],[x2,y2]=nodes[v],x=(x1+x2)/2,y=(y1+y2)/2,w=weights[key(e)];return `<g class="weight"><rect x="${x-12}" y="${y-10}" width="24" height="20"/><text x="${x}" y="${y+1}">${w}</text></g>`}
+function draw(){svg.innerHTML="";all.forEach(e=>svg.insertAdjacentHTML("beforeend",line(e,step===0?"":"fade")));if(step>=0)mst.forEach(e=>svg.insertAdjacentHTML("beforeend",line(e,"mst")));if(step>=1)mst.forEach(e=>svg.insertAdjacentHTML("beforeend",line(e,"double")));if(step>=3)tour.forEach(e=>svg.insertAdjacentHTML("beforeend",line(e,"tour")));all.forEach(e=>svg.insertAdjacentHTML("beforeend",weight(e)));Object.entries(nodes).forEach(([id,[x,y]])=>svg.insertAdjacentHTML("beforeend",`<g class="node"><circle cx="${x}" cy="${y}" r="18"/><text x="${x}" y="${y+1}">${id}</text></g>`));document.querySelectorAll(".step").forEach((el,i)=>el.classList.toggle("active",i===step));caption.textContent=labels[step][1]}
+function next(){step=Math.min(step+1,3);draw();if(step===3)stop()}function play(){if(playing)return stop();playing=true;document.getElementById("play").textContent="Pauza";next();timer=setInterval(next,1300)}function stop(){playing=false;clearInterval(timer);timer=null;document.getElementById("play").textContent="Prehrat"}function reset(){stop();step=0;draw()}
+document.getElementById("play").onclick=play;document.getElementById("step").onclick=next;document.getElementById("reset").onclick=reset;draw();
+</script>
+</body>
+</html>
