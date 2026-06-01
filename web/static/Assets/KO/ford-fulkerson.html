@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ford-Fulkerson - augmentace a minimalni rez</title>
+<style>
+:root{--bg:#07111f;--panel:rgba(16,31,54,.94);--panel2:rgba(22,42,70,.9);--line:rgba(142,164,204,.22);--text:#eef7ff;--muted:#9db0cd;--cyan:#56e0dc;--blue:#69a8ff;--green:#72e3a6;--amber:#ffbd78;--rose:#ff7f96;--violet:#b59cff;--speed:760ms}
+*{box-sizing:border-box}body{min-width:1120px;margin:0;padding:14px;overflow-x:auto;background:radial-gradient(circle at 0 0,rgba(86,224,220,.1),transparent 34rem),radial-gradient(circle at 100% 100%,rgba(181,156,255,.1),transparent 30rem),linear-gradient(135deg,#07111f,#0a1628 50%,#071422);color:var(--text);font:14px "Segoe UI",system-ui,sans-serif}button{font:inherit}.topbar,.scene,.panel,.lesson{border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:0 18px 44px rgba(0,0,0,.2)}.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:10px;padding:12px 14px}.eyebrow,.panel-title,.kicker{color:var(--cyan);font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}h1{margin:2px 0 0;font-size:20px}.controls,.view-tabs{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.btn{border:1px solid var(--line);border-radius:8px;padding:7px 10px;background:rgba(35,57,89,.84);color:#dcecff;cursor:pointer;transition:.18s}.btn:hover{border-color:rgba(86,224,220,.65);transform:translateY(-1px)}.btn.primary{border-color:rgba(86,224,220,.6);background:linear-gradient(135deg,rgba(17,139,150,.92),rgba(50,105,185,.92));font-weight:850}.btn.active{border-color:rgba(86,224,220,.68);background:rgba(86,224,220,.13);color:#ecffff}.btn:disabled{cursor:default;opacity:.42;transform:none}.speed{display:flex;align-items:center;gap:6px;margin-left:4px;color:var(--muted);font-size:11px;font-weight:800}input[type=range]{width:88px;accent-color:var(--cyan)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 306px;gap:10px}.scene{overflow:hidden}.scene-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid var(--line);background:rgba(9,21,39,.55)}.graph{position:relative;min-height:590px;background:linear-gradient(rgba(142,164,204,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(142,164,204,.045) 1px,transparent 1px),linear-gradient(145deg,rgba(10,25,47,.97),rgba(7,16,31,.98));background-size:26px 26px}.graph svg{display:block;width:100%;height:590px}.side{display:grid;gap:10px;align-content:start}.panel{padding:12px}.stat-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid rgba(142,164,204,.14)}.stat-row:last-child{border:0}.stat-row strong{color:#fff}.lesson{display:grid;grid-template-columns:minmax(0,1fr) 310px;gap:12px;margin-top:10px;padding:12px 14px}.lesson h2{margin:3px 0 5px;font-size:18px}.lesson p{margin:0;color:#c8d7ed;line-height:1.45}.formula{align-self:stretch;border:1px solid rgba(86,224,220,.28);border-radius:10px;padding:10px;background:rgba(12,47,69,.52);color:#dfffff;font:800 13px Consolas,monospace;line-height:1.45}.timeline{display:flex;gap:5px;margin-top:10px}.tick{height:7px;flex:1;border-radius:999px;background:rgba(80,103,138,.48)}.tick.done{background:var(--green)}.tick.active{background:var(--amber);box-shadow:0 0 12px rgba(255,189,120,.5)}.legend{display:grid;gap:7px;margin-top:9px;color:#d6e2f4;font-size:12px}.legend span{display:flex;align-items:center;gap:7px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%}.hint{margin:8px 0 0;color:#c5d4eb;line-height:1.45}.cut-box{margin-top:9px;border:1px solid rgba(255,127,150,.32);border-radius:9px;padding:9px;background:rgba(94,30,49,.24);color:#ffd7df;font:800 12px Consolas,monospace;line-height:1.45}.edge-base{fill:none;stroke:rgba(133,161,202,.36);stroke-width:2.2}.edge-flow{fill:none;stroke:rgba(86,224,220,.76);stroke-linecap:round}.edge-active{fill:none;stroke:var(--amber);stroke-width:5;stroke-linecap:round;filter:url(#glow)}.edge-active.back{stroke:var(--violet);stroke-dasharray:9 6}.edge-label rect{fill:rgba(7,20,39,.94);stroke:rgba(142,164,204,.35);stroke-width:1}.edge-label.mandatory rect{stroke:rgba(255,189,120,.72);fill:rgba(72,49,28,.92)}.edge-label text{fill:#e8f3ff;font:800 12px Consolas,monospace;text-anchor:middle}.edge-label .tiny{fill:var(--amber);font:900 9px "Segoe UI",sans-serif}.node circle{fill:#132946;stroke:#7b96bf;stroke-width:2.2}.node text{fill:#fff;font:900 14px "Segoe UI",sans-serif;text-anchor:middle;dominant-baseline:middle}.node.source circle,.node.sink circle{fill:#173f61;stroke:var(--cyan);stroke-width:3}.node.reachable circle{fill:#164638;stroke:var(--green);stroke-width:3;filter:url(#softGlow)}.node.blocked circle{fill:#472534;stroke:var(--rose)}.node.active circle{stroke:var(--amber);stroke-width:4;filter:url(#glow)}.cut-line{stroke:var(--rose);stroke-width:3;stroke-dasharray:9 8;filter:url(#roseGlow)}.cut-label{fill:#ffd3db;font:900 13px "Segoe UI",sans-serif;text-anchor:middle}.packet{fill:var(--amber);stroke:#fff5d8;stroke-width:1.5;filter:url(#glow)}.packet.back{fill:var(--violet);stroke:#f1ebff}.residual-note{fill:#cce1ff;font:800 11px Consolas,monospace;text-anchor:middle}.phase-list{display:grid;gap:7px;margin-top:9px}.phase{display:grid;grid-template-columns:22px 1fr;gap:8px;align-items:center;color:#adbed7;font-size:12px}.phase b{display:grid;place-items:center;width:21px;height:21px;border:1px solid var(--line);border-radius:50%;color:#d8e5f7}.phase.done{color:#d7fbe9}.phase.done b{border-color:rgba(114,227,166,.6);background:rgba(25,106,76,.55);color:#baffda}.phase.active{color:#fff0d8}.phase.active b{border-color:rgba(255,189,120,.75);background:rgba(124,75,24,.56);color:#ffe0b0}@media(max-width:1120px){body{min-width:1040px}.layout{grid-template-columns:1fr}.side{grid-template-columns:repeat(3,1fr)}}
+.cut-band{fill:rgba(255,127,150,.11)}.cut-line{stroke-width:4}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div><div class="eyebrow">Kombinatorická optimalizace · toky v sítích</div><h1>Ford–Fulkerson: přírůstkové cesty, zpětná hrana a min-cut</h1></div>
+  <div class="controls">
+    <button class="btn" id="resetBtn">↺ Reset</button><button class="btn" id="backBtn">◀ Zpět</button><button class="btn" id="nextBtn">Další ▶</button><button class="btn primary" id="playBtn">▶ Přehrát</button>
+    <label class="speed">rychlost <input id="speed" type="range" min="420" max="1500" value="820"></label>
+  </div>
+</header>
+<div class="layout">
+  <main class="scene">
+    <div class="scene-head">
+      <div><div class="kicker" id="sceneKicker">Přípustný počáteční tok</div><strong id="sceneTitle">Začínáme už s nenulovými lower bounds</strong></div>
+      <div class="view-tabs"><button class="btn active" data-view="flow">Tok f [l,u]</button><button class="btn" data-view="residual">Reziduální graf</button></div>
+    </div>
+    <div class="graph"><svg id="svg" viewBox="0 0 760 560" role="img" aria-label="Toková síť pro Fordův-Fulkersonův algoritmus"></svg></div>
+  </main>
+  <aside class="side">
+    <section class="panel"><div class="panel-title">Aktuální stav</div><div class="stat-row"><span>Hodnota toku |f|</span><strong id="flowStat">3</strong></div><div class="stat-row"><span>Iterace</span><strong id="iterationStat">0 / 6</strong></div><div class="stat-row"><span>Kapacita cesty γ</span><strong id="gammaStat">—</strong></div><div class="stat-row"><span>Aktivní cesta</span><strong id="pathStat">—</strong></div><div class="timeline" id="timeline"></div></section>
+    <section class="panel"><div class="panel-title">Jak číst hranu</div><div class="legend"><span><i class="dot" style="background:#56e0dc"></i><b>f [l,u]</b> = tok a meze</span><span><i class="dot" style="background:#ffbd78"></i>přírůstková cesta vpřed</span><span><i class="dot" style="background:#b59cff"></i>zpětná hrana: část toku vrátíme</span><span><i class="dot" style="background:#72e3a6"></i>vrchol dosažitelný v G<sub>f</sub></span></div><p class="hint" id="viewHint">Oranžově orámované štítky mají kladnou dolní mez l(e). Proto nezačínáme nulovým tokem.</p></section>
+    <section class="panel"><div class="panel-title">Algoritmická mapa</div><div class="phase-list" id="phaseList"></div><div class="cut-box" id="cutBox">Min-cut se objeví po poslední augmentaci.</div></section>
+  </aside>
+</div>
+<section class="lesson"><div><div class="kicker" id="lessonKicker">Inicializace</div><h2 id="lessonTitle">Přípustný tok respektuje dolní i horní meze</h2><p id="lessonText">Nenulová dolní mez znamená povinný průtok. Výchozí tok proto není nulový: každá hrana splňuje l(e) ≤ f(e) ≤ u(e) a vnitřní vrcholy zachovávají tok.</p></div><div class="formula" id="formula">l(e) ≤ f(e) ≤ u(e)<br>|f| = 3</div></section>
+<script>
+const NS="http://www.w3.org/2000/svg";
+const nodes={s:[62,280],A:[230,105],B:[230,280],C:[230,455],D:[455,105],E:[455,280],F:[455,455],t:[700,280]};
+const edges=[
+  {id:"sA",from:"s",to:"A",l:2,u:10,f:2,label:[136,176]},
+  {id:"sB",from:"s",to:"B",l:1,u:9,f:1,label:[145,267]},
+  {id:"sC",from:"s",to:"C",l:0,u:8,f:0,label:[136,388]},
+  {id:"AD",from:"A",to:"D",l:1,u:5,f:2,label:[342,87]},
+  {id:"AE",from:"A",to:"E",l:0,u:4,f:0,label:[337,181]},
+  {id:"BE",from:"B",to:"E",l:1,u:5,f:2,label:[342,263]},
+  {id:"BF",from:"B",to:"F",l:0,u:4,f:0,label:[337,381]},
+  {id:"CF",from:"C",to:"F",l:0,u:6,f:0,label:[342,438]},
+  {id:"DB",from:"D",to:"B",l:1,u:3,f:1,label:[353,153],curve:[360,120]},
+  {id:"EF",from:"E",to:"F",l:0,u:3,f:0,label:[482,369]},
+  {id:"Dt",from:"D",to:"t",l:1,u:9,f:1,label:[578,176]},
+  {id:"Et",from:"E",to:"t",l:2,u:9,f:2,label:[582,263]},
+  {id:"Ft",from:"F",to:"t",l:0,u:10,f:0,label:[578,388]}
+];
+const augmentations=[
+  {path:[["sA",1],["AE",1],["Et",1]],gamma:4,note:"Volná cesta s → A → E → t. Nejužší místo je A → E: zbývají 4 jednotky."},
+  {path:[["sB",1],["BE",1],["EF",1],["Ft",1]],gamma:3,note:"Pošleme 3 jednotky přes E → F. Tento lokální výběr není ideální; za chvíli jej částečně vezmeme zpět."},
+  {path:[["sC",1],["CF",1],["Ft",1]],gamma:6,note:"Spodní větev má velkou rezervu. Hrana C → F dovolí augmentaci o 6 jednotek."},
+  {path:[["sB",1],["BF",1],["EF",-1],["Et",1]],gamma:3,note:"Klíčový moment: cestou F → E jdeme proti původní hraně E → F. Tok na E → F snížíme o 3 a přesměrujeme jej do t přes E."},
+  {path:[["sA",1],["AD",1],["Dt",1]],gamma:3,note:"Horní větev ještě propustí 3 jednotky. Po augmentaci se nasytí hrana A → D."},
+  {path:[["sB",1],["BF",1],["Ft",1]],gamma:1,note:"Poslední jednotka doplní B → F. Potom už v reziduálním grafu neexistuje žádná cesta ze s do t."}
+];
+const phases=["Přípustný start","Augmentující cesty","Labeling v Gf","Minimální řez"];
+let states=[],cursor=0,view="flow",playing=false,timer=null;
+const $=id=>document.getElementById(id);
+function cloneFlow(flow){return Object.fromEntries(Object.entries(flow));}
+function flowValue(flow){return ["sA","sB","sC"].reduce((sum,id)=>sum+flow[id],0);}
+function pathText(path){if(!path)return"—";const first=edges.find(e=>e.id===path[0][0]);let out=first.from;for(const [id,dir]of path){const e=edges.find(x=>x.id===id);out+=" → "+(dir===1?e.to:e.from)}return out}
+function buildStates(){
+  let flow=Object.fromEntries(edges.map(e=>[e.id,e.f]));
+  states=[{phase:"start",flow:cloneFlow(flow),kicker:"Přípustný počáteční tok",title:"Začínáme už s nenulovými lower bounds",text:"Nenulová dolní mez znamená povinný průtok. Výchozí tok proto není nulový: každá hrana splňuje l(e) ≤ f(e) ≤ u(e) a vnitřní vrcholy zachovávají tok.",formula:"l(e) ≤ f(e) ≤ u(e)\n|f| = 3"}];
+  augmentations.forEach((a,index)=>{
+    a.path.forEach(([id,dir])=>flow[id]+=dir*a.gamma);
+    states.push({phase:"augment",flow:cloneFlow(flow),iteration:index+1,path:a.path,gamma:a.gamma,kicker:"Ford–Fulkerson · augmentace",title:`Iterace ${index+1}: zvýšíme tok o γ = ${a.gamma}`,text:a.note,formula:`P = ${pathText(a.path)}\nγ = ${a.gamma}  ⇒  |f| = ${flowValue(flow)}`});
+  });
+  states.push({phase:"stop",flow:cloneFlow(flow),kicker:"Konec augmentací",title:"Z t už se ze zdroje nedostaneme",text:"V reziduálním grafu není žádná cesta s → t. Tok je maximální. Teď použijeme labeling procedure: označíme vrcholy, které jsou ze s ještě dosažitelné.",formula:"neexistuje s → t v Gf\n⇒ tok je maximální"});
+  states.push({phase:"label",flow:cloneFlow(flow),reachable:["s"],kicker:"Labeling procedure",title:"Začneme označením zdroje s",text:"Procházíme pouze reziduální hrany s kladnou kapacitou. Zdroj má ještě rezervu do A, B i C, takže se označování v dalším kroku rozšíří.",formula:"A₀ = { s }"});
+  states.push({phase:"label",flow:cloneFlow(flow),reachable:["s","A","B","C"],kicker:"Labeling procedure",title:"Dosažitelné jsou právě s, A, B, C",text:"Z levé části už dál neprojdeme: všechny hrany směrem doprava jsou nasycené. To je přesně hranice minimálního řezu.",formula:"A = { s, A, B, C }\nV ∖ A = { D, E, F, t }"});
+  states.push({phase:"cut",flow:cloneFlow(flow),reachable:["s","A","B","C"],kicker:"Max-flow = Min-cut",title:"Minimální řez má kapacitu 23",text:"Přes řez vede pět hran vpřed a jedna povinná hrana D → B zpět. U obecné sítě odečítáme lower bounds hran mířících do množiny A.",formula:"C(A) = 5 + 4 + 5 + 4 + 6 − 1 = 23\nmax |f| = min C(A) = 23"});
+}
+function svgEl(name,attrs={}){const el=document.createElementNS(NS,name);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));return el}
+function edge(id){return edges.find(e=>e.id===id)}
+function dFor(e,reverse=false){const [x1,y1]=nodes[reverse?e.to:e.from],[x2,y2]=nodes[reverse?e.from:e.to];if(e.curve){const [cx,cy]=e.curve;return`M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`}return`M ${x1} ${y1} L ${x2} ${y2}`}
+function def(svg){
+  const defs=svgEl("defs");defs.innerHTML=`<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8ca8d1"/></marker><marker id="arrowActive" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffbd78"/></marker><marker id="arrowBack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#b59cff"/></marker><filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><filter id="softGlow"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><filter id="roseGlow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;svg.append(defs)}
+function activeInfo(s,id){if(!s.path)return null;const item=s.path.find(x=>x[0]===id);return item?{dir:item[1]}:null}
+function labelText(e,flow){return view==="flow"?`${flow[e.id]} [${e.l},${e.u}]`:`+${e.u-flow[e.id]} / −${flow[e.id]-e.l}`}
+function renderGraph(animate=false){
+  const s=states[cursor],svg=$("svg");svg.innerHTML="";def(svg);
+  edges.forEach(e=>{
+    const base=svgEl("path",{d:dFor(e),class:"edge-base","marker-end":"url(#arrow)"});svg.append(base);
+    const width=1.4+Math.min(6,s.flow[e.id]/2),flowLine=svgEl("path",{d:dFor(e),class:"edge-flow","stroke-width":width});svg.append(flowLine);
+    const info=activeInfo(s,e.id);if(info){svg.append(svgEl("path",{d:dFor(e,info.dir<0),class:`edge-active${info.dir<0?" back":""}`,"marker-end":info.dir<0?"url(#arrowBack)":"url(#arrowActive)"}))}
+    const g=svgEl("g",{class:`edge-label${e.l>0?" mandatory":""}`});g.append(svgEl("rect",{x:e.label[0]-34,y:e.label[1]-13,width:68,height:25,rx:7}));const text=svgEl("text",{x:e.label[0],y:e.label[1]+4});text.textContent=labelText(e,s.flow);g.append(text);if(e.l>0){const tiny=svgEl("text",{x:e.label[0]+27,y:e.label[1]-16,class:"tiny"});tiny.textContent="l>0";g.append(tiny)}svg.append(g);
+  });
+  if(s.phase==="cut"){svg.append(svgEl("rect",{x:332,y:28,width:16,height:504,class:"cut-band"}));svg.append(svgEl("line",{x1:340,y1:28,x2:340,y2:532,class:"cut-line"}));const label=svgEl("text",{x:340,y:22,class:"cut-label"});label.textContent="MIN-CUT";svg.append(label)}
+  if(view==="residual"){const note=svgEl("text",{x:380,y:542,class:"residual-note"});note.textContent="štítek hrany: + reziduum vpřed / − reziduum vzad";svg.append(note)}
+  Object.entries(nodes).forEach(([id,[x,y]])=>{const reachable=s.reachable?.includes(id),blocked=s.reachable&&!reachable;const active=s.path&&s.path.some(([eid])=>{const e=edge(eid);return e.from===id||e.to===id});const g=svgEl("g",{class:`node ${id==="s"?"source":id==="t"?"sink":""} ${reachable?"reachable":blocked?"blocked":""} ${active?"active":""}`});g.append(svgEl("circle",{cx:x,cy:y,r:id==="s"||id==="t"?28:24}));const text=svgEl("text",{x,y:y+1});text.textContent=id;g.append(text);svg.append(g)});
+  if(animate&&s.path){s.path.forEach(([id,dir],i)=>{const e=edge(id),circle=svgEl("circle",{r:6,class:`packet${dir<0?" back":""}`}),motion=svgEl("animateMotion",{dur:`${Math.max(360,Number($("speed").value)*.65)}ms`,begin:`${i*150}ms`,fill:"freeze",path:dFor(e,dir<0)});circle.append(motion);svg.append(circle)})}
+}
+function phaseIndex(s){return s.phase==="start"?0:s.phase==="augment"?1:s.phase==="stop"||s.phase==="label"?2:3}
+function render(animate=false){const s=states[cursor],p=phaseIndex(s);$("sceneKicker").textContent=s.kicker;$("sceneTitle").textContent=s.title;$("lessonKicker").textContent=s.kicker;$("lessonTitle").textContent=s.title;$("lessonText").textContent=s.text;$("formula").innerHTML=s.formula.replaceAll("\n","<br>");$("flowStat").textContent=flowValue(s.flow);$("iterationStat").textContent=`${s.iteration||Math.min(augmentations.length,Math.max(0,cursor))} / ${augmentations.length}`;$("gammaStat").textContent=s.gamma||"—";$("pathStat").textContent=s.path?pathText(s.path):"—";$("timeline").innerHTML=states.map((_,i)=>`<i class="tick ${i<cursor?"done":i===cursor?"active":""}"></i>`).join("");$("phaseList").innerHTML=phases.map((name,i)=>`<div class="phase ${i<p?"done":i===p?"active":""}"><b>${i+1}</b><span>${name}</span></div>`).join("");$("backBtn").disabled=cursor===0;$("nextBtn").disabled=cursor===states.length-1;$("playBtn").textContent=playing?"⏸ Pauza":cursor===states.length-1?"↺ Přehrát":"▶ Přehrát";$("cutBox").innerHTML=s.phase==="cut"?"C(A) = 5 + 4 + 5 + 4 + 6 − 1 = <b>23</b><br>−1 je lower bound hrany D → B.":"Min-cut se objeví po poslední augmentaci.";$("viewHint").textContent=view==="flow"?"Oranžově orámované štítky mají kladnou dolní mez l(e). Proto nezačínáme nulovým tokem.":"Reziduum vpřed je u(e) − f(e). Reziduum vzad je f(e) − l(e): vrátit lze jen tok nad povinné minimum.";document.querySelectorAll("[data-view]").forEach(b=>b.classList.toggle("active",b.dataset.view===view));renderGraph(animate)}
+function next(){if(cursor>=states.length-1){stop();return}cursor++;render(true);if(cursor===states.length-1)stop()}
+function back(){stop();if(cursor>0){cursor--;render()}}
+function reset(){stop();cursor=0;render()}
+function play(){if(playing)return stop();if(cursor===states.length-1)cursor=0;playing=true;render();next();timer=setInterval(next,Number($("speed").value))}
+function stop(){playing=false;if(timer)clearInterval(timer);timer=null;render()}
+function auditModel(){const errors=[];states.forEach((s,index)=>{edges.forEach(e=>{if(s.flow[e.id]<e.l||s.flow[e.id]>e.u)errors.push(`stav ${index}: ${e.id} mimo [l,u]`)});Object.keys(nodes).filter(v=>v!=="s"&&v!=="t").forEach(v=>{const incoming=edges.filter(e=>e.to===v).reduce((sum,e)=>sum+s.flow[e.id],0),outgoing=edges.filter(e=>e.from===v).reduce((sum,e)=>sum+s.flow[e.id],0);if(incoming!==outgoing)errors.push(`stav ${index}: ${v} porušuje zachování toku ${incoming} != ${outgoing}`)})});const final=states.find(s=>s.phase==="cut"),cut=edges.filter(e=>["s","A","B","C"].includes(e.from)&&!["s","A","B","C"].includes(e.to)).reduce((n,e)=>n+e.u,0)-edges.filter(e=>!["s","A","B","C"].includes(e.from)&&["s","A","B","C"].includes(e.to)).reduce((n,e)=>n+e.l,0);if(flowValue(final.flow)!==23||cut!==23)errors.push(`max-flow/min-cut nesedí: ${flowValue(final.flow)} / ${cut}`);return{ok:errors.length===0,errors,states:states.length,maxFlow:flowValue(final.flow),minCut:cut}}
+$("nextBtn").addEventListener("click",next);$("backBtn").addEventListener("click",back);$("resetBtn").addEventListener("click",reset);$("playBtn").addEventListener("click",play);$("speed").addEventListener("input",()=>{document.documentElement.style.setProperty("--speed",`${$("speed").value}ms`);if(playing){stop();play()}});document.querySelectorAll("[data-view]").forEach(b=>b.addEventListener("click",()=>{view=b.dataset.view;render()}));
+buildStates();window.__fordAudit=auditModel();render();
+</script>
+</body>
+</html>

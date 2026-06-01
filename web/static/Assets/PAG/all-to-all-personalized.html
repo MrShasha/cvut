@@ -1,355 +1,510 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>All-to-All Personalized — animace</title>
+<title>All-to-All Personalized | interaktivni animace</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
-h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
-.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
-.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
-.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
-.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
-select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
-input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
-.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
-.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
-canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
-.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 60px; }
-.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
-.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
-.deriv-lbl { color: #888; min-width: 130px; font-size: 0.9em; }
-.deriv-val { color: #c3e88d; font-family: monospace; }
-.highlight { color: #0984e3; font-weight: 700; }
-.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
-.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
-.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; }
-.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
-.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
-.tab-btns { display: flex; gap: 6px; margin-bottom: 10px; }
-.tab-btn { background: #3c3c3c; color: #888; border: none; border-radius: 5px; padding: 6px 14px; font-size: 0.82em; cursor: pointer; }
-.tab-btn.active { background: #0984e3; color: #fff; font-weight: 700; }
+:root {
+  --bg: #09101f;
+  --panel: rgba(18, 29, 52, .94);
+  --line: rgba(142, 164, 204, .2);
+  --text: #edf4ff;
+  --muted: #9aa9c8;
+  --cyan: #56e0dc;
+  --green: #6ee7a8;
+  --orange: #ffbd78;
+  --violet: #aa91ff;
+  --shadow: 0 18px 45px rgba(0,0,0,.22);
+}
+* { box-sizing: border-box; }
+body { margin:0; min-height:100vh; padding:18px; color:var(--text);
+  background: radial-gradient(circle at 10% 5%, rgba(64,114,221,.18), transparent 28rem),
+              radial-gradient(circle at 92% 90%, rgba(52,207,187,.12), transparent 30rem),
+              var(--bg);
+  font-family: Inter,"Segoe UI",system-ui,sans-serif; font-size:14px; }
+button,select,input { font:inherit; } button { cursor:pointer; }
+.shell { width:min(1420px,100%); margin:0 auto; }
+
+.hero { display:flex; align-items:flex-end; justify-content:space-between; gap:18px; margin-bottom:14px; }
+.eyebrow { color:var(--cyan); font-size:11px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
+h1 { margin:5px 0 0; font-size:clamp(21px,2.8vw,30px); letter-spacing:-.045em; }
+.hero p { max-width:720px; margin:6px 0 0; color:var(--muted); line-height:1.55; font-size:13px; }
+.hero-badge { flex:0 0 auto; padding:10px 13px; border:1px solid rgba(86,224,220,.35); border-radius:14px;
+  color:var(--cyan); background:rgba(86,224,220,.08); font-size:12px; font-weight:800; white-space:nowrap; }
+
+.toolbar { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px;
+  padding:11px 13px; border:1px solid var(--line); border-radius:15px; background:var(--panel);
+  box-shadow:var(--shadow); flex-wrap:wrap; }
+.topo-tabs,.controls { display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+.tab-btn,.icon-btn,.play-btn { border:1px solid transparent; border-radius:10px; font-size:12px; font-weight:800;
+  transition:transform .18s,border-color .18s,background .18s,color .18s; }
+.tab-btn,.icon-btn { padding:7px 11px; color:var(--muted); background:rgba(255,255,255,.045); }
+.tab-btn:hover,.icon-btn:hover { transform:translateY(-1px); border-color:rgba(98,169,255,.55); color:var(--text); }
+.tab-btn.active { border-color:rgba(86,224,220,.6); color:#dffefd; background:rgba(86,224,220,.13); }
+.icon-btn:disabled,.play-btn:disabled { cursor:default; opacity:.38; transform:none; }
+.play-btn { padding:7px 13px; color:#07172c; background:linear-gradient(135deg,var(--cyan),#79b9ff); }
+.play-btn:hover { transform:translateY(-1px); }
+.control-group { display:flex; align-items:center; gap:6px; padding:0 6px; color:var(--muted); font-size:12px; }
+input[type="range"] { width:80px; accent-color:var(--cyan); }
+
+.layout { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:12px; }
+.scene-card { border:1px solid var(--line); border-radius:16px; background:var(--panel); box-shadow:var(--shadow); overflow:hidden; }
+.scene-head { display:flex; align-items:center; justify-content:space-between; padding:12px 15px 8px; gap:12px; }
+.scene-title { font-size:13px; font-weight:850; }
+.scene-subtitle { margin-top:3px; color:var(--muted); font-size:12px; }
+.status-pill { flex:0 0 auto; padding:5px 9px; border:1px solid rgba(110,231,168,.35); border-radius:999px;
+  color:var(--green); background:rgba(110,231,168,.08); font-size:11px; font-weight:850; }
+.canvas-wrap { padding:0 10px; }
+canvas { display:block; width:100%; height:380px; border:1px solid rgba(142,164,204,.14); border-radius:13px; background:#0b1528; }
+
+.lesson { display:grid; gap:8px; padding:12px 15px 14px; border-top:1px solid var(--line); background:rgba(8,16,31,.55); }
+.lesson-kicker { color:var(--cyan); font-size:10px; font-weight:850; letter-spacing:.15em; text-transform:uppercase; }
+.lesson-title { font-size:15px; font-weight:850; margin-top:2px; }
+.lesson-text { color:var(--muted); font-size:12px; line-height:1.55; }
+.lesson-formula { padding:8px 11px; border:1px solid rgba(98,169,255,.22); border-radius:8px; color:#cfe6ff;
+  background:rgba(98,169,255,.08); font:700 12px/1.45 ui-monospace,Consolas,monospace; white-space:pre-line; }
+
+.sidebar { display:grid; align-content:start; gap:10px; }
+.side-card { padding:13px; border:1px solid var(--line); border-radius:16px; background:var(--panel); box-shadow:var(--shadow); }
+.side-card h2 { margin:0 0 10px; color:#d8e8ff; font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+.stats { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+.stat { padding:8px 6px; border:1px solid rgba(142,164,204,.15); border-radius:9px; background:rgba(255,255,255,.03); text-align:center; }
+.stat-value { color:var(--text); font-size:18px; font-weight:900; }
+.stat-label { margin-top:2px; color:var(--muted); font-size:9px; text-transform:uppercase; letter-spacing:.08em; }
+.progress-track { display:flex; align-items:center; gap:5px; margin:12px 0 3px; }
+.progress-line { flex:1; height:3px; border-radius:99px; background:rgba(142,164,204,.18); }
+.progress-line.done { background:var(--green); }
+.progress-dot { width:13px; height:13px; border:2px solid rgba(142,164,204,.35); border-radius:50%; background:#12203a; }
+.progress-dot.done { border-color:var(--green); background:var(--green); box-shadow:0 0 13px rgba(110,231,168,.46); }
+.progress-dot.active { border-color:var(--orange); box-shadow:0 0 0 4px rgba(255,189,120,.12); }
+.timeline { display:grid; gap:5px; }
+.timeline-row { display:grid; grid-template-columns:20px 1fr auto; align-items:center; gap:7px; padding:6px 7px;
+  border:1px solid rgba(142,164,204,.12); border-radius:8px; color:var(--muted);
+  background:rgba(255,255,255,.025); font-size:11px; }
+.timeline-row.done { border-color:rgba(110,231,168,.24); color:#c8f8dd; }
+.timeline-row.active { border-color:rgba(255,189,120,.48); color:#ffe3c2; background:rgba(255,189,120,.08); }
+.timeline-num { display:grid; place-items:center; width:20px; height:20px; border-radius:50%;
+  color:#c9d7ef; background:rgba(142,164,204,.15); font-size:10px; font-weight:900; }
+.timeline-count { font-family:ui-monospace,Consolas,monospace; font-size:10px; color:inherit; }
+.formula-box { padding:9px 11px; border:1px solid rgba(86,224,220,.22); border-radius:8px; color:var(--cyan);
+  background:rgba(86,224,220,.07); font:750 11px/1.55 ui-monospace,Consolas,monospace; white-space:pre-line; }
+.note { color:var(--muted); font-size:11px; line-height:1.55; margin-top:6px; }
+.legend { display:flex; flex-wrap:wrap; gap:7px 11px; margin-top:10px; color:var(--muted); font-size:10px; }
+.legend i { display:inline-block; width:8px; height:8px; margin-right:4px; border-radius:50%; }
+
 /* Delivery matrix */
-.dm-grid { display: grid; gap: 2px; }
-.dm-cell { width: 18px; height: 18px; border-radius: 2px; font-size: 0.6em; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; }
-.dm-row { display: flex; gap: 2px; align-items: center; }
-.dm-hdr { width: 22px; text-align: right; color: #888; font-size: 0.72em; margin-right: 2px; }
+.matrix-wrap { overflow-x:auto; }
+.dm-table { border-collapse:collapse; font-size:10px; }
+.dm-table th { padding:2px 4px; color:var(--muted); font-weight:700; text-align:center; }
+.dm-table td { width:20px; height:20px; border-radius:3px; text-align:center; vertical-align:middle;
+  font-size:9px; font-weight:800; transition:background .3s, opacity .3s; }
+.dm-table td.empty { background:rgba(255,255,255,.04); opacity:.4; }
+.dm-corner { background:transparent !important; }
+
+@media (max-width:980px) {
+  .hero { align-items:flex-start; flex-direction:column; }
+  .toolbar { flex-direction:column; align-items:stretch; }
+  .controls { justify-content:flex-start; }
+  .layout { grid-template-columns:1fr; }
+  .sidebar { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  canvas { height:320px; }
+}
+@media (max-width:640px) { .sidebar { grid-template-columns:1fr; } canvas { height:290px; } }
 </style>
 </head>
 <body>
-<h1>All-to-All Personalized — každý každému jiné data</h1>
+<main class="shell">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Paralelni algoritmy / komunikacni operace</div>
+      <h1>All-to-All Personalized: kazdy kazdemu jina data</h1>
+      <p>Kazdy procesor P<sub>i</sub> ma <strong>p unikatnich paketu</strong> &mdash; jeden pro kazdeho partnera. Cil je kompletni personalizovana vymena: matice M[i][j] musi byt plna. Volba topologie zasadne ovlivni pocet kroky a preneseny objem dat.</p>
+    </div>
+    <div class="hero-badge" id="heroBadge">p = 8 &middot; p&minus;1 = 7 kroky</div>
+  </header>
 
-<div class="main">
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <div class="tab-btns">
-      <button class="tab-btn active" id="tabRing" onclick="switchTopo('ring')">Prsten (Ring)</button>
-      <button class="tab-btn" id="tabHyper" onclick="switchTopo('hypercube')">Hyperkrychle (XOR)</button>
+  <section class="toolbar">
+    <div class="topo-tabs" id="topoTabs">
+      <button class="tab-btn active" data-topo="ring">Prsten (Ring)</button>
+      <button class="tab-btn" data-topo="hypercube">Hyperkrychle (XOR)</button>
     </div>
-    <div class="row">
-      <label>p = 2^</label>
-      <input type="range" id="pSlider" min="1" max="4" value="3" style="width:80px;" oninput="updateP()">
-      <span style="color:#c3e88d; font-weight:700;" id="pVal">8</span>
+    <div class="controls">
+      <label class="control-group">p = 2^
+        <input type="range" id="pSlider" min="1" max="4" value="3" style="width:64px;">
+        <strong style="color:var(--green);min-width:24px;" id="pVal">8</strong>
+      </label>
+      <label class="control-group">Rychlost
+        <input type="range" id="speed" min="400" max="2000" value="900" step="100">
+      </label>
+      <button class="icon-btn" id="resetBtn">&#8635; Reset</button>
+      <button class="icon-btn" id="backBtn">&#9664; Zpet</button>
+      <button class="icon-btn" id="nextBtn">Dalsi &#9654;</button>
+      <button class="play-btn" id="playBtn">&#9654; Prehrat</button>
     </div>
-    <div class="row">
-      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
-      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
-      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
-      <button class="btn secondary" onclick="reset()">↺ Reset</button>
-      <label>Rychlost:</label>
-      <input type="range" id="speed" min="300" max="2000" value="900" step="100" style="width:80px;">
-    </div>
-    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
-  </div>
+  </section>
 
-  <canvas id="cv" height="320"></canvas>
-  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
-</div>
-
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <h3>Doručovací matice M[i][j]</h3>
-    <p style="font-size:0.78em; color:#888; margin-bottom:6px;">Řádek = příjemce, sloupec = odesílatel. Buňka = data odesílatele j u příjemce i.</p>
-    <div id="deliveryMatrix"></div>
-  </div>
-
-  <div class="panel">
-    <h3>Odvození složitosti</h3>
-    <div class="deriv-box">
-      <div class="deriv-row"><span class="deriv-lbl">Topologie:</span><span class="deriv-val" id="dTopo">Prsten</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Kroků:</span><span class="deriv-val" id="dSteps">p−1</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Zpráv/krok:</span><span class="deriv-val" id="dMsgs">p (1 na uzel)</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Objem zprávy/krok:</span><span class="deriv-val" id="dVol">—</span></div>
-      <hr style="border-color:#444; margin: 8px 0;">
-      <div class="deriv-row"><span class="deriv-lbl">T (tₛ):</span><span class="deriv-val" id="dTs">—</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">T (tᵥ):</span><span class="deriv-val" id="dTw">—</span></div>
-      <div class="deriv-row"><span class="deriv-lbl highlight">T celkem:</span><span class="deriv-val highlight" id="dTotal">—</span></div>
-      <div style="color:#888; font-size:0.8em; margin-top:8px;" id="dNote">—</div>
+  <section class="layout">
+    <div class="scene-card">
+      <div class="scene-head">
+        <div>
+          <div class="scene-title" id="sceneTitle"></div>
+          <div class="scene-subtitle" id="sceneSubtitle"></div>
+        </div>
+        <div class="status-pill" id="statusPill"></div>
+      </div>
+      <div class="canvas-wrap"><canvas id="cv"></canvas></div>
+      <div class="lesson">
+        <div>
+          <div class="lesson-kicker" id="lessonKicker"></div>
+          <div class="lesson-title" id="lessonTitle"></div>
+        </div>
+        <div class="lesson-text" id="lessonText"></div>
+        <div class="lesson-formula" id="lessonFormula"></div>
+      </div>
     </div>
-    <div class="stat-grid">
-      <div class="stat blue"><div class="stat-lbl">Krok</div><div class="stat-val" id="sCurStep">0/0</div></div>
-      <div class="stat green"><div class="stat-lbl">Doručeno M[i][j]</div><div class="stat-val" id="sDelivered">0/0</div></div>
-    </div>
-  </div>
-</div>
-</div>
+
+    <aside class="sidebar">
+      <section class="side-card">
+        <h2>Stav vypoctu</h2>
+        <div class="stats">
+          <div class="stat"><div class="stat-value" id="roundStat">0/0</div><div class="stat-label">krok</div></div>
+          <div class="stat"><div class="stat-value" id="deliveredStat">0</div><div class="stat-label">M[i][j] doruceno</div></div>
+          <div class="stat"><div class="stat-value" id="msgStat">0</div><div class="stat-label">prenosu</div></div>
+        </div>
+        <div class="progress-track" id="progressTrack"></div>
+        <div class="legend">
+          <span><i style="background:var(--cyan)"></i>odesilatel</span>
+          <span><i style="background:var(--orange)"></i>prijemce</span>
+          <span><i style="background:var(--green)"></i>dokonceno</span>
+        </div>
+      </section>
+
+      <section class="side-card">
+        <h2>Dorucovaci matice M[i][j]</h2>
+        <p style="color:var(--muted);font-size:10px;margin-bottom:8px;">Radek = prijemce i, sloupec = odesilatel j. Barva bunky = barva zdrojoveho procesoru.</p>
+        <div class="matrix-wrap"><table class="dm-table" id="deliveryMatrix"></table></div>
+      </section>
+
+      <section class="side-card">
+        <h2>Prubehy kroky</h2>
+        <div class="timeline" id="timeline"></div>
+      </section>
+
+      <section class="side-card">
+        <h2>Odvozeni slozitosti</h2>
+        <div class="formula-box" id="complexityFormula"></div>
+        <div class="note" id="complexityNote"></div>
+      </section>
+    </aside>
+  </section>
+</main>
 
 <script>
-const COLORS = ['#0984e3','#00b894','#e17055','#a29bfe','#fdcb6e','#fd79a8','#55efc4','#6c5ce7','#fab1a0','#74b9ff','#81ecec','#dfe6e9'];
+const COLORS=['#0984e3','#00b894','#e17055','#a29bfe','#fdcb6e','#fd79a8','#55efc4','#6c5ce7','#fab1a0','#74b9ff','#81ecec','#dfe6e9','#b2bec3','#636e72','#e84393','#d63031'];
 
-let p = 8, topo = 'ring';
-let steps = [];
-let curStep = -1;
-// delivered[i][j] = true if proc i has received data from proc j
-// Initially: delivered[i][i] = true (own data)
-// In ring: each step, each node passes a "packet train" to right; eventually each gets all
-let delivered = [];
-// For ring: each node carries a rotating buffer of packets
-// buffer[i][slot] = original sender id (-1 = empty). In step k, buffer rotates right.
-// Simpler: track which original packets each node has
-let nodePackets = []; // nodePackets[i] = array of senderIds (initially [i, p packets headed to different dests])
+let p=8, topo='ring';
+let steps=[], snapshots=[], cursor=0, flights=[], busy=false, playing=false;
+let cssW=0, cssH=0, dpr=1, rafId=null, lastTs=null;
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
 
-// For the visualization, track which "slot" at each node contains data from whom
-// Ring: each node has p slots. slot k = data destined for proc (i-k+p)%p from original sender (i+k)%p ??? 
-// Let's simplify: just track what data each proc has received FROM whom.
-
-function buildSteps() {
-  steps = [];
-  if (topo === 'ring') {
-    // p-1 steps. Each step: all nodes send their "packet for right neighbor" and receive one from left.
-    // In step k, node i sends the packet from node (i+k)%p to node (i+1)%p.
-    // After step k, node (i+1)%p has data from node (i+k)%p... simplified:
-    // After step k, every node i has received data from nodes (i-1)%p, (i-2)%p, ... (i-k)%p
-    for (let k=1; k<p; k++) {
-      const pairs = [];
-      for (let i=0;i<p;i++) {
-        pairs.push({from:i, to:(i+1)%p, dataFrom: (i-(k-1)+p)%p, step:k});
-      }
-      steps.push({pairs, desc:`Krok ${k}/${p-1}: každý pošle balík sousedovi vpravo (rotace ${k})`});
+// ---- Build steps ----
+function buildSteps(){
+  steps=[];
+  if(topo==='ring'){
+    for(let k=1;k<p;k++){
+      const pairs=[];
+      for(let i=0;i<p;i++) pairs.push({from:i,to:(i+1)%p,dataFrom:(i-(k-1)+p)%p});
+      steps.push({pairs, bidir:false,
+        kicker:'Prsten \u00b7 krok '+k+' z '+(p-1),
+        title:'Rotace '+k+': kazdy posle balik sousedovi vpravo',
+        text:'Kazdy aktivni uzel predava balik cyklem doprava. Po kroku k ma kazdy uzel data od k ruznych odesiolatelu. Zpravy se predavaji dale jako "vlak" \u2014 obsah se pri kazdem pruchodu meni.',
+        formula:'zprav v kroku: '+p+'\nobjem/zpravu: m slov\ncelkem v kroku: '+p+' \u00d7 m slov'
+      });
     }
   } else {
-    // Hypercube XOR scheduling: p-1 steps
-    // Step j (j=1..p-1): node i communicates with node i XOR j
-    // Only pair each i < i XOR j to avoid duplicate
-    for (let j=1; j<p; j++) {
-      const pairs = [];
-      for (let i=0;i<p;i++) {
-        const partner = i^j;
-        if (i<partner) pairs.push({from:i, to:partner, fromRev:true});
-      }
-      steps.push({pairs, desc:`Krok ${j}/${p-1}: uzel i ↔ uzel i⊕${j} (XOR ${j.toString(2).padStart(Math.log2(p),'0')})`});
+    for(let j=1;j<p;j++){
+      const pairs=[];
+      for(let i=0;i<p;i++){ const partner=i^j; if(i<partner) pairs.push({from:i,to:partner}); }
+      steps.push({pairs, bidir:true,
+        kicker:'Hyperkrychle \u00b7 krok '+j+' z '+(p-1),
+        title:'XOR '+j+' ('+j.toString(2).padStart(Math.log2(p),'0')+'): obousmerna vymena',
+        text:'Kazdy par (i, i\u2295'+j+') si vymeni vsechna nashromazd\u011bna data. Po kazdem kroku se zdvoji mnozina dat u kazdeho uzlu. XOR rozvrh garantuje, ze kazdy par komunikuje prave jednou.',
+        formula:'paru v kroku: '+Math.floor(p/2)+'\nobjem/par: 2 \u00d7 m slov (obousmerny)\ncelkem v kroku: '+p+' \u00d7 m slov'
+      });
     }
   }
 }
 
-function initDelivered() {
-  delivered = Array.from({length:p}, (_,i) => new Set([i])); // each has own data
-}
-
-function applyStep(idx) {
-  curStep = idx;
-  const st = steps[idx];
-  const pos = nodePositions();
-  const dur = parseInt(document.getElementById('speed').value)/1000*0.5;
-
-  if (topo === 'ring') {
-    // Each pair: to receives dataFrom from from
-    st.pairs.forEach(({from,to,dataFrom}) => {
-      delivered[to].add(dataFrom);
-      if (pos[from]&&pos[to]) arrows.push({fx:pos[from].x,fy:pos[from].y,tx:pos[to].x,ty:pos[to].y,t:0,dur});
-    });
+// ---- Snapshots ----
+function initialDelivered(){ return Array.from({length:p},(_,i)=>new Set([i])); }
+function applyStepToSnap(del,st){
+  if(!st.bidir){
+    const next=del.map(s=>new Set(s));
+    st.pairs.forEach(({from,to,dataFrom})=>next[to].add(dataFrom));
+    return next;
   } else {
-    // Hypercube: exchange all data between partners
-    const newDel = delivered.map(s=>new Set(s));
-    st.pairs.forEach(({from,to}) => {
-      delivered[from].forEach(d=>newDel[to].add(d));
-      delivered[to].forEach(d=>newDel[from].add(d));
-      if (pos[from]&&pos[to]) {
-        arrows.push({fx:pos[from].x,fy:pos[from].y,tx:pos[to].x,ty:pos[to].y,t:0,dur});
-        arrows.push({fx:pos[to].x,fy:pos[to].y,tx:pos[from].x,ty:pos[from].y,t:0,dur});
-      }
-    });
-    for(let i=0;i<p;i++) delivered[i]=newDel[i];
-  }
-
-  updateUI(idx);
-  cancelAnimationFrame(animFrame); animFrame=requestAnimationFrame(ts=>drawFrame(ts));
-}
-
-function rebuildState(upTo) {
-  initDelivered();
-  for(let i=0;i<=upTo;i++){
-    const st=steps[i];
-    if(topo==='ring'){
-      st.pairs.forEach(({from,to,dataFrom})=>{delivered[to].add(dataFrom);});
-    } else {
-      const nD=delivered.map(s=>new Set(s));
-      st.pairs.forEach(({from,to})=>{delivered[from].forEach(d=>nD[to].add(d));delivered[to].forEach(d=>nD[from].add(d));});
-      for(let j=0;j<p;j++) delivered[j]=nD[j];
-    }
+    const next=del.map(s=>new Set(s));
+    st.pairs.forEach(({from,to})=>{del[from].forEach(d=>next[to].add(d));del[to].forEach(d=>next[from].add(d));});
+    return next;
   }
 }
+function buildSnapshots(){
+  snapshots=[initialDelivered()];
+  steps.forEach(st=>snapshots.push(applyStepToSnap(snapshots.at(-1),st)));
+}
 
-function nodePositions() {
-  const W=cv.offsetWidth,H=320,cx=W/2,cy=160,R=Math.min(W,H)/2-40;
-  if (topo==='ring') {
+// ---- Geometry ----
+function nodePositions(){
+  const cx=cssW/2, cy=cssH/2, R=Math.min(cssW,cssH)/2-44;
+  if(topo==='ring'){
     return Array.from({length:p},(_,i)=>{const a=2*Math.PI*i/p-Math.PI/2;return{x:cx+R*Math.cos(a),y:cy+R*Math.sin(a)};});
   } else {
-    const d=Math.log2(p); const pos=[];
-    for(let i=0;i<p;i++){let x=0,y=0;
-      for(let b=0;b<d;b++){if(b%2===0)x+=((i>>b)&1)*(R*1.6/(d>2?2:1));else y+=((i>>b)&1)*(R*1.6/(d>2?2:1));}
-      pos.push({x:cx-R*.8+x,y:cy-R*.8+y});}
+    const d=Math.log2(p), pos=[];
+    for(let i=0;i<p;i++){
+      let x=0,y=0;
+      for(let b=0;b<d;b++){if(b%2===0)x+=((i>>b)&1)*(R*1.5/(d>2?2:1));else y+=((i>>b)&1)*(R*1.5/(d>2?2:1));}
+      pos.push({x:cx-R*.75+x,y:cy-R*.75+y});
+    }
     return pos;
   }
 }
 
-let arrows=[], playing=false, playTimer2=null, animFrame=null, lastTime=null;
-const cv=document.getElementById('cv'); const ctx=cv.getContext('2d');
-
-function drawFrame(ts) {
-  const W=cv.width=cv.offsetWidth,H=cv.height=320;
-  ctx.clearRect(0,0,W,H);ctx.fillStyle='#252525';ctx.fillRect(0,0,W,H);
-  const pos=nodePositions();
-
-  // Edges
-  ctx.strokeStyle='#3c3c3c';ctx.lineWidth=1;
-  if(topo==='ring'){for(let i=0;i<p;i++){ctx.beginPath();ctx.moveTo(pos[i].x,pos[i].y);ctx.lineTo(pos[(i+1)%p].x,pos[(i+1)%p].y);ctx.stroke();}}
-  else{const d=Math.log2(p);for(let i=0;i<p;i++)for(let b=0;b<d;b++)if((i>>b&1)===0){ctx.beginPath();ctx.moveTo(pos[i].x,pos[i].y);ctx.lineTo(pos[i|(1<<b)].x,pos[i|(1<<b)].y);ctx.stroke();}}
-
-  // Active step edges
-  if(curStep>=0){
-    const curDimOrStep = topo==='hypercube' ? curStep+1 : -1;
-    steps[curStep].pairs.forEach(({from,to})=>{
-      ctx.beginPath();ctx.moveTo(pos[from].x,pos[from].y);ctx.lineTo(pos[to].x,pos[to].y);
-      ctx.strokeStyle='#0984e3';ctx.lineWidth=2;ctx.stroke();
-    });
-  }
-
-  // Arrows
-  if(ts&&lastTime){const dt=(ts-lastTime)/1000;arrows.forEach(a=>a.t=Math.min(1,a.t+dt/a.dur));arrows=arrows.filter(a=>a.t<1);}
-  lastTime=ts;
-  arrows.forEach(ar=>{
-    const x=ar.fx+(ar.tx-ar.fx)*ar.t,y=ar.fy+(ar.ty-ar.fy)*ar.t;
-    ctx.beginPath();ctx.moveTo(ar.fx,ar.fy);ctx.lineTo(x,y);ctx.strokeStyle='#0984e360';ctx.lineWidth=2;ctx.stroke();
-    const ang=Math.atan2(ar.ty-ar.fy,ar.tx-ar.fx);
-    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-9*Math.cos(ang-.4),y-9*Math.sin(ang-.4));ctx.lineTo(x-9*Math.cos(ang+.4),y-9*Math.sin(ang+.4));ctx.closePath();ctx.fillStyle='#0984e3';ctx.fill();
-    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='#c3e88d';ctx.fill();
-  });
-
-  // Nodes — draw pie of received data
-  pos.forEach((pt,i)=>{
-    const r=17;
-    const received=[...delivered[i]].sort((a,b)=>a-b);
-    const slice=2*Math.PI/received.length;
-    let angle=-Math.PI/2;
-    received.forEach(d=>{
-      ctx.beginPath();ctx.moveTo(pt.x,pt.y);ctx.arc(pt.x,pt.y,r,angle,angle+slice);ctx.closePath();
-      ctx.fillStyle=COLORS[d%COLORS.length];ctx.fill();angle+=slice;
-    });
-    ctx.beginPath();ctx.arc(pt.x,pt.y,r,0,Math.PI*2);ctx.strokeStyle='#555';ctx.lineWidth=1.5;ctx.stroke();
-    ctx.fillStyle='rgba(0,0,0,0.6)';ctx.beginPath();ctx.arc(pt.x,pt.y,8,0,Math.PI*2);ctx.fill();
-    ctx.fillStyle='#fff';ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
-    ctx.fillText(i,pt.x,pt.y);
-    ctx.font='8px monospace';ctx.fillStyle='#888';
-    ctx.fillText(`${received.length}/${p}`,pt.x,pt.y+r+10);
-  });
-
-  ctx.font='10px sans-serif';ctx.textBaseline='top';ctx.textAlign='left';ctx.fillStyle='#888';
-  ctx.fillText('Výseče = přijatá data od různých procesorů. Číslo = počet přijatých.', 6, H-14);
-
-  if(arrows.length>0) animFrame=requestAnimationFrame(ts=>drawFrame(ts));
+// ---- DPR resize ----
+function resizeDPR(){
+  const rect=cv.getBoundingClientRect();
+  const w=Math.max(200,Math.floor(rect.width)), h=Math.max(200,Math.floor(rect.height));
+  const ratio=Math.max(1,window.devicePixelRatio||1);
+  if(w===cssW&&h===cssH&&ratio===dpr) return;
+  cssW=w; cssH=h; dpr=ratio; cv.width=w*ratio; cv.height=h*ratio;
 }
 
-function updateUI(step) {
-  const total=steps.length;
-  document.getElementById('progress').style.width=(total>0?(step+1)/total*100:0)+'%';
-  document.getElementById('sCurStep').textContent=`${Math.max(0,step+1)}/${total}`;
-  const del=delivered.reduce((s,d)=>s+d.size,0);
-  document.getElementById('sDelivered').textContent=`${del}/${p*p}`;
+// ---- Draw ----
+function draw(ts){
+  resizeDPR();
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
+  const bg=ctx.createLinearGradient(0,0,cssW,cssH);
+  bg.addColorStop(0,'#0b1528'); bg.addColorStop(1,'#091120');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,cssW,cssH);
+  ctx.strokeStyle='rgba(142,164,204,.04)'; ctx.lineWidth=1;
+  for(let x=20;x<cssW;x+=30){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,cssH);ctx.stroke();}
+  for(let y=20;y<cssH;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(cssW,y);ctx.stroke();}
 
-  if(step<0){
-    document.getElementById('stepInfo').innerHTML=`Každý P<sub>i</sub> má ${p} paketů — jeden pro každý jiný procesor. Cíl: <strong>kompletní personalizovaná výměna dat.</strong><br>Topologie: <strong>${topo}</strong>, p = <strong>${p}</strong>.`;
-  } else {
-    const st=steps[step];
-    document.getElementById('stepInfo').innerHTML=`<strong>Krok ${step+1}/${total}:</strong> ${st.desc}<br>Zpráv v tomto kroku: <strong style="color:#c3e88d">${st.pairs.length*(topo==='hypercube'?2:1)}</strong>`;
-  }
+  const pos=nodePositions(), delivered=snapshots[cursor];
+  const activeStep=cursor>0?steps[cursor-1]:null;
+  const activeSenders=new Set(activeStep?activeStep.pairs.map(pp=>pp.from):[]);
+  const activeReceivers=new Set(activeStep?activeStep.pairs.map(pp=>pp.to):[]);
+  if(activeStep&&activeStep.bidir) activeStep.pairs.forEach(pp=>{activeSenders.add(pp.to);activeReceivers.add(pp.from);});
 
-  // Delivery matrix
-  const maxShow=Math.min(p,8);
-  let html='<div class="dm-grid">';
-  html+='<div class="dm-row"><span class="dm-hdr">i\\j</span>';
-  for(let j=0;j<maxShow;j++) html+=`<div class="dm-cell" style="background:#444;width:16px;height:14px;font-size:0.6em">${j}</div>`;
-  html+='</div>';
-  for(let i=0;i<maxShow;i++){
-    html+=`<div class="dm-row"><span class="dm-hdr">P${i}</span>`;
-    for(let j=0;j<maxShow;j++){
-      const has=delivered[i]&&delivered[i].has(j);
-      html+=`<div class="dm-cell" style="background:${has?COLORS[j%COLORS.length]:'#2a2a2a'};opacity:${has?1:0.25}">${has?'✓':''}</div>`;
-    }
-    html+='</div>';
-  }
-  html+='</div>';
-  document.getElementById('deliveryMatrix').innerHTML=html;
-
-  // Derivation
-  const d=Math.log2(p);
-  document.getElementById('dTopo').textContent=topo==='ring'?'Prsten':'Hyperkrychle';
+  // Background edges
+  ctx.lineWidth=1.5;
   if(topo==='ring'){
-    document.getElementById('dSteps').textContent=`p−1 = ${p-1}`;
-    document.getElementById('dMsgs').textContent='p zpráv (1 na uzel)';
-    document.getElementById('dVol').textContent='m·(p−k)/p slov v kroku k (průměr ≈ m/2)';
-    document.getElementById('dTs').textContent=`tₛ·(p−1)`;
-    document.getElementById('dTw').textContent=`tᵥ·m·(p−1)/2`;
-    document.getElementById('dTotal').textContent=`tₛ(p−1) + tᵥ·m(p−1)/2 ≈ O(m·p)`;
-    document.getElementById('dNote').textContent='Ring: zprávy se předávají a zmenšují. Celkový přenesený objem ≈ m·p²/2 → suboptimální.';
+    ctx.strokeStyle='rgba(142,164,204,.12)';
+    for(let i=0;i<p;i++){ctx.beginPath();ctx.moveTo(pos[i].x,pos[i].y);ctx.lineTo(pos[(i+1)%p].x,pos[(i+1)%p].y);ctx.stroke();}
   } else {
-    document.getElementById('dSteps').textContent=`p−1 = ${p-1}`;
-    document.getElementById('dMsgs').textContent=`p/2 párů (obousměrné)`;
-    document.getElementById('dVol').textContent='m slov/zprávu (konst.)';
-    document.getElementById('dTs').textContent=`tₛ·(p−1)`;
-    document.getElementById('dTw').textContent=`tᵥ·m·(p−1)`;
-    document.getElementById('dTotal').textContent=`(tₛ + tᵥ·m)·(p−1) = O(m·p)`;
-    document.getElementById('dNote').textContent='Hyperkrychle XOR: optimální! Každý krok přenese přesně m slov, celkem p−1 kroků.';
+    const d=Math.log2(p); ctx.strokeStyle='rgba(142,164,204,.10)';
+    for(let i=0;i<p;i++) for(let b=0;b<d;b++) if((i>>b&1)===0){ctx.beginPath();ctx.moveTo(pos[i].x,pos[i].y);ctx.lineTo(pos[i|(1<<b)].x,pos[i|(1<<b)].y);ctx.stroke();}
   }
+
+  // Active edges (glow)
+  if(activeStep){
+    activeStep.pairs.forEach(({from,to})=>{
+      ctx.save();
+      ctx.strokeStyle='rgba(86,224,220,.72)'; ctx.lineWidth=2.5;
+      ctx.shadowColor='#56e0dc'; ctx.shadowBlur=14;
+      ctx.setLineDash([6,5]);
+      ctx.beginPath(); ctx.moveTo(pos[from].x,pos[from].y); ctx.lineTo(pos[to].x,pos[to].y); ctx.stroke();
+      ctx.restore();
+    });
+  }
+
+  // Advance flights
+  if(ts&&lastTs){
+    const dt=ts-lastTs, spd=parseInt(document.getElementById('speed').value);
+    flights.forEach(f=>{f.t=Math.min(1,f.t+dt/spd);});
+  }
+  lastTs=ts;
+
+  // Draw glowing packets
+  flights.forEach(f=>{
+    if(f.t<=0||f.t>=1) return;
+    const x=f.x0+(f.x1-f.x0)*f.t, y=f.y0+(f.y1-f.y0)*f.t;
+    const t0=Math.max(0,f.t-.18), tx=f.x0+(f.x1-f.x0)*t0, ty=f.y0+(f.y1-f.y0)*t0;
+    ctx.save(); ctx.strokeStyle=COLORS[f.color%COLORS.length]+'60'; ctx.lineWidth=2.5; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(x,y); ctx.stroke(); ctx.restore();
+    const ang=Math.atan2(f.y1-f.y0,f.x1-f.x0);
+    ctx.save(); ctx.fillStyle=COLORS[f.color%COLORS.length];
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-9*Math.cos(ang-.42),y-9*Math.sin(ang-.42)); ctx.lineTo(x-9*Math.cos(ang+.42),y-9*Math.sin(ang+.42)); ctx.closePath(); ctx.fill(); ctx.restore();
+    ctx.save(); ctx.shadowColor=COLORS[f.color%COLORS.length]; ctx.shadowBlur=18;
+    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(x,y,5,0,Math.PI*2); ctx.fill(); ctx.restore();
+  });
+
+  // Nodes
+  pos.forEach((pt,id)=>{
+    const rcv=[...delivered[id]].sort((a,b)=>a-b);
+    const isSnd=activeSenders.has(id), isRcv=activeReceivers.has(id);
+    const isDone=rcv.length===p;
+    const R=21;
+    // Glow halo
+    if(isSnd||isRcv){
+      ctx.beginPath(); ctx.arc(pt.x,pt.y,R+8,0,Math.PI*2);
+      ctx.fillStyle=isSnd?'rgba(86,224,220,.12)':'rgba(255,189,120,.12)'; ctx.fill();
+    }
+    // Pie chart of received data
+    const slice=(2*Math.PI)/rcv.length; let ang=-Math.PI/2;
+    rcv.forEach(d=>{
+      ctx.save(); ctx.shadowColor=isDone?'rgba(110,231,168,.4)':'rgba(0,0,0,.3)'; ctx.shadowBlur=isDone?10:4;
+      ctx.beginPath(); ctx.moveTo(pt.x,pt.y); ctx.arc(pt.x,pt.y,R,ang,ang+slice); ctx.closePath();
+      ctx.fillStyle=COLORS[d%COLORS.length]; ctx.fill(); ctx.restore(); ang+=slice;
+    });
+    // Outline
+    ctx.beginPath(); ctx.arc(pt.x,pt.y,R,0,Math.PI*2);
+    ctx.lineWidth=(isSnd||isRcv)?2.5:1.5;
+    ctx.strokeStyle=isSnd?'#56e0dc':isRcv?'#ffbd78':isDone?'#6ee7a8':'rgba(142,164,204,.4)'; ctx.stroke();
+    // Label badge
+    ctx.save(); ctx.beginPath(); ctx.arc(pt.x,pt.y,9,0,Math.PI*2); ctx.fillStyle='rgba(0,0,0,.72)'; ctx.fill();
+    ctx.fillStyle='#edf4ff'; ctx.font='700 9px "Segoe UI",sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(id,pt.x,pt.y); ctx.restore();
+    // Count badge
+    ctx.fillStyle=isDone?'#6ee7a8':'rgba(142,164,204,.5)'; ctx.font='9px ui-monospace,Consolas,monospace';
+    ctx.textAlign='center'; ctx.textBaseline='top'; ctx.fillText(rcv.length+'/'+p,pt.x,pt.y+R+5);
+  });
+
+  if(flights.some(f=>f.t>0&&f.t<1)) rafId=requestAnimationFrame(draw);
 }
 
-function stepFwd(){if(curStep+1<steps.length)applyStep(curStep+1);}
+// ---- Launch flights ----
+function launchFlights(stepIdx){
+  const pos=nodePositions(), st=steps[stepIdx];
+  flights=[];
+  st.pairs.forEach(({from,to},pi)=>{
+    flights.push({x0:pos[from].x,y0:pos[from].y,x1:pos[to].x,y1:pos[to].y,t:-pi*.04,color:from});
+    if(st.bidir) flights.push({x0:pos[to].x,y0:pos[to].y,x1:pos[from].x,y1:pos[from].y,t:-pi*.04,color:to});
+  });
+}
+
+// ---- Async advance ----
+async function advance(){
+  if(busy||cursor>=steps.length) return;
+  busy=true; launchFlights(cursor); lastTs=null;
+  await new Promise(resolve=>{
+    function tick(ts){ draw(ts); if(flights.every(f=>f.t>=1)) resolve(); else requestAnimationFrame(tick); }
+    requestAnimationFrame(tick);
+  });
+  cursor++; flights=[]; busy=false; draw(null); render();
+  await new Promise(r=>setTimeout(r,120));
+}
+
 function stepBack(){
-  if(curStep>0){rebuildState(curStep-1);curStep--;arrows=[];updateUI(curStep);cancelAnimationFrame(animFrame);requestAnimationFrame(ts=>drawFrame(ts));}
-  else{initDelivered();curStep=-1;arrows=[];updateUI(-1);cancelAnimationFrame(animFrame);requestAnimationFrame(ts=>drawFrame(ts));}
+  if(busy||cursor===0) return;
+  cursor--; flights=[]; cancelAnimationFrame(rafId); lastTs=null; draw(null); render();
 }
 
-function togglePlay(){
-  playing=!playing;
-  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
-  if(playing){const go=()=>{if(curStep+1<steps.length){applyStep(curStep+1);playTimer2=setTimeout(go,parseInt(document.getElementById('speed').value));}else{playing=false;document.getElementById('playBtn').textContent='▶ Přehrát';}};go();}
-  else clearTimeout(playTimer2);
+async function togglePlay(){
+  if(playing){playing=false;render();return;}
+  if(cursor>=steps.length) reset();
+  playing=true; render();
+  while(playing&&cursor<steps.length) await advance();
+  playing=false; render();
 }
 
 function reset(){
-  clearTimeout(playTimer2);playing=false;document.getElementById('playBtn').textContent='▶ Přehrát';
-  initDelivered();buildSteps();curStep=-1;arrows=[];
-  updateUI(-1);cancelAnimationFrame(animFrame);lastTime=null;requestAnimationFrame(ts=>drawFrame(ts));
+  playing=false; busy=false; flights=[]; cursor=0;
+  cancelAnimationFrame(rafId); lastTs=null;
+  buildSteps(); buildSnapshots(); draw(null); render();
 }
 
-function updateP(){
-  const k=parseInt(document.getElementById('pSlider').value);
-  p=Math.pow(2,k);document.getElementById('pVal').textContent=p;reset();
+// ---- Render UI ----
+function render(){
+  const total=steps.length, delivered=snapshots[cursor], finished=cursor===total;
+  const step=cursor>0?steps[cursor-1]:null;
+  const totalDel=delivered.reduce((s,d)=>s+d.size,0);
+  let totalMsgs=0; for(let i=0;i<cursor;i++) totalMsgs+=steps[i].pairs.length*(steps[i].bidir?2:1);
+
+  document.getElementById('heroBadge').textContent='p = '+p+' \u00b7 p\u22121 = '+(p-1)+' krok'+(p-1===1?'':'u');
+  document.getElementById('sceneTitle').textContent=topo==='ring'?'Prsten: rotacni predavani baliku':'Hyperkrychle: XOR rozvrh vymeny';
+  document.getElementById('sceneSubtitle').textContent=topo==='ring'?'Kazdy uzel predava balik sousedovi vpravo. P\u0159eneseny objem: O(m\u00b7p\u00b2).':'Kazdy par i \u2295 j si vymeni data. Optimaln\u00ed: O(m\u00b7p) preneseno.';
+  document.getElementById('statusPill').textContent=finished?'\u2713 dokonceno':cursor+' / '+total+' kol';
+
+  if(step){
+    document.getElementById('lessonKicker').textContent=step.kicker;
+    document.getElementById('lessonTitle').textContent=step.title;
+    document.getElementById('lessonText').textContent=step.text;
+    document.getElementById('lessonFormula').textContent=step.formula;
+  } else {
+    document.getElementById('lessonKicker').textContent=(topo==='ring'?'Prsten':'Hyperkrychle')+' / start';
+    document.getElementById('lessonTitle').textContent='Kazdy procesor ma '+p+' paketu \u2014 jeden pro kazdeho';
+    document.getElementById('lessonText').textContent='Stiskni Prehrat nebo krokuj tlacitkem Dalsi. Vysece uzlu ukazuji prijata data (barva = odesilatel). Matice M[i][j] ukazuje stav doruCeni.';
+    document.getElementById('lessonFormula').textContent=topo==='ring'?'T = ts\u00b7(p\u22121) + tv\u00b7m\u00b7(p\u22121)/2\n  \u2248 O(m\u00b7p)  [prumerna zprava m/2 slov]':'T = (ts + tv\u00b7m)\u00b7(p\u22121)\n  = O(m\u00b7p)  [optimalni, kazdy krok = m slov]';
+  }
+
+  document.getElementById('roundStat').textContent=cursor+'/'+total;
+  document.getElementById('deliveredStat').textContent=totalDel;
+  document.getElementById('msgStat').textContent=totalMsgs;
+
+  // Progress track
+  let html='';
+  for(let i=0;i<=total;i++){
+    if(i>0) html+='<div class="progress-line'+(i<=cursor?' done':'')+'"></div>';
+    const cls=i<cursor?'done':i===cursor?'active':'';
+    html+='<div class="progress-dot '+cls+'" title="krok '+i+'"></div>';
+  }
+  document.getElementById('progressTrack').innerHTML=html;
+
+  // Timeline
+  const maxShow=Math.min(total,8);
+  document.getElementById('timeline').innerHTML=steps.slice(0,maxShow).map((st,i)=>{
+    const cls=i<cursor?'done':i===cursor-1?'active':'';
+    return '<div class="timeline-row '+cls+'"><div class="timeline-num">'+(i+1)+'</div><span>'+st.kicker.split('\u00b7')[1].trim()+'</span><span class="timeline-count">'+st.pairs.length*(st.bidir?2:1)+'\u00d7</span></div>';
+  }).join('');
+
+  // Complexity
+  if(topo==='ring'){
+    document.getElementById('complexityFormula').textContent='T = ts\u00b7(p\u22121) + tv\u00b7m\u00b7(p\u22121)/2\n  = ts\u00b7'+(p-1)+' + tv\u00b7m\u00b7'+((p-1)/2)+'\n\nCelkovy preneseny objem: m\u00b7p\u00b2/2\nKroky: p\u22121 = '+(p-1);
+    document.getElementById('complexityNote').textContent='Ring je suboptimalni: zpravy se preposílají dale, celkovy objem roste kvadraticky. Kazda zprava je delky m, ale je prenasena vicekrat.';
+  } else {
+    document.getElementById('complexityFormula').textContent='T = (ts + tv\u00b7m)\u00b7(p\u22121)\n  = (ts + tv\u00b7m)\u00b7'+(p-1)+'\n\nCelkovy preneseny objem: m\u00b7p\u00b2/2\nKroky: p\u22121 = '+(p-1)+'\nXOR rozvrh: optimalni';
+    document.getElementById('complexityNote').textContent='Hyperkrychle XOR je optimalni: kazdy krok prenese presne m slov, bez nadbytecneho pruchodu. Kazdy par komunikuje prave jednou.';
+  }
+
+  // Delivery matrix
+  const maxMat=Math.min(p,10);
+  let mhtml='<thead><tr><th></th>';
+  for(let j=0;j<maxMat;j++) mhtml+='<th style="color:'+COLORS[j%COLORS.length]+'">'+j+'</th>';
+  mhtml+='</tr></thead><tbody>';
+  for(let i=0;i<maxMat;i++){
+    mhtml+='<tr><th style="padding-right:4px;color:var(--muted)">P'+i+'</th>';
+    for(let j=0;j<maxMat;j++){
+      const has=delivered[i]&&delivered[i].has(j);
+      mhtml+='<td class="'+(has?'':'empty')+'" style="'+(has?'background:'+COLORS[j%COLORS.length]+';color:#fff':'')+'">'+(has?'\u2713':'')+'</td>';
+    }
+    mhtml+='</tr>';
+  }
+  mhtml+='</tbody>';
+  document.getElementById('deliveryMatrix').innerHTML=mhtml;
+
+  document.getElementById('playBtn').textContent=playing?'\u23f8 Pauza':cursor>=total?'\u21ba Prehrat':'\u25b6 Prehrat';
 }
 
-function switchTopo(t){
-  topo=t;
-  document.getElementById('tabRing').className='tab-btn'+(t==='ring'?' active':'');
-  document.getElementById('tabHyper').className='tab-btn'+(t==='hypercube'?' active':'');
+// ---- Controls ----
+document.getElementById('topoTabs').addEventListener('click',e=>{
+  const b=e.target.closest('[data-topo]'); if(!b||busy) return;
+  topo=b.dataset.topo;
+  document.querySelectorAll('.tab-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.topo===topo));
   reset();
-}
+});
+document.getElementById('pSlider').addEventListener('input',()=>{
+  p=Math.pow(2,parseInt(document.getElementById('pSlider').value));
+  document.getElementById('pVal').textContent=p; reset();
+});
+document.getElementById('resetBtn').addEventListener('click',reset);
+document.getElementById('backBtn').addEventListener('click',stepBack);
+document.getElementById('nextBtn').addEventListener('click',advance);
+document.getElementById('playBtn').addEventListener('click',togglePlay);
+window.addEventListener('resize',()=>draw(null));
 
-updateP();
+reset();
 </script>
 </body>
 </html>

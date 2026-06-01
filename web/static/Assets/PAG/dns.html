@@ -3,348 +3,119 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DNS algoritmus — animace</title>
+<title>DNS algoritmus | interaktivní 3D animace</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
-h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
-.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
-.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
-.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
-.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
-select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
-input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
-.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
-.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
-canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
-.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 56px; }
-.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
-.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
-.deriv-lbl { color: #888; min-width: 140px; font-size: 0.9em; }
-.deriv-val { color: #c3e88d; font-family: monospace; }
-.highlight { color: #0984e3; font-weight: 700; }
-.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
-.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
-.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; }
-.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
-.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+:root{
+  --bg:#07101f;--panel:rgba(15,27,50,.94);--panel2:rgba(20,36,64,.92);--line:rgba(137,166,211,.2);
+  --text:#edf5ff;--muted:#98a9c9;--cyan:#57e3df;--blue:#63a9ff;--orange:#ffbd78;
+  --green:#74e6a8;--violet:#ae96ff;--pink:#ff87ae;--shadow:0 20px 50px rgba(0,0,0,.24);
+}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:18px;color:var(--text);font:14px/1.45 Inter,"Segoe UI",system-ui,sans-serif;
+background:radial-gradient(circle at 8% 3%,rgba(68,112,220,.2),transparent 29rem),radial-gradient(circle at 92% 92%,rgba(42,205,183,.13),transparent 30rem),var(--bg)}
+button,input{font:inherit}button{cursor:pointer}.shell{width:min(1460px,100%);margin:auto}
+.hero{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:13px}.eyebrow{color:var(--cyan);font-size:11px;font-weight:850;letter-spacing:.18em;text-transform:uppercase}
+h1{margin:4px 0 0;font-size:clamp(22px,2.8vw,31px);letter-spacing:-.045em}.hero p{max-width:790px;margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.55}
+.badge{flex:none;padding:10px 13px;border:1px solid rgba(87,227,223,.4);border-radius:14px;color:var(--cyan);background:rgba(87,227,223,.08);font-size:12px;font-weight:850;text-align:center}
+.toolbar{display:flex;justify-content:space-between;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:11px;padding:10px 12px;border:1px solid var(--line);border-radius:15px;background:var(--panel);box-shadow:var(--shadow)}
+.group{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.hint{color:var(--muted);font-size:11px}.btn,.play{padding:7px 11px;border:1px solid transparent;border-radius:9px;color:var(--muted);background:rgba(255,255,255,.045);font-size:12px;font-weight:800;transition:.18s}
+.btn:hover{color:var(--text);border-color:rgba(99,169,255,.5);transform:translateY(-1px)}.play{color:#06172c;background:linear-gradient(135deg,var(--cyan),#7cbcff)}.play:hover{transform:translateY(-1px)}
+input[type=range]{width:74px;accent-color:var(--cyan)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 325px;gap:12px}
+.scene,.card{border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:var(--shadow)}.scene{overflow:hidden}.canvas-wrap{position:relative;padding:8px}
+canvas{display:block;width:100%;border:1px solid rgba(137,166,211,.14);border-radius:12px;background:#091426;cursor:grab;touch-action:none}canvas.drag{cursor:grabbing}
+.canvas-tip{position:absolute;top:19px;left:20px;padding:6px 8px;border:1px solid rgba(137,166,211,.2);border-radius:8px;color:var(--muted);background:rgba(5,13,27,.78);font-size:10px;pointer-events:none}
+.tooltip{position:absolute;display:none;z-index:3;padding:7px 9px;border:1px solid rgba(87,227,223,.35);border-radius:8px;color:#dffefd;background:rgba(6,18,34,.95);font:700 11px/1.45 ui-monospace,Consolas,monospace;pointer-events:none;white-space:pre-line}
+.lesson{display:grid;gap:6px;padding:12px 15px 14px;border-top:1px solid var(--line);background:rgba(7,15,30,.58)}.kicker{color:var(--cyan);font-size:10px;font-weight:850;letter-spacing:.16em;text-transform:uppercase}.lesson-title{font-size:16px;font-weight:850}.lesson-text{color:var(--muted);font-size:12px;line-height:1.55}
+.formula{padding:8px 10px;border:1px solid rgba(99,169,255,.24);border-radius:8px;color:#d7eaff;background:rgba(99,169,255,.075);font:700 11px/1.5 ui-monospace,Consolas,monospace;white-space:pre-line}
+.side{display:grid;align-content:start;gap:10px}.card{padding:12px}.card h2{margin:0 0 9px;color:#dbeaff;font-size:11px;font-weight:850;letter-spacing:.11em;text-transform:uppercase}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:9px}.stat{padding:7px 4px;border:1px solid rgba(137,166,211,.14);border-radius:8px;background:rgba(255,255,255,.025);text-align:center}.sv{font-size:17px;font-weight:900}.sl{margin-top:2px;color:var(--muted);font-size:8px;letter-spacing:.08em;text-transform:uppercase}
+.phases{display:grid;gap:4px}.phase{display:flex;align-items:center;gap:7px;padding:6px 8px;border:1px solid rgba(137,166,211,.12);border-radius:8px;color:var(--muted);font-size:10px;background:rgba(255,255,255,.018)}
+.phase b{width:17px;height:17px;border-radius:50%;background:rgba(137,166,211,.13);font-size:9px;line-height:17px;text-align:center}.phase span{margin-left:auto;font:700 9px ui-monospace,Consolas,monospace}.phase.active{border-color:rgba(255,189,120,.58);color:var(--orange);background:rgba(255,189,120,.08)}.phase.done{border-color:rgba(116,230,168,.28);color:var(--green);background:rgba(116,230,168,.04)}
+.focus-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.focus{padding:6px 3px;border:1px solid rgba(137,166,211,.14);border-radius:7px;color:var(--muted);background:rgba(255,255,255,.025);font:750 10px ui-monospace,Consolas,monospace}.focus.active{border-color:rgba(174,150,255,.7);color:#e5ddff;background:rgba(174,150,255,.13)}
+.equation{margin-top:8px;padding:8px 9px;border:1px solid rgba(174,150,255,.24);border-radius:8px;color:#e6deff;background:rgba(174,150,255,.07);font:700 10px/1.55 ui-monospace,Consolas,monospace;white-space:pre-line}.complexity{padding:8px 9px;border:1px solid rgba(87,227,223,.22);border-radius:8px;color:var(--cyan);background:rgba(87,227,223,.065);font:750 10px/1.58 ui-monospace,Consolas,monospace;white-space:pre-line}.note{margin-top:7px;color:var(--muted);font-size:10px;line-height:1.5}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;color:var(--muted);font-size:9px}.legend i{display:inline-block;width:7px;height:7px;margin-right:3px;border-radius:50%}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}.side{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.side{grid-template-columns:1fr}.hero{align-items:start;flex-direction:column}}
 </style>
 </head>
 <body>
-<h1>DNS algoritmus — 3D rozložení pro C = A·B</h1>
-
-<div class="main">
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <div class="row">
-      <label>q (p = q³):</label>
-      <select id="qSel" onchange="reset()">
-        <option value="2" selected>q=2 (p=8)</option>
-        <option value="3">q=3 (p=27)</option>
-      </select>
-      <span style="color:#888;font-size:0.82em;" id="pInfo">Vrstva k: proc(i,j,k) = A[i][k]·B[k][j]</span>
+<main class="shell">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Paralelní algoritmy / násobení matic</div>
+      <h1>DNS algoritmus: výpočet rozložený do 3D prostoru</h1>
+      <p>Každý procesor <strong>P(i,k,j)</strong> spočítá právě jeden člen součtu <strong>A[i][k] × B[k][j]</strong>. Natoč si kubus myší a sleduj, jak se operandy nejprve rozdistribuují a potom složí do výsledné roviny <strong>C</strong>.</p>
     </div>
-    <div class="row">
-      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
-      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
-      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
-      <button class="btn secondary" onclick="reset()">↺ Reset</button>
-      <label>Rychlost:</label>
-      <input type="range" id="speed" min="400" max="2500" value="1100" step="100" style="width:70px;">
+    <div class="badge">3 × 3 × 3<br><span style="color:var(--muted);font-size:10px">27 procesorů</span></div>
+  </header>
+  <section class="toolbar">
+    <div class="group"><button class="btn" id="cameraBtn">↻ Výchozí pohled</button><span class="hint">Tažení = otočení · kolečko = zoom · najeď na procesor pro detail</span></div>
+    <div class="group">
+      <label class="hint">rychlost <input id="speed" type="range" min="500" max="2200" step="100" value="1200"></label>
+      <button class="btn" id="resetBtn">↻ Reset</button><button class="btn" id="backBtn">◀ Zpět</button><button class="btn" id="nextBtn">Další ▶</button><button class="play" id="playBtn">▶ Přehrát</button>
     </div>
-    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
-  </div>
-
-  <canvas id="cv" height="360"></canvas>
-  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
-</div>
-
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <h3>Fáze algoritmu</h3>
-    <div style="font-size:0.82em; line-height:1.8; color:#d4d4d4;">
-      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:4px;" id="phase0Div">
-        <strong style="color:#888;">0. Init:</strong> proc(i,j,0) má A[i][0..q-1], proc(0,j,k) má B[k][j]
-      </div>
-      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:4px;" id="phase1Div">
-        <strong>1. Broadcast A podél k:</strong> proc(i,k,0)→(i,k,*) — všechny vrstvy k dostanou A[i][k]
-      </div>
-      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:4px;" id="phase2Div">
-        <strong>2. Broadcast B podél i:</strong> proc(0,j,k)→(*,j,k) — všechny řádky dostanou B[k][j]
-      </div>
-      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;margin-bottom:4px;" id="phase3Div">
-        <strong>3. Lokální násobení:</strong> proc(i,j,k) = A[i][k] · B[k][j]
-      </div>
-      <div style="padding:4px 8px;border-left:3px solid #3c3c3c;" id="phase4Div">
-        <strong>4. Redukce podél k:</strong> C[i][j] = Σ_k A[i][k]·B[k][j] sečte do proc(i,j,0)
-      </div>
+  </section>
+  <section class="layout">
+    <div class="scene">
+      <div class="canvas-wrap"><canvas id="cv"></canvas><div class="canvas-tip">interaktivní 3D prostor</div><div class="tooltip" id="tooltip"></div></div>
+      <div class="lesson"><div class="kicker" id="kicker"></div><div class="lesson-title" id="lessonTitle"></div><div class="lesson-text" id="lessonText"></div><div class="formula" id="formula"></div></div>
     </div>
-  </div>
+    <aside class="side">
+      <section class="card"><h2>Průběh algoritmu</h2><div class="stats"><div class="stat"><div class="sv" id="stepStat">0/6</div><div class="sl">krok</div></div><div class="stat"><div class="sv" id="activeStat">0</div><div class="sl">přenosů</div></div><div class="stat"><div class="sv" id="doneStat">0/9</div><div class="sl">hotová C</div></div></div><div class="phases" id="phases"></div></section>
+      <section class="card"><h2>Sledovaný prvek výsledku</h2><div class="focus-grid" id="focusGrid"></div><div class="equation" id="equation"></div><div class="legend"><span><i style="background:var(--cyan)"></i>A[i][k]</span><span><i style="background:var(--orange)"></i>B[k][j]</span><span><i style="background:var(--violet)"></i>součin</span><span><i style="background:var(--green)"></i>výsledek C</span></div></section>
+      <section class="card"><h2>Proč třetí rozměr?</h2><div class="complexity">P(i,k,j): A[i][k] × B[k][j]
+C[i][j] = Σₖ A[i][k]B[k][j]
 
-  <div class="panel">
-    <h3>Odvození složitosti</h3>
-    <div class="deriv-box">
-      <div class="deriv-row"><span class="deriv-lbl">3D mřížka:</span><span class="deriv-val" id="dGrid">q×q×q</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Procesory:</span><span class="deriv-val" id="dP">p = q³</span></div>
-      <hr style="border-color:#444;margin:5px 0;">
-      <div class="deriv-row"><span class="deriv-lbl">Broadcast A:</span><span class="deriv-val">(tₛ+tᵥ)·log q</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Broadcast B:</span><span class="deriv-val">(tₛ+tᵥ)·log q</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Redukce:</span><span class="deriv-val">(tₛ+tᵥ)·log q</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">T_P (n³ proc):</span><span class="deriv-val highlight">Θ(log n)</span></div>
-      <hr style="border-color:#444;margin:5px 0;">
-      <div style="color:#888;font-size:0.78em;margin-bottom:4px;">Pro p = q³ &lt; n³ (bloky n/q × n/q):</div>
-      <div class="deriv-row"><span class="deriv-lbl">T_P:</span><span class="deriv-val" id="dTp">n²/p^{2/3} + ...</span></div>
-      <div class="deriv-row highlight"><span class="deriv-lbl">Isoefektivita:</span><span class="deriv-val">Θ(p^{3/2})</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Max p:</span><span class="deriv-val" id="dMaxP">O(n³/log³n)</span></div>
-      <div style="color:#888;font-size:0.78em;margin-top:4px;">⬆ Klíčový rozdíl od Cannona: DNS může použít O(n³) procesorů, Cannon jen O(n²)!</div>
-    </div>
-    <div class="stat-grid">
-      <div class="stat blue"><div class="stat-lbl">Fáze</div><div class="stat-val" id="sCurStep">0/0</div></div>
-      <div class="stat green"><div class="stat-lbl">Aktivní proc.</div><div class="stat-val" id="sActive">0</div></div>
-    </div>
-  </div>
-</div>
-</div>
-
+Tₚ(n³ proc.) = Θ(log n)
+Tₚ(p=q³) = Θ(n² / p^(2/3)
+              + (n/q) log q)</div><div class="note">Oproti Cannonovi dovolí DNS využít mnohem více procesorů: až O(n³ / log³ n). Redukce je v animaci rozepsaná po vlnách, aby bylo vidět každé sčítání; implementace ji provádí stromově v Θ(log q).</div></section>
+    </aside>
+  </section>
+</main>
 <script>
-// Phase colors and state
-let q = 2;
-let curStep = -1, playing = false, playTimer3 = null;
-const steps = [];
-
-const PHASE_COLORS = ['#0984e3','#e17055','#00b894','#a29bfe'];
-const A_COLORS = ['#0984e3','#e17055','#00b894','#a29bfe','#fdcb6e','#fd79a8'];
-const B_COLORS = ['#fd79a8','#55efc4','#6c5ce7','#fdcb6e','#fab1a0','#74b9ff'];
-
-// DNS state: for each proc(i,j,k):
-//   hasA[i][k] = which procs in (i,*,k) have A[i][k]
-//   hasB[j][k] = which procs in (*,j,k) have B[k][j]
-//   computed[i][j][k] = whether A[i][k]*B[k][j] done
-//   reduced[i][j] = whether C[i][j] is fully summed
-
-let hasA, hasB, computed, reduced;
-
-function initState() {
-  // hasA[i][k] = set of proc-row-indices who have A[i][k] (initially just proc (i,k,0))
-  hasA = Array.from({length:q},()=>Array.from({length:q},()=>new Set([0])));
-  // hasB[k][j] = set of proc-col-indices who have B[k][j] (initially just proc (0,j,k) → i=0)
-  hasB = Array.from({length:q},()=>Array.from({length:q},()=>new Set([0])));
-  computed = Array.from({length:q},()=>Array.from({length:q},()=>Array(q).fill(false)));
-  reduced = Array.from({length:q},()=>Array(q).fill(false));
-}
-
-function buildSteps() {
-  steps.length=0;
-  steps.push({ phase:1, desc:`Broadcast A podél třetí dimenze (k): proc(i,k,0) pošle A[i][k] všem proc(i,k,*). Po skončení: každá "tyč" (i,k,*) drží A[i][k]. Čas: (tₛ+tᵥ)·log q` });
-  steps.push({ phase:2, desc:`Broadcast B podél první dimenze (i): proc(0,j,k) pošle B[k][j] všem proc(*,j,k). Po skončení: každá "tyč" (*,j,k) drží B[k][j]. Čas: (tₛ+tᵥ)·log q` });
-  steps.push({ phase:3, desc:`Lokální násobení: proc(i,j,k) spočítá A[i][k] · B[k][j] = dílčí součin. Všechny q³ procesorů pracují souběžně. Čas: Θ(1)` });
-  steps.push({ phase:4, desc:`Redukce podél třetí dimenze (k): C[i][j] = Σ_k A[i][k]·B[k][j] se sečte ke proc(i,j,0). Čas: (tₛ+tᵥ)·log q. Výsledek C leží v rovině k=0.` });
-}
-
-function applyStep(idx) {
-  curStep = idx;
-  const ph = steps[idx].phase;
-  if (ph===1) { for (let i=0;i<q;i++) for (let k=0;k<q;k++) { for(let l=0;l<q;l++) hasA[i][k].add(l); } }
-  else if (ph===2) { for (let k=0;k<q;k++) for (let j=0;j<q;j++) { for(let l=0;l<q;l++) hasB[k][j].add(l); } }
-  else if (ph===3) { for (let i=0;i<q;i++) for (let j=0;j<q;j++) for (let k=0;k<q;k++) computed[i][j][k]=true; }
-  else if (ph===4) { for (let i=0;i<q;i++) for (let j=0;j<q;j++) reduced[i][j]=true; }
-  updateUI(); drawFrame();
-}
-
-function stepFwd() { if (curStep+1<steps.length) applyStep(curStep+1); }
-function stepBack() {
-  if (curStep>0) { initState(); for(let i=0;i<curStep;i++){const ph=steps[i].phase;applyPhaseSilent(ph);} curStep--; updateUI(); drawFrame(); }
-  else { initState(); curStep=-1; updateUI(); drawFrame(); }
-}
-function applyPhaseSilent(ph) {
-  if (ph===1) { for (let i=0;i<q;i++) for (let k=0;k<q;k++) { for(let l=0;l<q;l++) hasA[i][k].add(l); } }
-  else if (ph===2) { for (let k=0;k<q;k++) for (let j=0;j<q;j++) { for(let l=0;l<q;l++) hasB[k][j].add(l); } }
-  else if (ph===3) { for (let i=0;i<q;i++) for (let j=0;j<q;j++) for (let k=0;k<q;k++) computed[i][j][k]=true; }
-  else if (ph===4) { for (let i=0;i<q;i++) for (let j=0;j<q;j++) reduced[i][j]=true; }
-}
-
-function updateUI() {
-  const total=steps.length;
-  document.getElementById('progress').style.width=(total>0?(curStep+1)/total*100:0)+'%';
-  document.getElementById('sCurStep').textContent=`${Math.max(0,curStep+1)}/${total}`;
-
-  let active=0;
-  if (curStep>=0) {
-    const ph=steps[curStep].phase;
-    if (ph===1||ph===2) active=q*q; // all procs in a layer
-    else if (ph===3) active=q*q*q;
-    else active=q*q;
-  }
-  document.getElementById('sActive').textContent=active||'—';
-
-  if (curStep<0) {
-    document.getElementById('stepInfo').innerHTML=`<strong>DNS algoritmus</strong>: matice C = A·B pomocí 3D mřížky q×q×q = ${q}³ = ${q*q*q} procesorů.<br>Proc(i,j,k) bude počítat <em>A[i][k] · B[k][j]</em> — jeden člen sumy pro C[i][j].`;
-  } else {
-    const st=steps[curStep];
-    document.getElementById('stepInfo').innerHTML=`<strong>Fáze ${st.phase}/4:</strong> ${st.desc}`;
-  }
-
-  // Highlight phases
-  for (let p=0;p<4;p++) {
-    const el=document.getElementById(`phase${p}Div`);
-    if (curStep>=0 && steps[curStep].phase===p+1) {
-      el.style.borderLeftColor=PHASE_COLORS[p]; el.style.background='#1a1a2e';
-    } else if (curStep>=p) {
-      el.style.borderLeftColor='#00b89466'; el.style.background='transparent';
-    } else {
-      el.style.borderLeftColor='#3c3c3c'; el.style.background='transparent';
-    }
-  }
-
-  document.getElementById('dGrid').textContent=`${q}×${q}×${q}`;
-  document.getElementById('dP').textContent=`p = ${q}³ = ${q*q*q}`;
-  document.getElementById('dTp').textContent=`n²/p^{2/3} + (n/q)·log q`;
-  document.getElementById('dMaxP').textContent=`O(n³/log³n)`;
-}
-
-const cv=document.getElementById('cv'); const ctx=cv.getContext('2d');
-
-function drawFrame() {
-  const W=cv.width=cv.offsetWidth, H=cv.height=360;
-  ctx.clearRect(0,0,W,H); ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
-
-  // Isometric-ish 3D cube projection: show q layers of q×q grids
-  // Layout: show q 2D planes side by side, labeled as "layer k"
-  const layers = q;
-  const gridN = q;
-  const padX = 20, padY = 30;
-  const availW = W - 2*padX;
-  const availH = H - padY - 60;
-  const layerW = Math.floor(availW / layers) - 10;
-  const cellW = Math.floor(layerW / gridN);
-
-  const phase = curStep>=0 ? steps[curStep].phase : 0;
-
-  for (let k=0; k<q; k++) {
-    const layerX = padX + k*(layerW + 10);
-    const layerY = padY + 14;
-
-    // Layer header
-    ctx.font='bold 11px sans-serif'; ctx.fillStyle='#9cdcfe'; ctx.textAlign='center';
-    ctx.fillText(`Vrstva k=${k}`, layerX + layerW/2, padY + 10);
-
-    for (let i=0; i<q; i++) {
-      for (let j=0; j<q; j++) {
-        const x = layerX + j*cellW;
-        const y = layerY + i*cellW;
-
-        // Determine cell state
-        const hasAik = hasA[i][k].size === q; // fully broadcast A[i][k]
-        const hasBkj = hasB[k][j].size === q; // fully broadcast B[k][j]
-        const isComputed = computed[i][j][k];
-        const isReduced = k===0 && reduced[i][j];
-
-        let bg = '#2a2a2a';
-        if (isReduced) bg = '#003322';
-        else if (isComputed) bg = '#1a2a1a';
-        else if (hasAik && hasBkj) bg = '#1a1a2e';
-
-        ctx.fillStyle=bg; ctx.fillRect(x+1,y+1,cellW-2,cellW-2);
-        let border='#3c3c3c';
-        if (isReduced) border='#00b894';
-        else if (isComputed) border='#00b89466';
-        else if (phase===1&&hasAik) border='#0984e3';
-        else if (phase===2&&hasBkj) border='#e17055';
-        ctx.strokeStyle=border; ctx.lineWidth=1.5;
-        ctx.strokeRect(x+1,y+1,cellW-2,cellW-2);
-
-        const cx2=x+cellW/2, cy2=y+cellW/2;
-        ctx.textAlign='center'; ctx.textBaseline='middle';
-
-        // Show A and B indicators
-        if (cellW >= 28) {
-          // A[i][k] indicator (top-left mini)
-          if (hasAik || (k===0&&i<q)) {
-            ctx.fillStyle=A_COLORS[i%A_COLORS.length]+(hasAik?'cc':'44');
-            ctx.fillRect(x+2,y+2,cellW/2-2,cellW/2-2);
-            ctx.fillStyle='#fff'; ctx.font=`${Math.max(7,cellW/4-1)}px monospace`;
-            ctx.fillText(`A${i}${k}`, x+2+(cellW/2-2)/2, y+2+(cellW/2-2)/2);
-          }
-          // B[k][j] indicator (bottom-right mini)
-          if (hasBkj || (i===0&&j<q)) {
-            ctx.fillStyle=B_COLORS[j%B_COLORS.length]+(hasBkj?'cc':'44');
-            ctx.fillRect(x+cellW/2,y+cellW/2,cellW/2-2,cellW/2-2);
-            ctx.fillStyle='#fff'; ctx.font=`${Math.max(7,cellW/4-1)}px monospace`;
-            ctx.fillText(`B${k}${j}`, x+cellW/2+(cellW/2-2)/2, y+cellW/2+(cellW/2-2)/2);
-          }
-        }
-
-        if (isComputed || isReduced) {
-          ctx.fillStyle=isReduced?'#00b894':'#c3e88d'; ctx.font=`bold ${Math.max(9,cellW/3)}px monospace`;
-          ctx.fillText(isReduced?'C':'×', cx2, cy2);
-        }
-
-        // Proc label
-        ctx.fillStyle='#555'; ctx.font=`${Math.max(7,cellW/5)}px sans-serif`;
-        ctx.fillText(`${i},${j}`, cx2, y+cellW-6);
-      }
-    }
-
-    // Arrows for broadcast phases
-    if (phase===1 && k>0) {
-      // A broadcast from k=0 to k: show arrow pointing right
-      const arrowY=layerY+layerW/2;
-      ctx.beginPath();
-      ctx.moveTo(padX+(k-1)*(layerW+10)+layerW+4, arrowY);
-      ctx.lineTo(padX+k*(layerW+10)-4, arrowY);
-      ctx.strokeStyle='#0984e380'; ctx.lineWidth=2; ctx.stroke();
-    }
-    if (phase===4 && k>0) {
-      // Reduce: arrows pointing back to k=0
-      const arrowY=layerY+layerW/2;
-      ctx.beginPath();
-      ctx.moveTo(padX+k*(layerW+10)-4, arrowY);
-      ctx.lineTo(padX+(k-1)*(layerW+10)+layerW+4, arrowY);
-      ctx.strokeStyle='#00b89480'; ctx.lineWidth=2; ctx.stroke();
-      ctx.beginPath();ctx.moveTo(padX+(k-1)*(layerW+10)+layerW+8,arrowY);
-      ctx.lineTo(padX+(k-1)*(layerW+10)+layerW+4+8,arrowY-4);
-      ctx.lineTo(padX+(k-1)*(layerW+10)+layerW+4+8,arrowY+4);ctx.closePath();
-      ctx.fillStyle='#00b894';ctx.fill();
-    }
-  }
-
-  // Legend
-  const legY=padY+14+q*cellW+12;
-  ctx.font='10px sans-serif'; ctx.textAlign='left'; ctx.fillStyle='#888';
-  ctx.fillText(`A bloky: `, padX, legY);
-  for (let i=0;i<q;i++) {
-    ctx.fillStyle=A_COLORS[i]; ctx.fillRect(padX+55+i*50,legY-9,12,12);
-    ctx.fillStyle='#888'; ctx.fillText(`A[${i}][k]`, padX+70+i*50, legY);
-  }
-  ctx.fillText(`B bloky: `, padX+55+q*50+20, legY);
-  for (let j=0;j<q;j++) {
-    ctx.fillStyle=B_COLORS[j]; ctx.fillRect(padX+55+q*50+75+j*50,legY-9,12,12);
-    ctx.fillStyle='#888'; ctx.fillText(`B[k][${j}]`, padX+55+q*50+90+j*50, legY);
-  }
-  const legY2=legY+18;
-  ctx.fillStyle='#555'; ctx.font='9px sans-serif';
-  ctx.fillText('Buňka (i,j,k) = proc(i,j,k). Čísla vlevo nahoře = blok A, vpravo dole = blok B. × = vynásobeno. C = zredukováno.', padX, legY2);
-}
-
-let playTimer4=null;
-function togglePlay() {
-  playing=!playing;
-  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
-  if(playing){const go=()=>{if(curStep+1<steps.length){applyStep(curStep+1);playTimer4=setTimeout(go,parseInt(document.getElementById('speed').value));}else{playing=false;document.getElementById('playBtn').textContent='▶ Přehrát';}};go();}
-  else clearTimeout(playTimer4);
-}
-
-function reset() {
-  clearTimeout(playTimer4); playing=false; document.getElementById('playBtn').textContent='▶ Přehrát';
-  q=parseInt(document.getElementById('qSel').value);
-  document.getElementById('pInfo').textContent=`q=${q}, p=${q}³=${q*q*q} proc, proc(i,j,k)=A[i][k]·B[k][j]`;
-  initState(); buildSteps(); curStep=-1; updateUI(); drawFrame();
-}
-
-reset();
+const q=3,A=[[2,1,3],[1,2,0],[3,1,2]],B=[[1,2,1],[0,1,3],[2,1,2]];
+const C=A.map((r,i)=>B[0].map((_,j)=>r.reduce((s,v,k)=>s+v*B[k][j],0)));
+const COLORS={a:'#57e3df',b:'#ffbd78',prod:'#ae96ff',sum:'#74e6a8',dim:'#6f83a8',focus:'#ff87ae'};
+const stages=[
+ {key:'start',title:'Vstupní data leží ve dvou kolmých rovinách',kicker:'0 / MAPOVÁNÍ DAT',text:'Blok A[i][k] začíná na čelní rovině j=0. Blok B[k][j] začíná na levé rovině i=0. Průsečík obou broadcastů je procesor P(i,k,j).',formula:'souřadnice procesoru = (i, k, j)\ni = řádek C · k = člen sumy · j = sloupec C'},
+ {key:'a',title:'Broadcast A podél osy j',kicker:'1 / DISTRIBUCE A',text:'Každý blok A[i][k] letí z roviny j=0 dozadu podél své tyrkysové tyče. Po této fázi jej mají všechny procesory P(i,k,*).',formula:'P(i,k,0) → P(i,k,*) : A[i][k]\nčas = (tₛ + t𝓌 · m) log q'},
+ {key:'b',title:'Broadcast B podél osy i',kicker:'2 / DISTRIBUCE B',text:'Každý blok B[k][j] letí z roviny i=0 doprava. Každý procesor nyní vlastní právě dvojici operandů, kterou potřebuje.',formula:'P(0,k,j) → P(*,k,j) : B[k][j]\nP(i,k,j) má A[i][k] i B[k][j]'},
+ {key:'mul',title:'27 lokálních násobení proběhne souběžně',kicker:'3 / LOKÁLNÍ VÝPOČET',text:'Uvnitř každého procesoru se tyrkysový a oranžový operand spojí do fialového dílčího součinu. Pro vybraný C[i][j] sleduj zvýrazněnou svislou věž.',formula:'partial(i,k,j) = A[i][k] × B[k][j]\nkaždý P(i,k,j) počítá jediný člen sumy'},
+ {key:'r1',title:'Redukce: první mezisoučty míří do roviny k=0',kicker:'4 / REDUKCE · VLNA 1',text:'Příspěvky z prostřední roviny k=1 se přesunou do výstupní roviny k=0 a přičtou se k prvním příspěvkům.',formula:'sum₁(i,j) = partial(i,0,j) + partial(i,1,j)'},
+ {key:'r2',title:'Redukce: poslední příspěvky dokončí výsledky',kicker:'5 / REDUKCE · VLNA 2',text:'Příspěvky ze zadní roviny k=2 doputují ke stejným výstupům. Každá zelená buňka nyní obsahuje úplný skalární součin.',formula:'C[i][j] = sum₁(i,j) + partial(i,2,j)'},
+ {key:'done',title:'Výsledná matice C leží v rovině k=0',kicker:'6 / HOTOVO',text:'Třetí rozměr rozložil jednotlivé členy sumy mezi samostatné procesory. Po redukci zůstane v přední výstupní rovině devět hotových prvků C.',formula:'C = A × B = [[8, 8, 11], [1, 4, 7], [7, 9, 10]]'}
+];
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),tip=document.getElementById('tooltip');
+let cur=0,playing=false,busy=false,raf=0,playTimer=0,anim=null,hover=null,focus={i:0,j:0},camera={yaw:-.72,pitch:.54,zoom:1};
+let W=0,H=0,dpr=1,projected=[];
+const $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), ease=t=>1-Math.pow(1-t,3);
+function node(i,k,j){return{i,k,j,id:`${i}${k}${j}`}}function allNodes(){const a=[];for(let i=0;i<q;i++)for(let k=0;k<q;k++)for(let j=0;j<q;j++)a.push(node(i,k,j));return a}
+const nodes=allNodes(), partial=(i,k,j)=>A[i][k]*B[k][j];
+function resize(){const r=cv.getBoundingClientRect(),nw=Math.max(400,Math.floor(r.width)),nh=Math.max(470,Math.min(620,Math.floor(nw*.58))),nd=Math.max(1,devicePixelRatio||1);if(nw===W&&nh===H&&nd===dpr)return;W=nw;H=nh;dpr=nd;cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+'px'}
+function xyz(n){return{x:(n.i-1)*108,y:(1-n.k)*108,z:(n.j-1)*108}}function proj(p){let x=p.x,z=p.z,y=p.y;const cy=Math.cos(camera.yaw),sy=Math.sin(camera.yaw),cp=Math.cos(camera.pitch),sp=Math.sin(camera.pitch);const x1=x*cy-z*sy,z1=x*sy+z*cy,y1=y*cp-z1*sp,z2=y*sp+z1*cp,s=1.06*camera.zoom;return{x:W*.49+x1*s,y:H*.48-y1*s,z:z2}}
+function line(a,b,color,width=1,dash=[]){ctx.save();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore()}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
+function stageIndex(key){return stages.findIndex(s=>s.key===key)}function reached(key){return cur>=stageIndex(key)}
+function focusNode(n){return n.i===focus.i&&n.j===focus.j}function outputValue(i,j){if(cur<4)return null;if(cur===4)return partial(i,0,j)+partial(i,1,j);return C[i][j]}
+function moveList(key){const m=[];if(key==='a')for(let i=0;i<q;i++)for(let k=0;k<q;k++)for(let j=1;j<q;j++)m.push({from:node(i,k,0),to:node(i,k,j),label:`A${i}${k}`,color:COLORS.a,delay:(i+k+j)*.025});if(key==='b')for(let k=0;k<q;k++)for(let j=0;j<q;j++)for(let i=1;i<q;i++)m.push({from:node(0,k,j),to:node(i,k,j),label:`B${k}${j}`,color:COLORS.b,delay:(i+k+j)*.025});if(key==='r1'||key==='r2'){const k=key==='r1'?1:2;for(let i=0;i<q;i++)for(let j=0;j<q;j++)m.push({from:node(i,k,j),to:node(i,0,j),label:String(partial(i,k,j)),color:COLORS.sum,delay:(i+j)*.045})}return m}
+function drawPlane(k,color){const ps=[proj(xyz(node(0,k,0))),proj(xyz(node(2,k,0))),proj(xyz(node(2,k,2))),proj(xyz(node(0,k,2)))];ctx.save();ctx.fillStyle=color;ctx.strokeStyle=color.replace('.08','.22');ctx.beginPath();ps.forEach((p,n)=>n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()}
+function drawAxes(){const o=proj({x:-155,y:-155,z:-155}),axes=[{p:proj({x:185,y:-155,z:-155}),c:COLORS.blue,t:'i · řádek C'},{p:proj({x:-155,y:185,z:-155}),c:COLORS.orange,t:'k · člen sumy'},{p:proj({x:-155,y:-155,z:185}),c:COLORS.a,t:'j · sloupec C'}];axes.forEach(a=>{line(o,a.p,a.c,2);ctx.fillStyle=a.c;ctx.font='700 11px "Segoe UI"';ctx.fillText(a.t,a.p.x+5,a.p.y-4)})}
+function drawGrid(){for(let i=0;i<q;i++)for(let k=0;k<q;k++)for(let j=0;j<q;j++){if(i<2)line(proj(xyz(node(i,k,j))),proj(xyz(node(i+1,k,j))),'rgba(121,151,197,.17)');if(k<2)line(proj(xyz(node(i,k,j))),proj(xyz(node(i,k+1,j))),'rgba(121,151,197,.17)');if(j<2)line(proj(xyz(node(i,k,j))),proj(xyz(node(i,k,j+1))),'rgba(121,151,197,.17)')}}
+function nodeLabel(n){if(cur===0){const bits=[];if(n.j===0)bits.push(`A${n.i}${n.k}`);if(n.i===0)bits.push(`B${n.k}${n.j}`);return bits.join('·')}if(cur===1)return`A${n.i}${n.k}`;if(cur===2)return`A·B`;if(cur===3)return String(partial(n.i,n.k,n.j));if(n.k===0)return String(outputValue(n.i,n.j));return cur<6?String(partial(n.i,n.k,n.j)):''}
+function nodeColor(n){if(cur>=4&&n.k===0)return COLORS.sum;if(cur>=3)return COLORS.prod;if(cur===2)return COLORS.orange;if(cur===1)return COLORS.a;return n.j===0?COLORS.a:n.i===0?COLORS.orange:COLORS.dim}
+function drawNode(n,p){const f=focusNode(n),out=cur>=4&&n.k===0,dim=cur===6&&n.k!==0,r=f?13:11,col=nodeColor(n);ctx.save();ctx.globalAlpha=dim?.18:1;if(f){ctx.shadowColor=COLORS.focus;ctx.shadowBlur=17}else if(out){ctx.shadowColor=COLORS.sum;ctx.shadowBlur=13}ctx.fillStyle='rgba(8,19,37,.96)';ctx.strokeStyle=f?COLORS.focus:col;ctx.lineWidth=f?2.5:1.7;ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle=col;ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);ctx.fill();const lbl=nodeLabel(n);if(lbl){ctx.fillStyle=f?'#fff':col;ctx.font=(f?'800 ':'700 ')+(f?'10px':'9px')+' ui-monospace,Consolas';ctx.textAlign='center';ctx.fillText(lbl,p.x,p.y-r-5)}ctx.restore()}
+function drawFlights(t){if(!anim)return;moveList(anim.key).forEach(m=>{const a=proj(xyz(m.from)),b=proj(xyz(m.to)),u=clamp((t-m.delay)/(1-m.delay),0,1),e=ease(u);line(a,b,m.color+'55',1.3,[4,4]);if(u<=0||u>=1)return;const x=a.x+(b.x-a.x)*e,y=a.y+(b.y-a.y)*e-18*Math.sin(Math.PI*u);ctx.save();ctx.shadowColor=m.color;ctx.shadowBlur=14;ctx.fillStyle=m.color;ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#07101f';ctx.font='800 7px ui-monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(m.label,x,y);ctx.restore()})}
+function drawMul(t){if(!anim||anim.key!=='mul')return;nodes.forEach(n=>{const p=proj(xyz(n)),u=clamp(t-(n.i+n.k+n.j)*.018,0,1);if(!u)return;ctx.save();ctx.strokeStyle=COLORS.prod+(u<.7?'77':'cc');ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,15+Math.sin(u*Math.PI)*8,0,Math.PI*2);ctx.stroke();ctx.restore()})}
+function draw(){resize();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0b1930');g.addColorStop(1,'#07101f');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(137,166,211,.035)';for(let x=20;x<W;x+=28){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=20;y<H;y+=28){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+ if(cur>=4)drawPlane(0,'rgba(116,230,168,.08)');else if(cur===1)for(let j=0;j<q;j++)drawPlane(j,'rgba(87,227,223,.035)');drawAxes();drawGrid();const sorted=nodes.map(n=>({n,p:proj(xyz(n))})).sort((a,b)=>b.p.z-a.p.z);projected=sorted;sorted.forEach(x=>drawNode(x.n,x.p));const t=anim?anim.t:1;drawFlights(t);drawMul(t)}
+function equation(){const{i,j}=focus,parts=[0,1,2].map(k=>`${A[i][k]}×${B[k][j]}=${partial(i,k,j)}`);if(cur<3)return`C[${i}][${j}] čeká na své tři členy:\n${parts.join('  +  ')}`;if(cur===3)return`C[${i}][${j}] = ${parts.join('  +  ')}\nTři fialové součiny zatím leží v různých vrstvách k.`;if(cur===4)return`C[${i}][${j}] : (${parts[0]}) + (${parts[1]}) = ${partial(i,0,j)+partial(i,1,j)}\nJeště čekáme na (${parts[2]}).`;return`C[${i}][${j}] = ${parts.map(x=>'('+x+')').join(' + ')} = ${C[i][j]}`}
+function render(){const s=stages[cur];$('kicker').textContent=s.kicker;$('lessonTitle').textContent=s.title;$('lessonText').textContent=s.text;$('formula').textContent=s.formula;$('stepStat').textContent=`${cur}/6`;$('activeStat').textContent=anim?moveList(anim.key).length:cur===3?'27':'0';$('doneStat').textContent=cur<4?'0/9':cur===4?'0/9':'9/9';$('equation').textContent=equation();$('playBtn').textContent=playing?'⏸ Pauza':cur===6?'↻ Přehrát':'▶ Přehrát';$('backBtn').disabled=busy||cur===0;$('nextBtn').disabled=busy||cur===6;$('phases').innerHTML=stages.map((x,i)=>`<div class="phase ${i===cur?'active':i<cur?'done':''}"><b>${i}</b>${x.title.split(':')[0]}<span>${x.key}</span></div>`).join('');draw()}
+function buildFocus(){let h='';for(let i=0;i<q;i++)for(let j=0;j<q;j++)h+=`<button class="focus ${i===focus.i&&j===focus.j?'active':''}" data-i="${i}" data-j="${j}">C[${i}][${j}]</button>`;$('focusGrid').innerHTML=h;$('focusGrid').querySelectorAll('button').forEach(b=>b.onclick=()=>{focus={i:+b.dataset.i,j:+b.dataset.j};buildFocus();render()})}
+function animate(key,done){cancelAnimationFrame(raf);busy=true;anim={key,t:0};render();let last=0;const duration=+$('speed').value;function tick(ts){if(!last)last=ts;anim.t=clamp(anim.t+(ts-last)/duration,0,1);last=ts;draw();if(anim.t<1)raf=requestAnimationFrame(tick);else{anim=null;busy=false;render();done&&done()}}raf=requestAnimationFrame(tick)}
+function advance(done){if(cur>=6){done&&done();return}cur++;const key=stages[cur].key;if(['a','b','mul','r1','r2'].includes(key))animate(key,done);else{render();done&&done()}}
+function back(){if(busy)return;playing=false;clearTimeout(playTimer);if(cur>0)cur--;render()}function reset(){cancelAnimationFrame(raf);clearTimeout(playTimer);cur=0;anim=null;busy=playing=false;render()}
+function play(){if(playing){playing=false;clearTimeout(playTimer);render();return}if(cur===6)cur=0;playing=true;render();const go=()=>{if(!playing||cur===6){playing=false;render();return}advance(()=>{if(playing)playTimer=setTimeout(go,180)})};go()}
+function cameraReset(){camera={yaw:-.72,pitch:.54,zoom:1};draw()}
+$('nextBtn').onclick=()=>advance();$('backBtn').onclick=back;$('resetBtn').onclick=reset;$('playBtn').onclick=play;$('cameraBtn').onclick=cameraReset;
+let drag=null;cv.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY,yaw:camera.yaw,pitch:camera.pitch};cv.setPointerCapture(e.pointerId);cv.classList.add('drag')};cv.onpointermove=e=>{const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;if(drag){camera.yaw=drag.yaw+(e.clientX-drag.x)*.009;camera.pitch=clamp(drag.pitch-(e.clientY-drag.y)*.009,-1.15,1.15);draw()}hover=projected.find(x=>(x.p.x-mx)**2+(x.p.y-my)**2<190);if(hover){const n=hover.n;tip.style.display='block';tip.style.left=(mx+17)+'px';tip.style.top=(my+17)+'px';tip.textContent=`P(${n.i},${n.k},${n.j})\nA[${n.i}][${n.k}] = ${A[n.i][n.k]}\nB[${n.k}][${n.j}] = ${B[n.k][n.j]}\npartial = ${partial(n.i,n.k,n.j)}`}else tip.style.display='none'};cv.onpointerup=()=>{drag=null;cv.classList.remove('drag')};cv.onpointerleave=()=>{drag=null;tip.style.display='none';cv.classList.remove('drag')};cv.onwheel=e=>{e.preventDefault();camera.zoom=clamp(camera.zoom*(e.deltaY>0?.91:1.1),.68,1.48);draw()};window.onresize=draw;
+buildFocus();render();
 </script>
 </body>
 </html>

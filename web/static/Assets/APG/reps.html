@@ -1,0 +1,214 @@
+<div class="graphics-widget" style="background:#1e1e1e; color:#e0e0e0; padding:20px; border-radius:8px; font-family:monospace; max-width:680px; box-shadow:0 4px 12px rgba(0,0,0,0.3); margin: 20px 0;">
+  
+  <div style="display:flex; background:#151515; border-radius:4px; padding:2px; margin-bottom:15px; border:1px solid #333;">
+    <button class="rep-tab-btn" onclick="switchRep('brep')" id="tab-brep" style="flex:1; background:#264f78; color:#fff; border:none; padding:8px; cursor:pointer; font-family:monospace; border-radius:3px;">B-Rep (Mesh)</button>
+    <button class="rep-tab-btn" onclick="switchRep('volume')" id="tab-volume" style="flex:1; background:transparent; color:#888; border:none; padding:8px; cursor:pointer; font-family:monospace; border-radius:3px;">Volume (Voxely)</button>
+    <button class="rep-tab-btn" onclick="switchRep('csg')" id="tab-csg" style="flex:1; background:transparent; color:#888; border:none; padding:8px; cursor:pointer; font-family:monospace; border-radius:3px;">CSG Strom</button>
+    <button class="rep-tab-btn" onclick="switchRep('metaballs')" id="tab-metaballs" style="flex:1; background:transparent; color:#888; border:none; padding:8px; cursor:pointer; font-family:monospace; border-radius:3px;">Metaballs</button>
+  </div>
+
+  <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+    <div>
+      <canvas id="repCanvas" width="300" height="300" style="background:#111; border:1px solid #333; display:block;"></canvas>
+      <div style="margin-top:8px;" id="rep-controls">
+        </div>
+    </div>
+    
+    <div style="flex:1; min-width:280px; display:flex; flex-direction:column; justify-content:start; font-size:12px;">
+      <div style="font-weight:bold; color:#569cd6; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:10px;" id="rep-title">B-REP (BOUNDARY REPRESENTATION)</div>
+      
+      <div style="background:#151515; padding:10px; border-radius:4px; border-left:4px solid #569cd6; min-height:140px; white-space:pre-wrap; line-height:1.4;" id="rep-data-structure">
+        </div>
+    </div>
+  </div>
+
+  <div style="margin-top:15px; background:#151515; padding:12px; border-radius:4px; font-size:13px; border:1px solid #2d2d2d;">
+    <div style="color:#888; margin-bottom:4px;">Matematické vyhodnocení & Render log:</div>
+    <div id="rep-math-feedback" style="color:#b5cea8;"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('repCanvas');
+  const ctx = canvas.getContext('2d');
+  
+  let currentRep = 'brep';
+  let param1 = 60; // radius / grid density / distance
+
+  const reps = {
+    brep: {
+      title: 'B-REP (POLYGONÁLNÍ SÍŤ / POVRCH)',
+      structure: `POLE VRCHOLŮ (Vertices):\nV0: [150, 90]\nV1: [210, 150]\nV2: [150, 210]\nV3: [90, 150]\n\nPOLE INDEXŮ (Faces):\nTriangle 0: [0, 1, 3]\nTriangle 1: [1, 2, 3]\n\nGPU: Vykresluje přímo stěny z paměti.`,
+      math: `$$n_{stěn} = 2$$, Paměť: $$O(V + F)$$. Test uvnitř vyžaduje Ray Casting (paprsek protíná polygony, počítají se průsečíky).`
+    },
+    volume: {
+      title: 'VOLUMETRICKÁ REPREZENTACE (VOXELY)',
+      structure: `UNIFORMNÍ 2D/3D MŘÍŽKA:\nRozlišení: N x N buněk\n\nStav paměti:\n[x, y] = 1 (plno)\n[x, y] = 0 (prázdno)\n\nTest uvnitř: Triviální O(1) indexace do pole.\nGPU: Vyžaduje Ray Casting skrze mřížku.`,
+      math: `Mřížka: $$30 \\times 30$$ buněk. Celkem prvků: $$900$$. Paměťová redundance potlačena pomocí Octree (Oktalových stromů).`
+    },
+    csg: {
+      title: 'CONSTRUCTIVE SOLID GEOMETRY (CSG)',
+      structure: `STROM OPERACÍ (DAG):\n      [ PRŮNIK (∩) ]\n       /          \\\n [Kruh A]     [Kvádr B]\n  r=60px       w=140, h=100\n\nTest uvnitř: Rekurzivní vyhodnocení zdola nahoru.`,
+      math: `$$F(P) = A(P) \\cap B(P)$$ \nKde $$A(P): x^2 + y^2 - r^2 \\le 0$$ a $$B(P)$$ je vnitřek obdélníku.`
+    },
+    metaballs: {
+      title: 'IMPLICITNÍ PLOCHY (METABALLS)',
+      structure: `POTENCIÁLOVÉ POLE:\nDva zdroje (centra polí) generují náboj.\nPovrch je definován izoplochou s prahem T.\n\n$$F(P) = \\sum e^{-A \\cdot r^2}$$\n\nGPU: Nelze poslat přímo, nutný březový pochod (Marching Cubes).`,
+      math: `Sčítání polí: $$F(P) = B_1 \\cdot e^{-r_1^2} + B_2 \\cdot e^{-r_2^2} = T$$\nTvar se organicky slévá, když se náboje přiblíží.`
+    }
+  };
+
+  window.switchRep = function(repName) {
+    currentRep = repName;
+    document.querySelectorAll('.rep-tab-btn').forEach(btn => {
+      btn.style.background = 'transparent';
+      btn.style.color = '#888';
+    });
+    document.getElementById('tab-' + repName).style.background = '#264f78';
+    document.getElementById('tab-' + repName).style.color = '#fff';
+    
+    injectControls();
+    render();
+  };
+
+  function injectControls() {
+    const ctrl = document.getElementById('rep-controls');
+    if (currentRep === 'brep') {
+      ctrl.innerHTML = `<label style="font-size:11px; color:#aaa;">Počet subdivizí kruhu (LOD): <input type="range" id="rep-slider" min="3" max="32" value="16" style="width:100%; margin-top:4px;"></label>`;
+    } else if (currentRep === 'volume') {
+      ctrl.innerHTML = `<label style="font-size:11px; color:#aaa;">Hustota voxelové mřížky: <input type="range" id="rep-slider" min="10" max="40" value="25" style="width:100%; margin-top:4px;"></label>`;
+    } else if (currentRep === 'csg') {
+      ctrl.innerHTML = `<label style="font-size:11px; color:#aaa;">Pozice ořezového kvádru: <input type="range" id="rep-slider" min="50" max="170" value="110" style="width:100%; margin-top:4px;"></label>`;
+    } else if (currentRep === 'metaballs') {
+      ctrl.innerHTML = `<label style="font-size:11px; color:#aaa;">Vzdálenost center polí: <input type="range" id="rep-slider" min="30" max="140" value="75" style="width:100%; margin-top:4px;"></label>`;
+    }
+    
+    document.getElementById('rep-slider').addEventListener('input', function(e) {
+      param1 = parseInt(e.target.value);
+      render();
+    });
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Update Static Texts
+    document.getElementById('rep-title').innerText = reps[currentRep].title;
+    document.getElementById('rep-math-feedback').innerHTML = reps[currentRep].math;
+    
+    if (currentRep === 'brep') {
+      document.getElementById('rep-data-structure').innerText = 
+        `POLE VRCHOLŮ (Triangles):\n` + Array.from({length: Math.min(param1, 6)}, (_, i) => `V${i}: [cos, sin] pos`).join('\n') + `\n...\n\nINDEXY SEZNAMU:\n` + Array.from({length: Math.min(param1-2, 4)}, (_, i) => `T${i}: [0, ${i+1}, ${i+2}]`).join('\n') + `\n...`;
+      
+      // Draw B-Rep Mesh
+      ctx.strokeStyle = '#569cd6';
+      ctx.fillStyle = 'rgba(86, 156, 214, 0.2)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      let steps = param1;
+      for(let i=0; i<=steps; i++) {
+        let angle = (i / steps) * Math.PI * 2;
+        let x = 150 + Math.cos(angle) * 70;
+        let y = 150 + Math.sin(angle) * 70;
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.fill(); ctx.stroke();
+      
+      // Draw wireframe overlay to emphasize triangles
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 1;
+      for(let i=1; i<steps; i++) {
+        let angle = (i / steps) * Math.PI * 2;
+        ctx.beginPath(); ctx.moveTo(150 + Math.cos(0)*70, 150 + Math.sin(0)*70);
+        ctx.lineTo(150 + Math.cos(angle)*70, 150 + Math.sin(angle)*70);
+        ctx.stroke();
+      }
+
+    } else if (currentRep === 'volume') {
+      let cells = param1;
+      let size = canvas.width / cells;
+      document.getElementById('rep-data-structure').innerText = reps.volume.structure.replace('N x N', `${cells} x ${cells}`);
+      
+      ctx.fillStyle = '#4ec9b0';
+      ctx.strokeStyle = '#222';
+      for(let x=0; x<cells; x++) {
+        for(let y=0; y<cells; y++) {
+          let cx = x * size + size/2;
+          let cy = y * size + size/2;
+          // Math condition for circle voxelization
+          if(Math.hypot(cx - 150, cy - 150) < 75) {
+            ctx.fillRect(x*size, y*size, size-1, size-1);
+          }
+        }
+      }
+
+    } else if (currentRep === 'csg') {
+      document.getElementById('rep-data-structure').innerText = reps.csg.structure;
+      
+      // Draw Primitives blend via CSG logic
+      ctx.save();
+      // Render A (Circle)
+      let circle = new Path2D();
+      circle.arc(150, 150, 75, 0, Math.PI*2);
+      
+      // Render B (Box controlled by slider)
+      let box = new Path2D();
+      box.rect(param1, 100, 140, 100);
+      
+      // Clip geometry to show Intersection (AND)
+      ctx.clip(circle);
+      ctx.clip(box);
+      
+      ctx.fillStyle = '#ce9178';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.restore();
+
+      // Draw outlines lines of analytical primitives
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4,4]);
+      ctx.beginPath(); ctx.arc(150,150,75,0,Math.PI*2); ctx.stroke();
+      ctx.strokeRect(param1, 100, 140, 100);
+      ctx.setLineDash([]);
+
+    } else if (currentRep === 'metaballs') {
+      document.getElementById('rep-data-structure').innerText = reps.metaballs.structure;
+      
+      let imgData = ctx.createImageData(canvas.width, canvas.height);
+      let data = imgData.data;
+      let d = param1; // distance between centers
+      
+      let p1 = {x: 150 - d/2, y: 150};
+      let p2 = {x: 150 + d/2, y: 150};
+      
+      // Evaluate implicit field formula per pixel
+      for (let x = 0; x < canvas.width; x+=2) {
+        for (let y = 0; y < canvas.height; y+=2) {
+          let r1_sq = (x - p1.x)**2 + (y - p1.y)**2;
+          let r2_sq = (x - p2.x)**2 + (y - p2.y)**2;
+          
+          // Potenciál klesající s e^(-A*r^2)
+          let f = 200 * Math.exp(-0.0005 * r1_sq) + 200 * Math.exp(-0.0005 * r2_sq);
+          
+          if (f > 40) { // Thresholding T
+            for(let dx=0; dx<2; dx++) {
+              for(let dy=0; dy<2; dy++) {
+                let idx = ((y+dy) * canvas.width + (x+dx)) * 4;
+                data[idx] = 218;     // R
+                data[idx+1] = 218;   // G
+                data[idx+2] = 170;   // B
+                data[idx+3] = 255;   // A
+              }
+            }
+          }
+        }
+      }
+      ctx.putImageData(imgData, 0, 0);
+    }
+  }
+
+  injectControls();
+  render();
+})();
+</script>

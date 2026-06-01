@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frakcni batoh - greedy</title>
+<style>
+:root {
+  --panel: rgba(24, 31, 43, .94);
+  --line: rgba(156, 163, 175, .24);
+  --text: #edf2f7;
+  --muted: #9ca3af;
+  --cyan: #22d3ee;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --blue: #60a5fa;
+}
+* { box-sizing: border-box; }
+body {
+  min-width: 820px;
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+  background:
+    radial-gradient(circle at 0 0, rgba(34, 211, 238, .13), transparent 26rem),
+    radial-gradient(circle at 100% 100%, rgba(251, 191, 36, .10), transparent 28rem),
+    #111827;
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+}
+button { font: inherit; }
+.topbar, .panel, .scene {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .22);
+}
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.eyebrow, .label, .panel-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+h1 { margin: 2px 0 0; font-size: 19px; letter-spacing: 0; }
+.controls { display: flex; align-items: center; gap: 8px; }
+.btn {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: rgba(55, 65, 81, .78);
+  color: #e5e7eb;
+  cursor: pointer;
+}
+.btn.primary {
+  min-width: 92px;
+  border-color: rgba(34, 211, 238, .6);
+  background: linear-gradient(135deg, rgba(8, 145, 178, .96), rgba(37, 99, 235, .90));
+  font-weight: 800;
+}
+.progress {
+  height: 7px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(55, 65, 81, .78);
+}
+.progress > div {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--cyan), var(--green), var(--amber));
+  transition: width .25s ease;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 270px;
+  gap: 10px;
+}
+.scene {
+  min-height: 500px;
+  background:
+    linear-gradient(rgba(156, 163, 175, .04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(156, 163, 175, .04) 1px, transparent 1px),
+    rgba(17, 24, 39, .84);
+  background-size: 24px 24px;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: 250px minmax(0, 1fr) 225px;
+  gap: 14px;
+  padding: 16px;
+}
+.items { display: grid; gap: 9px; align-content: start; }
+.item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 10px;
+  background: rgba(31, 41, 55, .86);
+  transition: .22s ease;
+}
+.item.active {
+  border-color: rgba(251, 191, 36, .92);
+  background: rgba(120, 53, 15, .42);
+  transform: translateX(5px);
+}
+.item.taken {
+  border-color: rgba(52, 211, 153, .9);
+  background: rgba(6, 78, 59, .45);
+}
+.item.partial {
+  border-color: rgba(96, 165, 250, .9);
+  background: rgba(30, 64, 175, .42);
+}
+.item-title { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: 850; }
+.item-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; color: #d1d5db; font-size: 12px; }
+.ratio { grid-column: 1 / -1; color: var(--muted); }
+.center { display: grid; grid-template-rows: auto 1fr; gap: 12px; }
+.ranking, .bag {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(15, 23, 42, .72);
+}
+.rank-row {
+  display: grid;
+  grid-template-columns: 52px 1fr 48px;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  color: #d1d5db;
+  font-size: 12px;
+}
+.bar {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(75, 85, 99, .8);
+}
+.fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), var(--amber));
+}
+.bag { min-height: 278px; border-radius: 16px 16px 28px 28px; }
+.meter {
+  height: 14px;
+  margin-top: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(75, 85, 99, .85);
+}
+.meter-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), var(--amber));
+  transition: width .35s ease;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip {
+  border: 1px solid rgba(52, 211, 153, .52);
+  border-radius: 8px;
+  padding: 6px 8px;
+  background: rgba(6, 95, 70, .54);
+  color: #d1fae5;
+  font-size: 12px;
+  font-weight: 850;
+}
+.chip.partial {
+  border-color: rgba(96, 165, 250, .56);
+  background: rgba(30, 64, 175, .52);
+  color: #dbeafe;
+}
+.summary { display: grid; gap: 10px; align-content: start; }
+.stat {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px;
+  background: rgba(15, 23, 42, .72);
+}
+.stat strong { display: block; margin-top: 4px; font-size: 24px; }
+.callout {
+  min-height: 122px;
+  border-left: 3px solid var(--cyan);
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: rgba(8, 145, 178, .12);
+  color: #dbeafe;
+  line-height: 1.45;
+}
+.side { display: grid; gap: 10px; align-content: start; }
+.panel { padding: 12px; }
+.note { margin: 8px 0 0; color: #d1d5db; line-height: 1.45; }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <div>
+      <div class="eyebrow">Frakcni batoh</div>
+      <h1>Greedy podle pomeru p/w</h1>
+    </div>
+    <div class="controls">
+      <button class="btn primary" id="play">Prehrat</button>
+      <button class="btn" id="step">Krok</button>
+      <button class="btn" id="reset">Reset</button>
+    </div>
+  </div>
+  <div class="progress"><div id="progress"></div></div>
+
+  <div class="layout">
+    <main class="scene">
+      <div class="workspace">
+        <section class="items" id="items"></section>
+        <section class="center">
+          <div class="ranking">
+            <div class="panel-title">Serazeni podle ceny za jednotku vahy</div>
+            <div id="ranking"></div>
+          </div>
+          <div class="bag">
+            <div class="panel-title">Batoh, kapacita 10</div>
+            <strong id="bagSummary">0 / 10 kg, hodnota 0</strong>
+            <div class="meter"><div class="meter-fill" id="meter"></div></div>
+            <div class="chips" id="chips"></div>
+          </div>
+        </section>
+        <section class="summary">
+          <div class="stat"><div class="panel-title">Hodnota</div><strong id="value">0</strong></div>
+          <div class="stat"><div class="panel-title">Zbyva kapacita</div><strong id="remaining">10</strong></div>
+          <div class="callout" id="callout">Protoze lze vzit libovolny zlomek predmetu, vyplati se brat nejdrive nejvyssi p/w. Posledni predmet se proste doreze podle zbyvajici kapacity.</div>
+        </section>
+      </div>
+    </main>
+    <aside class="side">
+      <section class="panel">
+        <div class="panel-title">Proc je to optimalni</div>
+        <p class="note">Kdyby reseni bralo kus horsiho predmetu a nechalo misto pro lepsi p/w, vymenou za lepsi predmet se hodnota nezmensi. Opakovanim dostaneme greedy reseni.</p>
+      </section>
+      <section class="panel">
+        <div class="panel-title">Slozitost</div>
+        <p class="note">Serazeni stoji O(n log n), samotne plneni batohu uz jen O(n).</p>
+      </section>
+    </aside>
+  </div>
+
+<script>
+const capacity = 10;
+const items = [
+  { name: "Zlato", weight: 3, value: 15 },
+  { name: "Stribro", weight: 4, value: 16 },
+  { name: "Mena", weight: 6, value: 18 },
+  { name: "Knihy", weight: 5, value: 10 }
+].map((item, idx) => ({ ...item, idx, ratio: item.value / item.weight }));
+
+const sorted = [...items].sort((a, b) => b.ratio - a.ratio);
+let steps = [];
+let cursor = 0;
+let timer = null;
+let playing = false;
+let state = { weight: 0, value: 0, chips: [] };
+
+const els = {
+  items: document.getElementById("items"),
+  ranking: document.getElementById("ranking"),
+  play: document.getElementById("play"),
+  step: document.getElementById("step"),
+  reset: document.getElementById("reset"),
+  progress: document.getElementById("progress"),
+  bagSummary: document.getElementById("bagSummary"),
+  meter: document.getElementById("meter"),
+  chips: document.getElementById("chips"),
+  value: document.getElementById("value"),
+  remaining: document.getElementById("remaining"),
+  callout: document.getElementById("callout")
+};
+
+function buildSteps() {
+  let remaining = capacity;
+  steps = [];
+  sorted.forEach(item => {
+    if (remaining <= 0) return;
+    if (item.weight <= remaining) {
+      steps.push({ item, fraction: 1, addWeight: item.weight, addValue: item.value });
+      remaining -= item.weight;
+    } else {
+      const fraction = remaining / item.weight;
+      steps.push({ item, fraction, addWeight: remaining, addValue: item.value * fraction });
+      remaining = 0;
+    }
+  });
+}
+
+function renderBase() {
+  els.items.innerHTML = "";
+  items.forEach(item => {
+    els.items.insertAdjacentHTML("beforeend", `
+      <div class="item" data-idx="${item.idx}">
+        <div class="item-title"><span>${item.name}</span><span>#${item.idx + 1}</span></div>
+        <div class="item-meta"><span>w=${item.weight}</span><span>p=${item.value}</span><span class="ratio">p/w=${item.ratio.toFixed(2)}</span></div>
+      </div>`);
+  });
+  const maxRatio = Math.max(...items.map(i => i.ratio));
+  els.ranking.innerHTML = "";
+  sorted.forEach((item, i) => {
+    els.ranking.insertAdjacentHTML("beforeend", `
+      <div class="rank-row"><strong>${i + 1}. ${item.name}</strong><div class="bar"><div class="fill" style="width:${item.ratio / maxRatio * 100}%"></div></div><span>${item.ratio.toFixed(2)}</span></div>`);
+  });
+}
+
+function card(item) {
+  return document.querySelector(`.item[data-idx="${item.idx}"]`);
+}
+
+function fmt(n) {
+  return Number.isInteger(n) ? String(n) : n.toFixed(1);
+}
+
+function renderState() {
+  els.bagSummary.textContent = `${fmt(state.weight)} / ${capacity} kg, hodnota ${fmt(state.value)}`;
+  els.meter.style.width = `${state.weight / capacity * 100}%`;
+  els.value.textContent = fmt(state.value);
+  els.remaining.textContent = fmt(capacity - state.weight);
+  els.chips.innerHTML = "";
+  state.chips.forEach(chip => {
+    const el = document.createElement("span");
+    el.className = `chip ${chip.partial ? "partial" : ""}`;
+    el.textContent = chip.label;
+    els.chips.appendChild(el);
+  });
+}
+
+function applyStep(step) {
+  document.querySelectorAll(".item").forEach(el => el.classList.remove("active"));
+  const c = card(step.item);
+  const partial = step.fraction < 1;
+  c.classList.add("active", partial ? "partial" : "taken");
+  state.weight += step.addWeight;
+  state.value += step.addValue;
+  state.chips.push({ partial, label: partial ? `${step.item.name} ${(step.fraction * 100).toFixed(0)}%` : step.item.name });
+  els.callout.textContent = partial
+    ? `Zbyva ${fmt(step.addWeight)} kg, proto vezmeme jen ${(step.fraction * 100).toFixed(0)} % predmetu ${step.item.name}. Tim je batoh presne plny.`
+    : `Predmet ${step.item.name} ma nejlepsi dostupny pomer p/w a cely se vejde, tak ho vlozime.`;
+  renderState();
+}
+
+function updateProgress() {
+  els.progress.style.width = `${steps.length ? cursor / steps.length * 100 : 0}%`;
+  els.play.textContent = playing ? "Pauza" : "Prehrat";
+  els.step.disabled = cursor >= steps.length;
+}
+
+function stepForward() {
+  if (cursor >= steps.length) return stop();
+  applyStep(steps[cursor]);
+  cursor++;
+  updateProgress();
+  if (cursor >= steps.length) stop();
+}
+
+function play() {
+  if (playing) return stop();
+  playing = true;
+  updateProgress();
+  stepForward();
+  timer = setInterval(stepForward, 780);
+}
+
+function stop() {
+  playing = false;
+  if (timer) clearInterval(timer);
+  timer = null;
+  updateProgress();
+}
+
+function reset() {
+  stop();
+  cursor = 0;
+  state = { weight: 0, value: 0, chips: [] };
+  document.querySelectorAll(".item").forEach(el => el.className = "item");
+  els.callout.textContent = "Protoze lze vzit libovolny zlomek predmetu, vyplati se brat nejdrive nejvyssi p/w. Posledni predmet se proste doreze podle zbyvajici kapacity.";
+  renderState();
+  updateProgress();
+}
+
+buildSteps();
+renderBase();
+reset();
+els.play.addEventListener("click", play);
+els.step.addEventListener("click", stepForward);
+els.reset.addEventListener("click", reset);
+</script>
+</body>
+</html>

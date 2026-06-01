@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Topologie propojovacích sítí — 3D vizualizace</title>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 13px; padding: 12px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+h1 { color: #569cd6; font-size: 1.1em; flex-shrink: 0; }
+.controls { background: #2d2d2d; border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
+label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
+select { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.85em; cursor: pointer; }
+.btn { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 5px; padding: 5px 12px; font-size: 0.82em; cursor: pointer; white-space: nowrap; }
+.btn:hover { background: #4a4a4a; }
+.btn.active { background: #0984e3; color: #fff; border-color: #0984e3; }
+.main { display: grid; grid-template-columns: 1fr 240px; gap: 10px; flex: 1; min-height: 0; }
+#cvWrap { background: #252525; border-radius: 8px; overflow: hidden; position: relative; }
+#cvWrap canvas { display: block; width: 100% !important; height: 100% !important; cursor: grab; }
+#cvWrap canvas:active { cursor: grabbing; }
+.hint { color: #444; font-size: 0.72em; text-align: center; position: absolute; bottom: 8px; left: 0; right: 0; pointer-events: none; user-select: none; }
+.side { display: flex; flex-direction: column; gap: 8px; overflow-y: auto; }
+.panel { background: #2d2d2d; border-radius: 8px; padding: 12px; flex-shrink: 0; }
+.panel h3 { color: #9cdcfe; font-size: 0.8em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.stat-row { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; border-bottom: 1px solid #383838; font-size: 0.82em; }
+.stat-row:last-child { border-bottom: none; }
+.stat-key { color: #888; }
+.stat-val { color: #c3e88d; font-family: monospace; font-size: 0.9em; text-align: right; max-width: 120px; }
+.desc-box { background: #252525; border-radius: 6px; padding: 10px; font-size: 0.79em; line-height: 1.6; color: #aaa; }
+.loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #252525; color: #555; font-size: 1em; border-radius: 8px; z-index: 10; }
+</style>
+</head>
+<body>
+<h1>Topologie propojovacích sítí — 3D vizualizace</h1>
+
+<div class="controls">
+  <label>Topologie:</label>
+  <select id="topoSel" onchange="onTopoChange()">
+    <option value="ring">Prsten (Ring)</option>
+    <option value="mesh2d">2D Mřížka (Mesh)</option>
+    <option value="torus">Torus</option>
+    <option value="hypercube">Hyperkrychle</option>
+    <option value="star">Hvězdice (Star)</option>
+    <option value="complete">Úplný graf (K_n)</option>
+    <option value="mesh3d">3D Mřížka</option>
+  </select>
+  <label>Uzlů:</label>
+  <select id="nSel" onchange="rebuild()"></select>
+  <button class="btn active" id="rotBtn" onclick="toggleRotate()">⟳ Auto-rotace</button>
+  <button class="btn" onclick="resetCamera()">⌖ Reset pohledu</button>
+</div>
+
+<div class="main">
+  <div id="cvWrap">
+    <div class="loading" id="loader">Načítám Three.js…</div>
+    <div class="hint">Táhni = rotace &nbsp;|&nbsp; Scroll = zoom &nbsp;|&nbsp; Pravé tlačítko = posun</div>
+  </div>
+  <div class="side">
+    <div class="panel">
+      <h3>Vlastnosti topologie</h3>
+      <div id="statsBox"></div>
+    </div>
+    <div class="panel">
+      <h3>Popis</h3>
+      <div class="desc-box" id="descBox">—</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Scene init
+// ─────────────────────────────────────────────────────────────────────────────
+const wrap = document.getElementById('cvWrap');
+const loader = document.getElementById('loader');
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x1a1a2e);
+wrap.appendChild(renderer.domElement);
+loader.style.display = 'none';
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x1a1a2e, 0.04);
+
+const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 120);
+camera.position.set(0, 4, 10);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.07;
+controls.autoRotate = true;
+controls.autoRotateSpeed = 0.9;
+controls.minDistance = 2;
+controls.maxDistance = 30;
+controls.target.set(0, 0, 0);
+
+// Lighting
+scene.add(new THREE.AmbientLight(0x556070, 4));
+const dir1 = new THREE.DirectionalLight(0xffffff, 2.5);
+dir1.position.set(6, 10, 7); scene.add(dir1);
+const dir2 = new THREE.DirectionalLight(0x4466aa, 1.0);
+dir2.position.set(-5, -4, -6); scene.add(dir2);
+
+// Grid floor
+const gridHelper = new THREE.GridHelper(24, 24, 0x2a2a3a, 0x222232);
+gridHelper.position.y = -3.5;
+scene.add(gridHelper);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Topology configuration
+// ─────────────────────────────────────────────────────────────────────────────
+const TOPO_OPTIONS = {
+  ring:      [6, 8, 10, 12, 16],
+  mesh2d:    [4, 9, 16, 25],
+  torus:     [9, 16, 25],
+  hypercube: [4, 8, 16],
+  star:      [5, 7, 9, 13, 17],
+  complete:  [4, 5, 6, 7, 8],
+  mesh3d:    [8, 12, 27],
+};
+
+const TOPO_DESCS = {
+  ring:      'Procesory v kruhu. Průměr p/2 — zpráva může obejít půlku kruhu. Nejjednodušší a nejlevnější topologie. Typické použití: NVLink ring v distribuovaném ML, jednoduché sběrnicové systémy.',
+  mesh2d:    '2D mřížka (√p × √p). Přirozené pro maticové výpočty a image processing. Rohové uzly (červené) mají stupeň 2, hraniční (modré) 3, vnitřní (zelené) 4. Torus přidává wraparound hrany.',
+  torus:     '2D torus: mřížka s wraparound hranami v obou dimenzích. Každý uzel má stupeň 4. Průměr √p místo 2√p a dvojnásobná bisekce oproti čisté mřížce. Vizualizováno jako skutečný torus (donut).',
+  hypercube: 'p = 2^d uzlů. Každý má d=log₂p sousedů. Průměr d=log₂p. Bisekce p/2. Klíčová vlastnost: lze rekurzivně rozložit na 2 hyperkrychle — základ rekurzivního zdvojování. d=2: čtverec, d=3: krychle, d=4: hyperkrychle (2 vložené krychle).',
+  star:      'Centrální hub (žlutá) propojen se všemi listy (modrá). Průměr 2 — vždy max 2 skoky. Hub je single point of failure a komunikační bottleneck. Reálné příklady: Ethernet switch, InfiniBand fat-tree (hierarchická hvězdice).',
+  complete:  'K_n — každý procesor přímo propojen s každým jiným. Průměr 1, bisekce ≈ p²/4. Počet hran roste kvadraticky — pro 100 uzlů = 4 950 spojů. V praxi nerealizovatelné; slouží jako teoretická horní mez výkonu.',
+  mesh3d:    '3D mřížka (∛p × ∛p × ∛p). Každý uzel má až 6 sousedů (±x,±y,±z). Barva = vrstva (osa z). Průměr 3(∛p−1). Přirozené pro 3D simulace: CFD, seizmika, výpočetní fyzika. Příklady: Cray XT (3D torus), IBM Blue Gene (3D torus).',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Build graph data (positions + edges + colors)
+// ─────────────────────────────────────────────────────────────────────────────
+function buildTopologyData(type, n) {
+  let positions = [], edges = [], colors = [];
+
+  if (type === 'ring') {
+    const R = Math.max(2.5, n * 0.38);
+    positions = Array.from({length: n}, (_, i) => {
+      const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+      return new THREE.Vector3(R * Math.cos(a), 0, R * Math.sin(a));
+    });
+    edges = Array.from({length: n}, (_, i) => [i, (i + 1) % n]);
+    colors = Array(n).fill(0x0984e3);
+
+  } else if (type === 'mesh2d') {
+    const cols = Math.round(Math.sqrt(n));
+    const rows = Math.ceil(n / cols);
+    positions = Array.from({length: n}, (_, i) => {
+      const r = Math.floor(i / cols), c = i % cols;
+      return new THREE.Vector3((c - (cols - 1) / 2) * 1.8, 0, (r - (rows - 1) / 2) * 1.8);
+    });
+    for (let i = 0; i < n; i++) {
+      const r = Math.floor(i / cols), c = i % cols;
+      if (c + 1 < cols && i + 1 < n) edges.push([i, i + 1]);
+      if (i + cols < n) edges.push([i, i + cols]);
+    }
+    colors = Array.from({length: n}, (_, i) => {
+      const r = Math.floor(i / cols), c = i % cols;
+      const corner = (r === 0 || r === rows - 1) && (c === 0 || c === cols - 1);
+      const edge = r === 0 || r === rows - 1 || c === 0 || c === cols - 1;
+      return corner ? 0xe17055 : (edge ? 0x0984e3 : 0x00b894);
+    });
+
+  } else if (type === 'torus') {
+    const cols = Math.round(Math.sqrt(n));
+    const rows = Math.ceil(n / cols);
+    const R1 = 2.8, R2 = 1.1;
+    positions = Array.from({length: n}, (_, i) => {
+      const r = Math.floor(i / cols), c = i % cols;
+      const theta = (c / cols) * Math.PI * 2;
+      const phi = (r / rows) * Math.PI * 2;
+      return new THREE.Vector3(
+        (R1 + R2 * Math.cos(phi)) * Math.cos(theta),
+        R2 * Math.sin(phi),
+        (R1 + R2 * Math.cos(phi)) * Math.sin(theta)
+      );
+    });
+    for (let i = 0; i < n; i++) {
+      const r = Math.floor(i / cols), c = i % cols;
+      const right = r * cols + (c + 1) % cols;
+      const down = ((r + 1) % rows) * cols + c;
+      if (right !== i) edges.push([i, right]);
+      if (down !== i) edges.push([i, down]);
+    }
+    // Dedup
+    const edgeSet = new Set(edges.map(([a, b]) => a < b ? `${a}-${b}` : `${b}-${a}`));
+    edges = [...edgeSet].map(s => s.split('-').map(Number));
+    colors = Array(n).fill(0xa29bfe);
+
+  } else if (type === 'hypercube') {
+    const d = Math.round(Math.log2(n));
+    const S = 2.0;
+    if (d === 2) {
+      positions = [[-S,0,-S],[S,0,-S],[S,0,S],[-S,0,S]].map(([x,y,z])=>new THREE.Vector3(x,y,z));
+    } else if (d === 3) {
+      positions = Array.from({length: 8}, (_, i) =>
+        new THREE.Vector3((i&1?S:-S), (i&2?S:-S), (i&4?S:-S))
+      );
+    } else { // d=4, n=16
+      positions = Array.from({length: 16}, (_, i) => {
+        const inner = !(i & 8);
+        const s = inner ? S * 0.6 : S * 1.35;
+        return new THREE.Vector3((i&1?s:-s), (i&2?s:-s), (i&4?s:-s));
+      });
+    }
+    for (let i = 0; i < n; i++)
+      for (let bit = 0; bit < d; bit++) { const j = i ^ (1<<bit); if (j > i) edges.push([i, j]); }
+    const pal = [0x0984e3,0xe17055,0x00b894,0xa29bfe,0xfdcb6e,0xfd79a8,0x55efc4,0x74b9ff,
+                 0xb2bec3,0x636e72,0x81ecec,0xdfe6e9,0xfab1a0,0x55efc4,0xa29bfe,0xffeaa7];
+    colors = Array.from({length: n}, (_, i) => pal[i % pal.length]);
+
+  } else if (type === 'star') {
+    positions = [new THREE.Vector3(0, 0, 0)];
+    for (let i = 1; i < n; i++) {
+      const phi = Math.acos(1 - 2 * i / Math.max(n - 1, 1));
+      const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+      const R = 3.2;
+      positions.push(new THREE.Vector3(R*Math.sin(phi)*Math.cos(theta), R*Math.cos(phi), R*Math.sin(phi)*Math.sin(theta)));
+    }
+    edges = Array.from({length: n-1}, (_, i) => [0, i+1]);
+    colors = Array.from({length: n}, (_, i) => i === 0 ? 0xfdcb6e : 0x0984e3);
+
+  } else if (type === 'complete') {
+    const R = Math.max(2.2, n * 0.5);
+    positions = Array.from({length: n}, (_, i) => {
+      const phi = Math.acos(1 - 2 * i / Math.max(n - 1, 1));
+      const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+      return new THREE.Vector3(R*Math.sin(phi)*Math.cos(theta), R*Math.cos(phi), R*Math.sin(phi)*Math.sin(theta));
+    });
+    for (let i = 0; i < n; i++) for (let j = i+1; j < n; j++) edges.push([i, j]);
+    const pal = [0x0984e3,0xe17055,0x00b894,0xa29bfe,0xfdcb6e,0xfd79a8,0x55efc4,0x74b9ff];
+    colors = Array.from({length: n}, (_, i) => pal[i % pal.length]);
+
+  } else if (type === 'mesh3d') {
+    let nx, ny, nz;
+    if (n === 8)  { nx=2; ny=2; nz=2; }
+    else if (n === 12) { nx=2; ny=2; nz=3; }
+    else           { nx=3; ny=3; nz=3; } // 27
+    const sp = 1.9;
+    for (let z=0; z<nz; z++) for (let y=0; y<ny; y++) for (let x=0; x<nx; x++)
+      positions.push(new THREE.Vector3((x-(nx-1)/2)*sp, (y-(ny-1)/2)*sp, (z-(nz-1)/2)*sp));
+    const total = nx*ny*nz;
+    for (let i=0; i<total; i++) {
+      const x=i%nx, y=Math.floor(i/nx)%ny, z=Math.floor(i/(nx*ny));
+      if (x+1<nx) edges.push([i, i+1]);
+      if (y+1<ny) edges.push([i, i+nx]);
+      if (z+1<nz) edges.push([i, i+nx*ny]);
+    }
+    const layerColors = [0xe17055, 0x0984e3, 0x00b894, 0xa29bfe];
+    colors = Array.from({length: total}, (_, i) => layerColors[Math.floor(i/(nx*ny)) % layerColors.length]);
+  }
+
+  return { positions, edges, colors };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Stats
+// ─────────────────────────────────────────────────────────────────────────────
+function getStats(type, n) {
+  const rows = {};
+  if (type === 'ring') {
+    rows['Průměr'] = `⌊p/2⌋ = ${Math.floor(n/2)}`;
+    rows['Bisekční šířka'] = '2';
+    rows['Stupeň uzlu'] = '2';
+    rows['Počet hran'] = `${n}`;
+  } else if (type === 'mesh2d') {
+    const s = Math.round(Math.sqrt(n));
+    rows['Průměr'] = `2(√p−1) = ${2*(s-1)}`;
+    rows['Bisekční šířka'] = `√p = ${s}`;
+    rows['Stupeň (vnitřní)'] = '4';
+    rows['Stupeň (rohový)'] = '2';
+    rows['Počet hran'] = `${(s-1)*s*2}`;
+    rows['Rozložení'] = `${s}×${s}`;
+  } else if (type === 'torus') {
+    const s = Math.round(Math.sqrt(n));
+    rows['Průměr'] = `√p = ${s}`;
+    rows['Bisekční šířka'] = `2√p = ${2*s}`;
+    rows['Stupeň uzlu'] = '4';
+    rows['Počet hran'] = `${2*n}`;
+    rows['Rozložení'] = `${s}×${s} torus`;
+  } else if (type === 'hypercube') {
+    const d = Math.round(Math.log2(n));
+    rows['Průměr'] = `d = log₂p = ${d}`;
+    rows['Bisekční šířka'] = `p/2 = ${n/2}`;
+    rows['Stupeň uzlu'] = `d = ${d}`;
+    rows['Počet hran'] = `${n*d/2}`;
+    rows['Dimenze'] = `d = ${d}`;
+  } else if (type === 'star') {
+    rows['Průměr'] = '2';
+    rows['Bisekční šířka'] = `⌊p/2⌋ = ${Math.floor(n/2)}`;
+    rows['Stupeň (hub)'] = `${n-1}`;
+    rows['Stupeň (list)'] = '1';
+    rows['Počet hran'] = `${n-1}`;
+  } else if (type === 'complete') {
+    rows['Průměr'] = '1';
+    rows['Bisekční šířka'] = `≈ p²/4 = ${Math.floor(n/2)*Math.ceil(n/2)}`;
+    rows['Stupeň uzlu'] = `${n-1}`;
+    rows['Počet hran'] = `${n*(n-1)/2}`;
+  } else if (type === 'mesh3d') {
+    let nx, ny, nz;
+    if (n===8){nx=2;ny=2;nz=2;} else if (n===12){nx=2;ny=2;nz=3;} else{nx=3;ny=3;nz=3;}
+    const cbrt = Math.round(Math.cbrt(n));
+    rows['Průměr'] = `3(∛p−1) ≈ ${3*(cbrt-1)}`;
+    rows['Bisekční šířka'] = `p^(2/3) ≈ ${Math.round(Math.pow(n,2/3))}`;
+    rows['Stupeň (vnitřní)'] = '6';
+    rows['Stupeň (rohový)'] = '3';
+    rows['Počet hran'] = `${(nx-1)*ny*nz + nx*(ny-1)*nz + nx*ny*(nz-1)}`;
+    rows['Rozložení'] = `${nx}×${ny}×${nz}`;
+  }
+  rows['Uzlů'] = `${n}`;
+  return rows;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Build Three.js scene
+// ─────────────────────────────────────────────────────────────────────────────
+let graphGroup = null;
+const NODE_GEOM = new THREE.SphereGeometry(0.24, 20, 14);
+const EDGE_MAT = new THREE.LineBasicMaterial({ color: 0x445566, opacity: 0.65, transparent: true });
+
+function buildScene(type, n) {
+  if (graphGroup) {
+    graphGroup.traverse(obj => {
+      if (obj.geometry && obj !== graphGroup) obj.geometry.dispose();
+      if (obj.material && obj !== graphGroup) {
+        if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+        else obj.material.dispose();
+      }
+    });
+    scene.remove(graphGroup);
+  }
+  graphGroup = new THREE.Group();
+
+  const { positions, edges, colors } = buildTopologyData(type, n);
+
+  // Edges
+  if (edges.length > 0) {
+    const pts = [];
+    edges.forEach(([i, j]) => { pts.push(positions[i], positions[j]); });
+    const geom = new THREE.BufferGeometry().setFromPoints(pts);
+    graphGroup.add(new THREE.LineSegments(geom, EDGE_MAT));
+  }
+
+  // Nodes
+  positions.forEach((pos, i) => {
+    const mat = new THREE.MeshPhongMaterial({
+      color: colors[i],
+      shininess: 90,
+      specular: new THREE.Color(0x334466),
+      emissive: new THREE.Color(colors[i]).multiplyScalar(0.12),
+    });
+    const mesh = new THREE.Mesh(NODE_GEOM, mat);
+    mesh.position.copy(pos);
+    graphGroup.add(mesh);
+  });
+
+  // Star hub highlight ring
+  if (type === 'star' && positions.length > 0) {
+    const ringGeom = new THREE.TorusGeometry(0.42, 0.06, 8, 32);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xfdcb6e });
+    const ring = new THREE.Mesh(ringGeom, ringMat);
+    ring.position.copy(positions[0]);
+    graphGroup.add(ring);
+  }
+
+  // Hypercube inner/outer shell indicator (d=4)
+  if (type === 'hypercube' && n === 16) {
+    [0.6*2.0*1.73, 1.35*2.0*1.73].forEach((r, si) => {
+      const sphereGeom = new THREE.SphereGeometry(r, 24, 16);
+      const sphereMat = new THREE.MeshBasicMaterial({ color: si===0?0x0984e3:0xe17055, opacity:0.04, transparent:true, side:THREE.BackSide, depthWrite:false });
+      graphGroup.add(new THREE.Mesh(sphereGeom, sphereMat));
+    });
+  }
+
+  scene.add(graphGroup);
+
+  // Update UI
+  const stats = getStats(type, n);
+  document.getElementById('statsBox').innerHTML =
+    Object.entries(stats).map(([k,v]) =>
+      `<div class="stat-row"><span class="stat-key">${k}</span><span class="stat-val">${v}</span></div>`
+    ).join('');
+  document.getElementById('descBox').textContent = TOPO_DESCS[type] || '';
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Resize + animation
+// ─────────────────────────────────────────────────────────────────────────────
+function resize() {
+  const w = wrap.clientWidth, h = wrap.clientHeight;
+  if (!w || !h) return;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(wrap);
+resize();
+
+let animId;
+function animate() {
+  animId = requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Global UI callbacks
+// ─────────────────────────────────────────────────────────────────────────────
+window.onTopoChange = function() {
+  const type = document.getElementById('topoSel').value;
+  const opts = TOPO_OPTIONS[type];
+  const nSel = document.getElementById('nSel');
+  nSel.innerHTML = opts.map(v => `<option value="${v}">${v} uzlů</option>`).join('');
+  rebuild();
+};
+
+window.rebuild = function() {
+  const type = document.getElementById('topoSel').value;
+  const n = parseInt(document.getElementById('nSel').value);
+  buildScene(type, n);
+};
+
+let autoRotate = true;
+window.toggleRotate = function() {
+  autoRotate = !autoRotate;
+  controls.autoRotate = autoRotate;
+  const btn = document.getElementById('rotBtn');
+  btn.textContent = '⟳ Auto-rotace';
+  btn.classList.toggle('active', autoRotate);
+};
+
+window.resetCamera = function() {
+  camera.position.set(0, 4, 10);
+  controls.target.set(0, 0, 0);
+  controls.update();
+};
+
+// Init
+onTopoChange();
+</script>
+</body>
+</html>

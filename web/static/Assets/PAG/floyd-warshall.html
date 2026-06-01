@@ -3,319 +3,388 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floyd-Warshall — 2D blokové rozložení</title>
+<title>Floyd-Warshall | 2D blokove rozlozeni</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
-h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
-.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
-.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
-.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
-.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
-select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
-input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
-.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
-.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
-canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
-.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 60px; }
-.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
-.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
-.deriv-lbl { color: #888; min-width: 130px; font-size: 0.9em; }
-.deriv-val { color: #c3e88d; font-family: monospace; }
-.highlight { color: #0984e3; font-weight: 700; }
-.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
-.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
-.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; } .stat.yellow { border-color: #fdcb6e; }
-.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
-.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+:root{
+  --bg:#08111f;--panel:rgba(15,28,49,.95);--panel2:rgba(10,21,39,.84);
+  --line:rgba(145,170,211,.2);--text:#edf5ff;--muted:#9badca;
+  --cyan:#55e2dd;--blue:#62a9ff;--violet:#aa91ff;--orange:#ffbd78;
+  --green:#6ee7a8;--pink:#ff89b8;--red:#ff8297;--shadow:0 18px 45px rgba(0,0,0,.22);
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:18px;color:var(--text);
+  background:radial-gradient(circle at 8% 0%,rgba(77,123,221,.19),transparent 30rem),
+             radial-gradient(circle at 94% 96%,rgba(48,207,184,.12),transparent 34rem),var(--bg);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif;font-size:14px}
+button,select,input{font:inherit}button{cursor:pointer}.shell{width:min(1480px,100%);margin:0 auto}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:13px}
+.eyebrow{color:var(--cyan);font-size:11px;font-weight:850;letter-spacing:.18em;text-transform:uppercase}
+h1{margin:5px 0 0;font-size:clamp(21px,2.7vw,30px);letter-spacing:-.045em}
+.hero p{max-width:780px;margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.55}
+.hero-badge{flex:0 0 auto;padding:10px 13px;border:1px solid rgba(85,226,221,.38);border-radius:14px;
+  background:rgba(85,226,221,.08);color:var(--cyan);font-size:12px;font-weight:850;text-align:center}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin-bottom:12px;
+  border:1px solid var(--line);border-radius:15px;background:var(--panel);box-shadow:var(--shadow);flex-wrap:wrap}
+.tb-group,.ctrl{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.ctrl{color:var(--muted);font-size:12px}
+select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.06);color:var(--text);font-size:12px}
+input[type=range]{width:75px;accent-color:var(--cyan)}
+.icon-btn,.play-btn{padding:7px 11px;border:1px solid transparent;border-radius:10px;font-size:12px;font-weight:800;
+  transition:transform .18s,border-color .18s,background .18s,color .18s}
+.icon-btn{color:var(--muted);background:rgba(255,255,255,.045)}.icon-btn:hover{transform:translateY(-1px);border-color:rgba(98,169,255,.55);color:var(--text)}
+.icon-btn:disabled{cursor:default;opacity:.4;transform:none}.play-btn{padding-inline:14px;color:#07172c;background:linear-gradient(135deg,var(--cyan),#7fc1ff)}
+.play-btn:hover{transform:translateY(-1px)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:12px}.stack{display:grid;gap:12px;align-content:start}
+.card{border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:var(--shadow);overflow:hidden}
+.card-pad{padding:12px}.card h2{margin:0 0 9px;color:#dbe9ff;font-size:12px;font-weight:850;letter-spacing:.11em;text-transform:uppercase}
+.proc-scene{position:relative;padding:11px 12px;background:var(--panel2);border-bottom:1px solid var(--line)}
+.proc-grid{position:relative;z-index:2;display:grid;grid-template-columns:repeat(2,1fr);gap:7px;max-width:680px;margin:0 auto}
+.proc{min-height:42px;padding:7px 10px;border:1px solid rgba(145,170,211,.25);border-radius:10px;background:rgba(255,255,255,.035);
+  color:var(--muted);font-size:10px;transition:.2s}.proc strong{display:block;color:var(--blue);font-size:11px}.proc small{display:block;margin-top:2px}
+.proc.row-src,.proc.row-recv{border-color:rgba(85,226,221,.72);background:rgba(85,226,221,.09)}.proc.row-src strong,.proc.row-recv strong{color:var(--cyan)}
+.proc.col-src,.proc.col-recv{border-color:rgba(170,145,255,.72);background:rgba(170,145,255,.1)}.proc.col-src strong,.proc.col-recv strong{color:var(--violet)}
+.comm-layer{position:absolute;z-index:3;inset:8px 12px;pointer-events:none}.comm-layer svg{width:100%;height:100%;overflow:visible}
+.comm-path{fill:none;stroke-width:2;stroke-dasharray:5 5;opacity:.55}.comm-dot{filter:drop-shadow(0 0 5px currentColor)}
+.scene-grid{display:grid;grid-template-columns:minmax(470px,1fr) 300px;gap:12px;padding:12px}
+.matrix-wrap{min-width:0;padding:11px;border:1px solid rgba(145,170,211,.14);border-radius:13px;background:rgba(8,17,32,.56)}
+.matrix-title,.graph-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;color:var(--muted);font-size:11px}
+.matrix-title strong,.graph-title strong{color:var(--text);font-size:12px}.matrix{display:grid;gap:4px;justify-content:center;align-items:center}
+.axis{display:flex;align-items:center;justify-content:center;color:var(--muted);font:800 10px ui-monospace,Consolas,monospace}
+.axis.hot-row{color:var(--cyan)}.axis.hot-col{color:var(--violet)}
+.cell{position:relative;display:flex;align-items:center;justify-content:center;width:52px;height:48px;border:1px solid rgba(145,170,211,.16);
+  border-radius:7px;background:rgba(255,255,255,.025);font:800 14px ui-monospace,Consolas,monospace;transition:.24s;overflow:hidden}
+.cell.p0{background:rgba(98,169,255,.07)}.cell.p1{background:rgba(255,189,120,.07)}.cell.p2{background:rgba(110,231,168,.07)}.cell.p3{background:rgba(170,145,255,.07)}
+.cell.block-top{border-top-color:rgba(237,245,255,.46)}.cell.block-left{border-left-color:rgba(237,245,255,.46)}
+.cell.row-k{border-color:rgba(85,226,221,.85);box-shadow:inset 0 0 0 1px rgba(85,226,221,.25)}.cell.col-k{border-color:rgba(170,145,255,.9);box-shadow:inset 0 0 0 1px rgba(170,145,255,.24)}
+.cell.pivot{color:#07172c;background:var(--orange);border-color:var(--orange);box-shadow:0 0 15px rgba(255,189,120,.45)}
+.cell.changed{color:#f3edff;background:rgba(170,145,255,.22);border-color:var(--violet);box-shadow:0 0 12px rgba(170,145,255,.28);animation:pulse 1.15s ease-in-out infinite}
+.cell .delta{position:absolute;right:3px;bottom:2px;color:var(--green);font:800 8px ui-monospace,Consolas,monospace}
+@keyframes pulse{50%{box-shadow:0 0 20px rgba(170,145,255,.52)}}
+.matrix-legend{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:9px;color:var(--muted);font-size:9px}
+.dot{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%}
+.graph-wrap{padding:11px;border:1px solid rgba(145,170,211,.14);border-radius:13px;background:rgba(8,17,32,.56)}
+#graph{display:block;width:100%;height:335px}.edge{stroke:rgba(145,170,211,.25);stroke-width:1.5}.edge.via{stroke:var(--violet);stroke-width:4;filter:drop-shadow(0 0 5px rgba(170,145,255,.7))}
+.weight{fill:var(--muted);font:700 10px "Segoe UI",sans-serif}.node circle{fill:#142844;stroke:var(--blue);stroke-width:2}.node text{fill:var(--text);font:850 12px "Segoe UI",sans-serif;text-anchor:middle;dominant-baseline:middle}
+.node.k circle{fill:var(--orange);stroke:var(--orange);filter:drop-shadow(0 0 8px rgba(255,189,120,.72))}.node.k text{fill:#08111f}
+.node.endpoint circle{stroke:var(--violet);stroke-width:3;filter:drop-shadow(0 0 5px rgba(170,145,255,.7))}
+.phase-track{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--line);background:rgba(8,17,32,.38)}
+.phase{padding:5px 10px;border:1px solid rgba(145,170,211,.2);border-radius:18px;color:var(--muted);background:rgba(255,255,255,.025);font-size:10px;font-weight:800;transition:.2s}
+.phase.active{color:var(--orange);border-color:rgba(255,189,120,.65);background:rgba(255,189,120,.1)}.phase.done{color:var(--green);border-color:rgba(110,231,168,.38);background:rgba(110,231,168,.06)}
+.lesson{padding:11px 14px 13px;border-top:1px solid var(--line);background:rgba(8,17,32,.56)}
+.lesson-kicker{color:var(--cyan);font-size:10px;font-weight:850;letter-spacing:.15em;text-transform:uppercase}.lesson-title{margin-top:3px;font-size:15px;font-weight:850}
+.lesson-text{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.55}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.stat{padding:8px 5px;border:1px solid rgba(145,170,211,.15);border-radius:9px;background:rgba(255,255,255,.03);text-align:center}
+.stat-val{font-size:17px;font-weight:900}.stat-lbl{margin-top:2px;color:var(--muted);font-size:9px;letter-spacing:.07em;text-transform:uppercase}
+.formula{padding:9px 10px;border:1px solid rgba(85,226,221,.22);border-radius:9px;background:rgba(85,226,221,.065);font:750 11px/1.62 ui-monospace,Consolas,monospace;white-space:pre-line}
+.formula .cyan{color:var(--cyan)}.formula .violet{color:var(--violet)}.formula .green{color:var(--green)}.note{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.5}
+.pipe{display:grid;grid-template-columns:28px repeat(4,1fr);gap:4px;align-items:center}.pipe-head{color:var(--muted);font:800 9px ui-monospace,Consolas,monospace;text-align:center}
+.pipe-k{color:var(--muted);font:800 10px ui-monospace,Consolas,monospace}.pipe-slot{padding:5px 2px;border-radius:5px;background:rgba(255,255,255,.035);color:rgba(155,173,202,.48);font:800 9px ui-monospace,Consolas,monospace;text-align:center}
+.pipe-slot.on{color:#08111f;background:var(--orange)}.pipe-slot.past{color:var(--green);background:rgba(110,231,168,.1)}.pipe-slot.future{opacity:.42}
+.deriv{display:grid;gap:4px}.deriv-row{display:flex;gap:6px;align-items:baseline;font-size:11px}.deriv-row span:first-child{min-width:120px;color:var(--muted)}.deriv-row b{color:var(--green);font-family:ui-monospace,Consolas,monospace}
+.deriv-row.hl b{color:var(--cyan)}hr{border:none;border-top:1px solid var(--line);width:100%;margin:5px 0}
+@media(max-width:1150px){.layout{grid-template-columns:1fr}.stack.side{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:850px){.scene-grid{grid-template-columns:1fr}.stack.side{grid-template-columns:1fr}.graph-wrap{display:none}}
+@media(max-width:600px){body{padding:10px}.cell{width:42px;height:40px;font-size:12px}.scene-grid{padding:8px}.hero-badge{display:none}}
 </style>
 </head>
 <body>
-<h1>Floyd-Warshall — All-Pairs Shortest Paths — 2D blokové rozložení</h1>
+<main class="shell">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Paraleln&iacute; algoritmy / grafov&eacute; algoritmy</div>
+      <h1>Floyd-Warshall: cesty p&#345;es vrchol <em>k</em></h1>
+      <p>Ka&#382;d&aacute; iterace zp&#345;&iacute;stupn&iacute; procesor&#367;m jeden &#345;&aacute;dek a jeden sloupec. Potom v&#353;echny bloky soub&#283;&#382;n&#283; rozhodnou, zda je cesta <em>i &#8594; k &#8594; j</em> krat&#353;&iacute;.</p>
+    </div>
+    <div class="hero-badge" id="heroBadge">n=6 &middot; p=4<br><span style="font-size:10px;color:var(--muted)">2 &times; 2 procesory</span></div>
+  </header>
 
-<div class="main">
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <div class="row">
-      <label>Uzlů n:</label>
-      <select id="nSel" onchange="reset()">
-        <option value="6" selected>6</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-      </select>
-      <label>Proc p:</label>
-      <select id="pSel" onchange="reset()">
-        <option value="4" selected>4 (2×2)</option>
-        <option value="9">9 (3×3)</option>
-      </select>
-      <label>Graf:</label>
-      <select id="gSel" onchange="reset()">
-        <option value="random" selected>Náhodný</option>
-        <option value="dense">Hustý</option>
-      </select>
+  <section class="toolbar">
+    <div class="tb-group">
+      <label class="ctrl">Matice
+        <select id="nSel"><option value="6">6 &times; 6</option><option value="8">8 &times; 8</option></select>
+      </label>
+      <label class="ctrl">Graf
+        <select id="graphSel"><option value="lesson">Uk&aacute;zkov&yacute;</option><option value="alternate">Alternativn&iacute;</option></select>
+      </label>
+      <span class="ctrl">&middot; 2D blokov&eacute; rozlo&#382;en&iacute; &middot; p=4</span>
     </div>
-    <div class="row">
-      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
-      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
-      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
-      <button class="btn secondary" onclick="reset()">↺ Reset</button>
-      <label>Rychlost:</label>
-      <input type="range" id="speed" min="400" max="3000" value="1100" step="100" style="width:70px;">
+    <div class="tb-group">
+      <label class="ctrl">rychlost <input type="range" id="speed" min="350" max="2200" value="1050" step="50"></label>
+      <button class="icon-btn" id="resetBtn">&#8635; Reset</button>
+      <button class="icon-btn" id="backBtn">&#9664; Zp&#283;t</button>
+      <button class="icon-btn" id="nextBtn">Dal&#353;&iacute; &#9654;</button>
+      <button class="play-btn" id="playBtn">&#9654; P&#345;ehr&aacute;t</button>
     </div>
-    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
+  </section>
+
+  <div class="layout">
+    <div class="stack">
+      <section class="card">
+        <div class="proc-scene">
+          <div class="proc-grid" id="procGrid"></div>
+          <div class="comm-layer" id="commLayer"></div>
+        </div>
+        <div class="scene-grid">
+          <div class="matrix-wrap">
+            <div class="matrix-title"><strong>Matice vzd&aacute;lenost&iacute; D</strong><span id="matrixCaption">Po&#269;&aacute;te&#269;n&iacute; hrany grafu</span></div>
+            <div class="matrix" id="matrix"></div>
+            <div class="matrix-legend">
+              <span><i class="dot" style="background:var(--orange)"></i>mezivrchol k</span>
+              <span><i class="dot" style="background:var(--cyan)"></i>&#345;&aacute;dek D[k,*]</span>
+              <span><i class="dot" style="background:var(--violet)"></i>sloupec D[*,k] / zm&#283;na</span>
+              <span><i class="dot" style="background:var(--green)"></i>nov&aacute; krat&#353;&iacute; cesta</span>
+            </div>
+          </div>
+          <div class="graph-wrap">
+            <div class="graph-title"><strong>Graf cest</strong><span id="graphCaption">v&aacute;hy hran</span></div>
+            <svg id="graph" viewBox="0 0 280 335"></svg>
+          </div>
+        </div>
+        <div class="phase-track" id="phaseTrack">
+          <span class="phase" data-phase="0">1. Aktivuj k</span>
+          <span class="phase" data-phase="1">2. Broadcast &#345;&aacute;dku</span>
+          <span class="phase" data-phase="2">3. Broadcast sloupce</span>
+          <span class="phase" data-phase="3">4. Paraleln&iacute; update</span>
+        </div>
+        <div class="lesson">
+          <div class="lesson-kicker" id="lessonKicker">START</div>
+          <div class="lesson-title" id="lessonTitle">Inicializace matice vzd&aacute;lenost&iacute;</div>
+          <div class="lesson-text" id="lessonText"></div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="stack side">
+      <section class="card card-pad">
+        <h2>Pr&#367;b&#283;h v&yacute;po&#269;tu</h2>
+        <div class="stats">
+          <div class="stat"><div class="stat-val" id="sK">0/6</div><div class="stat-lbl">Iterace k</div></div>
+          <div class="stat"><div class="stat-val" id="sChanged">0</div><div class="stat-lbl">Zm&#283;n v kroku</div></div>
+          <div class="stat"><div class="stat-val" id="sProc">4</div><div class="stat-lbl">Procesory</div></div>
+        </div>
+      </section>
+
+      <section class="card card-pad">
+        <h2>Jedno rozhodnut&iacute; v detailu</h2>
+        <div class="formula" id="formulaBox"></div>
+        <div class="note">P&#345;i posledn&iacute; f&aacute;zi prob&#283;hnou stejn&aacute; porovn&aacute;n&iacute; soub&#283;&#382;n&#283; ve v&#353;ech &#269;ty&#345;ech bloc&iacute;ch.</div>
+      </section>
+
+      <section class="card card-pad">
+        <h2>Pipeline iterac&iacute;</h2>
+        <div class="pipe" id="pipeline"></div>
+        <div class="note">R = &#345;&aacute;dek, S = sloupec, U = lok&aacute;ln&iacute; update. Pipelining dovol&iacute; p&#345;ekr&yacute;vat komunikaci sousedn&iacute;ch iterac&iacute;.</div>
+      </section>
+
+      <section class="card card-pad">
+        <h2>Odvozen&iacute; &#269;asu</h2>
+        <div class="deriv">
+          <div class="deriv-row"><span>blok / procesor:</span><b>(n / &#8730;p)&sup2;</b></div>
+          <div class="deriv-row"><span>update / iterace:</span><b>O(n&sup2; / p)</b></div>
+          <div class="deriv-row"><span>broadcast / iterace:</span><b>O(n log p / &#8730;p)</b></div>
+          <hr>
+          <div class="deriv-row hl"><span>T<sub>p</sub>:</span><b>O(n&sup3;/p + n&sup2; log p/&#8730;p)</b></div>
+          <div class="deriv-row"><span>isoefektivita:</span><b>&Theta;(p<sup>3/2</sup> log&sup3; p)</b></div>
+          <div class="deriv-row"><span>pipelined T<sub>p</sub>:</span><b>O(n&sup2;/&#8730;p + n log p)</b></div>
+        </div>
+      </section>
+    </aside>
   </div>
-
-  <canvas id="cv" height="360"></canvas>
-  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
-</div>
-
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <h3>Průběh iterace k</h3>
-    <div style="font-size:0.79em;line-height:1.9;color:#d4d4d4;">
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph0">1. Broadcast řádku k (po sloupcích mřížky proc)</div>
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph1">2. Broadcast sloupce k (po řádcích mřížky proc)</div>
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;" id="ph2">3. Lokální update: D[i][j] = min(D[i][j], D[i][k]+D[k][j])</div>
-    </div>
-    <div style="margin-top:10px;font-size:0.78em;color:#666;">
-      Barvy buněk = vlastnící procesor (2D blok). Zvýrazněné řádky/sloupce = aktuálně broadcastované.
-    </div>
-  </div>
-
-  <div class="panel">
-    <h3>Analýza Floyd-Warshall</h3>
-    <div class="deriv-box">
-      <div class="deriv-row"><span class="deriv-lbl">Mřížka proc:</span><span class="deriv-val" id="dGrid">√p × √p</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Blok každého proc:</span><span class="deriv-val" id="dBlock">n/√p × n/√p</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Lok. update/iter:</span><span class="deriv-val">O(n²/p)</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Broadcast/iter:</span><span class="deriv-val">O(n/√p · log p)</span></div>
-      <hr style="border-color:#444;margin:5px 0;">
-      <div class="deriv-row"><span class="deriv-lbl">Iterací celkem:</span><span class="deriv-val" id="dN">n</span></div>
-      <div class="deriv-row highlight"><span class="deriv-lbl">T_P:</span><span class="deriv-val">O(n³/p + n²·log p/√p)</span></div>
-      <hr style="border-color:#444;margin:5px 0;">
-      <div class="deriv-row highlight"><span class="deriv-lbl">Isoefektivita:</span><span class="deriv-val">Θ(p^(3/2)·log³p)</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Max p (cost-opt):</span><span class="deriv-val">O(n²/log²n)</span></div>
-      <div style="margin-top:8px;font-size:0.78em;color:#888;">Pipelined verze: T_P=O(n²/√p+n·log p), iso=Θ(p^(3/2)).</div>
-    </div>
-    <div class="stat-grid">
-      <div class="stat blue"><div class="stat-lbl">Iterace k</div><div class="stat-val" id="sK">—</div></div>
-      <div class="stat green"><div class="stat-lbl">Fáze</div><div class="stat-val" id="sPhase">—</div></div>
-      <div class="stat yellow" style="grid-column:1/-1"><div class="stat-lbl">Zlepšení (min D[i][j])</div><div class="stat-val" id="sMin">—</div></div>
-    </div>
-  </div>
-</div>
-</div>
+</main>
 
 <script>
-const PROC_COLORS = [
-  '#0984e3','#e17055','#00b894','#a29bfe',
-  '#fdcb6e','#fd79a8','#55efc4','#74b9ff','#b2bec3'
-];
-const INF = 9999;
+const INF = Infinity;
+const P = 4;
+const PROC_COLORS = ['#62a9ff','#ffbd78','#6ee7a8','#aa91ff'];
+let n = 6, steps = [], cur = 0, playing = false, busy = false, timer = null, raf = null;
+let edges = [], initial = [], positions = [];
 
-let n, p, sqrtP;
-let steps = [], curStep = -1, playing = false, playTimer = null;
-let initialD = [];
+const $ = id => document.getElementById(id);
+const clone = D => D.map(row => [...row]);
+const fmt = v => v === INF ? '\u221e' : String(v);
+const pair = (a,b) => a < b ? `${a}-${b}` : `${b}-${a}`;
 
-function buildGraph(n, type) {
-  const D = Array.from({length:n},()=>Array(n).fill(INF));
+function graphData(size, variant) {
+  const lesson6 = [[0,1,7],[0,2,2],[1,2,3],[1,3,4],[2,3,8],[2,4,10],[3,4,2],[3,5,6],[4,5,1]];
+  const alternate6 = [[0,1,4],[0,2,9],[0,5,14],[1,2,2],[1,3,7],[2,3,3],[2,4,8],[3,4,2],[4,5,3]];
+  const lesson8 = [[0,1,6],[0,2,3],[1,2,2],[1,3,5],[2,3,3],[2,4,7],[3,4,2],[3,5,6],[4,5,2],[4,6,5],[5,6,1],[5,7,4],[6,7,2]];
+  const alternate8 = [[0,1,3],[0,3,8],[1,2,4],[1,4,6],[2,3,2],[2,5,7],[3,5,3],[4,5,1],[4,6,5],[5,6,2],[5,7,6],[6,7,2]];
+  return size === 6 ? (variant === 'lesson' ? lesson6 : alternate6) : (variant === 'lesson' ? lesson8 : alternate8);
+}
+
+function nodePositions(size) {
+  if (size === 6) return [[140,31],[232,80],[224,194],[140,294],[46,225],[48,91]];
+  return [[140,24],[225,54],[258,143],[228,246],[140,305],[53,249],[23,143],[54,57]];
+}
+
+function buildInitial() {
+  edges = graphData(n, $('graphSel').value).map(([u,v,w]) => ({u,v,w}));
+  positions = nodePositions(n);
+  const D = Array.from({length:n}, () => Array(n).fill(INF));
   for (let i=0;i<n;i++) D[i][i]=0;
-  for (let i=0;i<n;i++) for (let j=i+1;j<n;j++) {
-    const hasEdge = type==='dense' ? Math.random()<0.8 : Math.random()<0.45;
-    if (hasEdge) { const w=Math.floor(Math.random()*15)+1; D[i][j]=D[j][i]=w; }
-  }
+  edges.forEach(({u,v,w}) => { D[u][v]=w; D[v][u]=w; });
   return D;
 }
 
-function cloneD(D) { return D.map(row=>[...row]); }
+function pickExample(prev, next, k, updates) {
+  if (updates.length) return updates[0];
+  for (let i=0;i<n;i++) for (let j=0;j<n;j++) {
+    if (i !== j && i !== k && j !== k && prev[i][k] !== INF && prev[k][j] !== INF)
+      return {i,j,old:prev[i][j],left:prev[i][k],right:prev[k][j],value:next[i][j],changed:false};
+  }
+  return {i:k,j:k,old:0,left:0,right:0,value:0,changed:false};
+}
 
-function buildSteps(D0, p) {
-  const n = D0.length;
-  const steps = [];
-  const D = cloneD(D0);
-
-  steps.push({k:-1,phase:-1,D:cloneD(D),rowK:-1,colK:-1,updated:[],desc:`Počáteční matice vzdáleností D. Procesory mají 2D bloky n/√p × n/√p (${Math.ceil(n/sqrtP)}×${Math.ceil(n/sqrtP)} buněk). Každá iterace k broadcastuje řádek k a sloupec k.`});
-
+function buildSteps(D0) {
+  const out = [], D = clone(D0);
+  out.push({phase:-1,k:-1,D:clone(D),updates:[],example:null,kicker:'START',title:'Inicializace matice vzd\u00e1lenost\u00ed',
+    text:`Hrany grafu tvo\u0159\u00ed vstupn\u00ed matici D. Nekone\u010dno znamen\u00e1, \u017ee zat\u00edm nezn\u00e1me \u017e\u00e1dnou cestu. Matice je rozd\u011blena do 2 \u00d7 2 blok\u016f procesor\u016f.`});
   for (let k=0;k<n;k++) {
-    // Phase 0: broadcast row k
-    steps.push({k,phase:0,D:cloneD(D),rowK:k,colK:-1,updated:[],desc:`Iterace k=${k}: Broadcast řádku k=${k} po sloupcích mřížky. Každý proc ve sloupci dostane podřádek délky n/√p. Čas: O(n/√p · log p).`});
-    // Phase 1: broadcast col k
-    steps.push({k,phase:1,D:cloneD(D),rowK:k,colK:k,updated:[],desc:`Iterace k=${k}: Broadcast sloupce k=${k} po řádcích mřížky. Každý proc dostane podsloupec délky n/√p. Čas: O(n/√p · log p).`});
-    // Phase 2: local update
-    const updated = [];
+    const prev=clone(D), next=clone(D), updates=[];
     for (let i=0;i<n;i++) for (let j=0;j<n;j++) {
-      if (D[i][k]!==INF && D[k][j]!==INF && D[i][k]+D[k][j]<D[i][j]) {
-        D[i][j]=D[i][k]+D[k][j]; updated.push([i,j]);
+      const via=prev[i][k]===INF||prev[k][j]===INF ? INF : prev[i][k]+prev[k][j];
+      if (via < prev[i][j]) {
+        next[i][j]=via;
+        updates.push({i,j,old:prev[i][j],left:prev[i][k],right:prev[k][j],value:via,changed:true});
       }
     }
-    steps.push({k,phase:2,D:cloneD(D),rowK:k,colK:k,updated:[...updated],desc:`Iterace k=${k}: Lokální update — ${updated.length} buněk zlepšeno. D[i][j] = min(D[i][j], D[i][${k}] + D[${k}][j]). Čas: O(n²/p).`});
+    const example=pickExample(prev,next,k,updates);
+    out.push({phase:0,k,D:prev,updates:[],example,kicker:`ITERACE k = ${k} / ${n-1} \u00b7 F\u00c1ZE 1`,title:`Aktivujeme mezivrchol k = ${k}`,
+      text:`V t\u00e9to iteraci dovol\u00edme cest\u00e1m pou\u017e\u00edt nav\u00edc vrchol ${k}. Procesory budou pot\u0159ebovat jeho \u0159\u00e1dek D[${k},*] a sloupec D[*,${k}].`});
+    out.push({phase:1,k,D:prev,updates:[],example,kicker:`ITERACE k = ${k} / ${n-1} \u00b7 F\u00c1ZE 2`,title:`Broadcast \u0159\u00e1dku D[${k},*]`,
+      text:`Fragmenty pivotn\u00edho \u0159\u00e1dku let\u00ed svisle po sloupc\u00edch procesorov\u00e9 m\u0159\u00ed\u017eky. Ka\u017ed\u00fd procesor t\u00edm z\u00edsk\u00e1 hodnoty D[${k},j] pot\u0159ebn\u00e9 pro sv\u016fj blok.`});
+    out.push({phase:2,k,D:prev,updates:[],example,kicker:`ITERACE k = ${k} / ${n-1} \u00b7 F\u00c1ZE 3`,title:`Broadcast sloupce D[*,${k}]`,
+      text:`Fragmenty pivotn\u00edho sloupce let\u00ed vodorovn\u011b po \u0159\u00e1dc\u00edch procesorov\u00e9 m\u0159\u00ed\u017eky. Nyn\u00ed ka\u017ed\u00fd procesor zn\u00e1 i hodnoty D[i,${k}].`});
+    out.push({phase:3,k,D:next,updates,example,kicker:`ITERACE k = ${k} / ${n-1} \u00b7 F\u00c1ZE 4`,title:`Paraleln\u00ed update: ${updates.length} ${updates.length===1?'zm\u011bna':'zm\u011bn'}`,
+      text:updates.length ? `V\u0161echny bloky soub\u011b\u017en\u011b porovnaj\u00ed p\u016fvodn\u00ed cestu s variantou p\u0159es ${k}. Fialov\u00e9 bu\u0148ky se pr\u00e1v\u011b zkr\u00e1tily; mal\u00fd zelen\u00fd popisek ukazuje p\u016fvodn\u00ed hodnotu.` : `Procesory provedly porovn\u00e1n\u00ed ve v\u0161ech bloc\u00edch, ale vrchol ${k} tentokr\u00e1t \u017e\u00e1dnou cestu nezkr\u00e1til.`});
+    for(let i=0;i<n;i++) D[i]=[...next[i]];
   }
-
-  const minDist = D.flat().filter(v=>v>0&&v<INF);
-  steps.push({k:n,phase:-1,D:cloneD(D),rowK:-1,colK:-1,updated:[],desc:`Hotovo! Floyd-Warshall dokončen po ${n} iteracích. Nejkratší cesty mezi všemi dvojicemi. T_P = O(n³/p + n²·log p/√p).`});
-  return steps;
+  out.push({phase:4,k:n,D:clone(D),updates:[],example:null,kicker:'HOTOVO',title:'Nejkrat\u0161\u00ed cesty mezi v\u0161emi dvojicemi jsou hotov\u00e9',
+    text:`Po ${n} iterac\u00edch obsahuje D d\u00e9lky nejkrat\u0161\u00edch cest. Ka\u017ed\u00e1 bu\u0148ka mohla postupn\u011b vyu\u017e\u00edt libovoln\u00fd mezivrchol.`});
+  return out;
 }
 
-function reset() {
-  clearTimeout(playTimer); playing=false; document.getElementById('playBtn').textContent='▶ Přehrát';
-  n = parseInt(document.getElementById('nSel').value);
-  p = parseInt(document.getElementById('pSel').value);
-  sqrtP = Math.round(Math.sqrt(p));
-  const gt = document.getElementById('gSel').value;
-  initialD = buildGraph(n, gt);
-  steps = buildSteps(initialD, p);
-  curStep = -1;
-  document.getElementById('dGrid').textContent = `${sqrtP} × ${sqrtP}`;
-  document.getElementById('dBlock').textContent = `${Math.ceil(n/sqrtP)} × ${Math.ceil(n/sqrtP)}`;
-  document.getElementById('dN').textContent = n;
-  updateUI(); drawFrame(steps[0]);
+function owner(i,j){ const b=n/2; return Math.floor(i/b)*2+Math.floor(j/b); }
+
+function renderProcessors(st) {
+  const b=n/2, kr=st.k>=0?Math.floor(st.k/b):-1, kc=st.k>=0?Math.floor(st.k/b):-1;
+  $('procGrid').innerHTML=[0,1,2,3].map(proc=>{
+    const r=Math.floor(proc/2),c=proc%2;
+    let cls='';
+    if(st.phase===1) cls=r===kr?'row-src':'row-recv';
+    if(st.phase===2) cls=c===kc?'col-src':'col-recv';
+    return `<div class="proc ${cls}"><strong>P${proc}</strong><small>D[${r*b}..${r*b+b-1}, ${c*b}..${c*b+b-1}]</small></div>`;
+  }).join('');
+  if(st.phase!==1&&st.phase!==2){$('commLayer').innerHTML='';return;}
+  const paths=[];
+  if(st.phase===1) {
+    const y1=kr===0?24:74,y2=kr===0?74:24;
+    [250,750].forEach(x=>paths.push({x1:x,y1,x2:x,y2,color:'#55e2dd'}));
+  } else {
+    const x1=kc===0?250:750,x2=kc===0?750:250;
+    [24,74].forEach(y=>paths.push({x1,y1:y,x2,y2:y,color:'#aa91ff'}));
+  }
+  $('commLayer').innerHTML=`<svg viewBox="0 0 1000 100" preserveAspectRatio="none">${paths.map((p,i)=>{
+    const id=`path${i}`;return `<path id="${id}" class="comm-path" stroke="${p.color}" d="M ${p.x1} ${p.y1} L ${p.x2} ${p.y2}"/>
+      <circle class="comm-dot" r="3" fill="${p.color}" style="color:${p.color}"><animateMotion dur="1.25s" repeatCount="indefinite" path="M ${p.x1} ${p.y1} L ${p.x2} ${p.y2}"/></circle>`;
+  }).join('')}</svg>`;
 }
 
-function applyStep(idx) { curStep=idx; updateUI(); drawFrame(steps[idx]); }
-function stepFwd() { if (curStep+1<steps.length) applyStep(curStep+1); }
-function stepBack() { if (curStep>0) applyStep(curStep-1); else { curStep=-1; updateUI(); drawFrame(steps[0]); } }
-
-function updateUI() {
-  const total=steps.length;
-  document.getElementById('progress').style.width=(total>0?(curStep+1)/total*100:0)+'%';
-  const st=curStep>=0?steps[curStep]:null;
-  document.getElementById('sK').textContent=st&&st.k>=0?`${st.k}/${n-1}`:'—';
-  document.getElementById('sPhase').textContent=st?.phase>=0?['Broadcast řádek','Broadcast sloupec','Lok. update'][st.phase]:'Init';
-  const minD=st?st.D.flat().filter(v=>v>0&&v<INF):[];
-  document.getElementById('sMin').textContent=minD.length?`${Math.min(...minD)} … ${Math.max(...minD)}`:'—';
-  document.getElementById('stepInfo').innerHTML=`<strong>${st?`Krok ${curStep+1}/${total}`:'Start'}:</strong> ${(st||steps[0]).desc}`;
-
-  for (let ph=0;ph<3;ph++) {
-    const el=document.getElementById(`ph${ph}`);
-    const active=st?.phase===ph;
-    el.style.borderLeftColor=active?'#0984e3':'#3c3c3c';
-    el.style.background=active?'#1a1a2e':'transparent';
-    el.style.color=active?'#d4d4d4':'#888';
+function renderMatrix(st) {
+  const cols=`25px repeat(${n},52px)`;
+  $('matrix').style.gridTemplateColumns=cols;
+  let html='<div></div>';
+  for(let j=0;j<n;j++) html+=`<div class="axis ${st.phase>=2&&j===st.k?'hot-col':''}">c${j}</div>`;
+  for(let i=0;i<n;i++){
+    html+=`<div class="axis ${st.phase>=1&&i===st.k?'hot-row':''}">r${i}</div>`;
+    for(let j=0;j<n;j++){
+      const up=st.updates.find(x=>x.i===i&&x.j===j),proc=owner(i,j);
+      const classes=['cell',`p${proc}`];
+      if(i===n/2)classes.push('block-top');if(j===n/2)classes.push('block-left');
+      if(st.phase>=1&&i===st.k)classes.push('row-k');if(st.phase>=2&&j===st.k)classes.push('col-k');
+      if(st.phase>=0&&st.phase<4&&i===st.k&&j===st.k)classes.push('pivot');
+      if(st.phase===3&&up)classes.push('changed');
+      html+=`<div class="${classes.join(' ')}">${fmt(st.D[i][j])}${up?`<small class="delta">${fmt(up.old)}&#8594;</small>`:''}</div>`;
+    }
   }
+  $('matrix').innerHTML=html;
+  $('matrixCaption').textContent=st.phase===4?'v\u00fdsledn\u00e1 matice nejkrat\u0161\u00edch cest':st.phase===3?`${st.updates.length} bun\u011bk se pr\u00e1v\u011b zkr\u00e1tilo`:st.k>=0?`aktivn\u00ed mezivrchol k = ${st.k}`:'po\u010d\u00e1te\u010dn\u00ed hrany grafu';
 }
 
-const cv=document.getElementById('cv'); const ctx=cv.getContext('2d');
-
-function getProc(i,j) {
-  const pr=Math.floor(i/Math.ceil(n/sqrtP));
-  const pc=Math.floor(j/Math.ceil(n/sqrtP));
-  return pr*sqrtP+pc;
+function renderGraph(st) {
+  const ex=st.phase===3?st.example:null, via=new Set();
+  if(ex&&ex.i!==ex.j){via.add(pair(ex.i,st.k));via.add(pair(st.k,ex.j));}
+  const defs='<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#aa91ff"/></marker></defs>';
+  const lines=edges.map(({u,v,w})=>{
+    const [x1,y1]=positions[u],[x2,y2]=positions[v], hot=via.has(pair(u,v));
+    return `<line class="edge ${hot?'via':''}" ${hot?'marker-end="url(#arrow)"':''} x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>
+      <text class="weight" x="${(x1+x2)/2+4}" y="${(y1+y2)/2-4}">${w}</text>`;
+  }).join('');
+  const nodes=positions.map(([x,y],i)=>{
+    const cls=['node'];if(i===st.k&&st.phase>=0&&st.phase<4)cls.push('k');if(ex&&(i===ex.i||i===ex.j))cls.push('endpoint');
+    return `<g class="${cls.join(' ')}"><circle cx="${x}" cy="${y}" r="16"/><text x="${x}" y="${y+1}">${i}</text></g>`;
+  }).join('');
+  $('graph').innerHTML=defs+lines+nodes;
+  $('graphCaption').textContent=ex&&ex.i!==ex.j?`detail cesty ${ex.i} \u2192 ${st.k} \u2192 ${ex.j}`:'v\u00e1hy hran';
 }
 
-function drawFrame(st) {
-  const W=cv.width=cv.offsetWidth, H=cv.height=360;
-  ctx.clearRect(0,0,W,H); ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
-  if (!st) return;
+function renderFormula(st) {
+  if(!st.example){$('formulaBox').innerHTML='<span class="cyan">D[i,j]</span> = min(D[i,j], D[i,k] + D[k,j])';return;}
+  const e=st.example,via=e.left===INF||e.right===INF?INF:e.left+e.right, result=Math.min(e.old,via);
+  $('formulaBox').innerHTML=`<span class="cyan">D[${e.i},${e.j}]</span> = min(D[${e.i},${e.j}], D[${e.i},${st.k}] + D[${st.k},${e.j}])\n`
+    +`       = min(${fmt(e.old)}, <span class="violet">${fmt(e.left)} + ${fmt(e.right)}</span>)\n`
+    +`       = <span class="${result<e.old?'green':'cyan'}">${fmt(result)}</span> ${result<e.old?'\u2713 krat\u0161\u00ed cesta':'\u00b7 beze zm\u011bny'}`;
+}
 
-  const D=st.D;
-  const bSize=Math.max(28,Math.min(44,Math.floor(Math.min(W-20,H-60)/n)));
-  const offX=Math.floor((W-bSize*n)/2), offY=Math.floor((H-70-bSize*n)/2)+20;
-
-  // Draw cells
-  for (let i=0;i<n;i++) for (let j=0;j<n;j++) {
-    const proc=getProc(i,j);
-    const bx=offX+j*bSize, by=offY+i*bSize;
-    const isRowK=st.rowK>=0&&i===st.rowK;
-    const isColK=st.colK>=0&&j===st.colK;
-    const isUpdated=st.updated.some(([ui,uj])=>ui===i&&uj===j);
-    const isKK=st.rowK>=0&&i===st.rowK&&st.colK>=0&&j===st.colK;
-
-    // Base color from proc
-    let baseColor = PROC_COLORS[proc%PROC_COLORS.length]+'33';
-    if (isUpdated) baseColor='#00b89466';
-    else if (isRowK&&isColK) baseColor='#fdcb6e66';
-    else if (isRowK) baseColor='#fd79a844';
-    else if (isColK) baseColor='#a29bfe44';
-
-    ctx.fillStyle=baseColor; ctx.fillRect(bx,by,bSize,bSize);
-    ctx.strokeStyle=isUpdated?'#00b894':(isRowK||isColK?'#666':'#444');
-    ctx.lineWidth=isUpdated?1.5:(isKK?2:0.5); ctx.strokeRect(bx,by,bSize,bSize);
-
-    // Value
-    const val=D[i][j];
-    const txt=val===INF?'∞':(val===0?'0':String(val));
-    ctx.fillStyle=isUpdated?'#00b894':(isKK?'#fdcb6e':(i===j?'#666':'#d4d4d4'));
-    ctx.font=`${Math.max(8,bSize*0.35)}px monospace`; ctx.textAlign='center';
-    ctx.fillText(txt,bx+bSize/2,by+bSize*0.65);
+function renderPipeline(st) {
+  const names=['K','R','S','U'];let html='<span></span>'+names.map(x=>`<span class="pipe-head">${x}</span>`).join('');
+  const center=st.k<0?0:Math.min(st.k,n-1);
+  for(let k=Math.max(0,center-1);k<=Math.min(n-1,center+2);k++){
+    html+=`<span class="pipe-k">k${k}</span>`;
+    for(let ph=0;ph<4;ph++){
+      let cls='pipe-slot';
+      if(k<st.k||(k===st.k&&ph<st.phase)||st.phase===4)cls+=' past';
+      else if(k===st.k&&ph===st.phase)cls+=' on';else cls+=' future';
+      html+=`<span class="${cls}">${names[ph]}</span>`;
+    }
   }
+  $('pipeline').innerHTML=html;
+}
 
-  // Row/col highlight borders
-  if (st.rowK>=0) {
-    const by=offY+st.rowK*bSize;
-    ctx.strokeStyle='#fd79a8'; ctx.lineWidth=2;
-    ctx.strokeRect(offX,by,bSize*n,bSize);
-  }
-  if (st.colK>=0) {
-    const bx=offX+st.colK*bSize;
-    ctx.strokeStyle='#a29bfe'; ctx.lineWidth=2;
-    ctx.strokeRect(bx,offY,bSize,bSize*n);
-  }
-
-  // Row labels
-  for (let i=0;i<n;i++) {
-    ctx.fillStyle=st.rowK===i?'#fd79a8':'#666';
-    ctx.font=`${Math.max(8,bSize*0.32)}px sans-serif`; ctx.textAlign='right';
-    ctx.fillText(i,offX-4,offY+i*bSize+bSize*0.65);
-  }
-  // Col labels
-  for (let j=0;j<n;j++) {
-    ctx.fillStyle=st.colK===j?'#a29bfe':'#666';
-    ctx.font=`${Math.max(8,bSize*0.32)}px sans-serif`; ctx.textAlign='center';
-    ctx.fillText(j,offX+j*bSize+bSize/2,offY-6);
-  }
-
-  // Proc grid border lines (thicker)
-  ctx.strokeStyle='#888'; ctx.lineWidth=2;
-  for (let pr=0;pr<=sqrtP;pr++) {
-    const y=offY+pr*Math.ceil(n/sqrtP)*bSize;
-    if (y<=offY+n*bSize) { ctx.beginPath(); ctx.moveTo(offX,y); ctx.lineTo(offX+n*bSize,Math.min(y,offY+n*bSize)); ctx.stroke(); }
-  }
-  for (let pc=0;pc<=sqrtP;pc++) {
-    const x=offX+pc*Math.ceil(n/sqrtP)*bSize;
-    if (x<=offX+n*bSize) { ctx.beginPath(); ctx.moveTo(x,offY); ctx.lineTo(Math.min(x,offX+n*bSize),offY+n*bSize); ctx.stroke(); }
-  }
-
-  // Proc labels on right
-  for (let pr=0;pr<sqrtP;pr++) for (let pc=0;pc<sqrtP;pc++) {
-    const proc=pr*sqrtP+pc;
-    const bx=offX+pc*Math.ceil(n/sqrtP)*bSize;
-    const by=offY+pr*Math.ceil(n/sqrtP)*bSize;
-    const bw=Math.min(Math.ceil(n/sqrtP)*bSize, n*bSize-pc*Math.ceil(n/sqrtP)*bSize);
-    const bh=Math.min(Math.ceil(n/sqrtP)*bSize, n*bSize-pr*Math.ceil(n/sqrtP)*bSize);
-    ctx.fillStyle=PROC_COLORS[proc%PROC_COLORS.length]+'cc';
-    ctx.font='bold 9px sans-serif'; ctx.textAlign='left';
-    ctx.fillText(`P${proc}`,bx+3,by+12);
-  }
-
-  // Legend at bottom
-  const legY=H-36;
-  [[`#fd79a8`,'Řádek k (broadcast)'],[`#a29bfe`,'Sloupec k (broadcast)'],[`#00b894`,'Aktualizovaná buňka']].forEach(([c,txt],i)=>{
-    const lx=10+i*140;
-    ctx.fillStyle=c; ctx.fillRect(lx,legY,10,10);
-    ctx.fillStyle='#aaa'; ctx.font='8px sans-serif'; ctx.textAlign='left'; ctx.fillText(txt,lx+13,legY+9);
+function renderUI() {
+  const st=steps[cur];
+  renderProcessors(st);renderMatrix(st);renderGraph(st);renderFormula(st);renderPipeline(st);
+  $('lessonKicker').textContent=st.kicker;$('lessonTitle').textContent=st.title;$('lessonText').textContent=st.text;
+  $('sK').textContent=st.phase===4?`${n}/${n}`:st.k<0?`0/${n}`:`${st.k+1}/${n}`;
+  $('sChanged').textContent=st.phase===3?st.updates.length:'\u2014';$('sProc').textContent=P;
+  $('heroBadge').innerHTML=`n=${n} &middot; p=${P}<br><span style="font-size:10px;color:var(--muted)">2 &times; 2 procesory</span>`;
+  document.querySelectorAll('.phase').forEach(el=>{
+    const ph=+el.dataset.phase;el.classList.remove('active','done');
+    if(st.phase===ph)el.classList.add('active');else if(st.phase>ph||st.phase===4)el.classList.add('done');
   });
-
-  // Title
-  ctx.fillStyle='#0984e3'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
-  ctx.fillText(`Floyd-Warshall — n=${n}, p=${p} (${sqrtP}×${sqrtP} mřížka)`, W/2, 14);
+  $('backBtn').disabled=busy||cur===0;$('nextBtn').disabled=busy||cur===steps.length-1;
+  $('playBtn').textContent=playing?'\u23f8 Pauza':cur===steps.length-1?'\u21ba P\u0159ehr\u00e1t':'\u25b6 P\u0159ehr\u00e1t';
 }
 
-function togglePlay() {
-  playing=!playing;
-  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
-  if (playing) {
-    const go=()=>{
-      if (curStep+1<steps.length) { applyStep(curStep+1); playTimer=setTimeout(go,parseInt(document.getElementById('speed').value)); }
-      else { playing=false; document.getElementById('playBtn').textContent='▶ Přehrát'; }
-    };
-    go();
-  } else clearTimeout(playTimer);
+function animateTo(idx, done) {
+  cancelAnimationFrame(raf);busy=true;renderUI();
+  const duration=+$('speed').value,start=performance.now();
+  const tick=now=>{ if(now-start<duration){raf=requestAnimationFrame(tick);return;} busy=false;renderUI();if(done)done(); };
+  raf=requestAnimationFrame(tick);
 }
-
-window.addEventListener('resize',()=>{ if(curStep>=0) drawFrame(steps[curStep]); else drawFrame(steps[0]); });
+function stepFwd(){if(!busy&&cur<steps.length-1){cur++;animateTo(cur)}}
+function stepBack(){if(!busy&&cur>0){playing=false;clearTimeout(timer);cur--;renderUI()}}
+function togglePlay(){
+  if(playing){playing=false;clearTimeout(timer);renderUI();return}
+  if(cur===steps.length-1)cur=0;playing=true;renderUI();
+  const next=()=>{if(!playing||cur===steps.length-1){playing=false;renderUI();return}cur++;animateTo(cur,()=>{timer=setTimeout(next,80)})};next();
+}
+function reset(){
+  cancelAnimationFrame(raf);clearTimeout(timer);playing=false;busy=false;n=+$('nSel').value;
+  initial=buildInitial();steps=buildSteps(initial);cur=0;renderUI();
+}
+$('nSel').addEventListener('change',reset);$('graphSel').addEventListener('change',reset);
+$('resetBtn').addEventListener('click',reset);$('backBtn').addEventListener('click',stepBack);
+$('nextBtn').addEventListener('click',stepFwd);$('playBtn').addEventListener('click',togglePlay);
 reset();
 </script>
 </body>
