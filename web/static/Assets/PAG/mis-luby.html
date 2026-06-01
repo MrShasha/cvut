@@ -3,336 +3,279 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIS — Lubyho randomizovaný algoritmus</title>
+<title>Lubyho algoritmus | Maximalni nezavisla mnozina</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: #1e1e1e; color: #d4d4d4; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 14px; padding: 16px; }
-h1 { color: #569cd6; font-size: 1.2em; margin-bottom: 12px; }
-.main { display: grid; grid-template-columns: 1fr 310px; gap: 14px; }
-.panel { background: #2d2d2d; border-radius: 8px; padding: 14px; }
-.panel h3 { color: #9cdcfe; font-size: 0.85em; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
-.row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
-label { color: #9cdcfe; font-size: 0.82em; white-space: nowrap; }
-select, input[type=range] { background: #3c3c3c; color: #d4d4d4; border: 1px solid #555; border-radius: 4px; padding: 4px 8px; font-size: 0.88em; }
-input[type=range] { padding: 2px 0; accent-color: #0984e3; cursor: pointer; }
-.btn { background: #0984e3; color: #fff; border: none; border-radius: 5px; padding: 7px 16px; font-size: 0.88em; cursor: pointer; font-weight: 600; }
-.btn:hover { background: #0773c5; } .btn.secondary { background: #3c3c3c; } .btn.secondary:hover { background: #4a4a4a; }
-canvas { display: block; width: 100%; background: #252525; border-radius: 6px; }
-.step-info { background: #1a1a2e; border-left: 3px solid #0984e3; border-radius: 0 6px 6px 0; padding: 10px 14px; margin-bottom: 10px; font-size: 0.85em; line-height: 1.6; min-height: 60px; }
-.deriv-box { background: #252525; border-radius: 6px; padding: 12px; font-size: 0.83em; line-height: 1.8; }
-.deriv-row { display: flex; gap: 8px; align-items: baseline; margin-bottom: 2px; }
-.deriv-lbl { color: #888; min-width: 130px; font-size: 0.9em; }
-.deriv-val { color: #c3e88d; font-family: monospace; }
-.highlight { color: #0984e3; font-weight: 700; }
-.progress-wrap { background: #3c3c3c; border-radius: 4px; height: 6px; margin: 8px 0; }
-.progress-bar { background: #0984e3; height: 6px; border-radius: 4px; transition: width .3s; }
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-.stat { background: #3c3c3c; border-radius: 5px; padding: 8px 10px; border-left: 3px solid; }
-.stat.blue { border-color: #0984e3; } .stat.green { border-color: #00b894; } .stat.yellow { border-color: #fdcb6e; }
-.stat-lbl { font-size: 0.72em; color: #888; text-transform: uppercase; }
-.stat-val { font-size: 1.05em; font-weight: 700; color: #d4d4d4; margin-top: 2px; }
+:root{
+  --bg:#08111f;--panel:rgba(15,28,49,.95);--panel2:rgba(9,20,38,.82);
+  --line:rgba(145,170,211,.2);--text:#eef5ff;--muted:#9badca;
+  --cyan:#55e2dd;--blue:#62a9ff;--green:#6ee7a8;--orange:#ffbd78;
+  --violet:#aa91ff;--red:#ff8297;--shadow:0 18px 45px rgba(0,0,0,.22)
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;padding:18px;color:var(--text);
+  background:radial-gradient(circle at 9% 0%,rgba(73,122,220,.19),transparent 30rem),
+             radial-gradient(circle at 94% 94%,rgba(46,203,181,.12),transparent 34rem),var(--bg);
+  font-family:Inter,"Segoe UI",system-ui,sans-serif;font-size:14px}
+button,select,input{font:inherit}button{cursor:pointer}.shell{width:min(1480px,100%);margin:0 auto}
+.hero{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:13px}
+.eyebrow{color:var(--cyan);font-size:11px;font-weight:850;letter-spacing:.18em;text-transform:uppercase}
+h1{margin:5px 0 0;font-size:clamp(21px,2.7vw,30px);letter-spacing:-.045em}
+.hero p{max-width:820px;margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.55}
+.hero-badge{flex:0 0 auto;padding:10px 13px;border:1px solid rgba(85,226,221,.38);border-radius:14px;
+  background:rgba(85,226,221,.08);color:var(--cyan);font-size:12px;font-weight:850;text-align:center}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin-bottom:12px;
+  border:1px solid var(--line);border-radius:15px;background:var(--panel);box-shadow:var(--shadow);flex-wrap:wrap}
+.tb-group,.ctrl{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.ctrl{color:var(--muted);font-size:12px}
+select{padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.06);color:var(--text);font-size:12px}
+input[type=range]{width:76px;accent-color:var(--cyan)}
+.icon-btn,.play-btn{padding:7px 11px;border:1px solid transparent;border-radius:10px;font-size:12px;font-weight:800;transition:.18s}
+.icon-btn{color:var(--muted);background:rgba(255,255,255,.045)}.icon-btn:hover{transform:translateY(-1px);border-color:rgba(98,169,255,.55);color:var(--text)}
+.icon-btn:disabled{cursor:default;opacity:.4;transform:none}.play-btn{padding-inline:14px;color:#07172c;background:linear-gradient(135deg,var(--cyan),#7fc1ff)}
+.play-btn:hover{transform:translateY(-1px)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:12px}.stack{display:grid;gap:12px;align-content:start}
+.card{border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:var(--shadow);overflow:hidden}.card-pad{padding:12px}
+.card h2{margin:0 0 9px;color:#dbe9ff;font-size:12px;font-weight:850;letter-spacing:.11em;text-transform:uppercase}
+.scene{position:relative;padding:11px;background:var(--panel2)}#graph{display:block;width:100%;height:590px;border:1px solid rgba(145,170,211,.13);border-radius:13px;background:rgba(8,17,32,.44)}
+.edge{stroke:rgba(145,170,211,.3);stroke-width:2}.edge.inactive{stroke:rgba(145,170,211,.08)}.edge.kill{stroke:var(--red);stroke-width:3;stroke-dasharray:6 4;filter:drop-shadow(0 0 4px rgba(255,130,151,.5))}
+.edge.compare{stroke:var(--cyan);stroke-width:2.6;filter:drop-shadow(0 0 4px rgba(85,226,221,.5))}
+.node circle{fill:#132744;stroke:var(--blue);stroke-width:2;transition:.2s}.node text.id{fill:var(--text);font:850 14px "Segoe UI",sans-serif;text-anchor:middle;dominant-baseline:middle}
+.node text.priority{fill:var(--cyan);font:850 12px ui-monospace,Consolas,monospace;text-anchor:middle}.node text.tag{font:850 10px "Segoe UI",sans-serif;text-anchor:middle}
+.node.winner circle{fill:var(--orange);stroke:var(--orange);filter:drop-shadow(0 0 10px rgba(255,189,120,.75))}.node.winner text.id{fill:#08111f}
+.node.mis circle{fill:var(--green);stroke:var(--green);filter:drop-shadow(0 0 10px rgba(110,231,168,.58))}.node.mis text.id{fill:#08111f}.node.mis text.tag{fill:var(--green)}
+.node.removed circle{fill:#172237;stroke:rgba(145,170,211,.22);opacity:.65}.node.removed text.id{fill:rgba(155,173,202,.48)}.node.removed text.tag{fill:var(--red)}
+.node.focus circle{stroke-width:4}.pulse{fill:none;stroke:var(--green);stroke-width:2;opacity:.7;animation:pulse 1.2s ease-out infinite}
+@keyframes pulse{from{r:23;opacity:.8}to{r:53;opacity:0}}
+.msg{fill:var(--cyan);filter:drop-shadow(0 0 4px rgba(85,226,221,.9))}
+.legend{position:absolute;left:24px;bottom:24px;display:flex;gap:12px;flex-wrap:wrap;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:rgba(8,17,32,.82);color:var(--muted);font-size:10px}
+.dot{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%}
+.phase-track{display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid var(--line);background:rgba(8,17,32,.38)}
+.phase{padding:5px 10px;border:1px solid rgba(145,170,211,.2);border-radius:18px;color:var(--muted);background:rgba(255,255,255,.025);font-size:10px;font-weight:800;transition:.2s}
+.phase.active{color:var(--orange);border-color:rgba(255,189,120,.65);background:rgba(255,189,120,.1)}.phase.done{color:var(--green);border-color:rgba(110,231,168,.38);background:rgba(110,231,168,.06)}
+.lesson{padding:11px 14px 13px;border-top:1px solid var(--line);background:rgba(8,17,32,.56)}
+.lesson-kicker{color:var(--cyan);font-size:10px;font-weight:850;letter-spacing:.15em;text-transform:uppercase}.lesson-title{margin-top:3px;font-size:15px;font-weight:850}
+.lesson-text{margin-top:5px;color:var(--muted);font-size:12px;line-height:1.55}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.stat{padding:8px 5px;border:1px solid rgba(145,170,211,.15);border-radius:9px;background:rgba(255,255,255,.03);text-align:center}
+.stat-val{font-size:18px;font-weight:900}.stat-lbl{margin-top:2px;color:var(--muted);font-size:9px;letter-spacing:.07em;text-transform:uppercase}
+.formula{padding:9px 10px;border:1px solid rgba(85,226,221,.22);border-radius:9px;background:rgba(85,226,221,.065);font:750 11px/1.65 ui-monospace,Consolas,monospace;white-space:pre-line}
+.formula .cyan{color:var(--cyan)}.formula .orange{color:var(--orange)}.formula .green{color:var(--green)}.formula .red{color:var(--red)}
+.note{margin-top:6px;color:var(--muted);font-size:11px;line-height:1.5}
+.rounds{display:grid;gap:5px}.round{display:grid;grid-template-columns:45px 1fr 40px;gap:6px;align-items:center;padding:6px 7px;border:1px solid rgba(145,170,211,.14);border-radius:7px;background:rgba(255,255,255,.025);font-size:10px}
+.round.active{border-color:rgba(255,189,120,.58);background:rgba(255,189,120,.07)}.round b{color:var(--cyan)}.round span{color:var(--muted)}.round em{color:var(--green);font-style:normal;text-align:right}
+.checks{display:grid;gap:7px}.check{padding:7px 8px;border:1px solid rgba(145,170,211,.15);border-radius:8px;background:rgba(255,255,255,.025)}
+.check b{display:block;color:var(--green);font-size:11px}.check span{display:block;margin-top:2px;color:var(--muted);font-size:10px;line-height:1.45}
+.deriv{display:grid;gap:4px}.deriv-row{display:flex;gap:6px;align-items:baseline;font-size:11px}.deriv-row span:first-child{min-width:128px;color:var(--muted)}
+.deriv-row b{color:var(--green);font-family:ui-monospace,Consolas,monospace}.deriv-row.hl b{color:var(--cyan)}hr{border:none;border-top:1px solid var(--line);width:100%;margin:5px 0}
+@media(max-width:1120px){.layout{grid-template-columns:1fr}.stack.side{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){body{padding:10px}.stack.side{grid-template-columns:1fr}#graph{height:470px}.hero-badge{display:none}}
 </style>
 </head>
 <body>
-<h1>MIS — Lubyho randomizovaný algoritmus</h1>
+<main class="shell">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">Paraleln&iacute; algoritmy / grafov&eacute; algoritmy</div>
+      <h1>Lubyho algoritmus: maxim&aacute;ln&iacute; nez&aacute;visl&aacute; mno&#382;ina</h1>
+      <p>Ka&#382;d&yacute; aktivn&iacute; uzel si vylosuje prioritu a po&#353;le ji soused&#367;m. Lok&aacute;ln&iacute; minima vstoup&iacute; soub&#283;&#382;n&#283; do MIS; jejich soused&eacute; se deaktivuj&iacute;. V&yacute;sledek je maximal independent set, tedy mno&#382;ina, kterou u&#382; nelze roz&#353;&iacute;&#345;it.</p>
+    </div>
+    <div class="hero-badge" id="heroBadge">n=12<br><span style="font-size:10px;color:var(--muted)">deterministick&aacute; uk&aacute;zka</span></div>
+  </header>
 
-<div class="main">
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <div class="row">
-      <label>Uzlů n:</label>
-      <select id="nSel" onchange="reset()">
-        <option value="10">10</option>
-        <option value="12" selected>12</option>
-        <option value="15">15</option>
-      </select>
-      <label>Graf:</label>
-      <select id="gSel" onchange="reset()">
-        <option value="random" selected>Náhodný</option>
-        <option value="grid">Mřížka</option>
-        <option value="cycle">Cyklus</option>
-      </select>
+  <section class="toolbar">
+    <div class="tb-group">
+      <label class="ctrl">Graf
+        <select id="graphSel"><option value="lesson">Uk&aacute;zkov&yacute;</option><option value="grid">M&#345;&iacute;&#382;ka</option><option value="cycle">Cyklus s t&#283;tivami</option></select>
+      </label>
+      <label class="ctrl">B&#283;h
+        <select id="runSel"><option value="1">A</option><option value="2">B</option><option value="3">C</option></select>
+      </label>
+      <span class="ctrl">&middot; unik&aacute;tn&iacute; pseudon&aacute;hodn&eacute; priority</span>
     </div>
-    <div class="row">
-      <button class="btn" id="playBtn" onclick="togglePlay()">▶ Přehrát</button>
-      <button class="btn secondary" onclick="stepBack()">◀ Zpět</button>
-      <button class="btn secondary" onclick="stepFwd()">Vpřed ▶</button>
-      <button class="btn secondary" onclick="reset()">↺ Reset</button>
-      <label>Rychlost:</label>
-      <input type="range" id="speed" min="400" max="3000" value="1200" step="100" style="width:70px;">
+    <div class="tb-group">
+      <label class="ctrl">rychlost <input type="range" id="speed" min="350" max="2200" value="1050" step="50"></label>
+      <button class="icon-btn" id="resetBtn">&#8635; Reset</button>
+      <button class="icon-btn" id="backBtn">&#9664; Zp&#283;t</button>
+      <button class="icon-btn" id="nextBtn">Dal&#353;&iacute; &#9654;</button>
+      <button class="play-btn" id="playBtn">&#9654; P&#345;ehr&aacute;t</button>
     </div>
-    <div class="progress-wrap"><div class="progress-bar" id="progress" style="width:0%"></div></div>
+  </section>
+
+  <div class="layout">
+    <div class="stack">
+      <section class="card">
+        <div class="scene">
+          <svg id="graph" viewBox="0 0 1040 590"></svg>
+          <div class="legend">
+            <span><i class="dot" style="background:var(--blue)"></i>aktivn&iacute;</span>
+            <span><i class="dot" style="background:var(--orange)"></i>lok&aacute;ln&iacute; minimum</span>
+            <span><i class="dot" style="background:var(--green)"></i>v MIS</span>
+            <span><i class="dot" style="background:var(--red)"></i>deaktivovan&yacute; soused</span>
+          </div>
+        </div>
+        <div class="phase-track">
+          <span class="phase" data-phase="0">1. Losuj priority</span>
+          <span class="phase" data-phase="1">2. Po&#353;li soused&#367;m</span>
+          <span class="phase" data-phase="2">3. P&#345;idej minima do MIS</span>
+          <span class="phase" data-phase="3">4. Deaktivuj okol&iacute;</span>
+        </div>
+        <div class="lesson">
+          <div class="lesson-kicker" id="lessonKicker">START</div>
+          <div class="lesson-title" id="lessonTitle">V&#353;echny uzly jsou aktivn&iacute;</div>
+          <div class="lesson-text" id="lessonText"></div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="stack side">
+      <section class="card card-pad">
+        <h2>Pr&#367;b&#283;h v&yacute;po&#269;tu</h2>
+        <div class="stats">
+          <div class="stat"><div class="stat-val" id="sRound">0</div><div class="stat-lbl">Kolo</div></div>
+          <div class="stat"><div class="stat-val" id="sActive">12</div><div class="stat-lbl">Aktivn&iacute;</div></div>
+          <div class="stat"><div class="stat-val" id="sMIS">0</div><div class="stat-lbl">V MIS</div></div>
+          <div class="stat"><div class="stat-val" id="sRemoved">0</div><div class="stat-lbl">Deaktivovan&iacute;</div></div>
+        </div>
+      </section>
+
+      <section class="card card-pad">
+        <h2>Jedno lok&aacute;ln&iacute; rozhodnut&iacute;</h2>
+        <div class="formula" id="formulaBox"></div>
+        <div class="note">Oran&#382;ov&yacute; uzel je detail jednoho v&iacute;t&#283;ze. Stejn&eacute; porovn&aacute;n&iacute; prob&#283;hne paraleln&#283; u ka&#382;d&eacute;ho aktivn&iacute;ho uzlu.</div>
+      </section>
+
+      <section class="card card-pad">
+        <h2>Historie kol</h2>
+        <div class="rounds" id="rounds"></div>
+      </section>
+
+      <section class="card card-pad">
+        <h2>Pro&#269; je v&yacute;sledek MIS?</h2>
+        <div class="checks">
+          <div class="check"><b id="indCheck">&#10003; Nez&aacute;vislost</b><span>&#381;&aacute;dn&eacute; dva zelen&eacute; uzly nesd&iacute;lej&iacute; hranu: soused&eacute; v&iacute;t&#283;ze se ihned deaktivuj&iacute;.</span></div>
+          <div class="check"><b id="maxCheck">&#8230; Maximalita</b><span>Na konci je ka&#382;d&yacute; nezvolen&yacute; uzel sousedem n&#283;kter&eacute;ho uzlu v MIS, tak&#382;e u&#382; nelze nic p&#345;idat.</span></div>
+        </div>
+      </section>
+
+      <section class="card card-pad">
+        <h2>&#268;asov&aacute; slo&#382;itost</h2>
+        <div class="deriv">
+          <div class="deriv-row"><span>pr&aacute;ce uzlu / kolo:</span><b>lok&aacute;ln&iacute; komunikace</b></div>
+          <div class="deriv-row"><span>odstran&#283;n&eacute; hrany:</span><b>konstantn&iacute; frakce w.h.p.</b></div>
+          <hr>
+          <div class="deriv-row hl"><span>o&#269;ek&aacute;van&#283; kol:</span><b>O(log |V|)</b></div>
+          <div class="deriv-row"><span>pro p = |E|:</span><b>T<sub>p</sub> = O(log |V|)</b></div>
+        </div>
+        <div class="note">Randomizace rozbije symetrii bez centr&aacute;ln&iacute;ho koordin&aacute;tora. Konkr&eacute;tn&iacute; uk&aacute;zka m&#367;&#382;e skon&#269;it rychleji ne&#382; asymptotick&yacute; odhad.</div>
+      </section>
+    </aside>
   </div>
-
-  <canvas id="cv" height="360"></canvas>
-  <div class="step-info" id="stepInfo">Stiskni ▶ nebo krok vpřed.</div>
-</div>
-
-<div>
-  <div class="panel" style="margin-bottom:10px;">
-    <h3>Krok Lubyho algoritmu</h3>
-    <div style="font-size:0.79em;line-height:1.9;color:#d4d4d4;">
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph0">1. Každý aktivní uzel generuje náhodné číslo r(v)</div>
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph1">2. Lokální minimum: r(v) &lt; r(u) pro všechny sousedy u?</div>
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;margin-bottom:2px;" id="ph2">3. Lokální minima vstoupí do MIS (zelená)</div>
-      <div style="padding:3px 8px;border-left:3px solid #3c3c3c;" id="ph3">4. Odeber MIS uzly + jejich sousedy z grafu</div>
-    </div>
-  </div>
-
-  <div class="panel">
-    <h3>Analýza Lubyho MIS</h3>
-    <div class="deriv-box">
-      <div class="deriv-row"><span class="deriv-lbl">Vlastnost MIS:</span><span class="deriv-val">Nezávislá + max</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Každé kolo:</span><span class="deriv-val">paralelní (|V| proc)</span></div>
-      <hr style="border-color:#444;margin:5px 0;">
-      <div style="color:#888;font-size:0.78em;margin-bottom:4px;">Každé kolo odstraní v průměru ≥ ½ hran z grafu (w.h.p.). Proto:</div>
-      <div class="deriv-row"><span class="deriv-lbl">Kol celkem (E[]):</span><span class="deriv-val">O(log |V|)</span></div>
-      <div class="deriv-row highlight"><span class="deriv-lbl">T_P (p=|E|):</span><span class="deriv-val">O(log |V|)</span></div>
-      <hr style="border-color:#444;margin:5px 0;">
-      <div class="deriv-row"><span class="deriv-lbl">Každý uzel:</span><span class="deriv-val">kontaktuje sousedy</span></div>
-      <div class="deriv-row"><span class="deriv-lbl">Komunikace:</span><span class="deriv-val">O(1) zpráv/kolo</span></div>
-      <div style="margin-top:8px;font-size:0.78em;color:#888;">Randomizace zaručuje konvergenci — na rozdíl od deterministických algoritmů, které potřebují složitou koordinaci.</div>
-    </div>
-    <div class="stat-grid">
-      <div class="stat blue"><div class="stat-lbl">Kolo</div><div class="stat-val" id="sRound">0</div></div>
-      <div class="stat green"><div class="stat-lbl">V MIS</div><div class="stat-val" id="sMIS">0</div></div>
-      <div class="stat yellow"><div class="stat-lbl">Aktivních</div><div class="stat-val" id="sActive">0</div></div>
-      <div class="stat blue"><div class="stat-lbl">Odstraněných</div><div class="stat-val" id="sRemoved">0</div></div>
-    </div>
-  </div>
-</div>
-</div>
+</main>
 
 <script>
-let n, graphType;
-let steps = [], curStep = -1, playing = false, playTimer = null;
-let nodes = [], adjList = [];
+const N = 12;
+let nodes=[],edges=[],adj=[],steps=[],cur=0,playing=false,busy=false,timer=null,raf=null;
+const $=id=>document.getElementById(id),fmt=v=>v===undefined?'\u2014':String(v),key=(a,b)=>a<b?`${a}-${b}`:`${b}-${a}`;
+const cloneSet=s=>new Set(s);
+const graphPositions=[[160,102],[356,69],[565,91],[798,91],[925,229],[855,414],[633,495],[412,477],[187,455],[79,298],[296,247],[594,282]];
 
-function buildGraph(n, type) {
-  const nodes = [];
-  if (type === 'grid') {
-    const cols = Math.round(Math.sqrt(n));
-    const rows = Math.ceil(n/cols);
-    for (let i=0;i<n;i++) {
-      const r=Math.floor(i/cols), c=i%cols;
-      nodes.push({x:(c/(cols-1||1))*220-110, y:(r/(rows-1||1))*180-90});
-    }
-  } else if (type === 'cycle') {
-    for (let i=0;i<n;i++) {
-      const a=(i/n)*2*Math.PI-Math.PI/2;
-      nodes.push({x:120*Math.cos(a), y:120*Math.sin(a)});
-    }
-  } else {
-    for (let i=0;i<n;i++) {
-      const a=(i/n)*2*Math.PI-Math.PI/2;
-      const r=90+Math.random()*50;
-      nodes.push({x:r*Math.cos(a), y:r*Math.sin(a)});
-    }
-  }
-
-  const adj = Array.from({length:n},()=>new Set());
-  if (type==='grid') {
-    const cols=Math.round(Math.sqrt(n));
-    for (let i=0;i<n;i++) {
-      const r=Math.floor(i/cols), c=i%cols;
-      if (c+1<cols&&i+1<n) { adj[i].add(i+1); adj[i+1].add(i); }
-      if (i+cols<n) { adj[i].add(i+cols); adj[i+cols].add(i); }
-    }
-  } else if (type==='cycle') {
-    for (let i=0;i<n;i++) { const j=(i+1)%n; adj[i].add(j); adj[j].add(i); }
-    // Add some chords
-    for (let i=0;i<n;i+=3) { const j=(i+Math.floor(n/3))%n; adj[i].add(j); adj[j].add(i); }
-  } else {
-    // Ensure connected: random spanning tree
-    const perm=[...Array(n).keys()].sort(()=>Math.random()-0.5);
-    for (let i=1;i<n;i++) { adj[perm[i]].add(perm[i-1]); adj[perm[i-1]].add(perm[i]); }
-    // Extra edges
-    for (let i=0;i<n;i++) for (let j=i+1;j<n;j++) if (!adj[i].has(j)&&Math.random()<0.2) { adj[i].add(j); adj[j].add(i); }
-  }
-  return {nodes, adj: adj.map(s=>[...s])};
+function seededRandom(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function graphEdges(type){
+  if(type==='grid')return[[0,1],[1,2],[2,3],[4,5],[5,6],[6,7],[8,9],[9,10],[10,11],[0,4],[4,8],[1,5],[5,9],[2,6],[6,10],[3,7],[7,11]];
+  if(type==='cycle')return[[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11,0],[0,4],[3,7],[6,10],[9,1]];
+  return[[0,1],[0,9],[0,10],[1,2],[1,10],[2,3],[2,10],[2,11],[3,4],[3,11],[4,5],[4,11],[5,6],[5,11],[6,7],[6,11],[7,8],[7,10],[8,9],[8,10],[9,10],[10,11]];
 }
-
-function buildSteps(nodes, adj) {
-  const n = nodes.length;
-  const steps = [];
-  const mis = new Set();
-  const removed = new Set();
-
-  steps.push({phase:-1,round:0,mis:new Set(),removed:new Set(),randNums:{},localMins:new Set(),
-    desc:`Graf s ${n} uzly. Lubyho algoritmus iterativně vybírá MIS uzly — v každém kole každý uzel generuje náhodné číslo a lokální minima vstoupí do MIS.`});
-
-  let round = 0;
-  const MAX_ROUNDS = 20;
-
-  while (removed.size < n && round < MAX_ROUNDS) {
-    const active = [...Array(n).keys()].filter(i=>!removed.has(i)&&!mis.has(i));
-    if (active.length===0) break;
+function buildGraph(){
+  nodes=graphPositions.map(([x,y],id)=>({id,x,y}));
+  edges=graphEdges($('graphSel').value).map(([u,v])=>({u,v}));
+  adj=Array.from({length:N},()=>[]);
+  edges.forEach(({u,v})=>{adj[u].push(v);adj[v].push(u)});
+}
+function prioritiesFor(round,active){
+  const rnd=seededRandom(9137+(+$('runSel').value)*1009+round*65537+['lesson','grid','cycle'].indexOf($('graphSel').value)*811);
+  const order=[...active].sort(()=>rnd()-.5),out={};
+  order.forEach((v,i)=>out[v]=11+i*7+Math.floor(rnd()*6));
+  return out;
+}
+function snapshot(extra,mis,removed){return{round:0,phase:-1,mis:cloneSet(mis),removed:cloneSet(removed),active:new Set([...Array(N).keys()].filter(v=>!mis.has(v)&&!removed.has(v))),prio:{},wins:new Set(),newlyRemoved:new Set(),focus:null,...extra}}
+function buildSteps(){
+  const out=[],mis=new Set(),removed=new Set();
+  out.push(snapshot({kicker:'START',title:'V\u0161echny uzly jsou aktivn\u00ed',text:`Graf m\u00e1 ${N} uzl\u016f. V ka\u017ed\u00e9m kole rozhoduj\u00ed aktivn\u00ed uzly pouze podle priorit ve sv\u00e9m bezprost\u0159edn\u00edm okol\u00ed.`},mis,removed));
+  let round=0;
+  while(mis.size+removed.size<N&&round<20){
     round++;
-
-    // Phase 0: generate random numbers
-    const randNums = {};
-    active.forEach(v=>{ randNums[v]=Math.floor(Math.random()*1000); });
-
-    steps.push({phase:0,round,mis:new Set(mis),removed:new Set(removed),randNums:{...randNums},localMins:new Set(),
-      desc:`Kolo ${round}: Každý aktivní uzel (${active.length}) generuje náhodné číslo r(v). Paralelně — každý proc nezávisle.`});
-
-    // Phase 1: find local minima (v je lokální minimum pokud r(v) < r(u) pro všechny aktivní sousedy u)
-    const localMins = new Set();
-    active.forEach(v=>{
-      const activeNeighbors = adj[v].filter(u=>!removed.has(u)&&!mis.has(u));
-      const isMin = activeNeighbors.every(u=>randNums[v]<randNums[u]);
-      if (isMin) localMins.add(v);
-    });
-
-    steps.push({phase:1,round,mis:new Set(mis),removed:new Set(removed),randNums:{...randNums},localMins:new Set(localMins),
-      desc:`Kolo ${round}: Každý uzel porovná r(v) se svými sousedy. Lokální minima (${localMins.size} uzlů) vstoupí do MIS — r(v) < r(u) pro všechny sousedy u.`});
-
-    // Phase 2: add local mins to MIS
-    localMins.forEach(v=>mis.add(v));
-
-    steps.push({phase:2,round,mis:new Set(mis),removed:new Set(removed),randNums:{...randNums},localMins:new Set(localMins),
-      desc:`Kolo ${round}: Uzly ${[...localMins].join(', ')} přidány do MIS (zelená). Jejich sousedé budou odstraněni.`});
-
-    // Phase 3: remove MIS nodes and their neighbors
-    localMins.forEach(v=>{
-      removed.add(v);
-      adj[v].forEach(u=>{ if (!mis.has(u)) removed.add(u); });
-    });
-
-    steps.push({phase:3,round,mis:new Set(mis),removed:new Set(removed),randNums:{...randNums},localMins:new Set(localMins),
-      desc:`Kolo ${round}: Uzly MIS + jejich sousedé odstraněni z grafu. Aktivních zbývá: ${n-removed.size}. Pokračujeme dalším kolem.`});
+    const active=[...Array(N).keys()].filter(v=>!mis.has(v)&&!removed.has(v)),prio=prioritiesFor(round,active);
+    const wins=new Set(active.filter(v=>adj[v].filter(u=>!mis.has(u)&&!removed.has(u)).every(u=>prio[v]<prio[u])));
+    const focus=[...wins][0];
+    out.push(snapshot({round,phase:0,prio,wins:new Set(),focus,kicker:`KOLO ${round} \u00b7 F\u00c1ZE 1`,title:'Aktivn\u00ed uzly losuj\u00ed priority',text:`V\u0161ech ${active.length} aktivn\u00edch uzl\u016f si nez\u00e1visle vylosuje unik\u00e1tn\u00ed pseudon\u00e1hodnou prioritu r(v). Ni\u017e\u0161\u00ed hodnota je v\u00fdhodn\u011bj\u0161\u00ed.`},mis,removed));
+    out.push(snapshot({round,phase:1,prio,wins,focus,kicker:`KOLO ${round} \u00b7 F\u00c1ZE 2`,title:'Priority putuj\u00ed k soused\u016fm',text:`Ka\u017ed\u00fd aktivn\u00ed uzel po\u0161le r(v) sv\u00fdm aktivn\u00edm soused\u016fm. ${wins.size} ${wins.size===1?'uzel zjist\u00ed, \u017ee je lok\u00e1ln\u00ed minimum':'uzl\u016f zjist\u00ed, \u017ee jsou lok\u00e1ln\u00ed minima'}.`},mis,removed));
+    wins.forEach(v=>mis.add(v));
+    out.push(snapshot({round,phase:2,prio,wins,focus,kicker:`KOLO ${round} \u00b7 F\u00c1ZE 3`,title:`Do MIS vstupuje ${wins.size} ${wins.size===1?'uzel':'uzl\u016f'}: {${[...wins].join(', ')}}`,text:'Lok\u00e1ln\u00ed minima spolu nemohou sousedit: dva soused\u00e9 by nemohli m\u00edt oba prioritu men\u0161\u00ed ne\u017e ten druh\u00fd. Proto je lze bezpe\u010dn\u011b p\u0159idat soub\u011b\u017en\u011b.'},mis,removed));
+    const newlyRemoved=new Set();
+    wins.forEach(v=>adj[v].forEach(u=>{if(!mis.has(u)&&!removed.has(u)){removed.add(u);newlyRemoved.add(u)}}));
+    out.push(snapshot({round,phase:3,prio,wins,focus,newlyRemoved,kicker:`KOLO ${round} \u00b7 F\u00c1ZE 4`,title:`Deaktivujeme okol\u00ed: ${newlyRemoved.size} ${newlyRemoved.size===1?'soused':'soused\u016f'}`,text:`Vybran\u00e9 uzly z\u016fstanou zelen\u00e9. Jejich soused\u00e9 u\u017e do MIS nesm\u011bj\u00ed, proto je deaktivujeme. Aktivn\u00edch uzl\u016f zb\u00fdv\u00e1 ${N-mis.size-removed.size}.`},mis,removed));
   }
-
-  steps.push({phase:-1,round,mis:new Set(mis),removed:new Set(removed),randNums:{},localMins:new Set(),
-    desc:`MIS dokončena po ${round} kolech! Nezávislá množina: {${[...mis].join(', ')}}. T_P = O(log n) kol, každé kolo O(1) paralelně.`});
-
-  return steps;
+  out.push(snapshot({round,phase:4,kicker:'HOTOVO',title:`MIS = {${[...mis].sort((a,b)=>a-b).join(', ')}}`,text:`Ka\u017ed\u00fd nezvolen\u00fd uzel soused\u00ed s n\u011bkter\u00fdm zelen\u00fdm uzlem. Mno\u017eina je nez\u00e1visl\u00e1 a maxim\u00e1ln\u00ed: u\u017e ji nelze roz\u0161\u00ed\u0159it bez poru\u0161en\u00ed nez\u00e1vislosti.`},mis,removed));
+  return out;
 }
-
-function reset() {
-  clearTimeout(playTimer); playing=false; document.getElementById('playBtn').textContent='▶ Přehrát';
-  n=parseInt(document.getElementById('nSel').value);
-  graphType=document.getElementById('gSel').value;
-  const g=buildGraph(n,graphType);
-  nodes=g.nodes; adjList=g.adj;
-  steps=buildSteps(nodes,adjList);
-  curStep=-1;
-  updateUI(); drawFrame(steps[0]);
+function edgeState(st,u,v){
+  const inactive=!st.active.has(u)||!st.active.has(v),kill=st.phase===3&&((st.wins.has(u)&&st.newlyRemoved.has(v))||(st.wins.has(v)&&st.newlyRemoved.has(u)));
+  const compare=st.phase===1&&st.active.has(u)&&st.active.has(v)&&(u===st.focus||v===st.focus);
+  return kill?'kill':compare?'compare':inactive?'inactive':'';
 }
-
-function applyStep(idx) { curStep=idx; updateUI(); drawFrame(steps[idx]); }
-function stepFwd() { if (curStep+1<steps.length) applyStep(curStep+1); }
-function stepBack() { if (curStep>0) applyStep(curStep-1); else { curStep=-1; updateUI(); drawFrame(steps[0]); } }
-
-function updateUI() {
-  const total=steps.length;
-  document.getElementById('progress').style.width=(total>0?(curStep+1)/total*100:0)+'%';
-  const st=curStep>=0?steps[curStep]:steps[0];
-  document.getElementById('sRound').textContent=st.round;
-  document.getElementById('sMIS').textContent=st.mis.size;
-  document.getElementById('sActive').textContent=Math.max(0,n-st.removed.size-st.mis.size);
-  document.getElementById('sRemoved').textContent=st.removed.size-st.mis.size;
-  document.getElementById('stepInfo').innerHTML=`<strong>${curStep>=0?`Krok ${curStep+1}/${total}`:'Start'}:</strong> ${st.desc}`;
-
-  for (let ph=0;ph<4;ph++) {
-    const el=document.getElementById(`ph${ph}`);
-    const active=st.phase===ph;
-    el.style.borderLeftColor=active?'#0984e3':'#3c3c3c';
-    el.style.background=active?'#1a1a2e':'transparent';
-    el.style.color=active?'#d4d4d4':'#888';
-  }
+function renderGraph(st){
+  const defs='<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ff8297"/></marker></defs>';
+  const lines=edges.map(({u,v},i)=>{
+    const a=nodes[u],b=nodes[v],state=edgeState(st,u,v),mark=state==='kill'?' marker-end="url(#arrow)"':'';
+    return `<line id="e${i}" class="edge ${state}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"${mark}/>`;
+  }).join('');
+  const messages=st.phase===1?edges.map(({u,v},i)=>{
+    if(!st.active.has(u)||!st.active.has(v))return'';
+    const a=nodes[u],b=nodes[v],dur=1.05+(i%4)*.12;
+    return `<circle class="msg" r="3"><animate attributeName="cx" values="${a.x};${b.x}" dur="${dur}s" repeatCount="indefinite"/><animate attributeName="cy" values="${a.y};${b.y}" dur="${dur}s" repeatCount="indefinite"/></circle>
+      <circle class="msg" r="3"><animate attributeName="cx" values="${b.x};${a.x}" dur="${dur}s" repeatCount="indefinite"/><animate attributeName="cy" values="${b.y};${a.y}" dur="${dur}s" repeatCount="indefinite"/></circle>`;
+  }).join(''):'';
+  const circles=nodes.map(({id,x,y})=>{
+    const inMIS=st.mis.has(id),isRemoved=st.removed.has(id),winner=st.wins.has(id)&&!inMIS,focus=id===st.focus&&(st.phase===1||st.phase===2);
+    const cls=['node',inMIS?'mis':isRemoved?'removed':winner?'winner':'',focus?'focus':''].filter(Boolean).join(' ');
+    const pri=st.prio[id]!==undefined&&st.active.has(id)?`<text class="priority" x="${x}" y="${y-28}">r=${st.prio[id]}</text>`:'';
+    const tag=inMIS?'<text class="tag" x="'+x+'" y="'+(y+35)+'">MIS</text>':isRemoved?'<text class="tag" x="'+x+'" y="'+(y+35)+'">pry\u010d</text>':'';
+    const pulse=st.phase===3&&st.wins.has(id)?`<circle class="pulse" cx="${x}" cy="${y}" r="23"/>`:'';
+    return `${pulse}<g class="${cls}"><circle cx="${x}" cy="${y}" r="22"/><text class="id" x="${x}" y="${y+1}">${id}</text>${pri}${tag}</g>`;
+  }).join('');
+  $('graph').innerHTML=defs+lines+messages+circles;
 }
-
-const cv=document.getElementById('cv'); const ctx=cv.getContext('2d');
-
-function drawFrame(st) {
-  const W=cv.width=cv.offsetWidth, H=cv.height=360;
-  ctx.clearRect(0,0,W,H); ctx.fillStyle='#252525'; ctx.fillRect(0,0,W,H);
-  if (!st) return;
-
-  const scale=Math.min(W,H)*0.34;
-  const cx=W/2, cy=H/2;
-  const pos=nodes.map(nd=>({x:cx+nd.x/150*scale, y:cy+nd.y/150*scale}));
-  const R=Math.max(14,Math.min(20,scale*0.1));
-
-  // Draw edges
-  for (let u=0;u<n;u++) {
-    adjList[u].forEach(v=>{
-      if (v<=u) return;
-      const uR=st.removed.has(u)||st.mis.has(u);
-      const vR=st.removed.has(v)||st.mis.has(v);
-      if (uR&&vR) return; // hide removed edges
-      ctx.beginPath(); ctx.moveTo(pos[u].x,pos[u].y); ctx.lineTo(pos[v].x,pos[v].y);
-      ctx.strokeStyle=(uR||vR)?'#333':'#555'; ctx.lineWidth=1; ctx.stroke();
-    });
-  }
-
-  // Draw nodes
-  for (let i=0;i<n;i++) {
-    const inMIS=st.mis.has(i);
-    const isRemoved=st.removed.has(i)&&!inMIS;
-    const isLocalMin=st.localMins&&st.localMins.has(i);
-    const randNum=st.randNums[i];
-    const isActive=!st.removed.has(i)&&!st.mis.has(i);
-
-    if (isLocalMin) {
-      ctx.beginPath(); ctx.arc(pos[i].x,pos[i].y,R+5,0,2*Math.PI);
-      ctx.strokeStyle='#fdcb6e'; ctx.lineWidth=3; ctx.stroke();
-    }
-
-    ctx.beginPath(); ctx.arc(pos[i].x,pos[i].y,R,0,2*Math.PI);
-    ctx.fillStyle = inMIS?'#00b894':(isRemoved?'#333':(isLocalMin?'#fdcb6e55':'#3c3c3c'));
-    ctx.fill();
-    ctx.strokeStyle = inMIS?'#00b894':(isRemoved?'#555':(isActive?'#888':'#444'));
-    ctx.lineWidth = inMIS?3:(isLocalMin?2:1); ctx.stroke();
-
-    // Node ID
-    ctx.fillStyle = isRemoved?'#555':(inMIS?'#fff':'#d4d4d4');
-    ctx.font=`bold ${R*0.7}px sans-serif`; ctx.textAlign='center';
-    ctx.fillText(i,pos[i].x,pos[i].y+4);
-
-    // Random number
-    if (randNum!==undefined&&isActive) {
-      ctx.fillStyle=isLocalMin?'#fdcb6e':'#9cdcfe';
-      ctx.font=`${Math.max(7,R*0.5)}px monospace`; ctx.textAlign='center';
-      ctx.fillText(randNum,pos[i].x,pos[i].y-R-4);
-    }
-
-    // MIS label
-    if (inMIS) {
-      ctx.fillStyle='#00b894'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
-      ctx.fillText('MIS',pos[i].x,pos[i].y+R+11);
-    }
-  }
-
-  // Legend
-  const legY=H-36;
-  [[`#00b894`,'V MIS'],[`#fdcb6e55`,'Lokální min (vstoupí)'],[`#3c3c3c`,'Aktivní'],[`#333`,'Odstraněný']].forEach(([c,txt],i)=>{
-    const lx=10+i*120;
-    ctx.fillStyle=c; ctx.strokeStyle='#888'; ctx.lineWidth=1;
-    ctx.fillRect(lx,legY,10,10); ctx.strokeRect(lx,legY,10,10);
-    ctx.fillStyle='#aaa'; ctx.font='8px sans-serif'; ctx.textAlign='left'; ctx.fillText(txt,lx+13,legY+9);
-  });
-
-  // Title
-  ctx.fillStyle='#0984e3'; ctx.font='bold 10px sans-serif'; ctx.textAlign='center';
-  ctx.fillText(`Lubyho MIS — n=${n} uzlů, ${st.round} kol, MIS={${[...st.mis].join(',')}}`, W/2, 14);
+function renderFormula(st){
+  if(st.focus===null||st.focus===undefined||st.prio[st.focus]===undefined){$('formulaBox').innerHTML='<span class="cyan">r(v)</span> &lt; r(u) pro v\u0161echny aktivn\u00ed sousedy u';return}
+  const v=st.focus,ns=adj[v].filter(u=>st.prio[u]!==undefined),vals=ns.map(u=>st.prio[u]),min=vals.length?Math.min(...vals):'\u221e',wins=st.wins.has(v)||st.phase===0;
+  $('formulaBox').innerHTML=`uzel <span class="orange">${v}</span>: r(${v}) = <span class="orange">${st.prio[v]}</span>\n`
+    +`soused\u00e9: ${ns.length?ns.map(u=>`r(${u})=${st.prio[u]}`).join(', '):'\u017e\u00e1dn\u00ed aktivn\u00ed'}\n`
+    +`${st.prio[v]} &lt; min({${vals.join(', ')||'\u221e'}}) = ${min}\n`
+    +`<span class="${wins?'green':'red'}">${wins?'\u2713 lok\u00e1ln\u00ed minimum \u2192 vstoup\u00ed do MIS':'\u2717 nevstoup\u00ed do MIS'}</span>`;
 }
-
-function togglePlay() {
-  playing=!playing;
-  document.getElementById('playBtn').textContent=playing?'⏸ Pauza':'▶ Přehrát';
-  if (playing) {
-    const go=()=>{
-      if (curStep+1<steps.length) { applyStep(curStep+1); playTimer=setTimeout(go,parseInt(document.getElementById('speed').value)); }
-      else { playing=false; document.getElementById('playBtn').textContent='▶ Přehrát'; }
-    };
-    go();
-  } else clearTimeout(playTimer);
+function roundSummary(round){
+  const add=steps.find(s=>s.round===round&&s.phase===2),end=steps.find(s=>s.round===round&&s.phase===3);
+  return{round,wins:add?[...add.wins]:[],active:end?end.active.size:N};
 }
-
-window.addEventListener('resize',()=>{ if(curStep>=0) drawFrame(steps[curStep]); else drawFrame(steps[0]); });
-reset();
+function renderRounds(st){
+  const count=steps.at(-1).round,items=[];for(let r=1;r<=count;r++)items.push(roundSummary(r));
+  $('rounds').innerHTML=items.map(x=>`<div class="round ${x.round===st.round&&st.phase!==4?'active':''}"><b>kolo ${x.round}</b><span>+ {${x.wins.join(', ')}}</span><em>${x.active} aktiv.</em></div>`).join('');
+}
+function independent(mis){return edges.every(({u,v})=>!mis.has(u)||!mis.has(v))}
+function maximal(st){return st.active.size===0&&[...st.removed].every(v=>adj[v].some(u=>st.mis.has(u)))}
+function renderUI(){
+  const st=steps[cur];renderGraph(st);renderFormula(st);renderRounds(st);
+  $('lessonKicker').textContent=st.kicker;$('lessonTitle').textContent=st.title;$('lessonText').textContent=st.text;
+  $('sRound').textContent=st.round;$('sActive').textContent=st.active.size;$('sMIS').textContent=st.mis.size;$('sRemoved').textContent=st.removed.size;
+  $('indCheck').textContent=(independent(st.mis)?'\u2713':'\u2717')+' Nez\u00e1vislost';
+  $('maxCheck').textContent=(st.phase===4&&maximal(st)?'\u2713':'\u2026')+' Maximalita';
+  document.querySelectorAll('.phase').forEach(el=>{const p=+el.dataset.phase;el.classList.remove('active','done');if(st.phase===p)el.classList.add('active');else if(st.phase>p||st.phase===4)el.classList.add('done')});
+  $('backBtn').disabled=busy||cur===0;$('nextBtn').disabled=busy||cur===steps.length-1;
+  $('playBtn').textContent=playing?'\u23f8 Pauza':cur===steps.length-1?'\u21ba P\u0159ehr\u00e1t':'\u25b6 P\u0159ehr\u00e1t';
+}
+function animateTo(idx,done){cancelAnimationFrame(raf);busy=true;renderUI();const duration=+$('speed').value,start=performance.now();const tick=now=>{if(now-start<duration){raf=requestAnimationFrame(tick);return}busy=false;renderUI();if(done)done()};raf=requestAnimationFrame(tick)}
+function stepFwd(){if(!busy&&cur<steps.length-1){cur++;animateTo(cur)}}function stepBack(){if(!busy&&cur>0){playing=false;clearTimeout(timer);cur--;renderUI()}}
+function togglePlay(){if(playing){playing=false;clearTimeout(timer);renderUI();return}if(cur===steps.length-1)cur=0;playing=true;renderUI();const next=()=>{if(!playing||cur===steps.length-1){playing=false;renderUI();return}cur++;animateTo(cur,()=>timer=setTimeout(next,80))};next()}
+function reset(){cancelAnimationFrame(raf);clearTimeout(timer);playing=false;busy=false;buildGraph();steps=buildSteps();cur=0;$('heroBadge').innerHTML=`n=${N}<br><span style="font-size:10px;color:var(--muted)">b\u011bh ${$('runSel').selectedOptions[0].text} \u00b7 ${steps.at(-1).round} kol</span>`;renderUI()}
+$('graphSel').addEventListener('change',reset);$('runSel').addEventListener('change',reset);$('resetBtn').addEventListener('click',reset);$('backBtn').addEventListener('click',stepBack);$('nextBtn').addEventListener('click',stepFwd);$('playBtn').addEventListener('click',togglePlay);reset();
 </script>
 </body>
 </html>

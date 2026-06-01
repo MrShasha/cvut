@@ -323,11 +323,15 @@ input[type="range"] {
 }
 
 .processors {
+  position: relative;
+  z-index: 5;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   padding: 13px 14px 14px;
 }
+.processors.grid-1d { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.processors.grid-2d { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
 .processor {
   position: relative;
@@ -344,6 +348,29 @@ input[type="range"] {
   box-shadow: 0 0 22px color-mix(in srgb, var(--proc) 20%, transparent);
 }
 .processor.inactive { opacity: .4; }
+.processor.sender {
+  border-color: rgba(251, 191, 36, .94);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, .12), 0 0 22px rgba(251, 191, 36, .22);
+}
+.processor.receiver {
+  border-color: rgba(34, 211, 238, .94);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, .12), 0 0 22px rgba(34, 211, 238, .22);
+}
+.processor.sender::after, .processor.receiver::after {
+  position: absolute;
+  top: 34px;
+  right: 8px;
+  z-index: 9;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 3px 6px;
+  background: rgba(7, 18, 36, .9);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+.processor.sender::after { content: "ODESÍLÁ"; color: #fde68a; }
+.processor.receiver::after { content: "PŘIJÍMÁ"; color: #a5f3fc; }
 
 .processor-header {
   display: flex;
@@ -389,6 +416,11 @@ input[type="range"] {
   border-color: rgba(34, 211, 238, .5);
   background: rgba(8, 145, 178, .2);
   color: #cffafe;
+}
+.chip.origin {
+  border-color: rgba(251, 191, 36, .7);
+  background: rgba(120, 53, 15, .35);
+  color: #fef3c7;
 }
 .chip.partial {
   border-color: rgba(192, 132, 252, .52);
@@ -483,6 +515,50 @@ input[type="range"] {
   border-radius: 8px;
 }
 
+.communication-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+}
+.communication-layer svg { width: 100%; height: 100%; overflow: visible; }
+.comm-path {
+  fill: none;
+  stroke: var(--cyan);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 9 7;
+  filter: drop-shadow(0 0 7px rgba(34, 211, 238, .65));
+  animation: dash 1.15s linear infinite;
+}
+.comm-path.reduce {
+  stroke: var(--violet);
+  filter: drop-shadow(0 0 7px rgba(192, 132, 252, .68));
+}
+.comm-label rect {
+  fill: rgba(7, 18, 36, .96);
+  stroke: rgba(125, 211, 252, .72);
+}
+.comm-label.reduce rect { stroke: rgba(216, 180, 254, .8); }
+.comm-label text {
+  fill: #ecfeff;
+  font: 800 12px Consolas, monospace;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.comm-route {
+  margin-top: 7px;
+  color: #e0f2fe;
+  font: 900 16px Consolas, monospace;
+}
+.comm-payload {
+  margin-top: 5px;
+  color: #cbd5e1;
+  font-size: 12px;
+  line-height: 1.45;
+}
+@keyframes dash { to { stroke-dashoffset: -32; } }
+
 @keyframes fly {
   0% { left: var(--x1); top: var(--y1); opacity: 0; transform: translate(-50%, -50%) scale(.75); }
   12% { opacity: 1; }
@@ -538,6 +614,7 @@ input[type="range"] {
 
 <main class="layout">
   <section class="scene" id="scene">
+    <div class="communication-layer" id="communicationLayer"></div>
     <div class="math-scene">
       <div class="matrix-wrap">
         <div class="object-label">matice A</div>
@@ -572,6 +649,13 @@ input[type="range"] {
 
   <aside class="side">
     <section class="panel">
+      <div class="panel-title">Komunikační kanál</div>
+      <div class="step-title" id="commKind">Bez přenosu</div>
+      <div class="comm-route" id="commRoute">lokální práce</div>
+      <div class="comm-payload" id="commPayload">Jakmile začne komunikace, zde uvidíš odesílatele, příjemce a konkrétní přenášená data.</div>
+    </section>
+
+    <section class="panel">
       <div class="panel-title">Aktu&aacute;ln&iacute; krok</div>
       <div class="step-title" id="stepTitle"></div>
       <div class="step-detail" id="stepDetail"></div>
@@ -583,6 +667,8 @@ input[type="range"] {
       <div class="legend-item"><span><i class="legend-dot" style="background:var(--cyan)"></i>prvek x</span><code>x[j]</code></div>
       <div class="legend-item"><span><i class="legend-dot" style="background:var(--green)"></i>hotov&eacute; y</span><code>y[i]</code></div>
       <div class="legend-item"><span><i class="legend-dot" style="background:var(--violet)"></i>mezisou&#269;et</span><code>s[i]</code></div>
+      <div class="legend-item"><span><i class="legend-dot" style="background:var(--amber)"></i>odes&iacute;latel</span><code>P<sub>src</sub></code></div>
+      <div class="legend-item"><span><i class="legend-dot" style="background:var(--cyan)"></i>p&#345;&iacute;jemce</span><code>P<sub>dst</sub></code></div>
     </section>
 
     <section class="panel">
@@ -654,8 +740,8 @@ function makeActions() {
   if (mode === "1d") {
     const next = [
       {type: "intro", phase: "Rozlo\u017een\u00ed dat"},
-      {type: "broadcast", segment: 0, phase: "All-to-all broadcast"},
-      {type: "broadcast", segment: 1, phase: "All-to-all broadcast"},
+      {type: "broadcast", segment: 0, from: 0, to: 1, phase: "All-to-all broadcast"},
+      {type: "broadcast", segment: 1, from: 1, to: 0, phase: "All-to-all broadcast"},
     ];
     for (let row = 0; row < 4; row += 1) {
       for (let col = 0; col < 4; col += 1) {
@@ -669,14 +755,14 @@ function makeActions() {
 
   return [
     {type: "intro", phase: "2D rozlo\u017een\u00ed dat"},
-    {type: "block-broadcast", blockCol: 0, phase: "Broadcast x[0:2]"},
-    {type: "block-broadcast", blockCol: 1, phase: "Broadcast x[2:4]"},
+    {type: "block-broadcast", blockCol: 0, from: 0, to: 2, phase: "Broadcast x[0:2] ve sloupci procesorů"},
+    {type: "block-broadcast", blockCol: 1, from: 1, to: 3, phase: "Broadcast x[2:4] ve sloupci procesorů"},
     {type: "block-compute", blockRow: 0, blockCol: 0, phase: "Lok\u00e1ln\u00ed blokov\u00fd sou\u010din"},
     {type: "block-compute", blockRow: 0, blockCol: 1, phase: "Lok\u00e1ln\u00ed blokov\u00fd sou\u010din"},
-    {type: "block-reduce", blockRow: 0, phase: "Redukce mezisou\u010dt\u016f"},
+    {type: "block-reduce", blockRow: 0, from: 1, to: 0, phase: "Redukce mezisou\u010dt\u016f v řádku procesorů"},
     {type: "block-compute", blockRow: 1, blockCol: 0, phase: "Lok\u00e1ln\u00ed blokov\u00fd sou\u010din"},
     {type: "block-compute", blockRow: 1, blockCol: 1, phase: "Lok\u00e1ln\u00ed blokov\u00fd sou\u010din"},
-    {type: "block-reduce", blockRow: 1, phase: "Redukce mezisou\u010dt\u016f"},
+    {type: "block-reduce", blockRow: 1, from: 3, to: 2, phase: "Redukce mezisou\u010dt\u016f v řádku procesorů"},
     {type: "finish", phase: "Hotovo"},
   ];
 }
@@ -690,6 +776,7 @@ function completedAll(type, predicate = () => true) {
 }
 
 function setupProcessorCards() {
+  $("processors").className = `processors grid-${mode}`;
   for (let i = 0; i < 4; i += 1) {
     const card = $(`proc-${i}`);
     card.classList.toggle("hidden", mode === "1d" && i > 1);
@@ -703,8 +790,9 @@ function setupProcessorCards() {
       const owns = i === 0 ? [0, 1] : [2, 3];
       const knowsRemote = completed("broadcast", (a) => a.segment !== i);
       $(`cache-${i}`).innerHTML = x.map((value, j) => {
-        const known = owns.includes(j) || knowsRemote;
-        return `<span class="chip ${known ? "known" : ""}">${known ? `x${j}=${value}` : `x${j}=?`}</span>`;
+        const origin = owns.includes(j);
+        const known = origin || knowsRemote;
+        return `<span class="chip ${known ? "known" : ""} ${origin ? "origin" : ""}">${known ? `x${j}=${value}` : `x${j}=?`}</span>`;
       }).join("");
       const rowsForProc = i === 0 ? [0, 1] : [2, 3];
       $(`out-${i}`).innerHTML = rowsForProc.map((row) => {
@@ -721,11 +809,14 @@ function setupProcessorCards() {
     const blockRow = Math.floor(i / 2);
     const blockCol = i % 2;
     $(`proc-scope-${i}`).textContent = `A[${blockRow},${blockCol}]`;
-    $(`proc-desc-${i}`).innerHTML = `Dr\u017e\u00ed blok matice 2\u00d72 a po broadcastu odpov\u00eddaj\u00edc\u00ed blok vektoru.`;
-    const knowsBlock = completed("block-broadcast", (a) => a.blockCol === blockCol);
+    $(`proc-desc-${i}`).innerHTML = blockRow === 0
+      ? `Dr\u017e\u00ed blok matice 2\u00d72 a po\u010d\u00e1te\u010dn\u00ed kopii x. Pos\u00edl\u00e1 ji dol\u016f ve sloupci procesor\u016f.`
+      : `Dr\u017e\u00ed blok matice 2\u00d72. Odpov\u00eddaj\u00edc\u00ed blok x obdr\u017e\u00ed shora ve sv\u00e9m sloupci.`;
+    const origin = blockRow === 0;
+    const knowsBlock = origin || completed("block-broadcast", (a) => a.blockCol === blockCol);
     const start = blockCol * 2;
     $(`cache-${i}`).innerHTML = x.slice(start, start + 2).map((value, offset) =>
-      `<span class="chip ${knowsBlock ? "known" : ""}">${knowsBlock ? `x${start + offset}=${value}` : `x${start + offset}=?`}</span>`
+      `<span class="chip ${knowsBlock ? "known" : ""} ${origin ? "origin" : ""}">${knowsBlock ? `x${start + offset}=${value}` : `x${start + offset}=?`}</span>`
     ).join("");
     const partialDone = completed("block-compute", (a) => a.blockRow === blockRow && a.blockCol === blockCol);
     const reduced = completed("block-reduce", (a) => a.blockRow === blockRow);
@@ -752,9 +843,10 @@ function resetHighlights() {
     cell.classList.remove("dimmed", "focus-a", "focus-x", "focus-y");
   });
   document.querySelectorAll(".processor").forEach((card) => {
-    card.classList.remove("active", "inactive");
+    card.classList.remove("active", "inactive", "sender", "receiver");
   });
   $("blockOutline").classList.remove("active");
+  $("communicationLayer").innerHTML = "";
 }
 
 function focusCells(selectors, className) {
@@ -774,6 +866,66 @@ function activeProcessors(ids) {
   });
 }
 
+function communicationFor(action) {
+  if (!action) return null;
+  if (action.type === "broadcast") {
+    const start = action.segment * 2;
+    return {from: action.from, to: action.to, kind: "broadcast", title: "All-to-all broadcast vektoru x", payload: `x[${start}:${start + 2}] = [${x[start]}, ${x[start + 1]}]`};
+  }
+  if (action.type === "block-broadcast") {
+    const start = action.blockCol * 2;
+    return {from: action.from, to: action.to, kind: "broadcast", title: `Broadcast x ve sloupci ${action.blockCol}`, payload: `x[${start}:${start + 2}] = [${x[start]}, ${x[start + 1]}]`};
+  }
+  if (action.type === "block-reduce") {
+    const payload = blockPartial(action.blockRow, 1);
+    return {from: action.from, to: action.to, kind: "reduce", title: `Redukce mezisoučtů v řádku ${action.blockRow}`, payload: `s[${action.blockRow},1] = [${payload.join(", ")}]`};
+  }
+  return null;
+}
+
+function drawCommunicationLink(info) {
+  const scene = $("scene").getBoundingClientRect();
+  const from = $(`proc-${info.from}`).getBoundingClientRect();
+  const to = $(`proc-${info.to}`).getBoundingClientRect();
+  const start = {x: from.left - scene.left + from.width / 2, y: from.top - scene.top + from.height / 2};
+  const end = {x: to.left - scene.left + to.width / 2, y: to.top - scene.top + to.height / 2};
+  const dx = end.x - start.x;
+  const dy = end.y - start.y;
+  const length = Math.hypot(dx, dy) || 1;
+  const trim = 36;
+  const x1 = start.x + dx / length * trim;
+  const y1 = start.y + dy / length * trim;
+  const x2 = end.x - dx / length * trim;
+  const y2 = end.y - dy / length * trim;
+  const label = `P${info.from} → P${info.to} · ${info.payload}`;
+  const width = Math.max(150, label.length * 7);
+  const mx = (x1 + x2) / 2;
+  const my = (y1 + y2) / 2 - (Math.abs(dx) > Math.abs(dy) ? 20 : 0);
+  $("communicationLayer").innerHTML = `<svg viewBox="0 0 ${scene.width} ${scene.height}" preserveAspectRatio="none">
+    <defs>
+      <marker id="commArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="${info.kind === "reduce" ? "#c084fc" : "#22d3ee"}"/></marker>
+    </defs>
+    <path class="comm-path ${info.kind}" d="M ${x1} ${y1} L ${x2} ${y2}" marker-end="url(#commArrow)"/>
+    <g class="comm-label ${info.kind}"><rect x="${mx - width / 2}" y="${my - 13}" width="${width}" height="26" rx="8"/><text x="${mx}" y="${my + 1}">${label}</text></g>
+  </svg>`;
+}
+
+function showCommunication(action) {
+  const info = communicationFor(action);
+  if (!info) {
+    $("commKind").textContent = "Bez síťového přenosu";
+    $("commRoute").textContent = "lokální práce";
+    $("commPayload").textContent = "V tomto kroku procesor pracuje pouze s daty ve své lokální paměti.";
+    return;
+  }
+  $(`proc-${info.from}`).classList.add("sender");
+  $(`proc-${info.to}`).classList.add("receiver");
+  drawCommunicationLink(info);
+  $("commKind").textContent = info.title;
+  $("commRoute").textContent = `P${info.from} → P${info.to}`;
+  $("commPayload").textContent = `Přenášená data: ${info.payload}`;
+}
+
 function positionBlockOutline(blockRow, blockCol) {
   const first = document.querySelector(`[data-a="${blockRow * 2}-${blockCol * 2}"]`);
   const last = document.querySelector(`[data-a="${blockRow * 2 + 1}-${blockCol * 2 + 1}"]`);
@@ -791,6 +943,7 @@ function positionBlockOutline(blockRow, blockCol) {
 function renderSnapshot() {
   resetHighlights();
   setupProcessorCards();
+  showCommunication(null);
 
   for (let row = 0; row < 4; row += 1) {
     const yCell = document.querySelector(`[data-y="${row}"]`);
@@ -838,6 +991,7 @@ function renderSnapshot() {
   if (previous.type === "broadcast") {
     const start = previous.segment * 2;
     activeProcessors([0, 1]);
+    showCommunication(previous);
     focusCells([`[data-x="${start}"]`, `[data-x="${start + 1}"]`], "focus-x");
     $("stepTitle").textContent = `Broadcast bloku x[${start}:${start + 2}]`;
     $("stepDetail").textContent = `Procesor P${previous.segment} odeslal svoji polovinu vektoru druh\u00e9mu procesoru.`;
@@ -879,11 +1033,12 @@ function renderSnapshot() {
   if (previous.type === "block-broadcast") {
     const start = previous.blockCol * 2;
     activeProcessors([previous.blockCol, previous.blockCol + 2]);
+    showCommunication(previous);
     focusCells([`[data-x="${start}"]`, `[data-x="${start + 1}"]`], "focus-x");
     $("stepTitle").textContent = `Broadcast bloku x[${start}:${start + 2}]`;
-    $("stepDetail").textContent = "Blok vektoru putuje pod\u00e9l sloupce procesorov\u00e9 m\u0159\u00ed\u017eky.";
-    $("explanation").innerHTML = `Procesory ve sloupci ${previous.blockCol} dostanou hodnoty <strong>[${x[start]}, ${x[start + 1]}]</strong>. Ty odpov\u00eddaj\u00ed sloupc\u016fm jejich blok\u016f matice A.`;
-    $("formula").innerHTML = `x[${start}:${start + 2}] = [${x[start]}, ${x[start + 1]}]`;
+    $("stepDetail").textContent = `P${previous.from} odesílá blok vektoru procesoru P${previous.to} podél sloupce ${previous.blockCol} procesorové mřížky.`;
+    $("explanation").innerHTML = `Horní procesor <strong>P${previous.from}</strong> posílá spodnímu procesoru <strong>P${previous.to}</strong> hodnoty <strong>[${x[start]}, ${x[start + 1]}]</strong>. Oba pak znají blok x odpovídající sloupcům jejich bloků matice A.`;
+    $("formula").innerHTML = `P${previous.from} &rarr; P${previous.to}: &nbsp; x[${start}:${start + 2}] = [${x[start]}, ${x[start + 1]}]`;
     return;
   }
 
@@ -916,13 +1071,14 @@ function renderSnapshot() {
     const left = blockPartial(blockRow, 0);
     const right = blockPartial(blockRow, 1);
     activeProcessors([blockRow * 2, blockRow * 2 + 1]);
+    showCommunication(previous);
     const first = blockRow * 2;
     document.querySelector(`[data-y="${first}"]`).classList.add("focus-y");
     document.querySelector(`[data-y="${first + 1}"]`).classList.add("focus-y");
     $("stepTitle").textContent = `Redukce mezisou\u010dt\u016f pro y[${first}:${first + 2}]`;
-    $("stepDetail").textContent = "Dva blokov\u00e9 meziv\u00fdsledky se po \u0159\u00e1dku procesor\u016f se\u010dtou.";
-    $("explanation").innerHTML = `Procesory spoj\u00ed sv\u00e9 lok\u00e1ln\u00ed v\u00fdsledky: <strong>[${left.join(", ")}] + [${right.join(", ")}]</strong>. Hotov\u00fd blok y je <strong class="accent">[${y[first]}, ${y[first + 1]}]</strong>.`;
-    $("formula").innerHTML = `y<sub>${blockRow}</sub> = [${left.join(", ")}] + [${right.join(", ")}]<br><span style="color:#86efac">= [${y[first]}, ${y[first + 1]}]</span>`;
+    $("stepDetail").textContent = `P${previous.from} posílá svůj mezisoučet procesoru P${previous.to}; ten oba bloky lokálně sečte.`;
+    $("explanation").innerHTML = `Pravý procesor <strong>P${previous.from}</strong> odešle <strong>[${right.join(", ")}]</strong> levému procesoru <strong>P${previous.to}</strong>. Ten už drží <strong>[${left.join(", ")}]</strong> a vytvoří hotový blok y: <strong class="accent">[${y[first]}, ${y[first + 1]}]</strong>.`;
+    $("formula").innerHTML = `P${previous.from} &rarr; P${previous.to}: [${right.join(", ")}]<br>y<sub>${blockRow}</sub> = [${left.join(", ")}] + [${right.join(", ")}] = <span style="color:#86efac">[${y[first]}, ${y[first + 1]}]</span>`;
     return;
   }
 
@@ -974,9 +1130,11 @@ async function animateAction(action) {
   const duration = speed();
   if (action.type === "broadcast") {
     const start = action.segment * 2;
-    const target = $(`cache-${1 - action.segment}`);
-    fly(document.querySelector(`[data-x="${start}"]`), target, `x${start}`, "#22d3ee", "flying-chip");
-    fly(document.querySelector(`[data-x="${start + 1}"]`), target, `x${start + 1}`, "#22d3ee", "flying-chip", 110);
+    showCommunication(action);
+    const source = $(`cache-${action.from}`);
+    const target = $(`cache-${action.to}`);
+    fly(source, target, `x${start}`, "#22d3ee", "flying-chip");
+    fly(source, target, `x${start + 1}`, "#22d3ee", "flying-chip", 110);
     await pause(duration + 150);
     return;
   }
@@ -998,9 +1156,11 @@ async function animateAction(action) {
 
   if (action.type === "block-broadcast") {
     const start = action.blockCol * 2;
-    const target = $(`cache-${action.blockCol + 2}`);
-    fly(document.querySelector(`[data-x="${start}"]`), target, `x${start}`, "#22d3ee", "flying-chip");
-    fly(document.querySelector(`[data-x="${start + 1}"]`), target, `x${start + 1}`, "#22d3ee", "flying-chip", 110);
+    showCommunication(action);
+    const source = $(`cache-${action.from}`);
+    const target = $(`cache-${action.to}`);
+    fly(source, target, `x${start}`, "#22d3ee", "flying-chip");
+    fly(source, target, `x${start + 1}`, "#22d3ee", "flying-chip", 110);
     await pause(duration + 150);
     return;
   }
@@ -1014,11 +1174,15 @@ async function animateAction(action) {
   }
 
   if (action.type === "block-reduce") {
-    const source = $(`out-${action.blockRow * 2 + 1}`);
+    showCommunication(action);
+    const source = $(`out-${action.from}`);
+    const target = $(`out-${action.to}`);
     const firstRow = action.blockRow * 2;
-    fly(source, document.querySelector(`[data-y="${firstRow}"]`), "\u03a3", "#4ade80");
-    fly(source, document.querySelector(`[data-y="${firstRow + 1}"]`), "\u03a3", "#4ade80", "", 100);
-    await pause(duration + 140);
+    fly(source, target, "\u03a3s", "#c084fc", "flying-chip");
+    await pause(duration + 80);
+    fly(target, document.querySelector(`[data-y="${firstRow}"]`), `y${firstRow}`, "#4ade80", "flying-chip");
+    fly(target, document.querySelector(`[data-y="${firstRow + 1}"]`), `y${firstRow + 1}`, "#4ade80", "flying-chip", 100);
+    await pause(duration + 120);
     return;
   }
 
