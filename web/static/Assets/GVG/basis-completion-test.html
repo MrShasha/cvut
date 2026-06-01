@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GVG - doplneni baze v R3</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    background: #14171c;
+    color: #e6edf3;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    padding: 14px;
+  }
+  button { font: inherit; }
+  .widget {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 12px;
+    min-height: 560px;
+  }
+  .scene, .panel {
+    border: 1px solid #343b46;
+    border-radius: 8px;
+    background: #1d222b;
+  }
+  .scene {
+    position: relative;
+    overflow: hidden;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 560px;
+  }
+  .grid { stroke: #2b313b; stroke-width: 1; }
+  .axis { stroke: #6b7280; stroke-width: 1.7; marker-end: url(#arrow); }
+  .basis-edge { stroke: rgba(148, 163, 184, 0.55); stroke-width: 2; stroke-dasharray: 5 5; }
+  .vector { stroke-width: 5; stroke-linecap: round; marker-end: url(#arrow); filter: drop-shadow(0 0 7px rgba(255,255,255,.15)); }
+  .v1 { stroke: #5eead4; }
+  .v2 { stroke: #93c5fd; }
+  .v3 { stroke: #fbbf24; }
+  .volume { fill: rgba(147, 197, 253, .14); stroke: rgba(147, 197, 253, .45); stroke-width: 1.5; }
+  text { fill: #cbd5e1; font-size: 13px; font-weight: 700; }
+  .label1 { fill: #5eead4; }
+  .label2 { fill: #93c5fd; }
+  .label3 { fill: #fbbf24; }
+  .panel {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  h1 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 18px;
+    line-height: 1.25;
+  }
+  .muted {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .choices {
+    display: grid;
+    gap: 8px;
+  }
+  .choice {
+    border: 1px solid #3c4655;
+    border-radius: 6px;
+    background: #252c37;
+    color: #e5e7eb;
+    padding: 8px 10px;
+    cursor: pointer;
+    text-align: left;
+  }
+  .choice:hover, .choice.active {
+    border-color: #60a5fa;
+    background: #17304e;
+  }
+  .stats {
+    display: grid;
+    gap: 8px;
+    margin-top: auto;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 1px solid #303743;
+    padding-bottom: 7px;
+    color: #aeb8c5;
+    font-size: 13px;
+  }
+  .row strong {
+    color: #f8fafc;
+    font-family: Consolas, monospace;
+    text-align: right;
+  }
+  .status {
+    border-radius: 7px;
+    padding: 10px;
+    background: rgba(34, 197, 94, .12);
+    color: #bbf7d0;
+    border: 1px solid rgba(34, 197, 94, .35);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .status.bad {
+    background: rgba(248, 113, 113, .12);
+    color: #fecaca;
+    border-color: rgba(248, 113, 113, .35);
+  }
+  @media (max-width: 780px) {
+    body { padding: 10px; }
+    .widget { grid-template-columns: 1fr; }
+    svg { min-height: 420px; }
+  }
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene" aria-label="Vizualizace baze v R3">
+    <svg id="scene" viewBox="0 0 760 560" role="img">
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L0,6 L8,3 z" fill="currentColor"></path>
+        </marker>
+      </defs>
+    </svg>
+  </section>
+  <aside class="panel">
+    <h1>Doplnění báze v R3</h1>
+    <p class="muted">Pevný je vektor b1 = (1, 1, 0). Vyber dvojici b2, b3 a sleduj, jestli vznikne nenulový objem rovnoběžnostěnu.</p>
+    <div class="choices" id="choices"></div>
+    <div class="stats">
+      <div class="row"><span>det[b1 b2 b3]</span><strong id="detVal">0</strong></div>
+      <div class="row"><span>rank</span><strong id="rankVal">0</strong></div>
+      <div class="status" id="statusBox">Vyber variantu.</div>
+    </div>
+  </aside>
+</main>
+
+<script>
+const options = [
+  {
+    label: 'Spravna baze',
+    b2: [0, 1, 0],
+    b3: [0, 0, 1],
+    note: 'Vektory nejsou v jedne rovine. Det je nenulovy, proto tvori bazi R3.'
+  },
+  {
+    label: 'Spatne: zavisle vektory',
+    b2: [2, 2, 0],
+    b3: [0, 0, 1],
+    note: 'b2 je jen nasobek b1. Jeden smer se opakuje, proto rank klesne.'
+  },
+  {
+    label: 'Spatne: vse v rovine z=0',
+    b2: [1, 0, 0],
+    b3: [0, 1, 0],
+    note: 'Vsechny tri vektory lezi v rovine z=0. Objem je nulovy.'
+  }
+];
+
+const b1 = [1, 1, 0];
+let selected = 0;
+
+const svg = document.getElementById('scene');
+const choices = document.getElementById('choices');
+const detVal = document.getElementById('detVal');
+const rankVal = document.getElementById('rankVal');
+const statusBox = document.getElementById('statusBox');
+
+function det3(a, b, c) {
+  return a[0] * (b[1] * c[2] - b[2] * c[1])
+    - b[0] * (a[1] * c[2] - a[2] * c[1])
+    + c[0] * (a[1] * b[2] - a[2] * b[1]);
+}
+
+function rankFromDet(det) {
+  return Math.abs(det) > 1e-9 ? 3 : 2;
+}
+
+function project([x, y, z]) {
+  const ox = 330;
+  const oy = 310;
+  const s = 116;
+  return [ox + (x - y) * s * 0.78, oy + (x + y) * s * 0.32 - z * s * 0.9];
+}
+
+function add(tag, attrs, parent = svg) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
+  parent.appendChild(el);
+  return el;
+}
+
+function line(a, b, cls) {
+  const [x1, y1] = project(a);
+  const [x2, y2] = project(b);
+  add('line', {x1, y1, x2, y2, class: cls});
+}
+
+function textAt(point, label, cls) {
+  const [x, y] = project(point);
+  add('text', {x: x + 8, y: y - 8, class: cls}, svg).textContent = label;
+}
+
+function drawGrid() {
+  for (let i = -2; i <= 2; i++) {
+    line([-2, i, 0], [2, i, 0], 'grid');
+    line([i, -2, 0], [i, 2, 0], 'grid');
+  }
+  line([0, 0, 0], [2.2, 0, 0], 'axis');
+  line([0, 0, 0], [0, 2.2, 0], 'axis');
+  line([0, 0, 0], [0, 0, 2.2], 'axis');
+  textAt([2.25, 0, 0], 'x', '');
+  textAt([0, 2.25, 0], 'y', '');
+  textAt([0, 0, 2.25], 'z', '');
+}
+
+function drawVolume(a, b, c) {
+  const pts = [
+    [0, 0, 0], a, b, c,
+    [a[0] + b[0], a[1] + b[1], a[2] + b[2]],
+    [a[0] + c[0], a[1] + c[1], a[2] + c[2]],
+    [b[0] + c[0], b[1] + c[1], b[2] + c[2]],
+    [a[0] + b[0] + c[0], a[1] + b[1] + c[1], a[2] + b[2] + c[2]]
+  ].map(project);
+  const faces = [[0,1,4,2], [0,1,5,3], [0,2,6,3], [7,4,1,5], [7,4,2,6], [7,5,3,6]];
+  for (const face of faces) {
+    add('polygon', {points: face.map(i => pts[i].join(',')).join(' '), class: 'volume'});
+  }
+}
+
+function render() {
+  svg.innerHTML = svg.querySelector('defs').outerHTML;
+  const opt = options[selected];
+  const d = det3(b1, opt.b2, opt.b3);
+  drawGrid();
+  if (Math.abs(d) > 1e-9) drawVolume(b1, opt.b2, opt.b3);
+  line([0, 0, 0], b1, 'vector v1');
+  line([0, 0, 0], opt.b2, 'vector v2');
+  line([0, 0, 0], opt.b3, 'vector v3');
+  textAt(b1, 'b1', 'label1');
+  textAt(opt.b2, 'b2', 'label2');
+  textAt(opt.b3, 'b3', 'label3');
+  detVal.textContent = d.toFixed(0);
+  rankVal.textContent = rankFromDet(d);
+  statusBox.textContent = opt.note;
+  statusBox.classList.toggle('bad', Math.abs(d) <= 1e-9);
+  [...choices.children].forEach((button, i) => button.classList.toggle('active', i === selected));
+}
+
+for (const [index, option] of options.entries()) {
+  const button = document.createElement('button');
+  button.className = 'choice';
+  button.type = 'button';
+  button.textContent = option.label;
+  button.addEventListener('click', () => {
+    selected = index;
+    render();
+  });
+  choices.appendChild(button);
+}
+
+render();
+</script>
+</body>
+</html>
