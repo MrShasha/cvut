@@ -34,7 +34,10 @@
     width: 100%;
     height: 100%;
     min-height: 560px;
+    cursor: grab;
+    touch-action: none;
   }
+  svg:active { cursor: grabbing; }
   .grid { stroke: #2b313b; stroke-width: 1; }
   .axis { stroke: #6b7280; stroke-width: 1.7; marker-end: url(#arrow); }
   .basis-edge { stroke: rgba(148, 163, 184, 0.55); stroke-width: 2; stroke-dasharray: 5 5; }
@@ -135,7 +138,7 @@
   </section>
   <aside class="panel">
     <h1>Doplnění báze v R3</h1>
-    <p class="muted">Pevný je vektor b1 = (1, 1, 0). Vyber dvojici b2, b3 a sleduj, jestli vznikne nenulový objem rovnoběžnostěnu.</p>
+    <p class="muted">Pevný je vektor b1 = (1, 1, 0). Vyber dvojici b2, b3 a sleduj, jestli vznikne nenulový objem rovnoběžnostěnu. Scénu otočíš tažením myší, dvojklik resetuje pohled.</p>
     <div class="choices" id="choices"></div>
     <div class="stats">
       <div class="row"><span>det[b1 b2 b3]</span><strong id="detVal">0</strong></div>
@@ -169,6 +172,10 @@ const options = [
 
 const b1 = [1, 1, 0];
 let selected = 0;
+let yaw = -0.74;
+let pitch = 0.58;
+let dragging = false;
+let lastPointer = null;
 
 const svg = document.getElementById('scene');
 const choices = document.getElementById('choices');
@@ -186,11 +193,23 @@ function rankFromDet(det) {
   return Math.abs(det) > 1e-9 ? 3 : 2;
 }
 
-function project([x, y, z]) {
+function rotatePoint([x, y, z]) {
+  const cy = Math.cos(yaw);
+  const sy = Math.sin(yaw);
+  const cp = Math.cos(pitch);
+  const sp = Math.sin(pitch);
+  const x1 = x * cy - y * sy;
+  const y1 = x * sy + y * cy;
+  const z1 = z;
+  return [x1, y1 * cp - z1 * sp, y1 * sp + z1 * cp];
+}
+
+function project(point) {
+  const [x, y, z] = rotatePoint(point);
   const ox = 330;
   const oy = 310;
   const s = 116;
-  return [ox + (x - y) * s * 0.78, oy + (x + y) * s * 0.32 - z * s * 0.9];
+  return [ox + x * s, oy - y * s - z * s * 0.18];
 }
 
 function add(tag, attrs, parent = svg) {
@@ -256,6 +275,39 @@ function render() {
   statusBox.classList.toggle('bad', Math.abs(d) <= 1e-9);
   [...choices.children].forEach((button, i) => button.classList.toggle('active', i === selected));
 }
+
+svg.addEventListener('pointerdown', (event) => {
+  dragging = true;
+  lastPointer = {x: event.clientX, y: event.clientY};
+  svg.setPointerCapture(event.pointerId);
+});
+
+svg.addEventListener('pointermove', (event) => {
+  if (!dragging || !lastPointer) return;
+  const dx = event.clientX - lastPointer.x;
+  const dy = event.clientY - lastPointer.y;
+  lastPointer = {x: event.clientX, y: event.clientY};
+  yaw += dx * 0.012;
+  pitch = Math.max(-1.25, Math.min(1.25, pitch + dy * 0.012));
+  render();
+});
+
+svg.addEventListener('pointerup', (event) => {
+  dragging = false;
+  lastPointer = null;
+  svg.releasePointerCapture(event.pointerId);
+});
+
+svg.addEventListener('pointercancel', () => {
+  dragging = false;
+  lastPointer = null;
+});
+
+svg.addEventListener('dblclick', () => {
+  yaw = -0.74;
+  pitch = 0.58;
+  render();
+});
 
 for (const [index, option] of options.entries()) {
   const button = document.createElement('button');
