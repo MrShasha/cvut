@@ -116,6 +116,28 @@
     font-family: Consolas, monospace;
     text-align: right;
   }
+  .legend {
+    display: grid;
+    gap: 6px;
+    padding: 10px;
+    border: 1px solid #303743;
+    border-radius: 7px;
+    background: #171c24;
+    color: #aeb8c5;
+    font-size: 13px;
+  }
+  .legend span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .swatch {
+    display: inline-block;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
   .status {
     border-radius: 7px;
     padding: 10px;
@@ -146,6 +168,14 @@
   <aside class="panel">
     <h1>Doplnění báze v R3</h1>
     <p class="muted">Pevný je vektor b1 = (1, 1, 0). Vyber dvojici b2, b3 a sleduj, jestli vznikne nenulový objem rovnoběžnostěnu.</p>
+    <div class="legend" aria-label="Legenda">
+      <span><i class="swatch" style="background:#ef4444"></i>osa x</span>
+      <span><i class="swatch" style="background:#22c55e"></i>osa y</span>
+      <span><i class="swatch" style="background:#60a5fa"></i>osa z</span>
+      <span><i class="swatch" style="background:#5eead4"></i>b1 = (1, 1, 0)</span>
+      <span><i class="swatch" style="background:#93c5fd"></i>b2</span>
+      <span><i class="swatch" style="background:#fbbf24"></i>b3</span>
+    </div>
     <div class="choices" id="choices"></div>
     <div class="stats">
       <div class="row"><span>det[b1 b2 b3]</span><strong id="detVal">0</strong></div>
@@ -190,6 +220,7 @@ const choices = document.getElementById('choices');
 const detVal = document.getElementById('detVal');
 const rankVal = document.getElementById('rankVal');
 const statusBox = document.getElementById('statusBox');
+const labelObjects = [];
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -227,6 +258,48 @@ scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0,
 scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), axisLength, 0x22c55e, 0.18, 0.1));
 scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), axisLength, 0x60a5fa, 0.18, 0.1));
 
+function makeLabel(text, color) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 192;
+  canvas.height = 64;
+  const ctx = canvas.getContext('2d');
+  ctx.font = '700 32px Segoe UI, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(20, 23, 28, 0.82)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+  roundRect(ctx, 42, 10, 108, 44, 10);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = color;
+  ctx.fillText(text, 96, 33);
+  const texture = new THREE.CanvasTexture(canvas);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true }));
+  sprite.scale.set(0.72, 0.24, 1);
+  labelObjects.push(sprite);
+  return sprite;
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, radius);
+  ctx.arcTo(x + width, y + height, x, y + height, radius);
+  ctx.arcTo(x, y + height, x, y, radius);
+  ctx.arcTo(x, y, x + width, y, radius);
+  ctx.closePath();
+}
+
+const xLabel = makeLabel('x', '#fecaca');
+xLabel.position.set(axisLength + 0.34, 0, 0);
+scene.add(xLabel);
+const yLabel = makeLabel('y', '#bbf7d0');
+yLabel.position.set(0, axisLength + 0.34, 0);
+scene.add(yLabel);
+const zLabel = makeLabel('z', '#bfdbfe');
+zLabel.position.set(0, 0, axisLength + 0.34);
+scene.add(zLabel);
+
 function det3(a, b, c) {
   return a[0] * (b[1] * c[2] - b[2] * c[1])
     - b[0] * (a[1] * c[2] - a[2] * c[1])
@@ -253,6 +326,12 @@ function addSphere(group, values, color, radius = 0.065) {
   );
   mesh.position.copy(vector(values));
   group.add(mesh);
+}
+
+function addVectorLabel(group, values, text, color) {
+  const label = makeLabel(text, color);
+  label.position.copy(vector(values).multiplyScalar(1.08));
+  group.add(label);
 }
 
 function addParallelepiped(group, a, b, c) {
@@ -316,6 +395,9 @@ function rebuild() {
   addSphere(graphGroup, b1, 0x5eead4);
   addSphere(graphGroup, opt.b2, 0x93c5fd);
   addSphere(graphGroup, opt.b3, 0xfbbf24);
+  addVectorLabel(graphGroup, b1, 'b1', '#99f6e4');
+  addVectorLabel(graphGroup, opt.b2, 'b2', '#bfdbfe');
+  addVectorLabel(graphGroup, opt.b3, 'b3', '#fde68a');
   scene.add(graphGroup);
 
   detVal.textContent = det.toFixed(0);
