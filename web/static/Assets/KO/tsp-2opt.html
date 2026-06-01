@@ -11,16 +11,16 @@
 </head>
 <body>
 <div class="topbar"><div><div class="eyebrow">Lokalni hledani</div><h1>2-OPT: odstraneni krizeni hran</h1></div><button class="btn" id="toggle">Ukaz 2-OPT</button></div>
-<div class="layout"><main class="scene"><svg id="svg" viewBox="0 0 760 390"></svg><div class="caption" id="caption"></div></main><aside class="side"><section class="panel"><div class="panel-title">Hrany</div><p class="note">Cisla primo v grafu jsou delky hran. Cervene hrany jsou dve odstranene hrany, zelene jsou nove hrany po 2-OPT.</p></section><section class="panel"><div class="panel-title">Princip</div><p class="note">2-OPT odebere dve hrany a obrati segment mezi nimi. U euklidovskeho TSP odstraneni krizeni tour zkrati.</p></section></aside></div>
+<div class="layout"><main class="scene"><svg id="svg" viewBox="0 0 760 390"></svg><div class="caption" id="caption"></div></main><aside class="side"><section class="panel"><div class="panel-title">Hrany</div><p class="note">Cervene hrany B-C a E-F odstraníme. Zelene hrany B-E a C-F pridame po 2-OPT.</p></section><section class="panel"><div class="panel-title">Reversal</div><p class="note">Segment C-D-E se pri novem propojeni projde opacne: E-D-C. To je presne otoceni segmentu v 2-OPT.</p></section></aside></div>
 <script>
-const pts={A:[150,80],B:[610,305],C:[150,305],D:[610,80]};
-const weights={"A-B":10,"B-C":8,"C-D":10,"D-A":8,"A-C":5,"C-B":8,"B-D":5};
+const pts={A:[92,200],B:[220,82],C:[355,96],D:[458,200],E:[355,304],F:[220,318]};
+const weights={"A-B":4,"B-C":9,"C-D":4,"D-E":4,"E-F":9,"F-A":4,"B-E":5,"C-F":5};
 let improved=false;const svg=document.getElementById("svg"),caption=document.getElementById("caption"),btn=document.getElementById("toggle");
 function key(u,v){return weights[`${u}-${v}`]!==undefined?`${u}-${v}`:`${v}-${u}`}
 function edge(u,v,cls=""){const [x1,y1]=pts[u],[x2,y2]=pts[v];return `<line class="edge ${cls}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`}
 function weight(u,v){const [x1,y1]=pts[u],[x2,y2]=pts[v],x=(x1+x2)/2,y=(y1+y2)/2,w=weights[key(u,v)];return `<g class="weight"><rect x="${x-12}" y="${y-10}" width="24" height="20"/><text x="${x}" y="${y+1}">${w}</text></g>`}
 function node(id){const [x,y]=pts[id];return `<g class="node"><circle cx="${x}" cy="${y}" r="18"/><text x="${x}" y="${y+1}">${id}</text></g>`}
-function draw(){svg.innerHTML="";const edges=!improved?[["A","B"],["B","C"],["C","D"],["D","A"]]:[["A","C"],["C","B"],["B","D"],["D","A"]];edges.forEach(e=>svg.insertAdjacentHTML("beforeend",edge(e[0],e[1],!improved&&((e[0]==="A"&&e[1]==="B")||(e[0]==="C"&&e[1]==="D"))?"bad":improved&&((e[0]==="A"&&e[1]==="C")||(e[0]==="B"&&e[1]==="D"))?"good":"")));edges.forEach(e=>svg.insertAdjacentHTML("beforeend",weight(e[0],e[1])));caption.textContent=!improved?"Puvodni tour obsahuje dve krizici se hrany A-B a C-D. Tyto dve hrany odebereme.":"Po 2-OPT pridame hrany A-C a B-D. Segment B-C se obrati, krizeni zmizi a tour je kratsi.";btn.textContent=improved?"Zpet":"Ukaz 2-OPT";Object.keys(pts).forEach(id=>svg.insertAdjacentHTML("beforeend",node(id)))}
+function draw(){svg.innerHTML="";const edges=!improved?[["A","B"],["B","C"],["C","D"],["D","E"],["E","F"],["F","A"]]:[["A","B"],["B","E"],["E","D"],["D","C"],["C","F"],["F","A"]];edges.forEach(e=>svg.insertAdjacentHTML("beforeend",edge(e[0],e[1],!improved&&((e[0]==="B"&&e[1]==="C")||(e[0]==="E"&&e[1]==="F"))?"bad":improved&&((e[0]==="B"&&e[1]==="E")||(e[0]==="C"&&e[1]==="F"))?"good":"")));edges.forEach(e=>svg.insertAdjacentHTML("beforeend",weight(e[0],e[1])));caption.textContent=!improved?"Puvodni tour: A -> B -> C -> D -> E -> F -> A. Vybereme hrany B-C a E-F k odstraneni.":"Po 2-OPT: A -> B -> E -> D -> C -> F -> A. Segment C-D-E se otocil na E-D-C.";btn.textContent=improved?"Zpet":"Ukaz 2-OPT";Object.keys(pts).forEach(id=>svg.insertAdjacentHTML("beforeend",node(id)))}
 btn.onclick=()=>{improved=!improved;draw()};draw();
 </script>
 </body>
