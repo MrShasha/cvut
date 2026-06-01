@@ -442,10 +442,10 @@ const OPS = {
   scatter:{
     label:"Scatter",short:"unikátní díl pro každého",
     subtitle:"Kořen rozdělí velký blok m slov; každý dostane svůj díl m/p.",
-    formulas:{ring:"T = t_s·log₂p + t_w·m·(p−1)/p",hyper:"T = t_s·log₂p + t_w·m·(p−1)/p",mesh:"T = t_s·log₂p + t_w·m·(p−1)/p"},
+    formulas:{ring:"T = t_s·log₂p + t_w·m·(p−1)",hyper:"T = t_s·log₂p + t_w·m·(p−1)",mesh:"T = t_s·log₂p + t_w·m·(p−1)"},
     intuitions:{ring:"Kořen posílá podstromům pouze bloky, které v nich skončí.",hyper:"V každém kole se balík půlí a polovina jde jinému.",mesh:"Kořen rozděluje bloky po vrstvách směrovacího stromu."},
-    costs:(ts,tw,m,p)=>({ring:ts*Math.log2(p)+tw*m,hyper:ts*Math.log2(p)+tw*m,mesh:ts*Math.log2(p)+tw*m}),
-    rounds:(p,topo)=>topo==="ring"?Math.ceil(p/2):topo==="mesh"?2*(Math.ceil(Math.sqrt(p))-1):Math.log2(p), words:m=>m,
+    costs:(ts,tw,m,p)=>({ring:ts*Math.log2(p)+tw*m*(p-1),hyper:ts*Math.log2(p)+tw*m*(p-1),mesh:ts*Math.log2(p)+tw*m*(p-1)}),
+    rounds:(p,topo)=>topo==="ring"?Math.ceil(p/2):topo==="mesh"?2*(Math.ceil(Math.sqrt(p))-1):Math.log2(p), words:(m,p)=>m*(p-1),
     build(topo){
       const tree=bfsTree(topo),evs=[];
       for(let depth=1;depth<=tree.maxDepth;depth++){
