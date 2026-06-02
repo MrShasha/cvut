@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GVG - prunik dvou podprostoru v R3</title>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: #14171c;
+    color: #e6edf3;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    padding: 14px;
+    overflow: hidden;
+  }
+  button { font: inherit; }
+  .widget {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    gap: 12px;
+    height: 100%;
+    min-height: 650px;
+  }
+  .scene, .panel {
+    border: 1px solid #343b46;
+    border-radius: 8px;
+    background: #1d222b;
+  }
+  .scene {
+    position: relative;
+    overflow: hidden;
+  }
+  .scene canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    cursor: grab;
+  }
+  .scene canvas:active { cursor: grabbing; }
+  .hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    color: rgba(203, 213, 225, .55);
+    font-size: 12px;
+    text-align: center;
+    pointer-events: none;
+    user-select: none;
+  }
+  .loader {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #1d222b;
+    color: #94a3b8;
+    z-index: 2;
+  }
+  .panel {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
+  h1 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 18px;
+    line-height: 1.25;
+  }
+  .muted {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+  .tab {
+    border: 1px solid #3c4655;
+    border-radius: 6px;
+    background: #252c37;
+    color: #e5e7eb;
+    padding: 8px 6px;
+    cursor: pointer;
+  }
+  .tab:hover, .tab.active {
+    border-color: #60a5fa;
+    background: #17304e;
+  }
+  .card {
+    border: 1px solid #303743;
+    border-radius: 7px;
+    background: #171c24;
+    padding: 10px;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .formula {
+    margin-top: 6px;
+    color: #f8fafc;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    word-break: break-word;
+  }
+  .legend {
+    display: grid;
+    gap: 7px;
+  }
+  .legend span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .swatch {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+  .result {
+    margin-top: auto;
+    border-radius: 7px;
+    padding: 10px;
+    background: rgba(34, 197, 94, .12);
+    color: #bbf7d0;
+    border: 1px solid rgba(34, 197, 94, .35);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  @media (max-width: 860px) {
+    body { padding: 10px; overflow: auto; }
+    .widget { grid-template-columns: 1fr; height: auto; }
+    .scene { min-height: 520px; }
+  }
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene" id="sceneWrap" aria-label="Prunik dvou rovin v R3">
+    <div class="loader" id="loader">Načítám Three.js...</div>
+    <div class="hint">Táhni = rotace | Scroll = zoom | Pravé tlačítko = posun</div>
+  </section>
+  <aside class="panel">
+    <h1>Průnik dvou podprostorů v R3</h1>
+    <p class="muted">Dvě dvojice vektorů generují dvě roviny procházející počátkem. Jejich společná část je přímka.</p>
+
+    <div class="tabs" aria-label="Režim zobrazení">
+      <button class="tab active" type="button" data-mode="assignment">Zadání</button>
+      <button class="tab" type="button" data-mode="solution">Řešení</button>
+      <button class="tab" type="button" data-mode="both">Obojí</button>
+    </div>
+
+    <div class="card">
+      <strong>Zadání</strong>
+      <div class="formula">
+        U = span((1,0,1), (0,1,1))<br>
+        V = span((0,0,1), (1,1,0))
+      </div>
+    </div>
+
+    <div class="card legend">
+      <span><i class="swatch" style="background:#38bdf8"></i>rovina U, tedy z = x + y</span>
+      <span><i class="swatch" style="background:#f59e0b"></i>rovina V, tedy y = x</span>
+      <span><i class="swatch" style="background:#22c55e"></i>průnik L = span((1,1,2))</span>
+      <span><i class="swatch" style="background:#e5e7eb"></i>bázové vektory rovin</span>
+    </div>
+
+    <div class="card">
+      <strong>Myšlenka řešení</strong>
+      <div class="formula">
+        a(1,0,1) + b(0,1,1)<br>
+        = c(0,0,1) + d(1,1,0)<br><br>
+        a = d, b = d, c = 2d
+      </div>
+    </div>
+
+    <div class="result">
+      Výsledek: průnik je jednorozměrný podprostor
+      <span class="formula">L = { d(1,1,2) | d ∈ R }</span>
+    </div>
+  </aside>
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const COLORS = {
+  uPlane: 0x38bdf8,
+  vPlane: 0xf59e0b,
+  line: 0x22c55e,
+  vector: 0xe5e7eb,
+  x: 0xef4444,
+  y: 0x22c55e,
+  z: 0x60a5fa,
+};
+
+const data = {
+  u1: new THREE.Vector3(1, 0, 1),
+  u2: new THREE.Vector3(0, 1, 1),
+  v1: new THREE.Vector3(0, 0, 1),
+  v2: new THREE.Vector3(1, 1, 0),
+  intersection: new THREE.Vector3(1, 1, 2),
+};
+
+let mode = 'assignment';
+let graphGroup = null;
+
+const wrap = document.getElementById('sceneWrap');
+const loader = document.getElementById('loader');
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x14171c);
+wrap.appendChild(renderer.domElement);
+loader.style.display = 'none';
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x14171c, 0.035);
+
+const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
+camera.position.set(5.5, 4.5, 6.5);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(0, 0, 0.55);
+controls.minDistance = 3;
+controls.maxDistance = 18;
+
+scene.add(new THREE.AmbientLight(0x7b879b, 3));
+const key = new THREE.DirectionalLight(0xffffff, 2.5);
+key.position.set(5, 7, 6);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x93c5fd, 1.1);
+fill.position.set(-4, 2, -5);
+scene.add(fill);
+
+const grid = new THREE.GridHelper(8, 16, 0x475569, 0x27313f);
+grid.position.set(0, 0, 0);
+scene.add(grid);
+
+const axisLength = 3.2;
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), axisLength, COLORS.x, 0.2, 0.1));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), axisLength, COLORS.y, 0.2, 0.1));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), axisLength, COLORS.z, 0.2, 0.1));
+
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, radius);
+  ctx.arcTo(x + width, y + height, x, y + height, radius);
+  ctx.arcTo(x, y + height, x, y, radius);
+  ctx.arcTo(x, y, x + width, y, radius);
+  ctx.closePath();
+}
+
+function labelSprite(text, color = '#e5e7eb') {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 72;
+  const ctx = canvas.getContext('2d');
+  ctx.font = '700 30px Segoe UI, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(20, 23, 28, 0.82)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+  roundRect(ctx, 28, 9, 200, 54, 10);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = color;
+  ctx.fillText(text, 128, 37);
+  const texture = new THREE.CanvasTexture(canvas);
+  const material = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true,
+    depthTest: false,
+    depthWrite: false,
+  });
+  const sprite = new THREE.Sprite(material);
+  sprite.scale.set(0.95, 0.27, 1);
+  sprite.renderOrder = 30;
+  return sprite;
+}
+
+function addLabel(group, text, position, color) {
+  const sprite = labelSprite(text, color);
+  sprite.position.copy(position);
+  group.add(sprite);
+}
+
+function addVector(group, vector, color, label) {
+  const length = vector.length();
+  const arrow = new THREE.ArrowHelper(vector.clone().normalize(), new THREE.Vector3(0, 0, 0), length, color, 0.18, 0.1);
+  group.add(arrow);
+  addLabel(group, label, vector.clone().multiplyScalar(1.18).add(new THREE.Vector3(0, 0, 0.14)), '#f8fafc');
+}
+
+function addLineThroughOrigin(group, direction, color, label) {
+  const dir = direction.clone().normalize();
+  const len = 3.1;
+  const points = [dir.clone().multiplyScalar(-len), dir.clone().multiplyScalar(len)];
+  const geometry = new THREE.BufferGeometry().setFromPoints(points);
+  const material = new THREE.LineBasicMaterial({ color, linewidth: 4 });
+  group.add(new THREE.Line(geometry, material));
+  group.add(new THREE.ArrowHelper(dir, new THREE.Vector3(0, 0, 0), len, color, 0.22, 0.12));
+  group.add(new THREE.ArrowHelper(dir.clone().negate(), new THREE.Vector3(0, 0, 0), len, color, 0.22, 0.12));
+  addLabel(group, label, dir.clone().multiplyScalar(len + 0.35), '#bbf7d0');
+}
+
+function addPlane(group, a, b, color, opacity) {
+  const scale = 1.35;
+  const corners = [
+    a.clone().multiplyScalar(-scale).add(b.clone().multiplyScalar(-scale)),
+    a.clone().multiplyScalar(scale).add(b.clone().multiplyScalar(-scale)),
+    a.clone().multiplyScalar(scale).add(b.clone().multiplyScalar(scale)),
+    a.clone().multiplyScalar(-scale).add(b.clone().multiplyScalar(scale)),
+  ];
+  const geometry = new THREE.BufferGeometry().setFromPoints(corners);
+  geometry.setIndex([0, 1, 2, 0, 2, 3]);
+  geometry.computeVertexNormals();
+  const material = new THREE.MeshStandardMaterial({
+    color,
+    transparent: true,
+    opacity,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    roughness: 0.78,
+    metalness: 0.04,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.renderOrder = 1;
+  group.add(mesh);
+
+  const edges = new THREE.EdgesGeometry(geometry);
+  const edgeLines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.9 }));
+  edgeLines.renderOrder = 2;
+  group.add(edgeLines);
+}
+
+function clearGraph() {
+  if (!graphGroup) return;
+  graphGroup.traverse((object) => {
+    object.geometry?.dispose?.();
+    if (Array.isArray(object.material)) object.material.forEach((mat) => mat.dispose?.());
+    else object.material?.dispose?.();
+  });
+  scene.remove(graphGroup);
+}
+
+function rebuild() {
+  clearGraph();
+  graphGroup = new THREE.Group();
+
+  const showAssignment = mode === 'assignment' || mode === 'both';
+  const showSolution = mode === 'solution' || mode === 'both';
+
+  addPlane(graphGroup, data.u1, data.u2, COLORS.uPlane, showSolution ? 0.16 : 0.27);
+  addPlane(graphGroup, data.v1, data.v2, COLORS.vPlane, showSolution ? 0.16 : 0.27);
+
+  if (showAssignment) {
+    addVector(graphGroup, data.u1, COLORS.vector, 'u1');
+    addVector(graphGroup, data.u2, COLORS.vector, 'u2');
+    addVector(graphGroup, data.v1, 0xfde68a, 'v1');
+    addVector(graphGroup, data.v2, 0xfde68a, 'v2');
+    addLabel(graphGroup, 'U = span(u1,u2)', new THREE.Vector3(-1.85, 0.15, 2.28), '#bae6fd');
+    addLabel(graphGroup, 'V = span(v1,v2)', new THREE.Vector3(1.82, 1.82, 0.42), '#fde68a');
+  }
+
+  if (showSolution) {
+    addLineThroughOrigin(graphGroup, data.intersection, COLORS.line, 'L = span(1,1,2)');
+  }
+
+  scene.add(graphGroup);
+}
+
+function resize() {
+  const rect = wrap.getBoundingClientRect();
+  renderer.setSize(Math.max(1, rect.width), Math.max(1, rect.height), false);
+  camera.aspect = Math.max(1, rect.width) / Math.max(1, rect.height);
+  camera.updateProjectionMatrix();
+}
+
+for (const button of document.querySelectorAll('.tab')) {
+  button.addEventListener('click', () => {
+    mode = button.dataset.mode;
+    document.querySelectorAll('.tab').forEach((tab) => tab.classList.toggle('active', tab === button));
+    rebuild();
+  });
+}
+
+const axisLabels = new THREE.Group();
+addLabel(axisLabels, 'x', new THREE.Vector3(axisLength + 0.35, 0, 0), '#fecaca');
+addLabel(axisLabels, 'y', new THREE.Vector3(0, axisLength + 0.35, 0), '#bbf7d0');
+addLabel(axisLabels, 'z', new THREE.Vector3(0, 0, axisLength + 0.35), '#bfdbfe');
+scene.add(axisLabels);
+
+window.addEventListener('resize', resize);
+resize();
+rebuild();
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+</body>
+</html>

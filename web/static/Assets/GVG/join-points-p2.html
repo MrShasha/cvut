@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GVG - join dvou bodu v P2</title>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#14171c;color:#e6edf3;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{display:grid;grid-template-columns:minmax(0,1fr)330px;gap:12px;height:100%;min-height:0}.scene,.panel{border:1px solid #343b46;border-radius:8px;background:#1d222b}.scene{position:relative;overflow:hidden}.scene canvas{display:block;width:100%!important;height:100%!important;cursor:grab}.scene canvas:active{cursor:grabbing}.hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:rgba(203,213,225,.56);font-size:12px;pointer-events:none}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{margin:0;color:#f8fafc;font-size:18px;line-height:1.25}.muted{margin:0;color:#9ca3af;font-size:13px;line-height:1.45}.card{border:1px solid #303743;border-radius:7px;background:#171c24;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:6px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.legend{display:grid;gap:7px}.legend span{display:flex;align-items:center;gap:8px}.swatch{width:11px;height:11px;border-radius:50%;flex:0 0 auto}.result{margin-top:auto;border-radius:7px;padding:10px;background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.35);font-size:13px;line-height:1.45}@media(max-width:860px){body{overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene{min-height:540px}}
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene" id="scene"><div class="hint">Tahni = rotace | Scroll = zoom | Prave tlacitko = posun</div></section>
+  <aside class="panel">
+    <h1>Join dvou bodu v P2</h1>
+    <p class="muted">Kazdy bod v obraze je paprsek z C. Dva body x1 a x2 urcuji rovinu paprsku; jeji rez s obrazovou rovinou je hledana primka l.</p>
+    <div class="card"><strong>Zadani</strong><span class="formula">x1=(1,1) -> [1,1,1]^T<br>x2=(2,1) -> [2,1,1]^T</span></div>
+    <div class="card legend">
+      <span><i class="swatch" style="background:#38bdf8"></i>modra rovina: obraz A2, w=1</span>
+      <span><i class="swatch" style="background:#22c55e"></i>paprsky bodu x1 a x2</span>
+      <span><i class="swatch" style="background:#f59e0b"></i>rovina span(x1,x2)</span>
+      <span><i class="swatch" style="background:#ef4444"></i>rez v obraze: l</span>
+    </div>
+    <div class="card"><strong>Vypocet</strong><span class="formula">l = x1 x x2<br>[1,1,1]^T x [2,1,1]^T = [0,1,-1]^T</span></div>
+    <div class="result">Rovnice primky je 0u + v - 1 = 0, tedy v=1.</div>
+  </aside>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const host=document.getElementById('scene');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x14171c);
+const camera=new THREE.PerspectiveCamera(45,1,.1,100);camera.position.set(4.8,3.8,4.8);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));host.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.target.set(.7,.55,.75);controls.minDistance=3;controls.maxDistance=15;
+scene.add(new THREE.AmbientLight(0xffffff,.78));const light=new THREE.DirectionalLight(0xffffff,.9);light.position.set(4,5,6);scene.add(light);
+const group=new THREE.Group();scene.add(group);
+function rounded(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+function makeLabel(text,color='#e5e7eb'){const c=document.createElement('canvas');c.width=370;c.height=76;const ctx=c.getContext('2d');ctx.font='700 24px Segoe UI, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='rgba(20,23,28,.84)';ctx.strokeStyle='rgba(255,255,255,.18)';rounded(ctx,12,8,346,58,10);ctx.fill();ctx.stroke();ctx.fillStyle=color;ctx.fillText(text,185,39);const tex=new THREE.CanvasTexture(c);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false}));s.scale.set(1.26,.26,1);s.renderOrder=50;return s}
+function label(t,p,c){const s=makeLabel(t,c);s.position.copy(p);group.add(s)}
+function plane(pts,color,op,name,pos){const geo=new THREE.BufferGeometry().setFromPoints(pts);geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();group.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,transparent:true,opacity:op,side:THREE.DoubleSide,depthWrite:false})));group.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color,transparent:true,opacity:.92})));if(name)label(name,pos,'#f8fafc')}
+function line(a,b,color,dashed=false){const geo=new THREE.BufferGeometry().setFromPoints([a,b]);const mat=dashed?new THREE.LineDashedMaterial({color,dashSize:.16,gapSize:.1,transparent:true,opacity:.85}):new THREE.LineBasicMaterial({color});const l=new THREE.Line(geo,mat);if(dashed)l.computeLineDistances();group.add(l)}
+function sphere(p,color,name){const m=new THREE.Mesh(new THREE.SphereGeometry(.08,28,16),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.18}));m.position.copy(p);group.add(m);if(name)label(name,p.clone().add(new THREE.Vector3(.18,.14,.12)),'#f8fafc')}
+function draw(){const C=new THREE.Vector3(0,0,0),x1=new THREE.Vector3(1,1,1),x2=new THREE.Vector3(2,1,1);plane([new THREE.Vector3(-.75,-.75,1),new THREE.Vector3(2.45,-.75,1),new THREE.Vector3(2.45,2,1),new THREE.Vector3(-.75,2,1)],0x38bdf8,.16,'A2: w=1',new THREE.Vector3(2.05,2.16,1));plane([C,x1,x1.clone().add(x2),x2],0xf59e0b,.16,'span(x1,x2)',new THREE.Vector3(1.25,.55,.72));line(C,x1,0x22c55e);line(C,x2,0x22c55e);line(C,x1.clone().multiplyScalar(1.2),0x22c55e,true);line(C,x2.clone().multiplyScalar(1.1),0x22c55e,true);line(new THREE.Vector3(-.65,1,1),new THREE.Vector3(2.35,1,1),0xef4444);sphere(C,0x3b82f6,'C');sphere(x1,0x22c55e,'x1=[1,1,1]');sphere(x2,0xf59e0b,'x2=[2,1,1]');label('l: v=1',new THREE.Vector3(2.0,1.15,1.05),'#fecaca');label('x1 x x2 = l',new THREE.Vector3(.62,.18,.42),'#fef3c7');group.add(new THREE.GridHelper(4.6,8,0x334155,0x26303c))}
+draw();
+function resize(){const r=host.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix()}window.addEventListener('resize',resize);resize();function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
+</script>
+</body>
+</html>

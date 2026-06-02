@@ -1,0 +1,227 @@
+<div class="skiplist-widget" style="font-family: var(--ifm-font-family-base); color: #e3e3e3; background-color: #1e1e1e; border: 1px solid #444; border-radius: 8px; padding: 20px; max-width: 1000px; margin: 20px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+    
+    <style>
+        .skiplist-widget button { background: #333; color: white; border: 1px solid #555; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background 0.2s; }
+        .skiplist-widget button:hover { background: #444; }
+        .skiplist-widget input[type="range"] { vertical-align: middle; }
+        .skiplist-widget .stat-box { font-family: 'Courier New', Courier, monospace; font-size: 13px; color: #aaa; margin: 4px 0; }
+        .skiplist-widget .highlight-path { stroke: #ffeb3b; stroke-width: 3; stroke-dasharray: none; }
+    </style>
+
+    <h3 style="margin-top: 0; color: white;">Pravděpodobnostní Vyhledávání ve Skip Listu</h3>
+    
+    <div style="display: flex; gap: 20px; margin-bottom: 15px; align-items: center; border-bottom: 1px solid #444; padding-bottom: 15px; flex-wrap: wrap;">
+        <div>
+            <label>Pravděpodobnost $p$: </label>
+            <input type="range" id="prob-slider" min="0.25" max="0.75" step="0.05" value="0.5">
+            <span id="prob-val">0.50</span>
+        </div>
+        <button id="regen-list-btn">Vygenerovat novou strukturu</button>
+        <div style="margin-left: auto;">
+            <label>Hledat klíč: </label>
+            <input type="number" id="search-key-input" value="42" style="width: 60px; background: #333; color: #fff; border: 1px solid #555; padding: 4px; border-radius: 4px;">
+            <button id="find-btn" style="background: #2196F3;">Vyhledat</button>
+        </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="overflow-x: auto; background: #252525; border: 1px solid #444; border-radius: 4px; padding: 10px;">
+            <svg id="skiplist-svg" width="900" height="220" style="background: #252525;">
+                </svg>
+        </div>
+
+        <div style="background: #2a2a2a; padding: 15px; border-radius: 4px; border: 1px solid #444;">
+            <p style="font-size: 15px; color: white; margin-top: 0; margin-bottom: 10px;"><strong>Matematické ověření efektivity indexu</strong></p>
+            <div id="skiplist-math-content"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const svg = document.getElementById('skiplist-svg');
+            const mathContent = document.getElementById('skiplist-math-content');
+            const probSlider = document.getElementById('prob-slider');
+            const probVal = document.getElementById('prob-val');
+            
+            let p_prob = 0.5;
+            const maxLevels = 5;
+            let nodes = [];
+            let searchSteps = [];
+
+            function generateList() {
+                // Fixní sada seřazených klíčů pro konzistentní vizualizaci distribuce výšek
+                const staticKeys = [10, 18, 24, 32, 42, 57, 63, 75, 88, 99];
+                nodes = [];
+                
+                // Přidání hlavičky (Header)
+                nodes.push({ key: 'H', levels: maxLevels });
+
+                // Vygenerování výšek na základě geometrického rozdělení
+                staticKeys.forEach(k => {
+                    let lvl = 1;
+                    while (Math.random() < p_prob && lvl < maxLevels) {
+                        lvl++;
+                    }
+                    nodes.push({ key: k, levels: lvl });
+                });
+                searchSteps = [];
+                render();
+            }
+
+            function render() {
+                while (svg.firstChild) svg.removeChild(svg.firstChild);
+                
+                const xStep = 75;
+                const yStep = 30;
+                const startY = 180;
+                const radius = 16;
+
+                // Vykreslení horizontálních spojení pro každou hladinu zvlášť
+                for (let l = 0; l < maxLevels; l++) {
+                    let lastX = 40;
+                    let active = false;
+
+                    for (let i = 0; i < nodes.length; i++) {
+                        const nodeX = 40 + i * xStep;
+                        const nodeY = startY - l * yStep;
+
+                        if (nodes[i].levels > l) {
+                            if (active) {
+                                // Kontrola, zda linka patří do aktivní vyhledávací cesty
+                                const isPath = isLinkInSearch(i - 1, i, l);
+                                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                                line.setAttribute("x1", lastX); line.setAttribute("y1", nodeY);
+                                line.setAttribute("x2", nodeX); line.setAttribute("y2", nodeY);
+                                line.setAttribute("stroke", isPath ? "#ffeb3b" : "#444");
+                                line.setAttribute("stroke-width", isPath ? "3" : "1.5");
+                                svg.appendChild(line);
+                            }
+                            lastX = nodeX;
+                            active = true;
+                        }
+                    }
+                }
+
+                // Vykreslení vertikálních sestupů vyhledávání
+                searchSteps.forEach(step => {
+                    if (step.type === 'down') {
+                        const nodeX = 40 + step.nodeIdx * xStep;
+                        const y1 = startY - step.fromL * yStep;
+                        const y2 = startY - step.toL * yStep;
+                        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                        line.setAttribute("x1", nodeX); line.setAttribute("y1", y1);
+                        line.setAttribute("x2", nodeX); line.setAttribute("y2", y2);
+                        line.setAttribute("class", "highlight-path");
+                        svg.appendChild(line);
+                    }
+                });
+
+                // Vykreslení samotných uzlů (věží)
+                nodes.forEach((node, i) => {
+                    const nodeX = 40 + i * xStep;
+                    
+                    // Vykreslení buněk věže nad sebou
+                    for (let l = 0; l < node.levels; l++) {
+                        const nodeY = startY - l * yStep;
+                        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        circle.setAttribute("cx", nodeX); circle.setAttribute("cy", nodeY); circle.setAttribute("r", radius);
+                        
+                        // Zvýraznění aktivního bodu ve vyhledávacím trasování
+                        const isVisited = searchSteps.some(s => s.nodeIdx === i && s.lvl === l);
+                        circle.setAttribute("fill", isVisited ? "#ffeb3b" : "#2d2d2d");
+                        circle.setAttribute("stroke", isVisited ? "#000" : "#666");
+                        circle.setAttribute("stroke-width", "1");
+                        svg.appendChild(circle);
+
+                        if (l === 0) {
+                            const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                            txt.setAttribute("x", nodeX); txt.setAttribute("y", nodeY + 5);
+                            txt.setAttribute("text-anchor", "middle"); txt.setAttribute("fill", isVisited ? "#000" : "#fff");
+                            txt.setAttribute("font-size", "11px"); txt.textContent = node.key;
+                            svg.appendChild(txt);
+                        }
+                    }
+                });
+
+                printMathData();
+            }
+
+            function isLinkInSearch(idx1, idx2, lvl) {
+                return searchSteps.some(s => s.type === 'forward' && s.fromIdx === idx1 && s.toIdx === idx2 && s.lvl === lvl);
+            }
+
+            function executeSearch(searchKey) {
+                searchSteps = [];
+                let currentLvl = maxLevels - 1;
+                let currentIdx = 0; // Začínáme na Headeru
+
+                while (currentLvl >= 0) {
+                    // Najdi další prvek na stejné hladině
+                    let nextIdx = currentIdx + 1;
+                    while (nextIdx < nodes.length && nodes[nextIdx].levels <= currentLvl) {
+                        nextIdx++;
+                    }
+
+                    if (nextIdx < nodes.length && nodes[nextIdx].key !== 'H' && nodes[nextIdx].key <= searchKey) {
+                        searchSteps.push({ type: 'forward', fromIdx: currentIdx, toIdx: nextIdx, lvl: currentLvl });
+                        searchSteps.push({ type: 'node', nodeIdx: nextIdx, lvl: currentLvl });
+                        currentIdx = nextIdx;
+                        if (nodes[currentIdx].key === searchKey) {
+                            // Sestup do nuly pro dokončení vizuální stopy
+                            while(currentLvl > 0) {
+                                searchSteps.push({ type: 'down', nodeIdx: currentIdx, fromL: currentLvl, toL: currentLvl - 1 });
+                                currentLvl--;
+                                searchSteps.push({ type: 'node', nodeIdx: currentIdx, lvl: currentLvl });
+                            }
+                            break;
+                        }
+                    } else {
+                        if (currentLvl > 0) {
+                            searchSteps.push({ type: 'down', nodeIdx: currentIdx, fromL: currentLvl, toL: currentLvl - 1 });
+                            searchSteps.push({ type: 'node', nodeIdx: currentIdx, lvl: currentLvl - 1 });
+                        }
+                        currentLvl--;
+                    }
+                }
+                render();
+            }
+
+            function printMathData() {
+                const totalNodes = nodes.length - 1; // Bez hlavičky
+                let totalPointers = 0;
+                nodes.forEach(n => totalPointers += n.levels);
+                
+                const avgPointersReal = totalPointers / nodes.length;
+                const avgPointersTeor = 1 / (1 - p_prob);
+                const comparisonsTeor = (Math.log(totalNodes) / (2 * p_prob * Math.log(1 / p_prob))).toFixed(2);
+                
+                const stepsCount = searchSteps.filter(s => s.type === 'forward' || s.type === 'down').length;
+
+                let html = `
+                    <p class="stat-box">Pravděpodobnost posunu o úroveň výš: <strong>p = ${p_prob.toFixed(2)}</strong></p>
+                    <p class="stat-box">Teoretický průměrný počet ukazatelů na uzel [1 / (1 - p)]: <strong>${avgPointersTeor.toFixed(2)}</strong></p>
+                    <p class="stat-box">Reálný průměrný počet ukazatelů v simulaci: <strong>${avgPointersReal.toFixed(2)}</strong></p>
+                    <p class="stat-box">Teoretický počet porovnání klíčů [log(N) / (2p * log(1/p))]: <strong>${totalNodes > 0 ? comparisonsTeor : 0}</strong></p>
+                `;
+                if (stepsCount > 0) {
+                    html += `<p style="margin-top: 10px; color: #ffeb3b; font-weight: bold;">Skutečný počet kroků (posunů + sestupů) při vyhledávání: ${stepsCount}</p>`;
+                }
+                mathContent.innerHTML = html;
+            }
+
+            // Event Listeners
+            probSlider.addEventListener('input', (e) => {
+                p_prob = parseFloat(e.target.value);
+                probVal.textContent = p_prob.toFixed(2);
+            });
+            document.getElementById('regen-list-btn').addEventListener('click', generateList);
+            document.getElementById('find-btn').addEventListener('click', () => {
+                const val = parseInt(document.getElementById('search-key-input').value, 10);
+                if (!isNaN(val)) executeSearch(val);
+            });
+
+            // Init
+            generateList();
+        })();
+    </script>
+</div>

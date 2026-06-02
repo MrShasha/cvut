@@ -1,0 +1,132 @@
+<div class="gray-hazard-widget" style="background-color: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; max-width: 850px; margin: 20px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3); box-sizing: border-box;">
+    <h3 style="margin-top: 0; color: #569cd6; border-bottom: 1px solid #3c3c3c; padding-bottom: 8px;">Grayův kód: Průběžná transformace a eliminace hazardů</h3>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 15px;">
+        <div style="background: #252526; padding: 15px; border-radius: 6px; border: 1px solid #3c3c3c; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <label style="font-size: 0.85rem; color: #9cdcfe; display: block; margin-bottom: 4px;">Vstupní hodnota (Rank / Dekadické číslo):</label>
+                <input type="range" id="gray-v2-rank" min="0" max="15" value="3" style="width: 100%; accent-color: #569cd6; margin-bottom: 10px;">
+                <div style="text-align: center; font-size: 1.5rem; font-weight: bold; color: #ce9178; margin-bottom: 15px;" id="gray-v2-rank-display">3</div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #888; margin-bottom: 4px;">Binární reprezentace ($B$):</div>
+                    <div id="gray-v2-bin-reg" style="display: flex; gap: 4px;"></div>
+                </div>
+                <div style="font-size: 0.75rem; color: #6a9955; padding-left: 10px;">⊕ (Bitový posun doprava $B \gg 1$)</div>
+                <div>
+                    <div style="font-size: 0.75rem; color: #4fc1ff; margin-bottom: 4px;">Výsledný Grayův kód ($G = B \oplus (B \gg 1)$):</div>
+                    <div id="gray-v2-gray-reg" style="display: flex; gap: 4px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: #252526; padding: 15px; border-radius: 6px; border: 1px solid #3c3c3c;">
+            <h4 style="margin: 0 0 10px 0; font-size: 0.9rem; color: #4fc1ff;">Srovnání změny při přechodu na další hodnotu</h4>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                <div style="background: #111; padding: 10px; border-radius: 4px; border-left: 4px solid #f44336;">
+                    <div style="font-size: 0.75rem; color: #aaa;">Změna v čisté binární soustavě:</div>
+                    <div style="font-size: 1.1rem; font-weight: bold; margin: 4px 0;" id="gray-v2-bin-trans">-</div>
+                    <div style="font-size: 0.75rem; color: #ff6b6b;" id="gray-v2-bin-count">Počet měněných bitů současně: -</div>
+                </div>
+
+                <div style="background: #111; padding: 10px; border-radius: 4px; border-left: 4px solid #4eed53;">
+                    <div style="font-size: 0.75rem; color: #aaa;">Změna v Grayově kódu:</div>
+                    <div style="font-size: 1.1rem; font-weight: bold; margin: 4px 0;" id="gray-v2-gray-trans">-</div>
+                    <div style="font-size: 0.75rem; color: #4eed53;">Počet měněných bitů současně: <span style="font-weight: bold;">1 (Konstantní)</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="background-color: #1e1e1e; border: 1px solid #3c3c3c; padding: 12px; border-radius: 6px; font-size: 0.85rem;">
+        <div style="color: #6a9955; margin-bottom: 4px;">// Ověření Lemmatu 1 pro každý bit: gⱼ = (bⱼ + bⱼ₊₁) mod 2</div>
+        <div id="gray-v2-math-debug" style="color: #dcdcaa; font-size: 0.8rem; line-height: 1.4;"></div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const rankSlider = document.getElementById('gray-v2-rank');
+    const rankDisplay = document.getElementById('gray-v2-rank-display');
+    const binReg = document.getElementById('gray-v2-bin-reg');
+    const grayReg = document.getElementById('gray-v2-gray-reg');
+    const binTrans = document.getElementById('gray-v2-bin-trans');
+    const binCount = document.getElementById('gray-v2-bin-count');
+    const grayTrans = document.getElementById('gray-v2-gray-trans');
+    const mathDebug = document.getElementById('gray-v2-math-debug');
+
+    function getBits(val, len = 4) {
+        return val.toString(2).padStart(len, '0').split('').map(Number);
+    }
+
+    function toGray(val) {
+        return val ^ (val >> 1);
+    }
+
+    function createBitBoxes(container, bits, activeColor) {
+        container.innerHTML = '';
+        bits.forEach(bit => {
+            const box = document.createElement('div');
+            box.style.flex = '1';
+            box.style.height = '30px';
+            box.style.display = 'flex';
+            box.style.alignItems = 'center';
+            box.style.justifyContent = 'center';
+            box.style.borderRadius = '4px';
+            box.style.fontWeight = 'bold';
+            box.style.background = bit ? activeColor : '#333';
+            box.style.color = bit ? '#1e1e1e' : '#777';
+            box.style.border = '1px solid #444';
+            box.textContent = bit;
+            container.appendChild(box);
+        });
+    }
+
+    function diffCount(bitsA, bitsB) {
+        let count = 0;
+        for (let i = 0; i < bitsA.length; i++) {
+            if (bitsA[i] !== bitsB[i]) count++;
+        }
+        return count;
+    }
+
+    function render() {
+        const val = parseInt(rankSlider.value, 10);
+        const nextVal = (val + 1) % 16;
+        
+        rankDisplay.textContent = val;
+
+        const currentBinBits = getBits(val);
+        const currentGrayBits = getBits(toGray(val));
+        const nextBinBits = getBits(nextVal);
+        const nextGrayBits = getBits(toGray(nextVal));
+
+        // Vykreslení registru aktuálního stavu
+        createBitBoxes(binReg, currentBinBits, '#ce9178');
+        createBitBoxes(grayReg, currentGrayBits, '#4fc1ff');
+
+        // Analýza přechodů hran
+        binTrans.innerHTML = `<span style="color:#ce9178">${currentBinBits.join('')}</span> → <span style="color:#aaa">${nextBinBits.join('')}</span>`;
+        const bDiff = diffCount(currentBinBits, nextBinBits);
+        binCount.textContent = `Počet měněných bitů současně: ${bDiff} ${bDiff > 1 ? '⚠️ (Lavinový hazard)' : '✓'}`;
+
+        grayTrans.innerHTML = `<span style="color:#4fc1ff">${currentGrayBits.join('')}</span> → <span style="color:#aaa">${nextGrayBits.join('')}</span>`;
+
+        // Výpočet popisu Lemmatu 1
+        let debugText = '';
+        for (let i = 0; i < currentBinBits.length; i++) {
+            const bj = currentBinBits[i];
+            const bj1 = (i === currentBinBits.length - 1) ? 0 : currentBinBits[i + 1];
+            const gj = currentGrayBits[i];
+            debugText += `g_b[${3-i}] = (${bj} + ${bj1}) mod 2 = ${gj}<br>`;
+        }
+        mathDebug.innerHTML = debugText;
+    }
+
+    rankSlider.addEventListener('input', render);
+    render();
+})();
+</script>

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Souřadné systémy perspektivní kamery</title>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#121820;color:#e5edf7;font-family:"Segoe UI",Inter,system-ui,sans-serif;padding:14px;overflow:hidden}button{font:inherit}.widget{height:100%;min-height:700px;display:grid;grid-template-columns:minmax(0,1fr)330px;gap:12px}.scene,.panel{border:1px solid #334155;border-radius:8px;background:#18202b}.scene{position:relative;overflow:hidden}.scene canvas{display:block;width:100%!important;height:100%!important;cursor:grab}.scene canvas:active{cursor:grabbing}.loader{position:absolute;inset:0;display:grid;place-items:center;background:#18202b;color:#94a3b8;z-index:2}.hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:rgba(203,213,225,.56);font-size:12px;pointer-events:none;user-select:none}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{font-size:18px;line-height:1.25;margin:0;color:#f8fafc}.muted{font-size:13px;line-height:1.45;color:#aebccd;margin:0}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.tab{border:1px solid #3d4b5f;border-radius:6px;background:#202a38;color:#e5e7eb;padding:8px 6px;cursor:pointer}.tab:hover,.tab.active{border-color:#60a5fa;background:#173454}.card{border:1px solid #2f3b4d;border-radius:7px;background:#111923;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:7px;font-family:Consolas,Menlo,monospace;color:#f8fafc;font-size:12px;line-height:1.55}.legend{display:grid;gap:7px}.legend span{display:flex;align-items:center;gap:8px}.swatch{width:12px;height:12px;border-radius:50%;flex:0 0 auto}.result{margin-top:auto;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.11);color:#bae6fd;border-radius:7px;padding:10px;font-size:13px;line-height:1.45}@media(max-width:880px){body{padding:10px;overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene{min-height:540px}.panel{max-height:none}}
+</style>
+</head>
+<body>
+<main class="widget">
+<section class="scene" id="sceneWrap" aria-label="Souřadné systémy perspektivní kamery">
+  <div class="loader" id="loader">Načítám Three.js...</div>
+  <div class="hint">Táhni = rotace | Scroll = zoom | Pravé tlačítko = posun</div>
+</section>
+<aside class="panel">
+  <h1>Souřadné systémy kamery</h1>
+  <p class="muted">3D verze obrázku: světový systém, kamera, obrazová rovina a projekční paprsek leží v jedné prostorové konfiguraci.</p>
+  <div class="tabs">
+    <button class="tab active" data-mode="systems">Soustavy</button>
+    <button class="tab" data-mode="projection">Projekce</button>
+    <button class="tab" data-mode="coords">Souřadnice</button>
+  </div>
+  <div class="card" id="explain"></div>
+  <div class="card legend">
+    <span><i class="swatch" style="background:#f87171"></i>světový počátek O a báze d</span>
+    <span><i class="swatch" style="background:#22c55e"></i>kamera C a báze β</span>
+    <span><i class="swatch" style="background:#38bdf8"></i>obrazová rovina π</span>
+    <span><i class="swatch" style="background:#fbbf24"></i>paprsek p přes C, x, X</span>
+  </div>
+  <div class="result">Bod X se promítne do x jako průsečík přímky CX s obrazovou rovinou π.</div>
+</aside>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+
+const COLORS={world:0xf87171,camera:0x22c55e,plane:0x38bdf8,ray:0xfbbf24,point:0xf8fafc,dim:0x94a3b8,u:0xa78bfa};
+const wrap=document.getElementById('sceneWrap'),loader=document.getElementById('loader'),explain=document.getElementById('explain');
+let mode='systems',dynamicGroup;
+
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setClearColor(0x121820);
+wrap.appendChild(renderer.domElement);
+loader.style.display='none';
+
+const scene=new THREE.Scene();
+scene.fog=new THREE.FogExp2(0x121820,.028);
+const camera=new THREE.PerspectiveCamera(45,1,.1,100);
+camera.position.set(5.5,4.4,6.5);
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.enableDamping=true;
+controls.dampingFactor=.08;
+controls.target.set(.15,.15,1.45);
+controls.minDistance=3;
+controls.maxDistance=16;
+
+scene.add(new THREE.AmbientLight(0x7b879b,2.5));
+const key=new THREE.DirectionalLight(0xffffff,2.4);key.position.set(6,7,5);scene.add(key);
+const fill=new THREE.DirectionalLight(0x93c5fd,1.0);fill.position.set(-4,2,-5);scene.add(fill);
+const grid=new THREE.GridHelper(8,16,0x42526a,0x263244);grid.position.y=-1.35;scene.add(grid);
+
+const C=new THREE.Vector3(0,0,0);
+const O=new THREE.Vector3(-2.75,1.25,.95);
+const b1=new THREE.Vector3(1,0,0);
+const b2=new THREE.Vector3(0,-1,0);
+const b3=new THREE.Vector3(0,0,1);
+const f=1,u=.82,v=.47,eta=2.95;
+const o=C.clone().addScaledVector(b3,f);
+const x=o.clone().addScaledVector(b1,u).addScaledVector(b2,v);
+const X=C.clone().add(x.clone().sub(C).multiplyScalar(eta));
+
+function roundedRect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function labelSprite(text,color='#e5e7eb'){
+  const c=document.createElement('canvas');c.width=330;c.height=76;
+  const ctx=c.getContext('2d');ctx.font='700 27px Segoe UI, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle='rgba(17,24,34,.84)';ctx.strokeStyle='rgba(255,255,255,.18)';roundedRect(ctx,15,9,300,56,10);ctx.fill();ctx.stroke();
+  ctx.fillStyle=color;ctx.fillText(text,165,39);
+  const tex=new THREE.CanvasTexture(c);
+  const mat=new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false});
+  const s=new THREE.Sprite(mat);s.scale.set(1.08,.25,1);s.renderOrder=50;return s;
+}
+function addLabel(g,text,pos,color){const s=labelSprite(text,color);s.position.copy(pos);g.add(s);return s}
+function addSphere(g,pos,color,label,offset=new THREE.Vector3(.18,.15,.18)){
+  const mesh=new THREE.Mesh(new THREE.SphereGeometry(.085,28,16),new THREE.MeshStandardMaterial({color,roughness:.45,emissive:color,emissiveIntensity:.12}));
+  mesh.position.copy(pos);g.add(mesh);if(label)addLabel(g,label,pos.clone().add(offset),'#f8fafc');return mesh;
+}
+function addArrow(g,from,to,color,label,labelOffset=new THREE.Vector3(.12,.12,.12)){
+  const dir=to.clone().sub(from),len=dir.length();
+  const arrow=new THREE.ArrowHelper(dir.clone().normalize(),from,len,color,.18,.085);
+  g.add(arrow);
+  if(label)addLabel(g,label,from.clone().add(to).multiplyScalar(.5).add(labelOffset),'#f8fafc');
+  return arrow;
+}
+function addLine(g,a,b,color,label,dashed=false){
+  const geo=new THREE.BufferGeometry().setFromPoints([a,b]);
+  const mat=dashed?new THREE.LineDashedMaterial({color,dashSize:.18,gapSize:.12,transparent:true,opacity:.8}):new THREE.LineBasicMaterial({color,transparent:true,opacity:.95});
+  const line=new THREE.Line(geo,mat);if(dashed)line.computeLineDistances();g.add(line);
+  if(label)addLabel(g,label,a.clone().add(b).multiplyScalar(.5).add(new THREE.Vector3(.1,.12,.1)),'#f8fafc');
+  return line;
+}
+function addPlane(g){
+  const w=1.5,h=1.15;
+  const corners=[
+    o.clone().addScaledVector(b1,-w).addScaledVector(b2,-h),
+    o.clone().addScaledVector(b1,w).addScaledVector(b2,-h),
+    o.clone().addScaledVector(b1,w).addScaledVector(b2,h),
+    o.clone().addScaledVector(b1,-w).addScaledVector(b2,h)
+  ];
+  const geo=new THREE.BufferGeometry().setFromPoints(corners);geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();
+  const mat=new THREE.MeshStandardMaterial({color:COLORS.plane,transparent:true,opacity:.2,side:THREE.DoubleSide,depthWrite:false,roughness:.8});
+  const mesh=new THREE.Mesh(geo,mat);mesh.renderOrder=1;g.add(mesh);
+  const edges=new THREE.EdgesGeometry(geo);const edge=new THREE.LineSegments(edges,new THREE.LineBasicMaterial({color:COLORS.plane,transparent:true,opacity:.95}));edge.renderOrder=2;g.add(edge);
+  addLabel(g,'π',corners[1].clone().add(new THREE.Vector3(.25,.15,.05)),'#bae6fd');
+}
+function setExplain(){
+  const data={
+    systems:['Soustavy souřadnic','O je počátek světového systému s bází d₁,d₂,d₃. Kamera má vlastní afinní systém (C,β), kde β=[b₁,b₂,b₃].<span class="formula">b₁,b₂ leží v obrazové rovině<br>b₃ míří z C do počátku obrazu o</span>'],
+    projection:['Perspektivní projekce','Obrazový bod x vznikne jako průsečík paprsku p = CX s obrazovou rovinou π.<span class="formula">C, x, X jsou kolineární<br>X - C = η x</span>'],
+    coords:['Souřadnice bodu x','Vektor k obrazovému bodu se skládá z posunu po b₁, posunu po b₂ a jedné jednotky ve směru b₃.<span class="formula">x = u b₁ + v b₂ + b₃<br>xβ = [u, v, 1]^T</span>']
+  }[mode];
+  explain.innerHTML=`<strong>${data[0]}</strong><p class="muted" style="margin:6px 0 0">${data[1]}</p>`;
+}
+function clearDynamic(){
+  if(!dynamicGroup)return;
+  dynamicGroup.traverse(o=>{o.geometry?.dispose?.();if(Array.isArray(o.material))o.material.forEach(m=>m.dispose?.());else o.material?.dispose?.()});
+  scene.remove(dynamicGroup);dynamicGroup=null;
+}
+function rebuild(){
+  clearDynamic();setExplain();
+  const g=new THREE.Group();dynamicGroup=g;
+  addPlane(g);
+  addSphere(g,O,COLORS.world,'O',new THREE.Vector3(-.26,.2,.1));
+  addSphere(g,C,COLORS.camera,'C',new THREE.Vector3(-.28,-.22,.12));
+  addSphere(g,o,COLORS.camera,'o',new THREE.Vector3(-.24,.18,.12));
+  addSphere(g,x,COLORS.point,'x',new THREE.Vector3(.22,.18,.1));
+  addSphere(g,X,COLORS.point,'X',new THREE.Vector3(.22,.18,.1));
+  addArrow(g,O,O.clone().add(new THREE.Vector3(-.72,-.42,-.24)),COLORS.world,'d₁',new THREE.Vector3(-.15,.08,.08));
+  addArrow(g,O,O.clone().add(new THREE.Vector3(1.02,0,0)),COLORS.world,'d₂');
+  addArrow(g,O,O.clone().add(new THREE.Vector3(0,0,1.06)),COLORS.world,'d₃');
+  addArrow(g,C,o,COLORS.camera,mode==='coords'?'1 b₃':'b₃',new THREE.Vector3(-.2,.08,.05));
+  addArrow(g,o,o.clone().addScaledVector(b1,.72),COLORS.camera,'b₁',new THREE.Vector3(.1,.12,.08));
+  addArrow(g,o,o.clone().addScaledVector(b2,.72),COLORS.camera,'b₂',new THREE.Vector3(.08,-.12,.06));
+  addLine(g,C,X,COLORS.ray,'p');
+  addLine(g,O,C,COLORS.dim,'C⃗',true);
+  addLine(g,O,X,COLORS.dim,'X⃗',true);
+  if(mode==='systems'){
+    addLine(g,C,o,COLORS.camera,'');
+    addLine(g,o,x,COLORS.u,'u⃗',false);
+  }
+  if(mode==='projection'){
+    addArrow(g,C,x,COLORS.ray,'x⃗',new THREE.Vector3(-.18,.12,.1));
+    addArrow(g,C,X,COLORS.ray,'ηx⃗',new THREE.Vector3(.2,-.1,.12));
+    addLine(g,x,X,COLORS.ray,'hloubka η',true);
+  }
+  if(mode==='coords'){
+    const xb1=o.clone().addScaledVector(b1,u);
+    addArrow(g,o,xb1,COLORS.u,'u b₁',new THREE.Vector3(.1,.12,.05));
+    addArrow(g,xb1,x,COLORS.u,'v b₂',new THREE.Vector3(.16,-.08,.05));
+  }
+  scene.add(g);
+}
+for(const b of document.querySelectorAll('.tab')){
+  b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));rebuild()};
+}
+function resize(){
+  const r=wrap.getBoundingClientRect();
+  renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);
+  camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize',resize);
+resize();rebuild();
+function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}
+animate();
+</script>
+<style>.widget{min-height:0!important}</style>
+</body>
+</html>

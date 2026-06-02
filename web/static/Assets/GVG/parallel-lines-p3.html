@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GVG - rovnobezne primky v P3</title>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    background: #14171c;
+    color: #e6edf3;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    padding: 14px;
+    overflow: hidden;
+  }
+  button { font: inherit; }
+  .widget {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 12px;
+    height: 100%;
+    min-height: 680px;
+  }
+  .scene, .panel {
+    border: 1px solid #343b46;
+    border-radius: 8px;
+    background: #1d222b;
+  }
+  .scene {
+    position: relative;
+    overflow: hidden;
+  }
+  .scene canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    cursor: grab;
+  }
+  .scene canvas:active { cursor: grabbing; }
+  .hint {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    color: rgba(203, 213, 225, .55);
+    font-size: 12px;
+    text-align: center;
+    pointer-events: none;
+    user-select: none;
+  }
+  .loader {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: #1d222b;
+    color: #94a3b8;
+    z-index: 2;
+  }
+  .panel {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
+  h1 {
+    margin: 0;
+    color: #f8fafc;
+    font-size: 18px;
+    line-height: 1.25;
+  }
+  .muted {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+  .tab {
+    border: 1px solid #3c4655;
+    border-radius: 6px;
+    background: #252c37;
+    color: #e5e7eb;
+    padding: 8px 6px;
+    cursor: pointer;
+  }
+  .tab:hover, .tab.active {
+    border-color: #60a5fa;
+    background: #17304e;
+  }
+  .card {
+    border: 1px solid #303743;
+    border-radius: 7px;
+    background: #171c24;
+    padding: 10px;
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .formula {
+    display: block;
+    margin-top: 6px;
+    color: #f8fafc;
+    font-family: Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.55;
+    word-break: break-word;
+  }
+  .legend {
+    display: grid;
+    gap: 7px;
+  }
+  .legend span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .swatch {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    flex: 0 0 auto;
+  }
+  .result {
+    margin-top: auto;
+    border-radius: 7px;
+    padding: 10px;
+    background: rgba(34, 197, 94, .12);
+    color: #bbf7d0;
+    border: 1px solid rgba(34, 197, 94, .35);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  @media (max-width: 880px) {
+    body { padding: 10px; overflow: auto; }
+    .widget { grid-template-columns: 1fr; height: auto; }
+    .scene { min-height: 520px; }
+  }
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene" id="sceneWrap" aria-label="Rovnobezne primky v projektivnim prostoru">
+    <div class="loader" id="loader">Načítám Three.js...</div>
+    <div class="hint">Táhni = rotace | Scroll = zoom | Pravé tlačítko = posun</div>
+  </section>
+  <aside class="panel">
+    <h1>Rovnoběžné přímky v P3</h1>
+    <p class="muted">V afinní části se přímky neprotnou. V projektivním uzávěru sdílejí ideální bod svého směru.</p>
+
+    <div class="tabs" aria-label="Režim zobrazení">
+      <button class="tab active" type="button" data-mode="affine">Afinní</button>
+      <button class="tab" type="button" data-mode="projective">P3</button>
+      <button class="tab" type="button" data-mode="planes">Roviny</button>
+    </div>
+
+    <div class="card">
+      <strong>Zadání</strong>
+      <span class="formula">
+        L1: (1,0,0) -> (1,0,1)<br>
+        L2: (1,1,0) -> (1,1,1)<br>
+        d = (0,0,1)
+      </span>
+    </div>
+
+    <div class="card legend">
+      <span><i class="swatch" style="background:#38bdf8"></i>L1 v rovině y = 0</span>
+      <span><i class="swatch" style="background:#f59e0b"></i>L2 v rovině x - y = 0</span>
+      <span><i class="swatch" style="background:#22c55e"></i>společný ideální bod směru z</span>
+      <span><i class="swatch" style="background:#a78bfa"></i>společná rovina x = 1</span>
+    </div>
+
+    <div class="card" id="explainBox">
+      <strong>Afinní pohled</strong>
+      <span class="formula">L1 a L2 jsou různé svislé přímky. Mají stejný směr, ale žádný konečný společný bod.</span>
+    </div>
+
+    <div class="result">
+      Projektivní průnik:
+      <span class="formula">P = [0, 0, 1, 0]^T</span>
+    </div>
+  </aside>
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const COLORS = {
+  l1: 0x38bdf8,
+  l2: 0xf59e0b,
+  ideal: 0x22c55e,
+  sigma1: 0x38bdf8,
+  sigma2: 0xf59e0b,
+  sigma3: 0xa78bfa,
+  x: 0xef4444,
+  y: 0x22c55e,
+  z: 0x60a5fa,
+};
+
+const points = {
+  x1: new THREE.Vector3(1, 0, 0),
+  x2: new THREE.Vector3(1, 0, 1),
+  x3: new THREE.Vector3(1, 1, 0),
+  x4: new THREE.Vector3(1, 1, 1),
+};
+
+let mode = 'affine';
+let graphGroup = null;
+
+const wrap = document.getElementById('sceneWrap');
+const loader = document.getElementById('loader');
+const explainBox = document.getElementById('explainBox');
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x14171c);
+wrap.appendChild(renderer.domElement);
+loader.style.display = 'none';
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x14171c, 0.035);
+
+const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
+camera.position.set(5.2, 4.2, 6.4);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(1, 0.5, 0.8);
+controls.minDistance = 3;
+controls.maxDistance = 18;
+
+scene.add(new THREE.AmbientLight(0x7b879b, 3));
+const key = new THREE.DirectionalLight(0xffffff, 2.5);
+key.position.set(5, 7, 6);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x93c5fd, 1.1);
+fill.position.set(-4, 2, -5);
+scene.add(fill);
+
+const grid = new THREE.GridHelper(8, 16, 0x475569, 0x27313f);
+grid.position.set(0, 0, 0);
+scene.add(grid);
+
+const axisLength = 3.2;
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, 0), axisLength, COLORS.x, 0.2, 0.1));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 0), axisLength, COLORS.y, 0.2, 0.1));
+scene.add(new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), axisLength, COLORS.z, 0.2, 0.1));
+
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.arcTo(x + width, y, x + width, y + height, radius);
+  ctx.arcTo(x + width, y + height, x, y + height, radius);
+  ctx.arcTo(x, y + height, x, y, radius);
+  ctx.arcTo(x, y, x + width, y, radius);
+  ctx.closePath();
+}
+
+function labelSprite(text, color = '#e5e7eb') {
+  const canvas = document.createElement('canvas');
+  canvas.width = 288;
+  canvas.height = 72;
+  const ctx = canvas.getContext('2d');
+  ctx.font = '700 28px Segoe UI, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(20, 23, 28, 0.82)';
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+  roundRect(ctx, 18, 9, 252, 54, 10);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = color;
+  ctx.fillText(text, 144, 37);
+  const texture = new THREE.CanvasTexture(canvas);
+  const material = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true,
+    depthTest: false,
+    depthWrite: false,
+  });
+  const sprite = new THREE.Sprite(material);
+  sprite.scale.set(1.05, 0.27, 1);
+  sprite.renderOrder = 30;
+  return sprite;
+}
+
+function addLabel(group, text, position, color) {
+  const sprite = labelSprite(text, color);
+  sprite.position.copy(position);
+  group.add(sprite);
+}
+
+function addPoint(group, point, color, label) {
+  const sphere = new THREE.Mesh(
+    new THREE.SphereGeometry(0.07, 24, 16),
+    new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.08 })
+  );
+  sphere.position.copy(point);
+  group.add(sphere);
+  addLabel(group, label, point.clone().add(new THREE.Vector3(0.18, 0.04, 0.16)), '#f8fafc');
+}
+
+function addLine(group, start, end, color, label, dashed = false) {
+  const geometry = new THREE.BufferGeometry().setFromPoints([start, end]);
+  const material = dashed
+    ? new THREE.LineDashedMaterial({ color, dashSize: 0.18, gapSize: 0.12, transparent: true, opacity: 0.75 })
+    : new THREE.LineBasicMaterial({ color });
+  const line = new THREE.Line(geometry, material);
+  if (dashed) line.computeLineDistances();
+  group.add(line);
+
+  const direction = end.clone().sub(start).normalize();
+  group.add(new THREE.ArrowHelper(direction, end.clone().sub(direction.clone().multiplyScalar(0.35)), 0.35, color, 0.14, 0.08));
+  if (label) addLabel(group, label, start.clone().add(end).multiplyScalar(0.5).add(new THREE.Vector3(0.24, 0.1, 0.22)), '#f8fafc');
+}
+
+function addPlane(group, corners, color, opacity, label, labelPosition) {
+  const geometry = new THREE.BufferGeometry().setFromPoints(corners);
+  geometry.setIndex([0, 1, 2, 0, 2, 3]);
+  geometry.computeVertexNormals();
+  const material = new THREE.MeshStandardMaterial({
+    color,
+    transparent: true,
+    opacity,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+    roughness: 0.78,
+    metalness: 0.04,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.renderOrder = 1;
+  group.add(mesh);
+  const edges = new THREE.EdgesGeometry(geometry);
+  const edgeLines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color, transparent: true, opacity: 0.85 }));
+  edgeLines.renderOrder = 2;
+  group.add(edgeLines);
+  if (label) addLabel(group, label, labelPosition, '#f8fafc');
+}
+
+function addIdealPoint(group) {
+  const top = new THREE.Vector3(1.5, 0.5, 3.25);
+  const halo = new THREE.Mesh(
+    new THREE.SphereGeometry(0.13, 32, 16),
+    new THREE.MeshStandardMaterial({ color: COLORS.ideal, emissive: COLORS.ideal, emissiveIntensity: 0.35, roughness: 0.4 })
+  );
+  halo.position.copy(top);
+  group.add(halo);
+  addLabel(group, 'P∞ = [0,0,1,0]', top.clone().add(new THREE.Vector3(0.1, 0.22, 0.35)), '#bbf7d0');
+  addLine(group, new THREE.Vector3(1, 0, 1.35), top, COLORS.ideal, '', true);
+  addLine(group, new THREE.Vector3(1, 1, 1.35), top, COLORS.ideal, '', true);
+}
+
+function clearGraph() {
+  if (!graphGroup) return;
+  graphGroup.traverse((object) => {
+    object.geometry?.dispose?.();
+    if (Array.isArray(object.material)) object.material.forEach((mat) => mat.dispose?.());
+    else object.material?.dispose?.();
+  });
+  scene.remove(graphGroup);
+}
+
+function updateExplanation() {
+  const text = {
+    affine: ['Afinní pohled', 'L1 a L2 jsou různé svislé přímky. Mají stejný směr, ale žádný konečný společný bod.'],
+    projective: ['Projektivní uzávěr', 'Rovnoběžné afinní přímky se doplní o stejný ideální bod směru d = (0,0,1). Proto se v P3 protínají.'],
+    planes: ['Roviny řešení', 'Výpočet hledá průnik tří rovin: σ1: y=0, σ2: x-y=0 a σ3: x=1. Jejich společný bod je [0,0,1,0].'],
+  }[mode];
+  explainBox.innerHTML = `<strong>${text[0]}</strong><span class="formula">${text[1]}</span>`;
+}
+
+function rebuild() {
+  clearGraph();
+  updateExplanation();
+  graphGroup = new THREE.Group();
+
+  const l1Start = new THREE.Vector3(1, 0, -0.7);
+  const l1End = new THREE.Vector3(1, 0, 2.45);
+  const l2Start = new THREE.Vector3(1, 1, -0.7);
+  const l2End = new THREE.Vector3(1, 1, 2.45);
+
+  if (mode === 'planes') {
+    addPlane(graphGroup, [
+      new THREE.Vector3(-0.6, 0, -0.7),
+      new THREE.Vector3(2.3, 0, -0.7),
+      new THREE.Vector3(2.3, 0, 2.45),
+      new THREE.Vector3(-0.6, 0, 2.45),
+    ], COLORS.sigma1, 0.16, 'σ1: y=0', new THREE.Vector3(2.1, 0, 2.75));
+
+    addPlane(graphGroup, [
+      new THREE.Vector3(-0.2, -0.2, -0.7),
+      new THREE.Vector3(2.1, 2.1, -0.7),
+      new THREE.Vector3(2.1, 2.1, 2.45),
+      new THREE.Vector3(-0.2, -0.2, 2.45),
+    ], COLORS.sigma2, 0.16, 'σ2: x-y=0', new THREE.Vector3(2.35, 2.35, 2.55));
+
+    addPlane(graphGroup, [
+      new THREE.Vector3(1, -0.5, -0.7),
+      new THREE.Vector3(1, 1.6, -0.7),
+      new THREE.Vector3(1, 1.6, 2.45),
+      new THREE.Vector3(1, -0.5, 2.45),
+    ], COLORS.sigma3, 0.18, 'σ3: x=1', new THREE.Vector3(1, 1.75, 1.95));
+  }
+
+  addLine(graphGroup, l1Start, l1End, COLORS.l1, 'L1');
+  addLine(graphGroup, l2Start, l2End, COLORS.l2, 'L2');
+  addPoint(graphGroup, points.x1, COLORS.l1, 'X1');
+  addPoint(graphGroup, points.x2, COLORS.l1, 'X2');
+  addPoint(graphGroup, points.x3, COLORS.l2, 'X3');
+  addPoint(graphGroup, points.x4, COLORS.l2, 'X4');
+
+  addLabel(graphGroup, 'd = (0,0,1)', new THREE.Vector3(1.62, 0.5, 2.25), '#bfdbfe');
+  if (mode === 'projective' || mode === 'planes') addIdealPoint(graphGroup);
+  if (mode === 'affine') {
+    addLabel(graphGroup, 'v A3 bez průniku', new THREE.Vector3(1.65, 0.5, 1.05), '#fecaca');
+  }
+
+  scene.add(graphGroup);
+}
+
+function resize() {
+  const rect = wrap.getBoundingClientRect();
+  renderer.setSize(Math.max(1, rect.width), Math.max(1, rect.height), false);
+  camera.aspect = Math.max(1, rect.width) / Math.max(1, rect.height);
+  camera.updateProjectionMatrix();
+}
+
+for (const button of document.querySelectorAll('.tab')) {
+  button.addEventListener('click', () => {
+    mode = button.dataset.mode;
+    document.querySelectorAll('.tab').forEach((tab) => tab.classList.toggle('active', tab === button));
+    rebuild();
+  });
+}
+
+const axisLabels = new THREE.Group();
+addLabel(axisLabels, 'x', new THREE.Vector3(axisLength + 0.35, 0, 0), '#fecaca');
+addLabel(axisLabels, 'y', new THREE.Vector3(0, axisLength + 0.35, 0), '#bbf7d0');
+addLabel(axisLabels, 'z', new THREE.Vector3(0, 0, axisLength + 0.35), '#bfdbfe');
+scene.add(axisLabels);
+
+window.addEventListener('resize', resize);
+resize();
+rebuild();
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+animate();
+</script>
+</body>
+</html>

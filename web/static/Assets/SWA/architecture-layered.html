@@ -1,0 +1,404 @@
+﻿<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Layered architecture</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --line: #d7dee8;
+      --text: #172033;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green-soft: #ecfdf5;
+      --violet-soft: #f5f3ff;
+      --amber-soft: #fffbeb;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      color: var(--text);
+      background: var(--bg);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    .widget {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+      height: 100%;
+      padding: 12px;
+    }
+
+    .header,
+    .diagram-panel,
+    .notes {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .header {
+      padding: 12px 14px;
+    }
+
+    .eyebrow {
+      margin-bottom: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 5px;
+      color: var(--muted);
+      line-height: 1.42;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .diagram-panel {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 36px 36px;
+      background-color: #fff;
+    }
+
+    .caption {
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      background: #fbfdff;
+      line-height: 1.42;
+    }
+
+    .caption b {
+      color: var(--blue);
+    }
+
+    .notes {
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      min-height: 0;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .note-title {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.42;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    li {
+      margin: 4px 0;
+      line-height: 1.32;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .flow {
+      display: grid;
+      gap: 5px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .flow li {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 7px;
+      margin: 0;
+    }
+
+    .flow span {
+      display: inline-grid;
+      place-items: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .box {
+      fill: rgba(248, 250, 252, .72);
+      stroke: #cbd5e1;
+      stroke-width: 1.5;
+      stroke-dasharray: 6 5;
+    }
+
+    .box-label {
+      fill: #64748b;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .edge {
+      fill: none;
+      stroke: #9aa8bb;
+      stroke-width: 2.2;
+      marker-end: url(#arrow);
+    }
+
+    .edge.async {
+      stroke-dasharray: 7 6;
+    }
+
+    .edge.primary {
+      stroke: var(--blue);
+      stroke-width: 3;
+      stroke-dasharray: 8 6;
+      animation: dash 3.2s linear infinite;
+    }
+
+    @keyframes dash {
+      to { stroke-dashoffset: -56; }
+    }
+
+    .edge-label-bg {
+      fill: #fff;
+      stroke: #e2e8f0;
+      stroke-width: 1;
+    }
+
+    .edge-label {
+      fill: #475569;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .node rect {
+      stroke-width: 1.7;
+    }
+
+    .node .title {
+      fill: var(--text);
+      font-size: 12.5px;
+      font-weight: 800;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .node .sub {
+      fill: #64748b;
+      font-size: 10.5px;
+      font-weight: 650;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .node.core rect,
+    .node.service rect {
+      fill: var(--blue-soft);
+      stroke: #3b82f6;
+    }
+
+    .node.actor rect {
+      fill: #f8fafc;
+      stroke: #94a3b8;
+    }
+
+    .node.data rect {
+      fill: var(--green-soft);
+      stroke: #10b981;
+    }
+
+    .node.integration rect,
+    .node.broker rect {
+      fill: var(--violet-soft);
+      stroke: #8b5cf6;
+    }
+
+    .node.risk rect {
+      fill: var(--amber-soft);
+      stroke: #f59e0b;
+    }
+
+    @media (max-width: 820px) {
+      .main {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 1fr) 210px;
+      }
+
+      .notes {
+        overflow: hidden;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="widget">
+    <header class="header">
+      <div class="eyebrow">Software architecture</div>
+      <h1>Layered architecture</h1>
+      <div class="subtitle">Technické vrstvy jsou seřazené shora dolů: UI/API, application, domain, persistence.</div>
+    </header>
+
+    <main class="main">
+      <section class="diagram-panel">
+        <svg viewBox="0 0 900 520" role="img" aria-label="Layered architecture diagram">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#9aa8bb"></path>
+            </marker>
+          </defs>
+
+
+          <path class="edge  primary" d="M 141.7 233.0 L 353.4 118.0" style="animation-delay:0.00s"></path>
+
+          <g class="edge-label-group">
+            <rect class="edge-label-bg" x="207.54999999999998" y="163.5" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="247.54999999999998" y="175.5">HTTP</text>
+          </g>
+          <path class="edge  " d="M 405.0 118.0 L 405.0 152.0" style="animation-delay:0.28s"></path>
+
+          <g class="edge-label-group">
+            <rect class="edge-label-bg" x="365" y="123" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="405" y="135">call</text>
+          </g>
+          <path class="edge  " d="M 405.0 208.0 L 405.0 242.0" style="animation-delay:0.56s"></path>
+
+          <g class="edge-label-group">
+            <rect class="edge-label-bg" x="365" y="213" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="405" y="225">rules</text>
+          </g>
+          <path class="edge  " d="M 405.0 298.0 L 405.0 332.0" style="animation-delay:0.84s"></path>
+
+          <g class="edge-label-group">
+            <rect class="edge-label-bg" x="365" y="303" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="405" y="315">load/save</text>
+          </g>
+          <path class="edge  " d="M 540.0 360.0 L 674.0 360.0" style="animation-delay:1.12s"></path>
+
+          <g class="edge-label-group">
+            <rect class="edge-label-bg" x="567" y="348" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="607" y="360">SQL</text>
+          </g>
+
+          <g class="node actor">
+            <rect x="24" y="233" width="136" height="54" rx="7"></rect>
+            <text class="title" x="92" y="253">Client</text>
+            <text class="sub" x="92" y="274">browser/mobile</text>
+          </g>
+          <g class="node core">
+            <rect x="270" y="62" width="270" height="56" rx="7"></rect>
+            <text class="title" x="405" y="83">Presentation</text>
+            <text class="sub" x="405" y="104">controller/API</text>
+          </g>
+          <g class="node core">
+            <rect x="270" y="152" width="270" height="56" rx="7"></rect>
+            <text class="title" x="405" y="173">Application</text>
+            <text class="sub" x="405" y="194">use cases</text>
+          </g>
+          <g class="node core">
+            <rect x="270" y="242" width="270" height="56" rx="7"></rect>
+            <text class="title" x="405" y="263">Domain</text>
+            <text class="sub" x="405" y="284">business rules</text>
+          </g>
+          <g class="node core">
+            <rect x="270" y="332" width="270" height="56" rx="7"></rect>
+            <text class="title" x="405" y="353">Persistence</text>
+            <text class="sub" x="405" y="374">repository/DAO</text>
+          </g>
+          <g class="node data">
+            <rect x="674" y="332" width="136" height="56" rx="7"></rect>
+            <text class="title" x="742" y="353">Database</text>
+            <text class="sub" x="742" y="374">storage</text>
+          </g>
+        </svg>
+        <div class="caption"><b>HTTP:</b> Request vstoupí do presentation vrstvy.</div>
+      </section>
+
+      <aside class="notes">
+        <section>
+          <div class="note-title">Princip</div>
+          <p>Každá vrstva má jinou odpovědnost. Závislosti typicky směřují dolů a výšší vrstva používá službu nižší vrstvy.</p>
+        </section>
+        <section>
+          <div class="note-title">Kdy použít</div>
+          <ul><li>enterprise CRUD aplikace</li><li>framework-driven backend</li><li>tým potřebuje jednoduchou strukturu</li></ul>
+        </section>
+        <section>
+          <div class="note-title">Pozor na</div>
+          <ul><li>změna často prochází více vrstvami</li><li>může vzniknout anemický domain model</li><li>cross-cutting concerns se špatně umisťují</li></ul>
+        </section>
+        <section>
+          <div class="note-title">Quality attributes</div>
+          <div class="badge-row"><span class="badge">clear structure</span><span class="badge">testable layers</span><span class="badge">familiar pattern</span></div>
+        </section>
+        <section>
+          <div class="note-title">Flow</div>
+          <ol class="flow"><li><span>1</span>Request vstoupí do presentation vrstvy.</li><li><span>2</span>Application vrstva řídí use case.</li><li><span>3</span>Domain vrstva provádí business pravidla.</li><li><span>4</span>Persistence vrstva načítá nebo ukládá data.</li><li><span>5</span>Databáze je za persistence vrstvou.</li></ol>
+        </section>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>
+

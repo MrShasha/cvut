@@ -1,0 +1,262 @@
+<div id="euler-widget" class="graphics-widget">
+  <style>
+    .graphics-widget {
+      --bg-color: #1e1e1e;
+      --panel-bg: #2d2d2d;
+      --text-color: #e0e0e0;
+      --accent-color: #007acc;
+      --border-color: #444;
+      
+      background: var(--bg-color);
+      color: var(--text-color);
+      padding: 16px;
+      border-radius: 8px;
+      font-family: monospace;
+      border: 1px solid var(--border-color);
+      max-width: 800px;
+      margin: 20px auto;
+    }
+    .widget-layout {
+      display: grid;
+      grid-template-columns: 1fr 240px;
+      gap: 16px;
+    }
+    @media (max-width: 600px) {
+      .widget-layout { grid-template-columns: 1fr; }
+    }
+    .canvas-container {
+      background: #111;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+    canvas { display: block; width: 100%; height: auto; cursor: pointer; }
+    .data-panel {
+      background: var(--panel-bg);
+      padding: 12px;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .math-feedback {
+      grid-column: 1 / -1;
+      background: #111;
+      padding: 12px;
+      border-radius: 4px;
+      border-left: 4px solid var(--accent-color);
+      font-size: 13px;
+    }
+    .status-badge {
+      padding: 6px;
+      border-radius: 4px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 11px;
+    }
+    .status-ok { background: #22c55e; color: #111; }
+    .status-no { background: #ff4d4d; color: #fff; }
+    .hint {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-size: 10px;
+      color: #666;
+      pointer-events: none;
+    }
+  </style>
+
+  <div class="widget-layout">
+    <div class="canvas-container">
+      <div class="hint">Kliknutím vyber uzel. Kliknutím na druhý uzel spoj/rozpoj hranu.</div>
+      <canvas id="euler-canvas" width="400" height="300"></canvas>
+    </div>
+    
+    <div class="data-panel">
+      <div id="euler-status" class="status-badge status-ok">Eulerův tah existuje</div>
+      
+      <div style="font-size:11px; display:flex; flex-direction:column; gap:4px;">
+        <strong>Stupně vrcholů (deg):</strong>
+        <div id="degree-list"></div>
+      </div>
+    </div>
+
+    <div class="math-feedback" id="euler-math">
+      Handshaking Lemma: ∑ deg(v) = 2|E|
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('euler-canvas');
+      const ctx = canvas.getContext('2d');
+      const degListBox = document.getElementById('degree-list');
+      const statusBox = document.getElementById('euler-status');
+      const mathBox = document.getElementById('euler-math');
+
+      const nodes = [
+        { id: 0, label: 'A', x: 200, y: 50 },
+        { id: 1, label: 'B', x: 330, y: 130 },
+        { id: 2, label: 'C', x: 280, y: 250 },
+        { id: 3, label: 'D', x: 120, y: 250 },
+        { id: 4, label: 'E', x: 70, y: 130 }
+      ];
+
+      let matrix = [
+        [0, 1, 0, 0, 1],
+        [1, 0, 1, 0, 0],
+        [0, 1, 0, 1, 0],
+        [0, 0, 1, 0, 1],
+        [1, 0, 0, 1, 0]
+      ];
+
+      let selectedNode = null;
+
+      canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const mx = (e.clientX - rect.left) * scaleX;
+        const my = (e.clientY - rect.top) * scaleY;
+
+        let clickedNode = null;
+        nodes.forEach(n => {
+          if (Math.hypot(n.x - mx, n.y - my) < 22) { 
+            clickedNode = n;
+          }
+        });
+
+        if (clickedNode !== null) {
+          if (selectedNode === null) {
+            selectedNode = clickedNode;
+          } else {
+            if (selectedNode.id !== clickedNode.id) {
+              let u = selectedNode.id;
+              let v = clickedNode.id;
+              let val = matrix[u][v] === 1 ? 0 : 1;
+              matrix[u][v] = val;
+              matrix[v][u] = val;
+            }
+            selectedNode = null;
+          }
+        } else {
+          selectedNode = null;
+        }
+        update();
+      });
+
+      function isConnected(degrees) {
+        let startNode = -1;
+        for (let i = 0; i < 5; i++) {
+          if (degrees[i] > 0) {
+            startNode = i;
+            break;
+          }
+        }
+        if (startNode === -1) return true; 
+
+        let visited = new Array(5).fill(false);
+        let queue = [startNode];
+        visited[startNode] = true;
+
+        while (queue.length > 0) {
+          let u = queue.shift();
+          for (let v = 0; v < 5; v++) {
+            if (matrix[u][v] === 1 && !visited[v]) {
+              visited[v] = true;
+              queue.push(v);
+            }
+          }
+        }
+
+        for (let i = 0; i < 5; i++) {
+          if (degrees[i] > 0 && !visited[i]) return false;
+        }
+        return true;
+      }
+
+      function update() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        let edgeCount = 0;
+        let degrees = new Array(5).fill(0);
+
+        for(let i=0; i<5; i++) {
+          for(let j=i+1; j<5; j++) {
+            if(matrix[i][j] === 1) {
+              edgeCount++;
+              ctx.beginPath();
+              ctx.moveTo(nodes[i].x, nodes[i].y);
+              ctx.lineTo(nodes[j].x, nodes[j].y);
+              ctx.strokeStyle = '#555';
+              ctx.lineWidth = 2.5;
+              ctx.stroke();
+            }
+          }
+        }
+
+        for(let i=0; i<5; i++) {
+          for(let j=0; j<5; j++) {
+            if(matrix[i][j] === 1) degrees[i]++;
+          }
+        }
+
+        nodes.forEach(n => {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, 18, 0, 2 * Math.PI);
+          
+          if (selectedNode && selectedNode.id === n.id) {
+            ctx.fillStyle = '#007acc';
+            ctx.strokeStyle = '#fff';
+          } else {
+            ctx.fillStyle = '#2d2d2d';
+            ctx.strokeStyle = '#555';
+          }
+          
+          ctx.lineWidth = 2;
+          ctx.fill();
+          ctx.stroke();
+          
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 12px monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(n.label, n.x, n.y);
+        });
+
+        let oddNodesCount = degrees.filter(d => d % 2 !== 0).length;
+        let sumDegrees = degrees.reduce((a, b) => a + b, 0);
+        let graphConnected = isConnected(degrees);
+
+        let htmlList = '';
+        nodes.forEach(n => {
+          let isOdd = degrees[n.id] % 2 !== 0;
+          htmlList += `${n.label}: ${degrees[n.id]} (${isOdd ? 'lichý' : 'sudý'})<br>`;
+        });
+        degListBox.innerHTML = htmlList;
+
+        if (!graphConnected) {
+          statusBox.textContent = 'Tah neexistuje (nesouvislý graf)';
+          statusBox.className = 'status-badge status-no';
+        } else if (edgeCount === 0) {
+          statusBox.textContent = 'Prázdný graf (0 hran)';
+          statusBox.className = 'status-badge status-ok';
+        } else if (oddNodesCount === 0) {
+          statusBox.textContent = 'Eulerův cyklus (uzavřený)';
+          statusBox.className = 'status-badge status-ok';
+        } else if (oddNodesCount === 2) {
+          statusBox.textContent = 'Eulerův tah (otevřený)';
+          statusBox.className = 'status-badge status-ok';
+        } else {
+          statusBox.textContent = `Tah neexistuje (lichých: ${oddNodesCount})`;
+          statusBox.className = 'status-badge status-no';
+        }
+
+        mathBox.innerHTML = `<strong>Handshaking Lemma:</strong> ∑ deg(v) = 2|E| ➔ <strong>${sumDegrees}</strong> = 2 · <strong>${edgeCount}</strong>.` +
+          `<br>Podmínka existence: Souvislost + 0 nebo 2 liché vrcholy (Aktuálně lichých: ${oddNodesCount}, Souvislý: ${graphConnected ? 'Ano' : 'Ne'}).`;
+      }
+
+      update();
+    })();
+  </script>
+</div>

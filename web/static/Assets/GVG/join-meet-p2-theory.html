@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GVG - join a meet v P2</title>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#14171c;color:#e6edf3;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{display:grid;grid-template-columns:minmax(0,1fr)320px;gap:12px;height:100%;min-height:0}.scene,.panel{border:1px solid #343b46;border-radius:8px;background:#1d222b}.scene{position:relative;overflow:hidden}.scene canvas{display:block;width:100%!important;height:100%!important;cursor:grab}.hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:rgba(203,213,225,.56);font-size:12px;pointer-events:none}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{margin:0;color:#f8fafc;font-size:18px}.muted{margin:0;color:#9ca3af;font-size:13px;line-height:1.45}.tabs{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.tab{border:1px solid #3c4655;border-radius:6px;background:#252c37;color:#e5e7eb;padding:8px 6px;cursor:pointer;font:inherit}.tab.active,.tab:hover{border-color:#60a5fa;background:#17304e}.card{border:1px solid #303743;border-radius:7px;background:#171c24;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:6px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.result{margin-top:auto;border-radius:7px;padding:10px;background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.35);font-size:13px;line-height:1.45}@media(max-width:840px){body{overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene{min-height:520px}}
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene" id="scene"><div class="hint">Táhni = rotace | Scroll = zoom</div></section>
+  <aside class="panel">
+    <h1>Join a meet v P²</h1>
+    <p class="muted">Podle GVG Fig. 9.8/9.9: join a meet jsou duální konstrukce ve 3D modelu P².</p>
+    <div class="tabs"><button class="tab active" data-mode="join">Join bodů</button><button class="tab" data-mode="meet">Meet přímek</button></div>
+    <div class="card" id="explain"></div>
+    <div class="result">Obě konstrukce se počítají vektorovým součinem.</div>
+  </aside>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const host=document.getElementById('scene'),explain=document.getElementById('explain');let mode='join',group;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x14171c);
+const camera=new THREE.PerspectiveCamera(46,1,.1,100);camera.position.set(4.3,4.0,4.8);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));host.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.target.set(.55,.55,.65);controls.minDistance=3;controls.maxDistance=14;
+scene.add(new THREE.AmbientLight(0xffffff,.75));const light=new THREE.DirectionalLight(0xffffff,.85);light.position.set(4,5,6);scene.add(light);
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+function label(text,color='#e5e7eb'){const c=document.createElement('canvas');c.width=350;c.height=74;const ctx=c.getContext('2d');ctx.font='700 24px Segoe UI, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='rgba(20,23,28,.82)';ctx.strokeStyle='rgba(255,255,255,.18)';rr(ctx,12,8,326,56,10);ctx.fill();ctx.stroke();ctx.fillStyle=color;ctx.fillText(text,175,38);const tex=new THREE.CanvasTexture(c);const mat=new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false});const s=new THREE.Sprite(mat);s.scale.set(1.18,.25,1);s.renderOrder=40;return s}
+function addLabel(g,t,p,c){const s=label(t,c);s.position.copy(p);g.add(s)}
+function addPlane(g,pts,color,op,name,pos){const geo=new THREE.BufferGeometry().setFromPoints(pts);geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();g.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,transparent:true,opacity:op,side:THREE.DoubleSide,depthWrite:false})));g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color,transparent:true,opacity:.9})));if(name)addLabel(g,name,pos,'#f8fafc')}
+function line(g,a,b,color,dashed=false){const geo=new THREE.BufferGeometry().setFromPoints([a,b]);const mat=dashed?new THREE.LineDashedMaterial({color,dashSize:.16,gapSize:.11,transparent:true,opacity:.8}):new THREE.LineBasicMaterial({color});const l=new THREE.Line(geo,mat);if(dashed)l.computeLineDistances();g.add(l)}
+function sphere(g,p,color,name){const m=new THREE.Mesh(new THREE.SphereGeometry(.075,24,14),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.15}));m.position.copy(p);g.add(m);if(name)addLabel(g,name,p.clone().add(new THREE.Vector3(.16,.12,.12)),'#f8fafc')}
+function base(g){addPlane(g,[new THREE.Vector3(-.7,-.7,1),new THREE.Vector3(1.8,-.7,1),new THREE.Vector3(1.8,1.8,1),new THREE.Vector3(-.7,1.8,1)],0x94a3b8,.12,'A²: w=1',new THREE.Vector3(1.55,2.0,1));sphere(g,new THREE.Vector3(0,0,0),0xf59e0b,'O')}
+function drawJoin(g){const x=new THREE.Vector3(1,0,1),y=new THREE.Vector3(0,1,1);addPlane(g,[new THREE.Vector3(0,0,0),x,x.clone().add(y),y],0x2563eb,.16,'span(x,y)',new THREE.Vector3(.9,.9,1.35));line(g,new THREE.Vector3(-.45,1.45,1),new THREE.Vector3(1.45,-.45,1),0xef4444);line(g,new THREE.Vector3(0,0,0),x,0x2563eb);line(g,new THREE.Vector3(0,0,0),y,0x2563eb);sphere(g,x,0x22c55e,'x');sphere(g,y,0x22c55e,'y');addLabel(g,'l=x×y',new THREE.Vector3(.85,-.25,1),'#fecaca');explain.innerHTML='<strong>Join</strong><span class="formula">x=[1,0,1], y=[0,1,1]<br>l=x×y=[-1,-1,1]<br>lᵀx=0, lᵀy=0</span>'}
+function drawMeet(g){const x=new THREE.Vector3(1,1,1),ka=new THREE.Vector3(1,-.7,1),kb=new THREE.Vector3(1,1.8,1),la=new THREE.Vector3(-.7,1,1),lb=new THREE.Vector3(1.8,1,1);addPlane(g,[ka,kb,kb.clone().multiplyScalar(-.55),ka.clone().multiplyScalar(-.55)],0xef4444,.14,'k: u=1',new THREE.Vector3(1.28,1.65,1));addPlane(g,[la,lb,lb.clone().multiplyScalar(-.55),la.clone().multiplyScalar(-.55)],0xe879f9,.14,'l: v=1',new THREE.Vector3(1.55,1.25,1));line(g,ka,kb,0xef4444);line(g,la,lb,0xe879f9);line(g,new THREE.Vector3(0,0,0),x,0x22c55e);sphere(g,x,0x22c55e,'x=k×l');explain.innerHTML='<strong>Meet</strong><span class="formula">k=[1,0,-1], l=[0,1,-1]<br>x=k×l=[1,1,1]<br>kᵀx=0, lᵀx=0</span>'}
+function rebuild(){if(group)scene.remove(group);group=new THREE.Group();base(group);if(mode==='join')drawJoin(group);else drawMeet(group);scene.add(group)}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));rebuild()});
+function resize(){const r=host.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix()}window.addEventListener('resize',resize);resize();rebuild();function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
+</script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+﻿<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Microkernel architecture</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --line: #d7dee8;
+      --text: #172033;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green-soft: #ecfdf5;
+      --violet-soft: #f5f3ff;
+      --amber-soft: #fffbeb;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      color: var(--text);
+      background: var(--bg);
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 14px;
+      letter-spacing: 0;
+    }
+
+    .widget {
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+      height: 100%;
+      padding: 12px;
+    }
+
+    .header,
+    .diagram-panel,
+    .notes {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .header {
+      padding: 12px 14px;
+    }
+
+    .eyebrow {
+      margin-bottom: 2px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin-top: 5px;
+      color: var(--muted);
+      line-height: 1.42;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .diagram-panel {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 36px 36px;
+      background-color: #fff;
+    }
+
+    .caption {
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      background: #fbfdff;
+      line-height: 1.42;
+    }
+
+    .caption b {
+      color: var(--blue);
+    }
+
+    .notes {
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      min-height: 0;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .note-title {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.42;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    li {
+      margin: 4px 0;
+      line-height: 1.32;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .flow {
+      display: grid;
+      gap: 5px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .flow li {
+      display: grid;
+      grid-template-columns: 22px 1fr;
+      gap: 7px;
+      margin: 0;
+    }
+
+    .flow span {
+      display: inline-grid;
+      place-items: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--blue);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .box {
+      fill: rgba(248, 250, 252, .72);
+      stroke: #cbd5e1;
+      stroke-width: 1.5;
+      stroke-dasharray: 6 5;
+    }
+
+    .box-label {
+      fill: #64748b;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .edge {
+      fill: none;
+      stroke: #9aa8bb;
+      stroke-width: 2.2;
+      marker-end: url(#arrow);
+    }
+
+    .edge.async {
+      stroke-dasharray: 7 6;
+    }
+
+    .edge.primary {
+      stroke: var(--blue);
+      stroke-width: 3;
+      stroke-dasharray: 8 6;
+      animation: dash 3.2s linear infinite;
+    }
+
+    @keyframes dash {
+      to { stroke-dashoffset: -56; }
+    }
+
+    .edge-label-bg {
+      fill: #fff;
+      stroke: #e2e8f0;
+      stroke-width: 1;
+    }
+
+    .edge-label {
+      fill: #475569;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .node rect {
+      stroke-width: 1.7;
+    }
+
+    .node .title {
+      fill: var(--text);
+      font-size: 12.5px;
+      font-weight: 800;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .node .sub {
+      fill: #64748b;
+      font-size: 10.5px;
+      font-weight: 650;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .node.core rect,
+    .node.service rect {
+      fill: var(--blue-soft);
+      stroke: #3b82f6;
+    }
+
+    .node.actor rect {
+      fill: #f8fafc;
+      stroke: #94a3b8;
+    }
+
+    .node.data rect {
+      fill: var(--green-soft);
+      stroke: #10b981;
+    }
+
+    .node.integration rect,
+    .node.broker rect {
+      fill: var(--violet-soft);
+      stroke: #8b5cf6;
+    }
+
+    .node.risk rect {
+      fill: var(--amber-soft);
+      stroke: #f59e0b;
+    }
+
+    @media (max-width: 820px) {
+      .main {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 1fr) 210px;
+      }
+
+      .notes {
+        overflow: hidden;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="widget">
+    <header class="header">
+      <div class="eyebrow">Software architecture</div>
+      <h1>Microkernel architecture</h1>
+      <div class="subtitle">Stabilní core a rozšíření přes plugins.</div>
+    </header>
+
+    <main class="main">
+      <section class="diagram-panel">
+        <svg viewBox="0 0 900 520" role="img" aria-label="Microkernel architecture diagram">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#9aa8bb"></path>
+            </marker>
+          </defs>
+
+
+          <path class="edge  primary" d="M 154.0 255.7 L 315.0 245.0" style="animation-delay:0.00s"></path>
+
+          <g class="edge-label-group">
+            <rect class="edge-label-bg" x="194.5" y="238.35" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="234.5" y="250.35">command</text>
+          </g>
+          <path class="edge  " d="M 390.0 283.0 L 390.0 329.0" style="animation-delay:0.28s"></path>
+
+          <g class="edge-label-group">
+            <rect class="edge-label-bg" x="350" y="294" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="390" y="306">contract</text>
+          </g>
+          <path class="edge  " d="M 423.2 329.0 L 655.5 147.0" style="animation-delay:0.56s"></path>
+
+          <g class="edge-label-group">
+            <rect class="edge-label-bg" x="499.35" y="226" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="539.35" y="238">load</text>
+          </g>
+          <path class="edge  " d="M 460.0 335.7 L 670.0 277.9" style="animation-delay:0.84s"></path>
+
+          <g class="edge-label-group">
+            <rect class="edge-label-bg" x="525" y="294.79999999999995" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="565" y="306.79999999999995">load</text>
+          </g>
+          <path class="edge  " d="M 460.0 365.5 L 625.0 390.3" style="animation-delay:1.12s"></path>
+
+          <g class="edge-label-group">
+            <rect class="edge-label-bg" x="502.5" y="365.9" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="542.5" y="377.9">load</text>
+          </g>
+
+          <g class="node actor">
+            <rect x="26" y="233" width="128" height="54" rx="7"></rect>
+            <text class="title" x="90" y="253">User</text>
+            <text class="sub" x="90" y="274">commands</text>
+          </g>
+          <g class="node core">
+            <rect x="315" y="197" width="150" height="86" rx="7"></rect>
+            <text class="title" x="390" y="233">Core system</text>
+            <text class="sub" x="390" y="254">runtime</text>
+          </g>
+          <g class="node integration">
+            <rect x="320" y="329" width="140" height="52" rx="7"></rect>
+            <text class="title" x="390" y="348">Plugin API</text>
+            <text class="sub" x="390" y="369">contract</text>
+          </g>
+          <g class="node service">
+            <rect x="625" y="93" width="130" height="54" rx="7"></rect>
+            <text class="title" x="690" y="113">Plugin A</text>
+            <text class="sub" x="690" y="134">feature</text>
+          </g>
+          <g class="node service">
+            <rect x="670" y="233" width="130" height="54" rx="7"></rect>
+            <text class="title" x="735" y="253">Plugin B</text>
+            <text class="sub" x="735" y="274">feature</text>
+          </g>
+          <g class="node service">
+            <rect x="625" y="373" width="130" height="54" rx="7"></rect>
+            <text class="title" x="690" y="393">Plugin C</text>
+            <text class="sub" x="690" y="414">feature</text>
+          </g>
+        </svg>
+        <div class="caption"><b>command:</b> Uživatel spustí funkci přes core.</div>
+      </section>
+
+      <aside class="notes">
+        <section>
+          <div class="note-title">Princip</div>
+          <p>Core poskytuje základní runtime, lifecycle a plugin API. Funkce se přidávají jako plugins s jasným contractem.</p>
+        </section>
+        <section>
+          <div class="note-title">Kdy použít</div>
+          <ul><li>IDE, editor, browser</li><li>produktová platforma</li><li>systém s volitelnými rozšířeními</li></ul>
+        </section>
+        <section>
+          <div class="note-title">Pozor na</div>
+          <ul><li>těžký návrh plugin API</li><li>verzování plugin contractu</li><li>testování kombinací pluginů</li></ul>
+        </section>
+        <section>
+          <div class="note-title">Quality attributes</div>
+          <div class="badge-row"><span class="badge">extensible</span><span class="badge">stable core</span><span class="badge">plugin ecosystem</span></div>
+        </section>
+        <section>
+          <div class="note-title">Flow</div>
+          <ol class="flow"><li><span>1</span>Uživatel spustí funkci přes core.</li><li><span>2</span>Core drží stabilní základ systému.</li><li><span>3</span>Plugin API definuje povolené rozhraní.</li><li><span>4</span>Plugin se připojí přes contract.</li><li><span>5</span>Další pluginy lze přidat bez změny core.</li></ol>
+        </section>
+      </aside>
+    </main>
+  </div>
+</body>
+</html>
+
