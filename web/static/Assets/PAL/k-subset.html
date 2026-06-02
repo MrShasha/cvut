@@ -1,0 +1,143 @@
+<div class="k-subset-widget" style="background-color: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: system-ui, sans-serif; max-width: 850px; margin: 20px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3); box-sizing: border-box;">
+    <h3 style="margin-top: 0; color: #b5cea8; border-bottom: 1px solid #3c3c3c; padding-bottom: 8px;">Kombinace: $k$-prvkové podmnožiny</h3>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+        <div style="background: #252526; padding: 15px; border-radius: 6px;">
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <span>Velikost množiny ($n$)</span>
+                    <span id="ksub-n-val" style="color: #b5cea8;">6</span>
+                </div>
+                <input type="range" id="ksub-n" min="2" max="10" value="6" style="width:100%;">
+            </div>
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <span>Velikost podmnožiny ($k$)</span>
+                    <span id="ksub-k-val" style="color: #b5cea8;">3</span>
+                </div>
+                <input type="range" id="ksub-k" min="1" max="5" value="3" style="width:100%;">
+            </div>
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <span>Rank (Lexikografické pořadí)</span>
+                    <span id="ksub-r-val" style="color: #b5cea8;">0</span>
+                </div>
+                <input type="range" id="ksub-r" min="0" max="19" value="0" style="width:100%;">
+            </div>
+        </div>
+
+        <div style="background: #111; padding: 15px; border-radius: 6px; border: 1px solid #3c3c3c; display: flex; align-items: center; justify-content: center;">
+            <div id="ksub-visual" style="display: flex; gap: 10px;"></div>
+        </div>
+    </div>
+
+    <div style="background: #252526; padding: 15px; border-radius: 6px; border: 1px solid #3c3c3c;">
+        <h4 style="margin: 0 0 10px 0; font-size: 0.9rem; color: #9cdcfe;">Výpočet Ranku (Sčítání bloků)</h4>
+        <div id="ksub-math" style="font-family: 'Times New Roman', serif; font-size: 1.1rem; color: #dcdcaa;"></div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const nIn = document.getElementById('ksub-n');
+    const kIn = document.getElementById('ksub-k');
+    const rIn = document.getElementById('ksub-r');
+    const nVal = document.getElementById('ksub-n-val');
+    const kVal = document.getElementById('ksub-k-val');
+    const rVal = document.getElementById('ksub-r-val');
+    const visual = document.getElementById('ksub-visual');
+    const math = document.getElementById('ksub-math');
+
+    function nCr(n, r) {
+        if (r < 0 || r > n) return 0;
+        if (r === 0 || r === n) return 1;
+        if (r > n / 2) r = n - r;
+        let res = 1;
+        for (let i = 1; i <= r; i++) {
+            res = res * (n - i + 1) / i;
+        }
+        return Math.round(res);
+    }
+
+    function update() {
+        const n = parseInt(nIn.value);
+        let k = parseInt(kIn.value);
+        if (k > n) { k = n; kIn.value = k; }
+        kIn.max = n;
+        
+        const total = nCr(n, k);
+        rIn.max = total - 1;
+        let r = parseInt(rIn.value);
+        if (r >= total) { r = total - 1; rIn.value = r; }
+
+        nVal.textContent = n;
+        kVal.textContent = k;
+        rVal.textContent = r;
+
+        // Unrank
+        let tempR = r;
+        const subset = [];
+        let next = 1;
+        for (let i = 1; i <= k; i++) {
+            while (true) {
+                let count = nCr(n - next, k - i);
+                if (tempR < count) {
+                    subset.push(next);
+                    next++;
+                    break;
+                }
+                tempR -= count;
+                next++;
+            }
+        }
+
+        // Visual
+        visual.innerHTML = '';
+        for (let i = 1; i <= n; i++) {
+            const box = document.createElement('div');
+            box.style.width = '35px';
+            box.style.height = '35px';
+            box.style.display = 'flex';
+            box.style.alignItems = 'center';
+            box.style.justifyContent = 'center';
+            box.style.borderRadius = '4px';
+            box.style.fontSize = '1rem';
+            box.style.fontWeight = 'bold';
+            box.textContent = i;
+            
+            if (subset.includes(i)) {
+                box.style.background = '#b5cea8';
+                box.style.color = '#1e1e1e';
+                box.style.transform = 'scale(1.1)';
+            } else {
+                box.style.background = '#333';
+                box.style.color = '#777';
+            }
+            visual.appendChild(box);
+        }
+
+        // Math
+        let mathStr = `Rank({${subset.join(',')}}) = `;
+        let sumParts = [];
+        let t_prev = 0;
+        let currentR = 0;
+        
+        for (let i = 1; i <= k; i++) {
+            let t_i = subset[i-1];
+            for (let j = t_prev + 1; j < t_i; j++) {
+                let val = nCr(n - j, k - i);
+                sumParts.push(`\\binom{${n - j}}{${k - i}}`);
+                currentR += val;
+            }
+            t_prev = t_i;
+        }
+        
+        math.innerHTML = mathStr + (sumParts.length > 0 ? sumParts.join(' + ') + ` = ${r}` : `${r} (První v pořadí)`);
+    }
+
+    nIn.addEventListener('input', update);
+    kIn.addEventListener('input', update);
+    rIn.addEventListener('input', update);
+    update();
+})();
+</script>
