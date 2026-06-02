@@ -1,71 +1,571 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="cs">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Lower bounds ve flow</title>
+  <title>Feasible flow and lower bounds</title>
   <style>
-    :root{--bg:#111827;--panel:#172033;--ink:#e5e7eb;--muted:#9ca3af;--line:#334155;--blue:#38bdf8;--green:#34d399;--red:#fb7185;--amber:#fbbf24}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,Segoe UI,Arial,sans-serif}
-    .wrap{max-width:1180px;margin:0 auto;padding:18px;display:grid;grid-template-columns:1fr 360px;gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
-    h1{font-size:22px;margin:0 0 4px}.muted{color:var(--muted);margin:0 0 12px}svg{width:100%;height:390px;background:#0b1220;border:1px solid var(--line);border-radius:8px}
-    .edge{stroke:#64748b;stroke-width:3;fill:none;marker-end:url(#arrow)}.edge.hot{stroke:var(--amber);stroke-width:5}.edge.super{stroke:var(--green);stroke-width:4;stroke-dasharray:8 6}
-    .node{fill:#1e293b;stroke:#64748b;stroke-width:2}.node.pos{stroke:var(--green);stroke-width:4}.node.neg{stroke:var(--red);stroke-width:4}.node.super{stroke:var(--blue);stroke-width:4}
-    .txt{fill:var(--ink);font-weight:800;text-anchor:middle;dominant-baseline:middle}.label rect{fill:#0b1220;stroke:#475569}.label text{fill:#e5e7eb;font:800 12px Consolas,monospace;text-anchor:middle}.balance{font:800 13px Consolas,monospace;fill:#dbeafe;text-anchor:middle}
-    button{background:#24324a;color:var(--ink);border:1px solid #475569;border-radius:7px;padding:9px 12px;cursor:pointer}button.primary{background:#0e7490;border-color:#22d3ee}.controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.badge{display:inline-block;padding:3px 8px;border-radius:999px;background:#26364f;color:#cbd5e1;font-size:12px;margin-bottom:8px}
-    .formula{background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:10px;font:800 13px Consolas,monospace;color:#dbeafe;margin-top:10px;white-space:pre-line}
-    @media(max-width:860px){.wrap{grid-template-columns:1fr}}
+    :root {
+      --bg: #111827;
+      --panel: #172033;
+      --ink: #e5e7eb;
+      --muted: #9ca3af;
+      --line: #334155;
+      --blue: #38bdf8;
+      --green: #34d399;
+      --red: #fb7185;
+      --amber: #fbbf24;
+      --violet: #a78bfa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    .wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 365px;
+      gap: 16px;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 14px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 19px;
+      letter-spacing: 0;
+    }
+
+    .muted {
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
+
+    svg {
+      width: 100%;
+      height: 430px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(rgba(148, 163, 184, .06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, .06) 1px, transparent 1px),
+        #0b1220;
+      background-size: 32px 32px;
+    }
+
+    .edge {
+      fill: none;
+      stroke: #64748b;
+      stroke-width: 3;
+    }
+
+    .edge.hot {
+      stroke: var(--amber);
+      stroke-width: 5;
+    }
+
+    .edge.used {
+      stroke: var(--green);
+      stroke-width: 5;
+    }
+
+    .edge.super {
+      stroke: var(--blue);
+      stroke-width: 4;
+      stroke-dasharray: 9 7;
+    }
+
+    .edge.ghost {
+      opacity: .34;
+    }
+
+    .node {
+      fill: #1e293b;
+      stroke: #64748b;
+      stroke-width: 2.2;
+    }
+
+    .node.pos {
+      stroke: var(--green);
+      stroke-width: 4;
+    }
+
+    .node.neg {
+      stroke: var(--red);
+      stroke-width: 4;
+    }
+
+    .node.zero {
+      stroke: var(--violet);
+      stroke-width: 3;
+    }
+
+    .node.super {
+      stroke: var(--blue);
+      stroke-width: 4;
+    }
+
+    .txt {
+      fill: var(--ink);
+      font-weight: 850;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .subtxt {
+      fill: #cbd5e1;
+      font: 800 12px Consolas, monospace;
+      text-anchor: middle;
+    }
+
+    .label rect,
+    .note rect {
+      fill: #0b1220;
+      stroke: #475569;
+      stroke-width: 1.2;
+    }
+
+    .label text,
+    .note text {
+      fill: #f8fafc;
+      font: 800 12px Consolas, monospace;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .note text {
+      font: 700 12px Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    .balance {
+      fill: #dbeafe;
+      font: 850 13px Consolas, monospace;
+      text-anchor: middle;
+    }
+
+    .balance.pos { fill: var(--green); }
+    .balance.neg { fill: var(--red); }
+    .balance.zero { fill: var(--violet); }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 1px solid #475569;
+      border-radius: 7px;
+      padding: 9px 12px;
+      color: var(--ink);
+      background: #24324a;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 750;
+    }
+
+    button.primary {
+      border-color: #22d3ee;
+      background: #0e7490;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      color: #cbd5e1;
+      background: #26364f;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .formula {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      color: #dbeafe;
+      background: #0b1220;
+      font: 800 13px Consolas, monospace;
+      white-space: pre-line;
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 880px) {
+      .wrap { grid-template-columns: 1fr; }
+      svg { height: 390px; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <main class="panel">
-      <h1>Dolní meze: převod na obyčejný max-flow</h1>
-      <p class="muted">Když má hrana povinný tok l(e), nulový tok už nemusí být přípustný.</p>
-      <svg id="svg" viewBox="0 0 780 390"></svg>
-      <div class="controls"><button id="prev">← zpět</button><button class="primary" id="next">další krok →</button><button id="reset">reset</button></div>
+      <h1 id="mainTitle"></h1>
+      <p class="muted" id="mainSubtitle"></p>
+      <svg id="svg" viewBox="0 0 860 430" aria-label="Flow reduction diagram"></svg>
+      <div class="controls">
+        <button id="prev">← zpět</button>
+        <button class="primary" id="next">další krok →</button>
+        <button id="reset">reset</button>
+      </div>
     </main>
+
     <aside class="panel">
       <span class="badge" id="badge"></span>
       <h2 id="title"></h2>
       <p id="text"></p>
       <div class="formula" id="formula"></div>
+      <p class="hint" id="hint"></p>
     </aside>
   </div>
+
   <script>
-    const NS="http://www.w3.org/2000/svg";
-    const baseNodes={A:[180,190],B:[390,105],C:[390,275]};
-    const baseEdges=[
-      {from:"A",to:"B",l:2,u:5,label:[285,130]},
-      {from:"A",to:"C",l:1,u:4,label:[285,250]},
-      {from:"B",to:"C",l:1,u:3,label:[430,190]}
-    ];
-    const steps=[
-      {title:"1. Původní síť s dolními mezemi",text:"Hrana [l,u] musí nést alespoň l jednotek toku. Nemůžeme automaticky začít s f=0.",formula:"příklad hran:\nA→B [2,5]\nA→C [1,4]\nB→C [1,3]",mode:"orig"},
-      {title:"2. Odečteme povinné minimum",text:"Substituce f(e)=l(e)+f'(e). Nová kapacita je u'(e)=u(e)-l(e), dolní mez je 0.",formula:"A→B: u'=5-2=3\nA→C: u'=4-1=3\nB→C: u'=3-1=2",mode:"shift"},
-      {title:"3. Spočítáme bilance uzlů",text:"Povinné toky rozbijí Kirchhoffův zákon. Bilance říká, kolik musí transformovaný tok dodat nebo odebrat.",formula:"b(v)=Σ l_in - Σ l_out\nb(A)=-3, b(B)=1, b(C)=2",mode:"balance"},
-      {title:"4. Přidáme super-zdroj a super-odpad",text:"Pro b(v)>0 přidáme S→v s kapacitou b(v). Pro b(v)<0 přidáme v→T s kapacitou -b(v). Feasible flow existuje, když se všechny tyto hrany nasytí.",formula:"S→B cap 1\nS→C cap 2\nA→T cap 3",mode:"super"}
-    ];
-    let step=0;
-    function el(n,a={}){const e=document.createElementNS(NS,n);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));return e}
-    function arrow(svg){const d=el("defs");d.innerHTML='<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#64748b"/></marker>';svg.append(d)}
-    function node(svg,id,x,y,cls=""){svg.append(el("circle",{cx:x,cy:y,r:28,class:"node "+cls}));const t=el("text",{x,y:y+1,class:"txt"});t.textContent=id;svg.append(t)}
-    function line(svg,x1,y1,x2,y2,cls="edge"){svg.append(el("line",{x1,y1,x2,y2,class:cls}))}
-    function label(svg,x,y,text){const g=el("g",{class:"label"});g.append(el("rect",{x:x-42,y:y-14,width:84,height:26,rx:6}));const t=el("text",{x,y:y+4});t.textContent=text;g.append(t);svg.append(g)}
-    function render(){
-      const s=steps[step], svg=document.getElementById("svg"); svg.innerHTML=""; arrow(svg);
-      const n={...baseNodes}; if(s.mode==="super"){n.S=[70,190];n.T=[650,190]}
-      baseEdges.forEach(e=>{const [x1,y1]=n[e.from], [x2,y2]=n[e.to]; line(svg,x1,y1,x2,y2,s.mode==="orig"?"edge hot":"edge"); label(svg,e.label[0],e.label[1],s.mode==="orig"?`[${e.l},${e.u}]`:`u'=${e.u-e.l}`)});
-      if(s.mode==="super"){line(svg,98,190,362,110,"edge super");label(svg,235,130,"1");line(svg,98,190,362,270,"edge super");label(svg,235,250,"2");line(svg,208,190,622,190,"edge super");label(svg,415,175,"3")}
-      Object.entries(n).forEach(([id,[x,y]])=>{let cls=id==="S"||id==="T"?"super":""; if(s.mode==="balance"||s.mode==="super"){if(id==="B"||id==="C")cls+=" pos"; if(id==="A")cls+=" neg"} node(svg,id,x,y,cls); if(s.mode==="balance"&&id.length===1){const b={A:"b=-3",B:"b=1",C:"b=2"}[id]; const tx=el("text",{x,y:y+48,class:"balance"});tx.textContent=b;svg.append(tx)}});
-      document.getElementById("badge").textContent=`${step+1} / ${steps.length}`;
-      document.getElementById("title").textContent=s.title;
-      document.getElementById("text").textContent=s.text;
-      document.getElementById("formula").textContent=s.formula;
+    const NS = "http://www.w3.org/2000/svg";
+    const mode = location.hash === "#balances" ? "balances" : "lower";
+
+    const configs = {
+      lower: {
+        title: "Dolní meze: odstranění povinného toku",
+        subtitle: "Nejdřív do hran vložíme minimum l(e). Zbytek řešíme jako tok s bilancemi.",
+        nodes: {
+          A: [190, 220],
+          B: [430, 105],
+          C: [430, 335]
+        },
+        edges: [
+          { from: "A", to: "B", l: 2, u: 5, label: [305, 130], curve: [280, 145, 345, 112] },
+          { from: "A", to: "C", l: 1, u: 4, label: [305, 310], curve: [280, 295, 345, 328] },
+          { from: "B", to: "C", l: 1, u: 3, label: [485, 220] }
+        ],
+        steps: [
+          {
+            title: "1. Původní hrany mají interval [l,u]",
+            text: "Dolní mez l(e) je povinný tok. Nulový tok proto nemusí splňovat kapacitní omezení.",
+            formula: "A→B [2,5]\nA→C [1,4]\nB→C [1,3]",
+            stage: "original"
+          },
+          {
+            title: "2. Posuneme proměnnou f(e)=l(e)+f'(e)",
+            text: "Povinné minimum dáme stranou. Nová proměnná f'(e) má dolní mez 0 a kapacitu u(e)-l(e).",
+            formula: "A→B: u'=5-2=3\nA→C: u'=4-1=3\nB→C: u'=3-1=2",
+            stage: "shift"
+          },
+          {
+            title: "3. Povinný tok vytvoří bilance",
+            text: "Po odečtení dolních mezí už uzly nemusí mít zachování toku. To přesně zapíšeme bilancí b(v).",
+            formula: "b(v)=Σ l_in - Σ l_out\nb(A)=-3\nb(B)=+1\nb(C)=+2",
+            stage: "balances"
+          },
+          {
+            title: "4. Bilance vyřešíme přes super-zdroj a super-odpad",
+            text: "Kladné bilance napojíme ze S. Záporné bilance napojíme do T. Přípustný tok existuje, když se tyto nové hrany nasytí.",
+            formula: "S→B cap 1\nS→C cap 2\nA→T cap 3",
+            stage: "super"
+          },
+          {
+            title: "5. Po max-flow vrátíme f(e)=l(e)+f'(e)",
+            text: "Max-flow najde zbytkový tok f'. Původní tok dostaneme tak, že ke každé hraně přičteme zpět její dolní mez.",
+            formula: "původní tok:\nf(e)=l(e)+f'(e)\n\nkontrola: super-hrany musí být saturované",
+            stage: "done"
+          }
+        ]
+      },
+      balances: {
+        title: "Přípustný tok s bilancemi",
+        subtitle: "Vrchol s b(v)>0 dodává tok, vrchol s b(v)<0 tok spotřebovává.",
+        nodes: {
+          "1": [175, 220],
+          "2": [430, 105],
+          "3": [430, 335]
+        },
+        edges: [
+          { from: "1", to: "2", cap: 7, flow: 3, label: [295, 130], curve: [275, 145, 355, 112] },
+          { from: "1", to: "3", cap: 5, flow: 5, label: [285, 238] },
+          { from: "2", to: "3", cap: 3, flow: 3, label: [485, 220] }
+        ],
+        balances: { "1": 8, "2": 0, "3": -8 },
+        steps: [
+          {
+            title: "1. Bilance říká, kolik má uzel dodat nebo odebrat",
+            text: "Tady uzel 1 dodává 8 jednotek, uzel 3 spotřebuje 8 jednotek a uzel 2 je jen průchozí.",
+            formula: "b(1)=+8\nb(2)=0\nb(3)=-8\nΣ b(v)=0",
+            stage: "balances"
+          },
+          {
+            title: "2. Podmínka v každém vrcholu",
+            text: "Přípustný tok musí splnit kapacity hran i rovnici odtok minus přítok rovná se bilance.",
+            formula: "Σ f_out(v) - Σ f_in(v) = b(v)\n\n1: 8-0 = 8\n2: 3-3 = 0\n3: 0-8 = -8",
+            stage: "flow"
+          },
+          {
+            title: "3. Redukce na max-flow",
+            text: "Super-zdroj S napojíme na kladné bilance. Záporné bilance napojíme do super-odpadu T.",
+            formula: "S→1 cap 8\n3→T cap 8\n\nostatní hrany zůstanou s původními kapacitami",
+            stage: "super"
+          },
+          {
+            title: "4. Kontrola saturace super-hran",
+            text: "Když max-flow nasytí všechny hrany ze S a do T, původní síť má přípustný tok s bilancemi.",
+            formula: "S→1: 8/8 saturováno\n3→T: 8/8 saturováno\n\n⇒ feasible flow existuje",
+            stage: "saturated"
+          }
+        ]
+      }
+    };
+
+    let step = 0;
+    const cfg = configs[mode];
+
+    const svg = document.getElementById("svg");
+    const title = document.getElementById("title");
+    const text = document.getElementById("text");
+    const formula = document.getElementById("formula");
+    const badge = document.getElementById("badge");
+    const hint = document.getElementById("hint");
+
+    document.getElementById("mainTitle").textContent = cfg.title;
+    document.getElementById("mainSubtitle").textContent = cfg.subtitle;
+
+    function el(name, attrs = {}) {
+      const node = document.createElementNS(NS, name);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+      return node;
     }
-    document.getElementById("next").onclick=()=>{step=Math.min(steps.length-1,step+1);render()};
-    document.getElementById("prev").onclick=()=>{step=Math.max(0,step-1);render()};
-    document.getElementById("reset").onclick=()=>{step=0;render()};
+
+    function defs() {
+      const d = el("defs");
+      d.innerHTML = `
+        <marker id="arrowGray" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+          <path d="M0 0 L12 6 L0 12z" fill="#94a3b8"></path>
+        </marker>
+        <marker id="arrowAmber" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="11" markerHeight="11" orient="auto">
+          <path d="M0 0 L12 6 L0 12z" fill="#fbbf24"></path>
+        </marker>
+        <marker id="arrowGreen" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="11" markerHeight="11" orient="auto">
+          <path d="M0 0 L12 6 L0 12z" fill="#34d399"></path>
+        </marker>
+        <marker id="arrowBlue" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="11" markerHeight="11" orient="auto">
+          <path d="M0 0 L12 6 L0 12z" fill="#38bdf8"></path>
+        </marker>`;
+      svg.append(d);
+    }
+
+    function markerFor(className) {
+      if (className.includes("super")) return "url(#arrowBlue)";
+      if (className.includes("used")) return "url(#arrowGreen)";
+      if (className.includes("hot")) return "url(#arrowAmber)";
+      return "url(#arrowGray)";
+    }
+
+    function shortenPoint(point, toward, amount = 36) {
+      const dx = toward[0] - point[0];
+      const dy = toward[1] - point[1];
+      const len = Math.hypot(dx, dy) || 1;
+      return [
+        point[0] + dx / len * amount,
+        point[1] + dy / len * amount
+      ];
+    }
+
+    function pathData(edge, nodes = cfg.nodes) {
+      const from = nodes[edge.from];
+      const to = nodes[edge.to];
+      if (edge.curve) {
+        const c1 = [edge.curve[0], edge.curve[1]];
+        const c2 = [edge.curve[2], edge.curve[3]];
+        const start = shortenPoint(from, c1);
+        const end = shortenPoint(to, c2);
+        return `M ${start[0]} ${start[1]} C ${c1[0]} ${c1[1]}, ${c2[0]} ${c2[1]}, ${end[0]} ${end[1]}`;
+      }
+      const start = shortenPoint(from, to);
+      const end = shortenPoint(to, from);
+      return `M ${start[0]} ${start[1]} L ${end[0]} ${end[1]}`;
+    }
+
+    function drawEdge(edge, className, labelText) {
+      svg.append(el("path", {
+        d: pathData(edge),
+        class: className,
+        "marker-end": markerFor(className)
+      }));
+      if (labelText) drawLabel(edge.label[0], edge.label[1], labelText);
+    }
+
+    function drawLine(from, to, className, labelAt, labelText) {
+      svg.append(el("path", {
+        d: `M ${from[0]} ${from[1]} L ${to[0]} ${to[1]}`,
+        class: className,
+        "marker-end": markerFor(className)
+      }));
+      if (labelText) drawLabel(labelAt[0], labelAt[1], labelText);
+    }
+
+    function drawLabel(x, y, value, width = 92) {
+      const g = el("g", { class: "label" });
+      g.append(el("rect", { x: x - width / 2, y: y - 14, width, height: 28, rx: 6 }));
+      const t = el("text", { x, y: y + 1 });
+      t.textContent = value;
+      g.append(t);
+      svg.append(g);
+    }
+
+    function drawNote(x, y, value, width = 180) {
+      const g = el("g", { class: "note" });
+      g.append(el("rect", { x: x - width / 2, y: y - 16, width, height: 32, rx: 7 }));
+      const t = el("text", { x, y: y + 1 });
+      t.textContent = value;
+      g.append(t);
+      svg.append(g);
+    }
+
+    function balanceClass(value) {
+      if (value > 0) return "pos";
+      if (value < 0) return "neg";
+      return "zero";
+    }
+
+    function drawNode(id, x, y, cls = "") {
+      svg.append(el("circle", { cx: x, cy: y, r: 30, class: `node ${cls}` }));
+      const t = el("text", { x, y: y + 1, class: "txt" });
+      t.textContent = id;
+      svg.append(t);
+    }
+
+    function drawBalance(id, value, x, y) {
+      const b = el("text", { x, y: y + 50, class: `balance ${balanceClass(value)}` });
+      b.textContent = `b=${value > 0 ? "+" : ""}${value}`;
+      svg.append(b);
+    }
+
+    function renderLower(stage) {
+      cfg.edges.forEach(edge => {
+        let label = `[${edge.l},${edge.u}]`;
+        let cls = "edge";
+        if (stage === "original") cls = "edge hot";
+        if (stage === "shift" || stage === "balances" || stage === "super" || stage === "done") label = `u'=${edge.u - edge.l}`;
+        if (stage === "done") label = `l+f'`;
+        drawEdge(edge, cls, label);
+      });
+
+      if (stage === "original") {
+        drawNote(636, 86, "l(e) = povinné minimum");
+      }
+
+      if (stage === "shift") {
+        drawNote(635, 86, "dolní mez je po posunu 0");
+      }
+
+      if (stage === "balances" || stage === "super" || stage === "done") {
+        drawNote(660, 86, "bilance vzniknou z povinných l(e)", 220);
+      }
+
+      if (stage === "super" || stage === "done") {
+        const S = [70, 220];
+        const T = [720, 220];
+        drawLine(S, [402, 105], "edge super", [244, 92], "cap 1");
+        drawLine(S, [402, 335], "edge super", [244, 365], "cap 2");
+        drawLine([220, 220], [690, 220], "edge super", [570, 196], "cap 3");
+        drawNode("S", S[0], S[1], "super");
+        drawNode("T", T[0], T[1], "super");
+      }
+
+      Object.entries(cfg.nodes).forEach(([id, [x, y]]) => {
+        const b = { A: -3, B: 1, C: 2 }[id];
+        const cls = stage === "balances" || stage === "super" || stage === "done" ? balanceClass(b) : "";
+        drawNode(id, x, y, cls);
+        if (stage === "balances" || stage === "super" || stage === "done") drawBalance(id, b, x, y);
+      });
+    }
+
+    function renderBalances(stage) {
+      const showFlow = stage === "flow" || stage === "super" || stage === "saturated";
+      cfg.edges.forEach(edge => {
+        const cls = showFlow ? "edge used" : "edge";
+        const label = showFlow ? `${edge.flow}/${edge.cap}` : `cap ${edge.cap}`;
+        drawEdge(edge, cls, label);
+      });
+
+      if (stage === "balances") {
+        drawNote(655, 88, "feasible flow musí splnit kapacity i bilance", 260);
+      }
+
+      if (stage === "flow") {
+        drawNote(650, 88, "odtok - přítok = b(v)", 210);
+      }
+
+      if (stage === "super" || stage === "saturated") {
+        const S = [70, 220];
+        const T = [720, 335];
+        drawLine(S, [145, 220], stage === "saturated" ? "edge used" : "edge super", [105, 185], stage === "saturated" ? "8/8" : "cap 8");
+        drawLine([460, 335], [690, 335], stage === "saturated" ? "edge used" : "edge super", [600, 360], stage === "saturated" ? "8/8" : "cap 8");
+        drawNode("S", S[0], S[1], "super");
+        drawNode("T", T[0], T[1], "super");
+        drawNote(650, 88, "kontrolujeme saturaci super-hran", 240);
+      }
+
+      Object.entries(cfg.nodes).forEach(([id, [x, y]]) => {
+        const b = cfg.balances[id];
+        drawNode(id, x, y, balanceClass(b));
+        drawBalance(id, b, x, y);
+      });
+    }
+
+    function render() {
+      const active = cfg.steps[step];
+      svg.innerHTML = "";
+      defs();
+
+      if (mode === "balances") renderBalances(active.stage);
+      else renderLower(active.stage);
+
+      badge.textContent = `${step + 1} / ${cfg.steps.length}`;
+      title.textContent = active.title;
+      text.textContent = active.text;
+      formula.textContent = active.formula;
+      hint.textContent = mode === "balances"
+        ? "Kladná bilance znamená zdroj toku v původní síti; záporná bilance znamená požadavek."
+        : "Po vyřešení transformované úlohy nezapomeň přičíst dolní meze zpět: f=l+f'.";
+    }
+
+    document.getElementById("next").onclick = () => {
+      step = Math.min(cfg.steps.length - 1, step + 1);
+      render();
+    };
+    document.getElementById("prev").onclick = () => {
+      step = Math.max(0, step - 1);
+      render();
+    };
+    document.getElementById("reset").onclick = () => {
+      step = 0;
+      render();
+    };
+
     render();
   </script>
 </body>
