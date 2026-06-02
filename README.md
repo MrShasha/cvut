@@ -20,7 +20,7 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 | Stav             | Předmět                       | Poznámka |
 | ---------------- | ----------------------------- | -------- |
 | ✅ Dokončené      | Databáze 2 😊                 | Jirka    |
-| 🟡 Rozpracované  | Softwarové architektury 😊    | Artur    |
+| ✅ Dokončené      | Softwarové architektury 😊    | Artur    |
 | ❌ Nerozpracované | Bezpečnost systémů 😊         |          |
 | ✅ Dokončené      | Efektivní software 🤨         | Jirka    |
 | 🟡 Rozpracované  | Paralelní algoritmy 💀        | Jirka    |
