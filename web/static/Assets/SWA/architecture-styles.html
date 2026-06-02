@@ -1099,7 +1099,6 @@
       renderList("risks", diagram.risks);
       renderBadges(diagram.qualities);
       [...tabs.children].forEach((tab, index) => tab.classList.toggle("active", index === current));
-      tabs.children[current]?.scrollIntoView({ block: "nearest", inline: "center" });
 
       const edge = diagram.edges[step % diagram.edges.length];
       const text = diagram.steps[step % diagram.steps.length];
