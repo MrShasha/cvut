@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GVG - roviny v P3</title>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#111820;color:#e7edf5;font-family:"Segoe UI",Inter,system-ui,sans-serif;padding:14px;overflow:hidden}.widget{display:grid;grid-template-columns:minmax(0,1fr)320px;gap:12px;height:100%;min-height:0}.scene,.panel{border:1px solid #334155;border-radius:8px;background:#18202b;min-width:0}.scene{position:relative;overflow:hidden}.scene canvas{display:block;width:100%!important;height:100%!important;cursor:grab}.hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:rgba(203,213,225,.56);font-size:12px;pointer-events:none}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{font-size:18px;margin:0;color:#f8fafc}.muted{font-size:13px;line-height:1.45;color:#aebccd;margin:0}.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.tab{border:1px solid #3d4b5f;border-radius:6px;background:#202a38;color:#e5e7eb;padding:8px 6px;cursor:pointer;font:inherit;font-weight:700}.tab.active,.tab:hover{border-color:#60a5fa;background:#173454}.card{border:1px solid #2f3b4d;border-radius:7px;background:#111923;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:7px;font-family:Consolas,Menlo,monospace;color:#f8fafc;font-size:12px;line-height:1.55}.result{margin-top:auto;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.11);color:#bae6fd;border-radius:7px;padding:10px;font-size:13px;line-height:1.45}@media(max-width:840px){body{overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene{min-height:520px}}
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene" id="scene"><div class="hint">Táhni = rotace | Scroll = zoom</div></section>
+  <aside class="panel">
+    <h1>Rovina jako 4-vektor</h1>
+    <p class="muted">V P³ je rovina reprezentována homogenním vektorem π=[a,b,c,d]ᵀ.</p>
+    <div class="tabs"><button class="tab active" data-mode="incidence">Incidence</button><button class="tab" data-mode="scale">Násobek</button><button class="tab" data-mode="ideal">Ideální řez</button></div>
+    <div class="card" id="explain"></div>
+    <div class="result">Příklad: π=[1,1,1,-1]ᵀ, tedy v afinním řezu w=1 rovnice x+y+z=1.</div>
+  </aside>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const host=document.getElementById('scene'),explain=document.getElementById('explain');let mode='incidence',group;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x111820);
+const camera=new THREE.PerspectiveCamera(46,1,.1,100);camera.position.set(4.7,4.0,5.2);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));host.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.target.set(.35,.35,.45);controls.minDistance=3;controls.maxDistance=14;
+scene.add(new THREE.AmbientLight(0xffffff,.75));const light=new THREE.DirectionalLight(0xffffff,.85);light.position.set(4,5,6);scene.add(light);
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+function label(text,color='#e5e7eb'){const c=document.createElement('canvas');c.width=350;c.height=74;const ctx=c.getContext('2d');ctx.font='700 24px Segoe UI, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='rgba(20,23,28,.82)';ctx.strokeStyle='rgba(255,255,255,.18)';rr(ctx,12,8,326,56,10);ctx.fill();ctx.stroke();ctx.fillStyle=color;ctx.fillText(text,175,38);const tex=new THREE.CanvasTexture(c);const mat=new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false});const s=new THREE.Sprite(mat);s.scale.set(1.15,.25,1);s.renderOrder=40;return s}
+function addLabel(g,t,p,c){const s=label(t,c);s.position.copy(p);g.add(s)}
+function line(g,a,b,color,dashed=false){const geo=new THREE.BufferGeometry().setFromPoints([a,b]);const mat=dashed?new THREE.LineDashedMaterial({color,dashSize:.16,gapSize:.11,transparent:true,opacity:.8}):new THREE.LineBasicMaterial({color});const l=new THREE.Line(geo,mat);if(dashed)l.computeLineDistances();g.add(l)}
+function sphere(g,p,color,name){const m=new THREE.Mesh(new THREE.SphereGeometry(.085,24,14),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.15}));m.position.copy(p);g.add(m);if(name)addLabel(g,name,p.clone().add(new THREE.Vector3(.18,.13,.12)),'#f8fafc')}
+function plane(g){const pts=[new THREE.Vector3(1.9,.1,-1),new THREE.Vector3(.1,1.9,-1),new THREE.Vector3(-1.25,.5,1.75),new THREE.Vector3(.5,-1.25,1.75)];const geo=new THREE.BufferGeometry().setFromPoints(pts);geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();g.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x38bdf8,transparent:true,opacity:.25,side:THREE.DoubleSide,depthWrite:false})));g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x38bdf8})));addLabel(g,'π: x+y+z=1',new THREE.Vector3(.7,.7,.7),'#bae6fd')}
+function base(g){g.add(new THREE.GridHelper(5,10,0x344256,0x253142));g.add(new THREE.AxesHelper(3));plane(g);sphere(g,new THREE.Vector3(1,0,0),0x22c55e,'A');sphere(g,new THREE.Vector3(0,1,0),0x22c55e,'B');sphere(g,new THREE.Vector3(0,0,1),0x22c55e,'C');sphere(g,new THREE.Vector3(1.2,1.2,1.2),0xf97316,'Q mimo');line(g,new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),0x22c55e);line(g,new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1),0x22c55e)}
+function rebuild(){if(group)scene.remove(group);group=new THREE.Group();base(group);if(mode==='ideal'){line(group,new THREE.Vector3(2,-1,-1),new THREE.Vector3(-1,2,-1),0xfbbf24,true);addLabel(group,'π ∩ π∞: x+y+z=0',new THREE.Vector3(.3,.8,-1),'#fde68a')}if(mode==='scale')addLabel(group,'2π je tatáž rovina',new THREE.Vector3(-.9,1.6,.8),'#bfdbfe');if(mode==='incidence')explain.innerHTML='<strong>Incidence</strong><span class="formula">π=[1,1,1,-1]ᵀ<br>πᵀA=0, πᵀB=0, πᵀC=0<br>πᵀQ=1.2+1.2+1.2-1≠0</span>';if(mode==='scale')explain.innerHTML='<strong>Násobek</strong><span class="formula">π ~ λπ, λ≠0<br>[1,1,1,-1]ᵀ ~ [2,2,2,-2]ᵀ</span>';if(mode==='ideal')explain.innerHTML='<strong>Ideální řez</strong><span class="formula">π∞: w=0<br>π ∩ π∞: x+y+z=0, w=0</span>';scene.add(group)}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));rebuild()});
+function resize(){const r=host.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix()}window.addEventListener('resize',resize);resize();rebuild();function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
+</script>
+</body>
+</html>
