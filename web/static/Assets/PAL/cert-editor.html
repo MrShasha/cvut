@@ -1,0 +1,147 @@
+<div class="tree-encoder-widget" style="background-color: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; max-width: 850px; margin: 20px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3); box-sizing: border-box;">
+    <h3 style="margin-top: 0; color: #569cd6; border-bottom: 1px solid #3c3c3c; padding-bottom: 8px;">Interaktivní stavba stromu → Výpočet certifikátu</h3>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div style="font-size: 0.85rem; color: #aaa;">
+            Kliknutím na existující uzel (modrý) z něj vyrostou noví potomci.
+        </div>
+        <button id="tree-enc-reset" style="background: #a1260d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Resetovat strom</button>
+    </div>
+
+    <div style="background: #111; border: 1px solid #3c3c3c; border-radius: 6px; position: relative; height: 300px; margin-bottom: 20px;">
+        <svg id="tree-enc-svg" width="100%" height="100%" style="display: block;"></svg>
+    </div>
+
+    <div style="background-color: #252526; border: 1px solid #3c3c3c; padding: 15px; border-radius: 6px; font-size: 0.85rem; line-height: 1.5;">
+        <div style="color: #6a9955; margin-bottom: 5px;">// Výpočet certifikátu ořezáváním a lexikografickým řazením</div>
+        <div style="margin-bottom: 8px;">
+            Struktura uzlů: <span id="tree-enc-nodes-count" style="color: #4fc1ff;">1</span> | 
+            Délka řetězce ($2 \cdot |V|$): <span id="tree-enc-len" style="color: #4fc1ff;">2</span>
+        </div>
+        <div style="background: #1e1e1e; padding: 10px; border-radius: 4px; border: 1px solid #444; font-size: 1rem; font-weight: bold; letter-spacing: 1px;">
+            Kanonický certifikát: <span id="tree-enc-result" style="color: #ce9178;">01</span>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const svg = document.getElementById('tree-enc-svg');
+    const resultEl = document.getElementById('tree-enc-result');
+    const nodesCountEl = document.getElementById('tree-enc-nodes-count');
+    const lenEl = document.getElementById('tree-enc-len');
+    const resetBtn = document.getElementById('tree-enc-reset');
+
+    // Inicializace: Kořenový uzel
+    let treeData = {
+        id: 0,
+        children: []
+    };
+    let globalCounter = 1;
+
+    function renderTree() {
+        svg.innerHTML = '';
+        const width = svg.clientWidth || 800;
+        const height = 300;
+
+        // Spočítat souřadnice uzlů (hierarchický layout)
+        const positions = {};
+        
+        function assignPositions(node, xMin, xMax, depth) {
+            const x = (xMin + xMax) / 2;
+            const y = 40 + depth * 55;
+            positions[node.id] = { x, y };
+            
+            const count = node.children.length;
+            if (count > 0) {
+                const segmentWidth = (xMax - xMin) / count;
+                node.children.forEach((child, idx) => {
+                    assignPositions(child, xMin + idx * segmentWidth, xMin + (idx + 1) * segmentWidth, depth + 1);
+                });
+            }
+        }
+        
+        assignPositions(treeData, 0, width, 0);
+
+        // 1. Vykreslení hran
+        function drawLines(node) {
+            node.children.forEach(child => {
+                const p1 = positions[node.id];
+                const p2 = positions[child.id];
+                
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", p1.x); line.setAttribute("y1", p1.y);
+                line.setAttribute("x2", p2.x); line.setAttribute("y2", p2.y);
+                line.setAttribute("stroke", "#555");
+                line.setAttribute("stroke-width", "2");
+                svg.appendChild(line);
+                
+                drawLines(child);
+            });
+        }
+        drawLines(treeData);
+
+        // 2. Vykreslení uzlů
+        let totalNodes = 0;
+        function drawNodes(node) {
+            totalNodes++;
+            const p = positions[node.id];
+
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            g.style.cursor = "pointer";
+            g.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Přidat potomka kliknutému uzlu
+                node.children.push({ id: globalCounter++, children: [] });
+                renderTree();
+            });
+
+            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            circle.setAttribute("cx", p.x); circle.setAttribute("cy", p.y);
+            circle.setAttribute("r", "14");
+            circle.setAttribute("fill", "#569cd6");
+            circle.setAttribute("stroke", "#1e1e1e");
+            circle.setAttribute("stroke-width", "2");
+            g.appendChild(circle);
+
+            const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            txt.setAttribute("x", p.x); txt.setAttribute("y", p.y + 4);
+            txt.setAttribute("text-anchor", "middle");
+            txt.setAttribute("fill", "white");
+            txt.setAttribute("font-size", "10px");
+            txt.textContent = node.id;
+            g.appendChild(txt);
+
+            svg.appendChild(g);
+            node.children.forEach(drawNodes);
+        }
+        drawNodes(treeData);
+
+        // 3. Výpočet certifikátu (AHU Algoritmus pro kódování stromů z kořene)
+        function computeCertificate(node) {
+            if (node.children.length === 0) {
+                return "01";
+            }
+            const childCerts = node.children.map(computeCertificate);
+            // Lexikografické seřazení zaručuje izomorfní invariantnost
+            childCerts.sort();
+            return "0" + childCerts.join("") + "1";
+        }
+
+        const cert = computeCertificate(treeData);
+        resultEl.textContent = cert;
+        nodesCountEl.textContent = totalNodes;
+        lenEl.textContent = cert.length;
+    }
+
+    resetBtn.addEventListener('click', () => {
+        treeData = { id: 0, children: [] };
+        globalCounter = 1;
+        renderTree();
+    });
+
+    // Prvotní vykreslení a navázání resize listeneru
+    window.addEventListener('resize', renderTree);
+    setTimeout(renderTree, 100);
+})();
+</script>

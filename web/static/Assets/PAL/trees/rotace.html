@@ -1,0 +1,267 @@
+<div class="tree-rotation-widget" style="font-family: var(--ifm-font-family-base); color: #e3e3e3; background-color: #1e1e1e; border: 1px solid #444; border-radius: 8px; padding: 20px; max-width: 1000px; margin: 20px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+    
+    <style>
+        .tree-rotation-widget button { background: #333; color: white; border: 1px solid #555; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; transition: background 0.2s; }
+        .tree-rotation-widget button:hover { background: #444; }
+        .tree-rotation-widget .control-group { display: flex; gap: 8px; margin-bottom: 15px; flex-wrap: wrap; }
+        .tree-rotation-widget .math-log { font-family: 'Courier New', Courier, monospace; font-size: 13px; color: #aaa; margin: 4px 0; }
+        .tree-rotation-widget .status-ok { color: #4caf50; font-weight: bold; }
+        .tree-rotation-widget .status-error { color: #f44336; font-weight: bold; }
+    </style>
+
+    <h3 style="margin-top: 0; color: white;">Vyvažování a Lokální Rotace Stromů</h3>
+    
+    <div class="control-group" style="border-bottom: 1px solid #444; padding-bottom: 15px;">
+        <button id="rot-left-btn">Rotace vlevo (L)</button>
+        <button id="rot-right-btn">Rotace vpravo (R)</button>
+        <button id="rot-lr-btn">Dvojitá rotace (LR)</button>
+        <button id="rot-rl-btn">Dvojitá rotace (RL)</button>
+        <button id="toggle-tree-mode" style="margin-left: auto; background: #2196F3;">Přepnout režim: AVL / RB-Tree</button>
+        <button id="reset-tree-btn">Reset stromu</button>
+    </div>
+
+    <div style="display: flex; gap: 20px;">
+        <svg id="tree-svg" width="500" height="350" style="background: #252525; border: 1px solid #444; border-radius: 4px;">
+            </svg>
+
+        <div style="flex-grow: 1; background: #2a2a2a; padding: 15px; border-radius: 4px; border: 1px solid #444; overflow-y: auto; max-height: 350px;">
+            <p style="font-size: 15px; color: white; margin-top: 0; margin-bottom: 10px;"><strong>Matematický stav & Validace</strong></p>
+            <div id="tree-math-content"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const svg = document.getElementById('tree-svg');
+            const mathContent = document.getElementById('tree-math-content');
+            let isAVLMode = true;
+
+            // Výchozí topologie testovacího nevyváženého stromu
+            let treeData = {};
+
+            function initDefaultTree() {
+                if (isAVLMode) {
+                    treeData = {
+                        val: 50, bal: 2, color: 'B', x: 250, y: 50,
+                        left: {
+                            val: 30, bal: 1, color: 'R', x: 130, y: 130,
+                            left: { val: 20, bal: 0, color: 'B', x: 70, y: 210, left: null, right: null },
+                            right: { val: 40, bal: 0, color: 'B', x: 190, y: 210, left: null, right: null }
+                        },
+                        right: { val: 70, bal: 0, color: 'B', x: 370, y: 130, left: null, right: null }
+                    };
+                } else {
+                    // RB Tree s úmyslným porušením pravidel (Double Red) pro ukázku
+                    treeData = {
+                        val: 50, bal: 0, color: 'B', x: 250, y: 50,
+                        left: {
+                            val: 30, bal: 0, color: 'R', x: 130, y: 130,
+                            left: { val: 20, bal: 0, color: 'R', x: 70, y: 210, left: null, right: null }, // Chyba: Red pod Red
+                            right: { val: 40, bal: 0, color: 'B', x: 190, y: 210, left: null, right: null }
+                        },
+                        right: { val: 70, bal: 0, color: 'B', x: 370, y: 130, left: null, right: null }
+                    };
+                }
+                updateTreeGeometry(treeData, 250, 50, 120);
+            }
+
+            function updateTreeGeometry(node, x, y, hSpace) {
+                if (!node) return;
+                node.x = x; node.y = y;
+                if (node.left) updateTreeGeometry(node.left, x - hSpace, y + 70, hSpace * 0.5);
+                if (node.right) updateTreeGeometry(node.right, x + hSpace, y + 70, hSpace * 0.5);
+            }
+
+            // Výpočty výšek a balančních faktorů
+            function getHeight(node) {
+                if (!node) return -1;
+                return 1 + Math.max(getHeight(node.left), getHeight(node.right));
+            }
+
+            function recalculateMetrics(node) {
+                if (!node) return;
+                const hL = getHeight(node.left);
+                const hH = getHeight(node.right);
+                node.bal = hL - hH;
+                recalculateMetrics(node.left);
+                recalculateMetrics(node.right);
+            }
+
+            // Implementace rotací nad statickým stromem (přepis hodnot/topologie)
+            function rotateRight() {
+                if (!treeData.left) return;
+                let q = treeData;
+                let p = treeData.left;
+                q.left = p.right;
+                p.right = q;
+                treeData = p;
+                finalizeTransformation();
+            }
+
+            function rotateLeft() {
+                if (!treeData.right) return;
+                let p = treeData;
+                let q = treeData.right;
+                p.right = q.left;
+                q.left = p;
+                treeData = q;
+                finalizeTransformation();
+            }
+
+            function finalizeTransformation() {
+                recalculateMetrics(treeData);
+                updateTreeGeometry(treeData, 250, 50, 120);
+                render();
+            }
+
+            function render() {
+                while (svg.firstChild) svg.removeChild(svg.firstChild);
+                drawEdges(treeData);
+                drawNodes(treeData);
+                validateAndPrintMath();
+            }
+
+            function drawEdges(node) {
+                if (!node) return;
+                if (node.left) { drawLine(node.x, node.y, node.left.x, node.left.y); drawEdges(node.left); }
+                if (node.right) { drawLine(node.x, node.y, node.right.x, node.right.y); drawEdges(node.right); }
+            }
+
+            function drawLine(x1, y1, x2, y2) {
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+                line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+                line.setAttribute("stroke", "#555"); line.setAttribute("stroke-width", "2");
+                svg.appendChild(line);
+            }
+
+            function drawNodes(node) {
+                if (!node) return;
+                const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", node.x); circle.setAttribute("cy", node.y); circle.setAttribute("r", 18);
+                
+                if (isAVLMode) {
+                    circle.setAttribute("fill", "#333");
+                    circle.setAttribute("stroke", Math.abs(node.bal) > 1 ? "#f44336" : "#4caf50");
+                    circle.setAttribute("stroke-width", "2.5");
+                } else {
+                    circle.setAttribute("fill", node.color === 'R' ? "#d32f2f" : "#111");
+                    circle.setAttribute("stroke", "#555");
+                    circle.setAttribute("stroke-width", "1.5");
+                }
+                
+                const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                txt.setAttribute("x", node.x); txt.setAttribute("y", node.y + 5);
+                txt.setAttribute("text-anchor", "middle"); txt.setAttribute("fill", "#fff");
+                txt.setAttribute("font-size", "12px"); txt.textContent = node.val;
+
+                // Sub-label pro doplňková data
+                const subTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                subTxt.setAttribute("x", node.x + 22); subTxt.setAttribute("y", node.y - 5);
+                subTxt.setAttribute("fill", "#aaa"); subTxt.setAttribute("font-size", "10px");
+                subTxt.textContent = isAVLMode ? `b:${node.bal}` : (node.color === 'R' ? 'R' : 'B');
+
+                g.appendChild(circle); g.appendChild(txt); g.appendChild(subTxt);
+                svg.appendChild(g);
+
+                drawNodes(node.left);
+                drawNodes(node.right);
+            }
+
+            // Kontrola pravidel a výpis matematiky do panelu
+            function checkRedViolation(node) {
+                if (!node) return false;
+                if (node.color === 'R') {
+                    if ((node.left && node.left.color === 'R') || (node.right && node.right.color === 'R')) return true;
+                }
+                return checkRedViolation(node.left) || checkRedViolation(node.right);
+            }
+
+            function getBlackHeight(node) {
+                if (!node) return 1; // NIL uzel je černý
+                const leftBH = getBlackHeight(node.left);
+                const rightBH = getBlackHeight(node.right);
+                if (leftBH === -1 || rightBH === -1 || leftBH !== rightBH) return -1;
+                return leftBH + (node.color === 'B' ? 1 : 0);
+            }
+
+            function validateAndPrintMath() {
+                let html = `<p style="color: #2196F3; font-weight:bold;">Režim: ${isAVLMode ? 'AVL Strom' : 'Red-Black Tree'}</p>`;
+                
+                if (isAVLMode) {
+                    const rootBal = treeData.bal;
+                    html += `<p class="math-log">Výška levého podstromu: ${getHeight(treeData.left)}</p>`;
+                    html += `<p class="math-log">Výška pravého podstromu: ${getHeight(treeData.right)}</p>`;
+                    html += `<p class="math-log">Rovnice balance factoru kořene: <br><strong>bal(root) = h(T_L) - h(T_R) = ${rootBal}</strong></p>`;
+                    
+                    let isBalanced = true;
+                    function checkAVL(node) {
+                        if(!node) return;
+                        if(Math.abs(node.bal) > 1) isBalanced = false;
+                        checkAVL(node.left); checkAVL(node.right);
+                    }
+                    checkAVL(treeData);
+
+                    if (isBalanced) {
+                        html += `<p class="status-ok">✔ Podmínka AVL splněna: bal(t) ∈ {-1, 0, 1}</p>`;
+                    } else {
+                        html += `<p class="status-error">❌ Strom je ROZVÁŽENÝ. Proveďte odpovídající rotaci k nápravě.</p>`;
+                    }
+                } else {
+                    const hasRedViolation = checkRedViolation(treeData);
+                    const bh = getBlackHeight(treeData);
+
+                    html += `<p class="math-log">Pravidlo 1: Kořen je černý: <strong>${treeData.color === 'B' ? 'ANO' : 'NE'}</strong></p>`;
+                    html += `<p class="math-log">Pravidlo 2: Red node má černé potomky: <strong style="color:${hasRedViolation ? '#f44336':'#4caf50'}">${hasRedViolation ? 'PORUŠENO (Red-Red konflikt)' : 'ANO'}</strong></p>`;
+                    html += `<p class="math-log">Pravidlo 3: Konzistentní Black-Height (bh): <strong style="color:${bh === -1 ? '#f44336':'#4caf50'}">${bh !== -1 ? `ANO (bh = ${bh})` : 'PORUŠENO (Cesty nemají stejný počet černých uzlů)'}</strong></p>`;
+                    
+                    if (!hasRedViolation && bh !== -1 && treeData.color === 'B') {
+                        html += `<p class="status-ok">✔ Všechna pravidla RB-Tree jsou validní.</p>`;
+                    } else {
+                        html += `<p class="status-error">❌ Struktura porušuje vlastnosti Red-Black stromu.</p>`;
+                    }
+                }
+                mathContent.innerHTML = html;
+            }
+
+            // Handlery pro simulované rotace
+            document.getElementById('rot-right-btn').addEventListener('click', rotateRight);
+            document.getElementById('rot-left-btn').addEventListener('click', rotateLeft);
+            document.getElementById('rot-lr-btn').addEventListener('click', () => {
+                if (treeData.left) {
+                    // Nejdřív levá rotace na levém synu
+                    let p = treeData.left;
+                    if (p.right) {
+                        let q = p.right; p.right = q.left; q.left = p; treeData.left = q;
+                    }
+                    finalizeTransformation();
+                    // Poté pravá rotace na kořeni
+                    setTimeout(rotateRight, 400);
+                }
+            });
+            document.getElementById('rot-rl-btn').addEventListener('click', () => {
+                if (treeData.right) {
+                    let p = treeData.right;
+                    if (p.left) {
+                        let q = p.left; p.left = q.right; q.right = p; treeData.right = q;
+                    }
+                    finalizeTransformation();
+                    setTimeout(rotateLeft, 400);
+                }
+            });
+
+            document.getElementById('toggle-tree-mode').addEventListener('click', () => {
+                isAVLMode = !isAVLMode;
+                initDefaultTree();
+                render();
+            });
+            document.getElementById('reset-tree-btn').addEventListener('click', () => { initDefaultTree(); render(); });
+
+            // Inicializační spuštění
+            initDefaultTree();
+            render();
+        })();
+    </script>
+</div>
