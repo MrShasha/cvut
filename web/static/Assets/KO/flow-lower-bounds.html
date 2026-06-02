@@ -76,7 +76,6 @@
       fill: none;
       stroke: #64748b;
       stroke-width: 3;
-      marker-end: url(#arrow);
     }
 
     .edge.hot {
@@ -362,33 +361,67 @@
     function defs() {
       const d = el("defs");
       d.innerHTML = `
-        <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M0 0 L10 5 L0 10z" fill="#64748b"></path>
+        <marker id="arrowGray" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="10" markerHeight="10" orient="auto">
+          <path d="M0 0 L12 6 L0 12z" fill="#94a3b8"></path>
         </marker>
-        <marker id="arrowBlue" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
-          <path d="M0 0 L10 5 L0 10z" fill="#38bdf8"></path>
+        <marker id="arrowAmber" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="11" markerHeight="11" orient="auto">
+          <path d="M0 0 L12 6 L0 12z" fill="#fbbf24"></path>
+        </marker>
+        <marker id="arrowGreen" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="11" markerHeight="11" orient="auto">
+          <path d="M0 0 L12 6 L0 12z" fill="#34d399"></path>
+        </marker>
+        <marker id="arrowBlue" viewBox="0 0 12 12" refX="10.5" refY="6" markerWidth="11" markerHeight="11" orient="auto">
+          <path d="M0 0 L12 6 L0 12z" fill="#38bdf8"></path>
         </marker>`;
       svg.append(d);
     }
 
+    function markerFor(className) {
+      if (className.includes("super")) return "url(#arrowBlue)";
+      if (className.includes("used")) return "url(#arrowGreen)";
+      if (className.includes("hot")) return "url(#arrowAmber)";
+      return "url(#arrowGray)";
+    }
+
+    function shortenPoint(point, toward, amount = 36) {
+      const dx = toward[0] - point[0];
+      const dy = toward[1] - point[1];
+      const len = Math.hypot(dx, dy) || 1;
+      return [
+        point[0] + dx / len * amount,
+        point[1] + dy / len * amount
+      ];
+    }
+
     function pathData(edge, nodes = cfg.nodes) {
-      const [x1, y1] = nodes[edge.from];
-      const [x2, y2] = nodes[edge.to];
+      const from = nodes[edge.from];
+      const to = nodes[edge.to];
       if (edge.curve) {
-        return `M ${x1} ${y1} C ${edge.curve[0]} ${edge.curve[1]}, ${edge.curve[2]} ${edge.curve[3]}, ${x2} ${y2}`;
+        const c1 = [edge.curve[0], edge.curve[1]];
+        const c2 = [edge.curve[2], edge.curve[3]];
+        const start = shortenPoint(from, c1);
+        const end = shortenPoint(to, c2);
+        return `M ${start[0]} ${start[1]} C ${c1[0]} ${c1[1]}, ${c2[0]} ${c2[1]}, ${end[0]} ${end[1]}`;
       }
-      return `M ${x1} ${y1} L ${x2} ${y2}`;
+      const start = shortenPoint(from, to);
+      const end = shortenPoint(to, from);
+      return `M ${start[0]} ${start[1]} L ${end[0]} ${end[1]}`;
     }
 
     function drawEdge(edge, className, labelText) {
-      svg.append(el("path", { d: pathData(edge), class: className }));
+      svg.append(el("path", {
+        d: pathData(edge),
+        class: className,
+        "marker-end": markerFor(className)
+      }));
       if (labelText) drawLabel(edge.label[0], edge.label[1], labelText);
     }
 
     function drawLine(from, to, className, labelAt, labelText) {
       svg.append(el("path", {
         d: `M ${from[0]} ${from[1]} L ${to[0]} ${to[1]}`,
-        class: className
+        class: className,
+        "marker-end": markerFor(className)
       }));
       if (labelText) drawLabel(labelAt[0], labelAt[1], labelText);
     }
@@ -457,7 +490,7 @@
         const T = [720, 220];
         drawLine(S, [402, 105], "edge super", [244, 92], "cap 1");
         drawLine(S, [402, 335], "edge super", [244, 365], "cap 2");
-        drawLine([220, 220], T, "edge super", [570, 196], "cap 3");
+        drawLine([220, 220], [690, 220], "edge super", [570, 196], "cap 3");
         drawNode("S", S[0], S[1], "super");
         drawNode("T", T[0], T[1], "super");
       }
@@ -490,7 +523,7 @@
         const S = [70, 220];
         const T = [720, 335];
         drawLine(S, [145, 220], stage === "saturated" ? "edge used" : "edge super", [105, 185], stage === "saturated" ? "8/8" : "cap 8");
-        drawLine([460, 335], T, stage === "saturated" ? "edge used" : "edge super", [600, 360], stage === "saturated" ? "8/8" : "cap 8");
+        drawLine([460, 335], [690, 335], stage === "saturated" ? "edge used" : "edge super", [600, 360], stage === "saturated" ? "8/8" : "cap 8");
         drawNode("S", S[0], S[1], "super");
         drawNode("T", T[0], T[1], "super");
         drawNote(650, 88, "kontrolujeme saturaci super-hran", 240);
