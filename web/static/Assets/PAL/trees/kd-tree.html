@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .kd-widget { font-family: sans-serif; background: #1e1e1e; color: #e3e3e3; padding: 20px; border-radius: 8px; max-width: 900px; margin: auto; }
+        .kd-controls { margin-bottom: 15px; display: flex; gap: 10px; align-items: center; }
+        .kd-flex { display: flex; gap: 20px; }
+        svg { background: #000; border: 1px solid #444; border-radius: 4px; cursor: crosshair; }
+        .kd-btn { background: #3b82f6; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+        .kd-btn:hover { background: #2563eb; }
+        #kd-math { background: #2d2d2e; padding: 15px; border-radius: 4px; flex: 1; font-family: monospace; font-size: 13px; border: 1px solid #444; }
+        .split-x { stroke: #ef4444; stroke-width: 1; stroke-dasharray: 2; }
+        .split-y { stroke: #3b82f6; stroke-width: 1; stroke-dasharray: 2; }
+        .node-pt { fill: #fff; stroke: #000; stroke-width: 1; }
+        .q-pt { fill: #10b981; stroke: #fff; stroke-width: 1; }
+        .found-pt { fill: #fbbf24; stroke: #fff; stroke-width: 2; }
+        .search-rad { fill: rgba(59, 130, 246, 0.05); stroke: #3b82f6; stroke-dasharray: 4; }
+        .pruned-box { fill: rgba(239, 68, 68, 0.1); }
+    </style>
+</head>
+<body>
+
+<div class="kd-widget">
+    <div class="kd-controls">
+        <button class="kd-btn" id="btn-rand">+10 Náhodných bodů</button>
+        <button class="kd-btn" id="btn-clear" style="background:#4b5563">Vyčistit</button>
+        <label><input type="checkbox" id="check-nn"> Mód: NN Search (pohyb myši)</label>
+    </div>
+    
+    <div class="kd-flex">
+        <svg id="kd-canvas" width="500" height="500"></svg>
+        <div id="kd-math">
+            <div style="color: #3b82f6; font-weight: bold; margin-bottom: 10px;">KD-STROM MATEMATIKA</div>
+            <div id="kd-log">Kliknutím do černého plátna přidejte body.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const svg = document.getElementById('kd-canvas');
+    const log = document.getElementById('kd-log');
+    const checkNN = document.getElementById('check-nn');
+    
+    let points = [];
+    let tree = null;
+    let bestDist = Infinity;
+    let bestNode = null;
+    let prunedBoxes = [];
+
+    class Node {
+        constructor(p, axis, depth) {
+            this.p = p; this.axis = axis; this.depth = depth;
+            this.left = null; this.right = null;
+        }
+    }
+
+    function buildTree(pts, depth = 0) {
+        if (pts.length === 0) return null;
+        const axis = depth % 2;
+        pts.sort((a, b) => axis === 0 ? a.x - b.x : a.y - b.y);
+        const mid = Math.floor(pts.length / 2);
+        const node = new Node(pts[mid], axis, depth);
+        node.left = buildTree(pts.slice(0, mid), depth + 1);
+        node.right = buildTree(pts.slice(mid + 1), depth + 1);
+        return node;
+    }
+
+    function searchNN(q, node, x1, x2, y1, y2) {
+        if (!node) return;
+        
+        const d = Math.hypot(q.x - node.p.x, q.y - node.p.y);
+        if (d < bestDist) {
+            bestDist = d;
+            bestNode = node;
+        }
+
+        const axis = node.axis;
+        const val = axis === 0 ? node.p.x : node.p.y;
+        const qVal = axis === 0 ? q.x : q.y;
+
+        const near = qVal < val ? node.left : node.right;
+        const far = qVal < val ? node.right : node.left;
+
+        let nBox = axis === 0 ? (qVal < val ? [x1, val, y1, y2] : [val, x2, y1, y2]) : (qVal < val ? [x1, x2, y1, val] : [x1, x2, val, y2]);
+        let fBox = axis === 0 ? (qVal < val ? [val, x2, y1, y2] : [x1, val, y1, y2]) : (qVal < val ? [x1, x2, val, y2] : [x1, x2, y1, val]);
+
+        searchNN(q, near, ...nBox);
+
+        if (Math.abs(qVal - val) < bestDist) {
+            searchNN(q, far, ...fBox);
+        } else {
+            prunedBoxes.push(fBox);
+        }
+    }
+
+    function draw(q = null) {
+        svg.innerHTML = '';
+        
+        function drawNodes(n, x1, x2, y1, y2) {
+            if (!n) return;
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            if (n.axis === 0) {
+                line.setAttribute("x1", n.p.x); line.setAttribute("y1", y1);
+                line.setAttribute("x2", n.p.x); line.setAttribute("y2", y2);
+                line.setAttribute("class", "split-x");
+                drawNodes(n.left, x1, n.p.x, y1, y2);
+                drawNodes(n.right, n.p.x, x2, y1, y2);
+            } else {
+                line.setAttribute("x1", x1); line.setAttribute("y1", n.p.y);
+                line.setAttribute("x2", x2); line.setAttribute("y2", n.p.y);
+                line.setAttribute("class", "split-y");
+                drawNodes(n.left, x1, x2, y1, n.p.y);
+                drawNodes(n.right, x1, x2, n.p.y, y2);
+            }
+            svg.appendChild(line);
+
+            const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            c.setAttribute("cx", n.p.x); c.setAttribute("cy", n.p.y); c.setAttribute("r", 4);
+            c.setAttribute("class", "node-pt");
+            svg.appendChild(c);
+        }
+
+        drawNodes(tree, 0, 500, 0, 500);
+
+        if (checkNN.checked && q && bestNode) {
+            prunedBoxes.forEach(b => {
+                const r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                r.setAttribute("x", b[0]); r.setAttribute("y", b[2]);
+                r.setAttribute("width", b[1] - b[0]); r.setAttribute("height", b[3] - b[2]);
+                r.setAttribute("class", "pruned-box"); svg.appendChild(r);
+            });
+
+            const rad = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            rad.setAttribute("cx", q.x); rad.setAttribute("cy", q.y); rad.setAttribute("r", bestDist);
+            rad.setAttribute("class", "search-rad"); svg.appendChild(rad);
+
+            const fn = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            fn.setAttribute("cx", bestNode.p.x); fn.setAttribute("cy", bestNode.p.y); rad.setAttribute("r", bestDist);
+            fn.setAttribute("r", 6); fn.setAttribute("class", "found-pt"); svg.appendChild(fn);
+
+            const qp = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            qp.setAttribute("cx", q.x); qp.setAttribute("cy", q.y); qp.setAttribute("r", 5);
+            qp.setAttribute("class", "q-pt"); svg.appendChild(qp);
+        }
+    }
+
+    svg.addEventListener('mousedown', function(e) {
+        if (checkNN.checked) return;
+        const rect = svg.getBoundingClientRect();
+        points.push({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+        tree = buildTree([...points]);
+        draw();
+        log.innerHTML = `Počet bodů ve stromu: ${points.length}`;
+    });
+
+    svg.addEventListener('mousemove', function(e) {
+        if (!checkNN.checked || !tree) return;
+        const rect = svg.getBoundingClientRect();
+        const q = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        
+        bestDist = Infinity;
+        bestNode = null;
+        prunedBoxes = [];
+        
+        searchNN(q, tree, 0, 500, 0, 500);
+        draw(q);
+
+        log.innerHTML = `
+            <b>Query Q:</b> [${Math.round(q.x)}, ${Math.round(q.y)}]<br>
+            <b>Nejbližší P:</b> [${Math.round(bestNode.p.x)}, ${Math.round(bestNode.p.y)}]<br>
+            <b>Vzdálenost:</b> ${bestDist.toFixed(2)}px<br><br>
+            <b>Osa větvení kořene:</b> ${tree.axis === 0 ? 'X (Svislá červená)' : 'Y (Vodorovná modrá)'}
+        `;
+    });
+
+    document.getElementById('btn-rand').addEventListener('click', function() {
+        for(let i=0; i<10; i++) points.push({ x: Math.random()*500, y: Math.random()*500 });
+        tree = buildTree([...points]);
+        draw();
+        log.innerHTML = `Generováno 10 bodů. Celkem: ${points.length}`;
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', function() {
+        points = []; tree = null; svg.innerHTML = ''; log.innerHTML = 'Strom vyčištěn.';
+    });
+})();
+</script>
+</body>
+</html>
