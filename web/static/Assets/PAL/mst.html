@@ -1,0 +1,385 @@
+<div id="mst-widget" class="graphics-widget">
+  <style>
+    .graphics-widget {
+      --bg-color: #1e1e1e;
+      --panel-bg: #2d2d2d;
+      --text-color: #e0e0e0;
+      --accent-color: #007acc;
+      --border-color: #444;
+      
+      background: var(--bg-color);
+      color: var(--text-color);
+      padding: 16px;
+      border-radius: 8px;
+      font-family: monospace;
+      border: 1px solid var(--border-color);
+      max-width: 800px;
+      margin: 20px auto;
+    }
+    .widget-layout {
+      display: grid;
+      grid-template-columns: 1fr 260px;
+      gap: 16px;
+    }
+    @media (max-width: 650px) {
+      .widget-layout { grid-template-columns: 1fr; }
+    }
+    .canvas-container {
+      background: #111;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+    canvas { display: block; width: 100%; height: auto; }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--panel-bg);
+      padding: 12px;
+      border-radius: 4px;
+    }
+    .btn {
+      background: #444;
+      color: #fff;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    .btn:hover { background: #555; }
+    .btn:disabled { background: #222; color: #555; cursor: not-allowed; }
+    .select-css {
+      background: #333;
+      color: #fff;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+    .math-feedback {
+      grid-column: 1 / -1;
+      background: #111;
+      padding: 12px;
+      border-radius: 4px;
+      border-left: 4px solid var(--accent-color);
+    }
+    .state-list {
+      font-size: 11px;
+      color: #aaa;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+  </style>
+
+  <div class="widget-layout">
+    <div class="canvas-container">
+      <canvas id="mst-canvas" width="450" height="320"></canvas>
+    </div>
+    
+    <div class="controls">
+      <label for="algo-select">Algoritmus:</label>
+      <select id="algo-select" class="select-css">
+        <option value="prim">Prim-Jarník</option>
+        <option value="kruskal">Kruskal (Greedy)</option>
+        <option value="boruvka">Borůvka</option>
+      </select>
+
+      <button id="btn-mst-step" class="btn">Krok Vpřed</button>
+      <button id="btn-mst-reset" class="btn">Reset</button>
+
+      <div style="font-size:12px; border-top:1px solid #444; padding-top:8px;">
+        <strong>Stav interní struktury:</strong>
+        <div id="mst-structure-state" class="state-list"></div>
+      </div>
+    </div>
+
+    <div class="math-feedback" id="mst-math">
+      Váha aktuální kostry: Σ w(e) = 0
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('mst-canvas');
+      const ctx = canvas.getContext('2d');
+      const stepBtn = document.getElementById('btn-mst-step');
+      const resetBtn = document.getElementById('btn-mst-reset');
+      const algoSelect = document.getElementById('algo-select');
+      const mathBox = document.getElementById('mst-math');
+      const structBox = document.getElementById('mst-structure-state');
+
+      const nodes = [
+        { id: 0, label: 'A', x: 80, y: 80 },
+        { id: 1, label: 'B', x: 220, y: 60 },
+        { id: 2, label: 'C', x: 370, y: 90 },
+        { id: 3, label: 'D', x: 100, y: 240 },
+        { id: 4, label: 'E', x: 260, y: 220 },
+        { id: 5, label: 'F', x: 380, y: 230 }
+      ];
+
+      const originalEdges = [
+        { id: 0, u: 0, v: 1, w: 4, state: 'none' },
+        { id: 1, u: 0, v: 3, w: 6, state: 'none' },
+        { id: 2, u: 1, v: 2, w: 5, state: 'none' },
+        { id: 3, u: 1, v: 3, w: 3, state: 'none' },
+        { id: 4, u: 1, v: 4, w: 2, state: 'none' },
+        { id: 5, u: 2, v: 4, w: 4, state: 'none' },
+        { id: 6, u: 2, v: 5, w: 7, state: 'none' },
+        { id: 7, u: 3, v: 4, w: 5, state: 'none' },
+        { id: 8, u: 4, v: 5, w: 1, state: 'none' }
+      ];
+
+      let edges = [];
+      let visitedNodes = new Set();
+      let kruskalEdgeQueue = [];
+      let parentUF = [];
+      let currentAlgo = 'prim';
+      let mstWeight = 0;
+      let boruvkaPhase = 0; 
+
+      const compColors = ['#ff4d4d', '#4da6ff', '#22c55e', '#eab308', '#a855f7', '#ec4899'];
+
+      function reset() {
+        edges = JSON.parse(JSON.stringify(originalEdges));
+        visitedNodes.clear();
+        mstWeight = 0;
+        stepBtn.disabled = false;
+        currentAlgo = algoSelect.value;
+        boruvkaPhase = 0;
+
+        parentUF = nodes.map(n => n.id);
+
+        if (currentAlgo === 'prim') {
+          visitedNodes.add(0); 
+        } else if (currentAlgo === 'kruskal') {
+          kruskalEdgeQueue = [...edges].sort((a, b) => a.w - b.w);
+        }
+        update();
+      }
+
+      function findUF(i) {
+        while (parentUF[i] !== i) i = parentUF[i];
+        return i;
+      }
+
+      function unionUF(i, j) {
+        let rootI = findUF(i);
+        let rootJ = findUF(j);
+        parentUF[rootI] = rootJ;
+      }
+
+      function stepPrim() {
+        let minEdge = null;
+        let minW = Infinity;
+
+        edges.forEach(e => {
+          if (e.state === 'none') {
+            let uIn = visitedNodes.has(e.u);
+            let vIn = visitedNodes.has(e.v);
+            if ((uIn && !vIn) || (!uIn && vIn)) {
+              if (e.w < minW) {
+                minW = e.w;
+                minEdge = e;
+              }
+            }
+          }
+        });
+
+        if (minEdge) {
+          minEdge.state = 'mst';
+          visitedNodes.add(minEdge.u);
+          visitedNodes.add(minEdge.v);
+          mstWeight += minEdge.w;
+        } else {
+          stepBtn.disabled = true;
+        }
+      }
+
+      function stepKruskal() {
+        if (kruskalEdgeQueue.length === 0) {
+          stepBtn.disabled = true;
+          return;
+        }
+
+        let nextEdge = kruskalEdgeQueue.shift();
+        let uRoot = findUF(nextEdge.u);
+        let vRoot = findUF(nextEdge.v);
+
+        let realEdge = edges.find(e => e.id === nextEdge.id);
+
+        if (uRoot !== vRoot) {
+          unionUF(nextEdge.u, nextEdge.v);
+          realEdge.state = 'mst';
+          mstWeight += realEdge.w;
+        } else {
+          realEdge.state = 'rejected';
+          stepKruskal(); 
+        }
+      }
+
+      function stepBoruvka() {
+        let cheapest = {};
+        let components = new Set();
+        
+        nodes.forEach(n => components.add(findUF(n.id)));
+        
+        if (components.size <= 1) {
+          stepBtn.disabled = true;
+          return;
+        }
+
+        components.forEach(c => cheapest[c] = null);
+
+        edges.forEach(e => {
+          if (e.state !== 'mst') {
+            let uComp = findUF(e.u);
+            let vComp = findUF(e.v);
+            if (uComp !== vComp) {
+              if (cheapest[uComp] === null || e.w < cheapest[uComp].w) cheapest[uComp] = e;
+              if (cheapest[vComp] === null || e.w < cheapest[vComp].w) cheapest[vComp] = e;
+            }
+          }
+        });
+
+        let selectedEdgesThisRound = new Set();
+        for (let c in cheapest) {
+          let e = cheapest[c];
+          if (e) selectedEdgesThisRound.add(e.id);
+        }
+
+        if (selectedEdgesThisRound.size === 0) {
+          stepBtn.disabled = true;
+          return;
+        }
+
+        selectedEdgesThisRound.forEach(id => {
+          let e = edges.find(edge => edge.id === id);
+          if (findUF(e.u) !== findUF(e.v)) {
+            e.state = 'mst';
+            mstWeight += e.w;
+            unionUF(e.u, e.v);
+          }
+        });
+
+        let checkComponents = new Set();
+        nodes.forEach(n => checkComponents.add(findUF(n.id)));
+        if (checkComponents.size <= 1) {
+          stepBtn.disabled = true;
+        }
+
+        boruvkaPhase++;
+      }
+
+      function drawGraph() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        edges.forEach(e => {
+          let n1 = nodes[e.u];
+          let n2 = nodes[e.v];
+          ctx.beginPath();
+          ctx.moveTo(n1.x, n1.y);
+          ctx.lineTo(n2.x, n2.y);
+          
+          if (e.state === 'mst') {
+            ctx.strokeStyle = '#22c55e';
+            ctx.lineWidth = 4;
+          } else if (e.state === 'rejected') {
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+          } else {
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 1.5;
+          }
+          ctx.stroke();
+
+          let mx = (n1.x + n2.x) / 2;
+          let my = (n1.y + n2.y) / 2;
+          ctx.fillStyle = '#fff';
+          ctx.font = '11px monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.clearRect(mx - 8, my - 8, 16, 16);
+          ctx.fillText(e.w, mx, my);
+        });
+
+        nodes.forEach(n => {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, 16, 0, 2 * Math.PI);
+          
+          if (currentAlgo === 'prim') {
+            ctx.fillStyle = visitedNodes.has(n.id) ? '#007acc' : '#2d2d2d';
+            ctx.strokeStyle = '#444';
+          } else {
+            let root = findUF(n.id);
+            ctx.fillStyle = '#2d2d2d';
+            ctx.strokeStyle = compColors[root % compColors.length];
+          }
+          
+          ctx.lineWidth = 2.5;
+          ctx.fill();
+          ctx.stroke();
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 11px monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(n.label, n.x, n.y);
+        });
+      }
+
+      function updateStructures() {
+        let html = '';
+        if (currentAlgo === 'prim') {
+          html += 'D_v (napojení na strom):<br>';
+          nodes.forEach(n => {
+            if (visitedNodes.has(n.id)) {
+              html += `${n.label}: v MST<br>`;
+            } else {
+              let minDist = Infinity;
+              edges.forEach(e => {
+                if ((visitedNodes.has(e.u) && e.v === n.id) || (visitedNodes.has(e.v) && e.u === n.id)) {
+                  if (e.w < minDist) minDist = e.w;
+                }
+              });
+              html += `${n.label}: D = ${minDist === Infinity ? '∞' : minDist}<br>`;
+            }
+          });
+        } else if (currentAlgo === 'kruskal') {
+          html += 'Union-Find Reprezentace:<br>';
+          nodes.forEach(n => {
+            html += `${n.label} ➔ kořen: ${nodes[findUF(n.id)].label}<br>`;
+          });
+        } else if (currentAlgo === 'boruvka') {
+          html += `Iterace algoritmu: ${boruvkaPhase}<br><br>Komponenty:<br>`;
+          let compMap = {};
+          nodes.forEach(n => {
+            let r = findUF(n.id);
+            if (!compMap[r]) compMap[r] = [];
+            compMap[r].push(n.label);
+          });
+          for (let r in compMap) {
+            html += `Komponenta [${nodes[r].label}]: { ${compMap[r].join(', ')} }<br>`;
+          }
+        }
+        structBox.innerHTML = html;
+        mathBox.innerHTML = `<strong>Minimální kostra (MST):</strong> Celková váha stromu ∑ w(e) = <strong>${mstWeight}</strong>`;
+      }
+
+      function update() {
+        drawGraph();
+        updateStructures();
+      }
+
+      stepBtn.addEventListener('click', () => {
+        if (currentAlgo === 'prim') stepPrim();
+        else if (currentAlgo === 'kruskal') stepKruskal();
+        else if (currentAlgo === 'boruvka') stepBoruvka();
+        update();
+      });
+
+      resetBtn.addEventListener('click', reset);
+      algoSelect.addEventListener('change', reset);
+
+      reset();
+    })();
+  </script>
+</div>
