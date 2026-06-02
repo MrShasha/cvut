@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GVG - projektivni prostor P3</title>
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}
+</script>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#14171c;color:#e6edf3;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}button{font:inherit}.widget{display:grid;grid-template-columns:minmax(0,1fr)330px;gap:12px;height:100%;min-height:700px}.scene,.panel{border:1px solid #343b46;border-radius:8px;background:#1d222b}.scene{position:relative;overflow:hidden}.scene canvas{display:block;width:100%!important;height:100%!important;cursor:grab}.scene canvas:active{cursor:grabbing}.hint{position:absolute;left:0;right:0;bottom:8px;color:rgba(203,213,225,.55);font-size:12px;text-align:center;pointer-events:none;user-select:none}.loader{position:absolute;inset:0;display:grid;place-items:center;background:#1d222b;color:#94a3b8;z-index:2}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{margin:0;color:#f8fafc;font-size:18px;line-height:1.25}.muted{margin:0;color:#9ca3af;font-size:13px;line-height:1.45}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.tab{border:1px solid #3c4655;border-radius:6px;background:#252c37;color:#e5e7eb;padding:8px 6px;cursor:pointer}.tab:hover,.tab.active{border-color:#60a5fa;background:#17304e}.card{border:1px solid #303743;border-radius:7px;background:#171c24;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:6px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55;word-break:break-word}.legend{display:grid;gap:7px}.legend span{display:flex;align-items:center;gap:8px}.swatch{width:11px;height:11px;border-radius:50%;flex:0 0 auto}.result{margin-top:auto;border-radius:7px;padding:10px;background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.35);font-size:13px;line-height:1.45}@media(max-width:880px){body{padding:10px;overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene{min-height:520px}}
+</style>
+</head>
+<body>
+<main class="widget">
+<section class="scene" id="sceneWrap" aria-label="Projektivni prostor P3">
+<div class="loader" id="loader">Načítám Three.js...</div>
+<div class="hint">Táhni = rotace | Scroll = zoom | Pravé tlačítko = posun</div>
+</section>
+<aside class="panel">
+<h1>Projektivní prostor P3</h1>
+<p class="muted">P³ doplní běžný prostor A³ o ideální body všech směrů. Ty dohromady tvoří ideální rovinu π∞.</p>
+<div class="tabs"><button class="tab active" data-mode="points">Body</button><button class="tab" data-mode="infinity">π∞</button><button class="tab" data-mode="plane">Rovina</button></div>
+<div class="card" id="explain"><strong>Body v P3</strong><span class="formula">afinní bod: [x,y,z,1]^T<br>ideální bod: [x,y,z,0]^T</span></div>
+<div class="card legend">
+<span><i class="swatch" style="background:#22c55e"></i>konečný bod v A³</span>
+<span><i class="swatch" style="background:#f59e0b"></i>ideální bod směru</span>
+<span><i class="swatch" style="background:#a78bfa"></i>ideální rovina π∞</span>
+<span><i class="swatch" style="background:#38bdf8"></i>rovina π: ax+by+cz+dw=0</span>
+</div>
+<div class="result">Rovnoběžné přímky stejného směru se v P³ potkají v jednom bodě na π∞.</div>
+</aside>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const COLORS={point:0x22c55e,ideal:0xf59e0b,inf:0xa78bfa,plane:0x38bdf8,x:0xef4444,y:0x22c55e,z:0x60a5fa,line:0xe5e7eb};
+let mode='points',graphGroup=null;const wrap=document.getElementById('sceneWrap'),loader=document.getElementById('loader'),explain=document.getElementById('explain');
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.setClearColor(0x14171c);wrap.appendChild(renderer.domElement);loader.style.display='none';
+const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x14171c,.035);const camera=new THREE.PerspectiveCamera(46,1,.1,100);camera.position.set(5.6,4.7,6.7);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.target.set(.4,.4,.6);controls.minDistance=3;controls.maxDistance=18;
+scene.add(new THREE.AmbientLight(0x7b879b,3));const key=new THREE.DirectionalLight(0xffffff,2.5);key.position.set(5,7,6);scene.add(key);const fill=new THREE.DirectionalLight(0x93c5fd,1.1);fill.position.set(-4,2,-5);scene.add(fill);
+const grid=new THREE.GridHelper(8,16,0x475569,0x27313f);scene.add(grid);const axisLength=3.2;scene.add(new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(0,0,0),axisLength,COLORS.x,.2,.1));scene.add(new THREE.ArrowHelper(new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,0),axisLength,COLORS.y,.2,.1));scene.add(new THREE.ArrowHelper(new THREE.Vector3(0,0,1),new THREE.Vector3(0,0,0),axisLength,COLORS.z,.2,.1));
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function labelSprite(text,color='#e5e7eb'){const c=document.createElement('canvas');c.width=300;c.height=72;const ctx=c.getContext('2d');ctx.font='700 27px Segoe UI, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='rgba(20,23,28,.82)';ctx.strokeStyle='rgba(255,255,255,.18)';rr(ctx,16,9,268,54,10);ctx.fill();ctx.stroke();ctx.fillStyle=color;ctx.fillText(text,150,37);const tex=new THREE.CanvasTexture(c);const mat=new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false});const s=new THREE.Sprite(mat);s.scale.set(1.08,.27,1);s.renderOrder=30;return s}
+function addLabel(g,t,p,c){const s=labelSprite(t,c);s.position.copy(p);g.add(s)}
+function addPlane(g,corners,color,opacity,label,pos){const geo=new THREE.BufferGeometry().setFromPoints(corners);geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();const mat=new THREE.MeshStandardMaterial({color,transparent:true,opacity,side:THREE.DoubleSide,depthWrite:false,roughness:.78});const mesh=new THREE.Mesh(geo,mat);mesh.renderOrder=1;g.add(mesh);const edges=new THREE.EdgesGeometry(geo);const lines=new THREE.LineSegments(edges,new THREE.LineBasicMaterial({color,transparent:true,opacity:.85}));lines.renderOrder=2;g.add(lines);if(label)addLabel(g,label,pos,'#f8fafc')}
+function addSphere(g,p,color,label){const m=new THREE.Mesh(new THREE.SphereGeometry(.09,28,16),new THREE.MeshStandardMaterial({color,roughness:.5,emissive:color,emissiveIntensity:.12}));m.position.copy(p);g.add(m);if(label)addLabel(g,label,p.clone().add(new THREE.Vector3(.18,.12,.18)),'#f8fafc')}
+function addLine(g,a,b,color,label,dashed=false){const geo=new THREE.BufferGeometry().setFromPoints([a,b]);const mat=dashed?new THREE.LineDashedMaterial({color,dashSize:.2,gapSize:.13,transparent:true,opacity:.78}):new THREE.LineBasicMaterial({color});const l=new THREE.Line(geo,mat);if(dashed)l.computeLineDistances();g.add(l);if(label)addLabel(g,label,a.clone().add(b).multiplyScalar(.5).add(new THREE.Vector3(.15,.15,.15)),'#f8fafc')}
+function clear(){if(!graphGroup)return;graphGroup.traverse(o=>{o.geometry?.dispose?.();if(Array.isArray(o.material))o.material.forEach(m=>m.dispose?.());else o.material?.dispose?.()});scene.remove(graphGroup)}
+function updateExplanation(){const e={points:['Body v P3','afinní bod: [x,y,z,1]^T<br>ideální bod: [x,y,z,0]^T'],infinity:['Ideální rovina','π∞ je množina všech bodů s w=0. Každý takový bod reprezentuje směr v A³.'],plane:['Rovina v P3','π=[a,b,c,d]^T a bod X spolu incidují, když π^T X = 0.']}[mode];explain.innerHTML=`<strong>${e[0]}</strong><span class="formula">${e[1]}</span>`}
+function rebuild(){clear();updateExplanation();graphGroup=new THREE.Group();if(mode==='infinity'||mode==='plane'){addPlane(graphGroup,[new THREE.Vector3(-2.4,-2.4,2.9),new THREE.Vector3(2.7,-2.4,2.9),new THREE.Vector3(2.7,2.7,2.9),new THREE.Vector3(-2.4,2.7,2.9)],COLORS.inf,.18,'π∞: w=0',new THREE.Vector3(2.55,2.55,3.15));addSphere(graphGroup,new THREE.Vector3(1.6,.6,2.9),COLORS.ideal,'[1,.4,1,0]');addLine(graphGroup,new THREE.Vector3(.8,.2,.2),new THREE.Vector3(1.6,.6,2.9),COLORS.ideal,'směr',true);addLine(graphGroup,new THREE.Vector3(-.8,.6,.2),new THREE.Vector3(1.6,.6,2.9),COLORS.ideal,'',true)}
+if(mode==='points'){addSphere(graphGroup,new THREE.Vector3(1,1,1),COLORS.point,'[1,1,1,1]');addSphere(graphGroup,new THREE.Vector3(-1,.8,.6),COLORS.point,'[−1,.8,.6,1]');addLine(graphGroup,new THREE.Vector3(0,0,0),new THREE.Vector3(1,1,1),COLORS.line,'poziční vektor')}
+if(mode==='plane'){addPlane(graphGroup,[new THREE.Vector3(-1.8,-1.8,.2),new THREE.Vector3(2.4,-1.8,.2),new THREE.Vector3(2.4,2.4,1.6),new THREE.Vector3(-1.8,2.4,1.6)],COLORS.plane,.22,'π: ax+by+cz+dw=0',new THREE.Vector3(-1.6,2.55,1.8));addSphere(graphGroup,new THREE.Vector3(.9,.9,.7),COLORS.point,'X, πᵀX=0')}
+scene.add(graphGroup)}
+for(const b of document.querySelectorAll('.tab'))b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));rebuild()};
+const axisLabels=new THREE.Group();addLabel(axisLabels,'x',new THREE.Vector3(axisLength+.35,0,0),'#fecaca');addLabel(axisLabels,'y',new THREE.Vector3(0,axisLength+.35,0),'#bbf7d0');addLabel(axisLabels,'z',new THREE.Vector3(0,0,axisLength+.35),'#bfdbfe');scene.add(axisLabels);
+function resize(){const r=wrap.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix()}window.addEventListener('resize',resize);resize();rebuild();function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
+</script>
+</body>
+</html>
