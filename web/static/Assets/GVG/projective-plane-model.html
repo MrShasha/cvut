@@ -4,38 +4,47 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GVG - geometricky model P2</title>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
 <style>
-*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#14171c;color:#e6edf3;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{display:grid;grid-template-columns:minmax(0,1fr)320px;gap:12px;height:100%;min-height:0}.scene,.panel{border:1px solid #343b46;border-radius:8px;background:#1d222b}.scene{overflow:hidden}svg{display:block;width:100%;height:100%}.plane{fill:rgba(229,231,235,.06);stroke:#cbd5e1;stroke-width:2}.idealPlane{fill:rgba(34,197,94,.09);stroke:#22c55e;stroke-width:2;stroke-dasharray:7 7}.ray{stroke:#e5e7eb;stroke-width:2.5}.rayMain{stroke:#22c55e;stroke-width:4}.parallel{stroke:#22c55e;stroke-width:2.5}.dash{stroke-dasharray:7 7}.point{fill:#111827;stroke:#e5e7eb;stroke-width:3}.origin{fill:#f59e0b;stroke:#fff7ed;stroke-width:3}text{fill:#dbe4f0;font-size:15px;font-weight:750}.tiny{fill:#94a3b8;font-size:12px}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{margin:0;color:#f8fafc;font-size:18px}.muted{margin:0;color:#9ca3af;font-size:13px;line-height:1.45}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.tab{border:1px solid #3c4655;border-radius:6px;background:#252c37;color:#e5e7eb;padding:8px 6px;cursor:pointer}.tab.active,.tab:hover{border-color:#60a5fa;background:#17304e}.card{border:1px solid #303743;border-radius:7px;background:#171c24;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:6px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.result{margin-top:auto;border-radius:7px;padding:10px;background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.35);font-size:13px;line-height:1.45}@media(max-width:860px){body{overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene{min-height:480px}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#14171c;color:#e6edf3;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{display:grid;grid-template-columns:minmax(0,1fr)320px;gap:12px;height:100%;min-height:0}.scene,.panel{border:1px solid #343b46;border-radius:8px;background:#1d222b}.scene{position:relative;overflow:hidden}.scene canvas{display:block;width:100%!important;height:100%!important;cursor:grab}.scene canvas:active{cursor:grabbing}.hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:rgba(203,213,225,.56);font-size:12px;pointer-events:none}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{margin:0;color:#f8fafc;font-size:18px}.muted{margin:0;color:#9ca3af;font-size:13px;line-height:1.45}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.tab{border:1px solid #3c4655;border-radius:6px;background:#252c37;color:#e5e7eb;padding:8px 6px;cursor:pointer;font:inherit}.tab.active,.tab:hover{border-color:#60a5fa;background:#17304e}.card{border:1px solid #303743;border-radius:7px;background:#171c24;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:6px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.result{margin-top:auto;border-radius:7px;padding:10px;background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.35);font-size:13px;line-height:1.45}@media(max-width:860px){body{overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene{min-height:520px}}
 </style>
 </head>
 <body>
 <main class="widget">
-  <section class="scene"><svg id="scene" viewBox="0 0 820 620"></svg></section>
+  <section class="scene" id="scene"><div class="hint">Táhni = rotace | Scroll = zoom | Pravé tlačítko = posun</div></section>
   <aside class="panel">
     <h1>Geometrický model P²</h1>
-    <p class="muted">Podle Fig. 9.2: projektivní body jsou přímky v A³ procházející bodem O.</p>
+    <p class="muted">Podle GVG Fig. 9.2: projektivní body jsou přímky v A³ procházející bodem O.</p>
     <div class="tabs">
       <button class="tab active" data-mode="affine">Afinní body</button>
       <button class="tab" data-mode="ideal">Ideální body</button>
       <button class="tab" data-mode="parallel">Směry</button>
     </div>
     <div class="card" id="explain"></div>
-    <div class="card"><strong>GVG model</strong><span class="formula">P² = { přímky v A³ přes O }<br>afinní bod: přímka přes O protne A²<br>ideální bod: přímka přes O je rovnoběžná s A²</span></div>
-    <div class="result">Ideální body odpovídají směrům rovnoběžek v A².</div>
+    <div class="card"><strong>Model</strong><span class="formula">A²: w=1<br>ideální rovina: w=0<br>P² = všechny přímky přes O</span></div>
+    <div class="result">Přímky přes O, které protnou w=1, jsou afinní body. Přímky přes O ležící ve w=0 jsou ideální body.</div>
   </aside>
 </main>
-<script>
-const svg=document.getElementById('scene'),explain=document.getElementById('explain');let mode='affine';
-function add(t,a){const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);svg.appendChild(e);return e}
-function txt(s,x,y,c=''){const e=add('text',{x,y,class:c});e.textContent=s}
-function line(a,b,cls){add('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],class:cls})}
-const A=[430,110],B=[670,190],C=[660,430],D=[420,350],O=[220,370];
-function plane(){add('polygon',{points:`${A} ${B} ${C} ${D}`,class:'plane'});txt('A²',432,96);txt('A³',265,105);txt('O',190,382);add('circle',{cx:O[0],cy:O[1],r:8,class:'origin'})}
-function affinePoints(){[[500,185],[565,245],[505,300]].forEach((p,i)=>{line(O,p,i===1?'rayMain':'ray');add('circle',{cx:p[0],cy:p[1],r:5,class:'point'})});txt('přímky přes O protínají A²',365,500,'tiny')}
-function idealPlane(){const P=[172,190],Q=[352,250],R=[350,430],S=[170,370];add('polygon',{points:`${P} ${Q} ${R} ${S}`,class:'idealPlane'});txt('rovina přes O rovnoběžná s A²',118,180,'tiny');line([145,250],[365,320],'rayMain');line([160,310],[380,380],'rayMain');line([180,370],[400,440],'rayMain');txt('svazek přímek přes O',112,455,'tiny')}
-function parallelLines(){idealPlane();[[450,170,650,235],[440,205,640,270],[430,240,630,305],[420,275,620,340],[410,310,610,375]].forEach(p=>line([p[0],p[1]],[p[2],p[3]],'parallel'));txt('jeden ideální bod ↔ jeden směr v A²',385,500,'tiny')}
-function render(){svg.innerHTML='';plane();if(mode==='affine'){affinePoints();explain.innerHTML='<strong>Afinní body</strong><span class="formula">každý bod X ∈ A² určí právě jednu přímku OX</span>'}if(mode==='ideal'){affinePoints();idealPlane();explain.innerHTML='<strong>Ideální body</strong><span class="formula">přímky přes O rovnoběžné s A² neprotínají A²<br>v P² jsou to ideální body</span>'}if(mode==='parallel'){parallelLines();explain.innerHTML='<strong>Směry rovnoběžek</strong><span class="formula">každý ideální bod reprezentuje jednu třídu rovnoběžek v A²</span>'}}
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));render()});render();
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const host=document.getElementById('scene'),explain=document.getElementById('explain');
+let mode='affine',group;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x14171c);
+const camera=new THREE.PerspectiveCamera(46,1,.1,100);camera.position.set(4.4,4.0,4.8);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));host.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.target.set(.2,.15,.55);controls.minDistance=3;controls.maxDistance=14;
+scene.add(new THREE.AmbientLight(0xffffff,.75));const light=new THREE.DirectionalLight(0xffffff,.8);light.position.set(4,5,6);scene.add(light);
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+function label(text,color='#e5e7eb'){const c=document.createElement('canvas');c.width=320;c.height=74;const ctx=c.getContext('2d');ctx.font='700 25px Segoe UI, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='rgba(20,23,28,.82)';ctx.strokeStyle='rgba(255,255,255,.18)';rr(ctx,12,8,296,56,10);ctx.fill();ctx.stroke();ctx.fillStyle=color;ctx.fillText(text,160,38);const tex=new THREE.CanvasTexture(c);const mat=new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false});const s=new THREE.Sprite(mat);s.scale.set(1.08,.25,1);s.renderOrder=40;return s}
+function addLabel(g,t,p,c){const s=label(t,c);s.position.copy(p);g.add(s)}
+function plane(g,z,color,op,name){const pts=[new THREE.Vector3(-1.6,-1.4,z),new THREE.Vector3(1.7,-1.4,z),new THREE.Vector3(1.7,1.4,z),new THREE.Vector3(-1.6,1.4,z)];const geo=new THREE.BufferGeometry().setFromPoints(pts);geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();g.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,transparent:true,opacity:op,side:THREE.DoubleSide,depthWrite:false})));g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color,transparent:true,opacity:.9})));addLabel(g,name,new THREE.Vector3(1.55,1.55,z),'#f8fafc')}
+function line(g,a,b,color,dashed=false){const geo=new THREE.BufferGeometry().setFromPoints([a,b]);const mat=dashed?new THREE.LineDashedMaterial({color,dashSize:.16,gapSize:.11,transparent:true,opacity:.8}):new THREE.LineBasicMaterial({color});const l=new THREE.Line(geo,mat);if(dashed)l.computeLineDistances();g.add(l)}
+function sphere(g,p,color,name){const m=new THREE.Mesh(new THREE.SphereGeometry(.075,24,14),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.15}));m.position.copy(p);g.add(m);if(name)addLabel(g,name,p.clone().add(new THREE.Vector3(.18,.13,.12)),'#f8fafc')}
+function base(g){g.add(new THREE.GridHelper(5,10,0x3f4b5c,0x26303c));plane(g,1,0x38bdf8,.18,'A²: w=1');sphere(g,new THREE.Vector3(0,0,0),0xf59e0b,'O');addLabel(g,'A³ / R³',new THREE.Vector3(-1.55,-1.55,1.65),'#cbd5e1')}
+function rebuild(){if(group)scene.remove(group);group=new THREE.Group();base(group);if(mode==='affine'){const pts=[new THREE.Vector3(.9,.25,1),new THREE.Vector3(-.45,.85,1),new THREE.Vector3(.25,-.75,1)];for(const p of pts){line(group,new THREE.Vector3(0,0,0),p,0xe5e7eb);sphere(group,p,0x22c55e,'X')}explain.innerHTML='<strong>Afinní body</strong><span class="formula">X=[x,y,1]ᵀ<br>přímka OX protne rovinu w=1</span>'}if(mode==='ideal'||mode==='parallel'){plane(group,0,0x22c55e,.12,'w=0');const dirs=[new THREE.Vector3(1,.45,0),new THREE.Vector3(-.65,.8,0)];for(const d of dirs){line(group,d.clone().multiplyScalar(-1.6),d.clone().multiplyScalar(1.6),0x22c55e,true);sphere(group,d,0xf59e0b,'P∞')}if(mode==='ideal')explain.innerHTML='<strong>Ideální body</strong><span class="formula">P∞=[u,v,0]ᵀ<br>přímka přes O neprotne w=1</span>'}if(mode==='parallel'){for(let k=-.8;k<=.8;k+=.4)line(group,new THREE.Vector3(-1.4,k,1),new THREE.Vector3(1.4,k+.63,1),0x22c55e);explain.innerHTML='<strong>Směry</strong><span class="formula">jeden ideální bod odpovídá jednomu směru rovnoběžek v A²</span>'}scene.add(group)}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));rebuild()});
+function resize(){const r=host.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix()}window.addEventListener('resize',resize);resize();rebuild();function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
 </script>
 </body>
 </html>
