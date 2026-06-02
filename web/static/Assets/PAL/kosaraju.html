@@ -30,7 +30,7 @@
 
   <div style="margin-top:15px; background:#151515; padding:12px; border-radius:4px; font-size:13px; border:1px solid #2d2d2d;">
     <div style="color:#888; margin-bottom:4px;">Průběh provádění:</div>
-    <div id="kosaraju-math-feedback" style="color:#b5cea8;">Graf inicializován dle schématu. Klikněte na Krok vpřed.</div>
+    <div id="kosaraju-math-feedback" style="color:#b5cea8;">Graf inicializován. Opraveny indexy aktivovaných hran pro obě fáze.</div>
   </div>
 </div>
 
@@ -46,55 +46,65 @@
     {id: 'g', x: 270, y: 180}, {id: 'h', x: 380, y: 180}
   ];
 
+  // Mapování indexů hran pro přesnou kontrolu vizualizace:
+  // 0:a->b, 1:b->c, 2:b->e, 3:b->f, 4:c->d, 5:c->g, 6:d->c, 7:d->h, 8:e->a, 9:e->f, 10:f->g, 11:g->f, 12:h->d, 13:h->g
   const edges = [
-    {from: 0, to: 1, curve: 0},  {from: 1, to: 2, curve: 0},
-    {from: 1, to: 4, curve: 0},  {from: 1, to: 5, curve: 0},
-    {from: 2, to: 3, curve: 20}, {from: 2, to: 6, curve: 0},
-    {from: 3, to: 2, curve: 20}, {from: 3, to: 7, curve: 20},
-    {from: 4, to: 0, curve: 0},  {from: 4, to: 5, curve: 0},
-    {from: 5, to: 6, curve: 20}, {from: 6, to: 5, curve: 20},
-    {from: 7, to: 3, curve: 20}, {from: 7, to: 6, curve: 0}
+    {from: 0, to: 1, curve: 0},  // 0: a -> b
+    {from: 1, to: 2, curve: 0},  // 1: b -> c
+    {from: 1, to: 4, curve: 0},  // 2: b -> e
+    {from: 1, to: 5, curve: 0},  // 3: b -> f
+    {from: 2, to: 3, curve: 20}, // 4: c -> d
+    {from: 2, to: 6, curve: 0},  // 5: c -> g
+    {from: 3, to: 2, curve: 20}, // 6: d -> c
+    {from: 3, to: 7, curve: 20}, // 7: d -> h
+    {from: 4, to: 0, curve: 0},  // 8: e -> a
+    {from: 4, to: 5, curve: 0},  // 9: e -> f
+    {from: 5, to: 6, curve: 20}, // 10: f -> g
+    {from: 6, to: 5, curve: 20}, // 11: g -> f
+    {from: 7, to: 3, curve: 20}, // 12: h -> d
+    {from: 7, to: 6, curve: 0}   // 13: h -> g
   ];
 
   let phase = 1;
   let stepIndex = 0;
 
   const timelineF1 = [
-    { msg: 'Spouštíme $$DFS(a)$$.', v: ['#ff8c00','#555','#555','#555','#555','#555','#555','#555'], e: [0], st: [] },
-    { msg: 'Pokračujeme na b.', v: ['#ff8c00','#ff8c00','#555','#555','#555','#555','#555','#555'], e: [0,1], st: [] },
-    { msg: 'Z b jdeme na c.', v: ['#ff8c00','#ff8c00','#ff8c00','#555','#555','#555','#555','#555'], e: [0,1,2], st: [] },
-    { msg: 'Z c jdeme na d.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#555','#555','#555'], e: [0,1,2,5], st: [] },
-    { msg: 'Z d skočíme na h.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#555','#555','#ff8c00'], e: [0,1,2,5,8], st: [] },
-    { msg: 'Z h vidíme zpět d (rozpracován). Druhá hrana vede do g. Navštěvujeme g.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#555','#ff8c00','#ff8c00'], e: [0,1,2,5,8,14], st: [] },
-    { msg: 'Z g jdeme do f.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#ff8c00','#ff8c00','#ff8c00'], e: [0,1,2,5,8,14,12], st: [] },
-    { msg: 'Z f vede hrana zpět do g (rozpracován). f nemá další sousedy, uzavíráme ho. Push na S.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#4ec9b0','#ff8c00','#ff8c00'], e: [0,1,2,5,8,14,12], st: ['f'] },
-    { msg: 'Návrat do g. Všechny větve zpracovány. Uzavíráme g. Push na S.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#4ec9b0','#4ec9b0','#ff8c00'], e: [0,1,2,5,8,14], st: ['f','g'] },
-    { msg: 'Návrat do h. Všechny větve zpracovány. Uzavíráme h. Push na S.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1,2,5,8], st: ['f','g','h'] },
-    { msg: 'Návrat do d. Soused c je rozpracován. Uzavíráme d. Push na S.', v: ['#ff8c00','#ff8c00','#ff8c00','#4ec9b0','#555','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1,2,5], st: ['f','g','h','d'] },
-    { msg: 'Návrat do c. Soused g je již uzavřen. Uzavíráme c. Push na S.', v: ['#ff8c00','#ff8c00','#4ec9b0','#4ec9b0','#555','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1], st: ['f','g','h','d','c'] },
-    { msg: 'Návrat do b. Větev do f je uzavřena. Zkoušíme hranu do e. Navštěvujeme e.', v: ['#ff8c00','#ff8c00','#4ec9b0','#4ec9b0','#ff8c00','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1,3], st: ['f','g','h','d','c'] },
-    { msg: 'Z e vidíme a (rozpracován) a f (uzavřen). Uzavíráme e. Push na S.', v: ['#ff8c00','#ff8c00','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1], st: ['f','g','h','d','c','e'] },
-    { msg: 'Návrat do b. Vše zpracováno. Uzavíráme b. Push na S.', v: ['#ff8c00','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0], st: ['f','g','h','d','c','e','b'] },
-    { msg: 'Návrat do a. Uzavíráme výchozí kořen. Push na S. Fáze 1 kompletní.', v: ['#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0'], e: [], st: ['f','g','h','d','c','e','b','a'] }
+    { msg: 'Spouštíme $$DFS(a)$$.', v: ['#ff8c00','#555','#555','#555','#555','#555','#555','#555'], e: [], st: [] },
+    { msg: 'Pokračujeme po hraně $$a \\rightarrow b$$.', v: ['#ff8c00','#ff8c00','#555','#555','#555','#555','#555','#555'], e: [0], st: [] },
+    { msg: 'Z b pokračujeme po hraně $$b \\rightarrow c$$.', v: ['#ff8c00','#ff8c00','#ff8c00','#555','#555','#555','#555','#555'], e: [0,1], st: [] },
+    { msg: 'Z c pokračujeme po hraně $$c \\rightarrow d$$.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#555','#555','#555'], e: [0,1,4], st: [] },
+    { msg: 'Z d pokračujeme po hraně $$d \\rightarrow h$$.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#555','#555','#ff8c00'], e: [0,1,4,7], st: [] },
+    { msg: 'Z h vedou hrany do d (backedge) a do g. Pokračujeme po hraně $$h \\rightarrow g$$.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#555','#ff8c00','#ff8c00'], e: [0,1,4,7,13], st: [] },
+    { msg: 'Z g pokračujeme po hraně $$g \\rightarrow f$$.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#ff8c00','#ff8c00','#ff8c00'], e: [0,1,4,7,13,11], st: [] },
+    { msg: 'Z f vede hrana $$f \\rightarrow g$$ (g je rozpracován). f nemá další sousedy &rarr; uzavíráme ho a vkládáme na zásobník S.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#4ec9b0','#ff8c00','#ff8c00'], e: [0,1,4,7,13,11], st: ['f'] },
+    { msg: 'Návrat do g. Nemá další nespustěné sousedy &rarr; uzavíráme g a vkládáme na zásobník S.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#4ec9b0','#4ec9b0','#ff8c00'], e: [0,1,4,7,13], st: ['f','g'] },
+    { msg: 'Návrat do h. Hrana $$h \\rightarrow d$$ vede do rozpracovaného d. Uzavíráme h a vkládáme na zásobník S.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1,4,7], st: ['f','g','h'] },
+    { msg: 'Návrat do d. Hrana $$d \\rightarrow c$$ vede do rozpracovaného c. Uzavíráme d a vkládáme na zásobník S.', v: ['#ff8c00','#ff8c00','#ff8c00','#4ec9b0','#555','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1,4], st: ['f','g','h','d'] },
+    { msg: 'Návrat do c. Druhá hrana $$c \\rightarrow g$$ vede do již uzavřeného g. Uzavíráme c a vkládáme na zásobník S.', v: ['#ff8c00','#ff8c00','#4ec9b0','#4ec9b0','#555','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1], st: ['f','g','h','d','c'] },
+    { msg: 'Návrat do b. Pokračujeme do nenavštívené větve po hraně $$b \\rightarrow e$$.', v: ['#ff8c00','#ff8c00','#4ec9b0','#4ec9b0','#ff8c00','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,2], st: ['f','g','h','d','c'] },
+    { msg: 'Z e zkoumáme sousedy: $$e \\rightarrow a$$ (a je rozpracován), $$e \\rightarrow f$$ (f je uzavřen). Uzavíráme e a vkládáme na zásobník S.', v: ['#ff8c00','#ff8c00','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0], st: ['f','g','h','d','c','e'] },
+    { msg: 'Návrat do b. Hrana $$b \\rightarrow f$$ vede do uzavřeného f. Uzavíráme b a vkládáme na zásobník S.', v: ['#ff8c00','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0'], e: [], st: ['f','g','h','d','c','e','b'] },
+    { msg: 'Návrat do výchozího kořene a. Uzavíráme a, tlačíme na zásobník S. Fáze 1 kompletní.', v: ['#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0'], e: [], st: ['f','g','h','d','c','e','b','a'] }
   ];
 
   const timelineF2 = [
-    { msg: 'Hrany otočeny na $$G^T$$. Na vrcholu S leží vrchol a.', v: ['#555','#555','#555','#555','#555','#555','#555','#555'], e: [], st: ['f','g','h','d','c','e','b','a'], scc: [] },
-    { msg: 'Pop(S) &rarr; a. Spouštíme $$DFS(a)$$ v $$G^T$$. Cesta skočí na e.', v: ['#ff8c00','#555','#555','#555','#ff8c00','#555','#555','#555'], e: [9], st: ['f','g','h','d','c','e','b'], scc: [] },
-    { msg: 'Z e skočíme na b v $$G^T$$.', v: ['#ff8c00','#ff8c00','#555','#555','#ff8c00','#555','#555','#555'], e: [9,2], st: ['f','g','h','d','c','e'], scc: [] },
-    { msg: 'Z b už nelze pokračovat do nespustěných uzlů. Izolována první SCC: {a, e, b}.', v: ['#ce9178','#ce9178','#555','#555','#ce9178','#555','#555','#555'], e: [], st: ['f','g','h','d','c'], scc: ['{a, e, b}'] },
-    { msg: 'Pop(S) postupně bere b, e (přeskočit). Další na řadě je c. Spouštíme $$DFS(c)$$. Jdeme na d.', v: ['#ce9178','#ce9178','#ff8c00','#ff8c00','#ce9178','#555','#555','#555'], e: [7], st: ['f','g','h'], scc: ['{a, e, b}'] },
-    { msg: 'Z d skočíme v $$G^T$$ na h.', v: ['#ce9178','#ce9178','#ff8c00','#ff8c00','#ce9178','#555','#555','#ff8c00'], e: [7,13], st: ['f','g'], scc: ['{a, e, b}'] },
-    { msg: 'Z h už nelze expandovat dál. Izolována druhá SCC: {c, d, h}.', v: ['#ce9178','#ce9178','#4ec9b0','#4ec9b0','#ce9178','#555','#555','#4ec9b0'], e: [], st: ['f','g'], scc: ['{a, e, b}', '{c, d, h}'] },
-    { msg: 'Pop(S) bere h, d (přeskočit). Další na řadě je g. Spouštíme $$DFS(g)$$. Vidíme f.', v: ['#ce9178','#ce9178','#4ec9b0','#4ec9b0','#ce9178','#ff8c00','#ff8c00','#4ec9b0'], e: [11], st: ['f'], scc: ['{a, e, b}', '{c, d, h}'] },
-    { msg: 'Z f už není kam jít. Průchod hotov. Třetí SCC: {g, f}. Všechny uzly zpracovány.', v: ['#ce9178','#ce9178','#4ec9b0','#4ec9b0','#ce9178','#b5cea8','#b5cea8','#4ec9b0'], e: [], st: [], scc: ['{a, e, b}', '{c, d, h}', '{g, f}'] }
+    { msg: 'Hrany grafu jsou transponovány ($$G^T$$). Na vrcholu zásobníku S leží vrchol a.', v: ['#555','#555','#555','#555','#555','#555','#555','#555'], e: [], st: ['f','g','h','d','c','e','b','a'], scc: [] },
+    { msg: 'Pop(S) &rarr; a. Spouštíme $$DFS(a)$$ na $$G^T$$. Jediná dostupná hrana v $$G^T$$ vede z a do e (původně $$e \\rightarrow a$$).', v: ['#ff8c00','#555','#555','#555','#ff8c00','#555','#555','#555'], e: [8], st: ['f','g','h','d','c','e','b'], scc: [] },
+    { msg: 'Z e pokračujeme v $$G^T$$ po hraně do b (původně $$b \\rightarrow e$$).', v: ['#ff8c00','#ff8c00','#555','#555','#ff8c00','#555','#555','#555'], e: [8,2], st: ['f','g','h','d','c','e'], scc: [] },
+    { msg: 'Z b v $$G^T$$ vedou hrany jen do a (již navštíven). Průchod končí a izoluje první komponentu **{a, e, b}**.', v: ['#ce9178','#ce9178','#555','#555','#ce9178','#555','#555','#555'], e: [], st: ['f','g','h','d','c'], scc: ['{a, e, b}'] },
+    { msg: 'Pop(S) postupně zpracuje b, e (už navštívené). Další volný vrchol je c. Spouštíme $$DFS(c)$$ a jdeme po hraně do d (původně $$d \\rightarrow c$$).', v: ['#ce9178','#ce9178','#ff8c00','#ff8c00','#ce9178','#555','#555','#555'], e: [6], st: ['f','g','h'], scc: ['{a, e, b}'] },
+    { msg: 'Z d pokračujeme v $$G^T$$ po hraně do h (původně $$h \\rightarrow d$$).', v: ['#ce9178','#ce9178','#ff8c00','#ff8c00','#ce9178','#555','#555','#ff8c00'], e: [6,12], st: ['f','g'], scc: ['{a, e, b}'] },
+    { msg: 'Z h v $$G^T$$ vedou hrany do d (navštíven) a c (navštíven). Průchod izoluje druhou komponentu **{c, d, h}**.', v: ['#ce9178','#ce9178','#4ec9b0','#4ec9b0','#ce9178','#555','#555','#4ec9b0'], e: [], st: ['f','g'], scc: ['{a, e, b}', '{c, d, h}'] },
+    { msg: 'Pop(S) přeskočí h, d. Další volný na řadě je g. Spouštíme $$DFS(g)$$ v $$G^T$$ a jdeme po hraně do f (původně $$f \\rightarrow g$$).', v: ['#ce9178','#ce9178','#4ec9b0','#4ec9b0','#ce9178','#ff8c00','#ff8c00','#4ec9b0'], e: [10], st: ['f'], scc: ['{a, e, b}', '{c, d, h}'] },
+    { msg: 'Z f v $$G^T$$ zbývají jen hrany do b, e, g (vše navštíveno). Izoluje se poslední komponenta **{g, f}**. Hotovo.', v: ['#ce9178','#ce9178','#4ec9b0','#4ec9b0','#ce9178','#b5cea8','#b5cea8','#4ec9b0'], e: [], st: [], scc: ['{a, e, b}', '{c, d, h}', '{g, f}'] }
   ];
 
   function drawEdge(fx, fy, tx, ty, color, curve, isT) {
     ctx.strokeStyle = color;
     ctx.fillStyle = color;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 2.5;
 
+    // V transponovaném režimu otočíme počátek a konec pro vykreslení šipky v opačném směru
     if (isT) { let tmpX = fx; let tmpY = fy; fx = tx; fy = ty; tx = tmpX; ty = tmpY; }
 
     let angle = Math.atan2(ty - fy, tx - fx);
@@ -110,13 +120,11 @@
       ctx.lineTo(ex, ey);
       ctx.stroke();
       
-      // Arrow head
       ctx.beginPath(); ctx.moveTo(ex, ey);
       ctx.lineTo(ex - 7 * Math.cos(angle - Math.PI/6), ey - 7 * Math.sin(angle - Math.PI/6));
       ctx.lineTo(ex - 7 * Math.cos(angle + Math.PI/6), ey - 7 * Math.sin(angle + Math.PI/6));
       ctx.fill();
     } else {
-      // Quadratic curve for bidirected links
       let cx = (sx + ex) / 2 + curve * Math.cos(angle + Math.PI/2);
       let cy = (sy + ey) / 2 + curve * Math.sin(angle + Math.PI/2);
       ctx.moveTo(sx, sy);
