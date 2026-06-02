@@ -1,287 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GVG - join dvou bodu v P2</title>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
 <style>
-  * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; }
-  body {
-    background: #14171c;
-    color: #e6edf3;
-    font-family: "Segoe UI", system-ui, sans-serif;
-    padding: 14px;
-    overflow: hidden;
-  }
-  button { font: inherit; }
-  .widget {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 320px;
-    gap: 12px;
-    height: 100%;
-    min-height: 620px;
-  }
-  .scene, .panel {
-    border: 1px solid #343b46;
-    border-radius: 8px;
-    background: #1d222b;
-  }
-  .scene { position: relative; overflow: hidden; }
-  svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    min-height: 620px;
-  }
-  .grid { stroke: #2b313b; stroke-width: 1; }
-  .axis { stroke: #8b95a5; stroke-width: 2; marker-end: url(#arrowGray); }
-  .join-line { stroke: #22c55e; stroke-width: 4; filter: drop-shadow(0 0 8px rgba(34,197,94,.32)); }
-  .candidate { stroke: #64748b; stroke-width: 2; stroke-dasharray: 7 7; opacity: .7; }
-  .guide { stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 7 7; opacity: .75; }
-  .point1 { fill: #38bdf8; stroke: #e0f2fe; stroke-width: 3; filter: drop-shadow(0 0 8px rgba(56,189,248,.48)); }
-  .point2 { fill: #f59e0b; stroke: #fff7ed; stroke-width: 3; filter: drop-shadow(0 0 8px rgba(245,158,11,.48)); }
-  .vanish { fill: #151922; stroke: #94a3b8; stroke-width: 2; }
-  text { fill: #dbe4f0; font-size: 16px; font-weight: 750; }
-  .tiny { font-size: 13px; fill: #94a3b8; font-weight: 650; }
-  .panel {
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    overflow-y: auto;
-  }
-  h1 { margin: 0; color: #f8fafc; font-size: 18px; line-height: 1.25; }
-  .muted { margin: 0; color: #9ca3af; font-size: 13px; line-height: 1.45; }
-  .tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
-  .tab {
-    border: 1px solid #3c4655;
-    border-radius: 6px;
-    background: #252c37;
-    color: #e5e7eb;
-    padding: 8px 6px;
-    cursor: pointer;
-  }
-  .tab:hover, .tab.active { border-color: #60a5fa; background: #17304e; }
-  .card {
-    border: 1px solid #303743;
-    border-radius: 7px;
-    background: #171c24;
-    padding: 10px;
-    color: #cbd5e1;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-  .formula {
-    display: block;
-    margin-top: 6px;
-    color: #f8fafc;
-    font-family: Consolas, monospace;
-    font-size: 12px;
-    line-height: 1.55;
-    word-break: break-word;
-  }
-  .legend { display: grid; gap: 7px; }
-  .legend span { display: flex; align-items: center; gap: 8px; }
-  .swatch { width: 11px; height: 11px; border-radius: 50%; flex: 0 0 auto; }
-  .result {
-    margin-top: auto;
-    border-radius: 7px;
-    padding: 10px;
-    background: rgba(34, 197, 94, .12);
-    color: #bbf7d0;
-    border: 1px solid rgba(34, 197, 94, .35);
-    font-size: 13px;
-    line-height: 1.45;
-  }
-  @media (max-width: 840px) {
-    body { padding: 10px; overflow: auto; }
-    .widget { grid-template-columns: 1fr; height: auto; }
-    svg { min-height: 460px; }
-  }
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#14171c;color:#e6edf3;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{display:grid;grid-template-columns:minmax(0,1fr)330px;gap:12px;height:100%;min-height:0}.scene,.panel{border:1px solid #343b46;border-radius:8px;background:#1d222b}.scene{position:relative;overflow:hidden}.scene canvas{display:block;width:100%!important;height:100%!important;cursor:grab}.scene canvas:active{cursor:grabbing}.hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:rgba(203,213,225,.56);font-size:12px;pointer-events:none}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{margin:0;color:#f8fafc;font-size:18px;line-height:1.25}.muted{margin:0;color:#9ca3af;font-size:13px;line-height:1.45}.card{border:1px solid #303743;border-radius:7px;background:#171c24;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:6px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.legend{display:grid;gap:7px}.legend span{display:flex;align-items:center;gap:8px}.swatch{width:11px;height:11px;border-radius:50%;flex:0 0 auto}.result{margin-top:auto;border-radius:7px;padding:10px;background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.35);font-size:13px;line-height:1.45}@media(max-width:860px){body{overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene{min-height:540px}}
 </style>
 </head>
 <body>
 <main class="widget">
-  <section class="scene" aria-label="Join dvou bodu v projektivni rovine">
-    <svg id="scene" viewBox="0 0 760 620" role="img">
-      <defs>
-        <marker id="arrowGray" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-          <path d="M0,0 L0,6 L8,3 z" fill="#8b95a5"></path>
-        </marker>
-      </defs>
-    </svg>
-  </section>
+  <section class="scene" id="scene"><div class="hint">Tahni = rotace | Scroll = zoom | Prave tlacitko = posun</div></section>
   <aside class="panel">
-    <h1>Join dvou bodů v P2</h1>
-    <p class="muted">Dvěma různými body v projektivní rovině prochází právě jedna přímka. Tu získáme vektorovým součinem bodů.</p>
-
-    <div class="tabs" aria-label="Režim zobrazení">
-      <button class="tab active" type="button" data-mode="affine">Afinně</button>
-      <button class="tab" type="button" data-mode="homogeneous">P² zápis</button>
-      <button class="tab" type="button" data-mode="join">Join</button>
-    </div>
-
-    <div class="card">
-      <strong>Zadání</strong>
-      <span class="formula">
-        x1 = (1,1) -> [1,1,1]^T<br>
-        x2 = (2,1) -> [2,1,1]^T
-      </span>
-    </div>
-
+    <h1>Join dvou bodu v P2</h1>
+    <p class="muted">Kazdy bod v obraze je paprsek z C. Dva body x1 a x2 urcuji rovinu paprsku; jeji rez s obrazovou rovinou je hledana primka l.</p>
+    <div class="card"><strong>Zadani</strong><span class="formula">x1=(1,1) -> [1,1,1]^T<br>x2=(2,1) -> [2,1,1]^T</span></div>
     <div class="card legend">
-      <span><i class="swatch" style="background:#38bdf8"></i>x1 = (1,1)</span>
-      <span><i class="swatch" style="background:#f59e0b"></i>x2 = (2,1)</span>
-      <span><i class="swatch" style="background:#22c55e"></i>l = x1 x x2 = [0,1,-1]^T</span>
-      <span><i class="swatch" style="background:#94a3b8"></i>l∞: w = 0</span>
+      <span><i class="swatch" style="background:#38bdf8"></i>modra rovina: obraz A2, w=1</span>
+      <span><i class="swatch" style="background:#22c55e"></i>paprsky bodu x1 a x2</span>
+      <span><i class="swatch" style="background:#f59e0b"></i>rovina span(x1,x2)</span>
+      <span><i class="swatch" style="background:#ef4444"></i>rez v obraze: l</span>
     </div>
-
-    <div class="card" id="explainBox">
-      <strong>Afinní pohled</strong>
-      <span class="formula">Oba body mají v=1, takže hledaná přímka je vodorovná: v=1.</span>
-    </div>
-
-    <div class="result">
-      Výsledek:
-      <span class="formula">[0,1,-1]^T -> 0u + 1v - 1 = 0 -> v = 1</span>
-    </div>
+    <div class="card"><strong>Vypocet</strong><span class="formula">l = x1 x x2<br>[1,1,1]^T x [2,1,1]^T = [0,1,-1]^T</span></div>
+    <div class="result">Rovnice primky je 0u + v - 1 = 0, tedy v=1.</div>
   </aside>
 </main>
-
-<script>
-const svg = document.getElementById('scene');
-const explainBox = document.getElementById('explainBox');
-let mode = 'affine';
-
-const view = {
-  minU: -1.2,
-  maxU: 3.2,
-  minV: -1.2,
-  maxV: 3.2,
-  width: 760,
-  height: 620,
-  pad: 72,
-};
-
-function sx(u) {
-  return view.pad + ((u - view.minU) / (view.maxU - view.minU)) * (view.width - 2 * view.pad);
-}
-
-function sy(v) {
-  return view.height - view.pad - ((v - view.minV) / (view.maxV - view.minV)) * (view.height - 2 * view.pad);
-}
-
-function add(tag, attrs, parent = svg) {
-  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
-  for (const [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
-  parent.appendChild(el);
-  return el;
-}
-
-function label(text, x, y, cls = '') {
-  const t = add('text', { x, y, class: cls });
-  t.textContent = text;
-  return t;
-}
-
-function updateExplanation() {
-  const content = {
-    affine: ['Afinní pohled', 'Body (1,1) a (2,1) leží na stejné vodorovné přímce. Proto už z obrázku vidíme v=1.'],
-    homogeneous: ['Homogenní zápis', 'Afinní body převedeme do P² přidáním poslední souřadnice 1: [1,1,1]^T a [2,1,1]^T.'],
-    join: ['Join', 'Přímka přes dva body v P² se počítá vektorovým součinem: l = x1 x x2 = [0,1,-1]^T.'],
-  }[mode];
-  explainBox.innerHTML = `<strong>${content[0]}</strong><span class="formula">${content[1]}</span>`;
-}
-
-function drawGrid() {
-  for (let u = -1; u <= 3; u += 0.5) {
-    const major = Number.isInteger(u);
-    add('line', {
-      x1: sx(u), y1: sy(view.minV), x2: sx(u), y2: sy(view.maxV),
-      class: 'grid',
-      opacity: major ? 1 : 0.45,
-    });
-  }
-  for (let v = -1; v <= 3; v += 0.5) {
-    const major = Number.isInteger(v);
-    add('line', {
-      x1: sx(view.minU), y1: sy(v), x2: sx(view.maxU), y2: sy(v),
-      class: 'grid',
-      opacity: major ? 1 : 0.45,
-    });
-  }
-  add('line', { x1: sx(view.minU), y1: sy(0), x2: sx(view.maxU), y2: sy(0), class: 'axis' });
-  add('line', { x1: sx(0), y1: sy(view.minV), x2: sx(0), y2: sy(view.maxV), class: 'axis' });
-  label('u', sx(view.maxU) - 8, sy(0) - 12);
-  label('v', sx(0) + 12, sy(view.maxV) + 10);
-}
-
-function drawProjectiveHint() {
-  const y = sy(3.0);
-  add('line', { x1: sx(view.minU), y1: y, x2: sx(view.maxU), y2: y, class: 'guide' });
-  label('l∞: w = 0', sx(2.25), y - 12, 'tiny');
-  add('circle', { cx: sx(2.92), cy: y, r: 7, class: 'vanish' });
-}
-
-function drawPoint(u, v, cls, text, dx = 16, dy = -16) {
-  add('circle', { cx: sx(u), cy: sy(v), r: 10, class: cls });
-  label(text, sx(u) + dx, sy(v) + dy);
-}
-
-function drawScene() {
-  svg.innerHTML = svg.querySelector('defs').outerHTML;
-  updateExplanation();
-  drawGrid();
-
-  add('line', { x1: sx(view.minU), y1: sy(1), x2: sx(view.maxU), y2: sy(1), class: 'join-line' });
-  label('l: v = 1', sx(2.35), sy(1) - 13);
-
-  if (mode === 'affine') {
-    add('line', { x1: sx(1), y1: sy(1), x2: sx(1), y2: sy(0), class: 'guide' });
-    add('line', { x1: sx(2), y1: sy(1), x2: sx(2), y2: sy(0), class: 'guide' });
-  }
-
-  if (mode === 'homogeneous' || mode === 'join') {
-    drawProjectiveHint();
-    add('line', { x1: sx(view.minU), y1: sy(0.2), x2: sx(view.maxU), y2: sy(2.55), class: 'candidate' });
-    label('jiná přímka by minula x2', sx(-0.86), sy(0.45), 'tiny');
-  }
-
-  drawPoint(1, 1, 'point1', 'x1 = (1,1)', 16, -18);
-  drawPoint(2, 1, 'point2', 'x2 = (2,1)', 16, 26);
-
-  if (mode === 'homogeneous') {
-    label('x1 = [1,1,1]ᵀ', sx(0.22), sy(2.45), 'tiny');
-    label('x2 = [2,1,1]ᵀ', sx(1.78), sy(2.65), 'tiny');
-  }
-
-  if (mode === 'join') {
-    const box = add('g', {});
-    add('rect', {
-      x: sx(1.36),
-      y: sy(2.78),
-      width: 276,
-      height: 96,
-      rx: 8,
-      fill: 'rgba(20,23,28,.86)',
-      stroke: 'rgba(148,163,184,.35)',
-    }, box);
-    label('x1 × x2 = [0,1,-1]ᵀ', sx(1.48), sy(2.54), 'tiny');
-    label('0u + 1v - 1 = 0', sx(1.48), sy(2.32), 'tiny');
-    label('v = 1', sx(1.48), sy(2.10), 'tiny');
-  }
-}
-
-for (const button of document.querySelectorAll('.tab')) {
-  button.addEventListener('click', () => {
-    mode = button.dataset.mode;
-    document.querySelectorAll('.tab').forEach((tab) => tab.classList.toggle('active', tab === button));
-    drawScene();
-  });
-}
-
-drawScene();
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const host=document.getElementById('scene');
+const scene=new THREE.Scene();scene.background=new THREE.Color(0x14171c);
+const camera=new THREE.PerspectiveCamera(45,1,.1,100);camera.position.set(4.8,3.8,4.8);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));host.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.target.set(.7,.55,.75);controls.minDistance=3;controls.maxDistance=15;
+scene.add(new THREE.AmbientLight(0xffffff,.78));const light=new THREE.DirectionalLight(0xffffff,.9);light.position.set(4,5,6);scene.add(light);
+const group=new THREE.Group();scene.add(group);
+function rounded(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
+function makeLabel(text,color='#e5e7eb'){const c=document.createElement('canvas');c.width=370;c.height=76;const ctx=c.getContext('2d');ctx.font='700 24px Segoe UI, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='rgba(20,23,28,.84)';ctx.strokeStyle='rgba(255,255,255,.18)';rounded(ctx,12,8,346,58,10);ctx.fill();ctx.stroke();ctx.fillStyle=color;ctx.fillText(text,185,39);const tex=new THREE.CanvasTexture(c);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false}));s.scale.set(1.26,.26,1);s.renderOrder=50;return s}
+function label(t,p,c){const s=makeLabel(t,c);s.position.copy(p);group.add(s)}
+function plane(pts,color,op,name,pos){const geo=new THREE.BufferGeometry().setFromPoints(pts);geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();group.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color,transparent:true,opacity:op,side:THREE.DoubleSide,depthWrite:false})));group.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color,transparent:true,opacity:.92})));if(name)label(name,pos,'#f8fafc')}
+function line(a,b,color,dashed=false){const geo=new THREE.BufferGeometry().setFromPoints([a,b]);const mat=dashed?new THREE.LineDashedMaterial({color,dashSize:.16,gapSize:.1,transparent:true,opacity:.85}):new THREE.LineBasicMaterial({color});const l=new THREE.Line(geo,mat);if(dashed)l.computeLineDistances();group.add(l)}
+function sphere(p,color,name){const m=new THREE.Mesh(new THREE.SphereGeometry(.08,28,16),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.18}));m.position.copy(p);group.add(m);if(name)label(name,p.clone().add(new THREE.Vector3(.18,.14,.12)),'#f8fafc')}
+function draw(){const C=new THREE.Vector3(0,0,0),x1=new THREE.Vector3(1,1,1),x2=new THREE.Vector3(2,1,1);plane([new THREE.Vector3(-.75,-.75,1),new THREE.Vector3(2.45,-.75,1),new THREE.Vector3(2.45,2,1),new THREE.Vector3(-.75,2,1)],0x38bdf8,.16,'A2: w=1',new THREE.Vector3(2.05,2.16,1));plane([C,x1,x1.clone().add(x2),x2],0xf59e0b,.16,'span(x1,x2)',new THREE.Vector3(1.25,.55,.72));line(C,x1,0x22c55e);line(C,x2,0x22c55e);line(C,x1.clone().multiplyScalar(1.2),0x22c55e,true);line(C,x2.clone().multiplyScalar(1.1),0x22c55e,true);line(new THREE.Vector3(-.65,1,1),new THREE.Vector3(2.35,1,1),0xef4444);sphere(C,0x3b82f6,'C');sphere(x1,0x22c55e,'x1=[1,1,1]');sphere(x2,0xf59e0b,'x2=[2,1,1]');label('l: v=1',new THREE.Vector3(2.0,1.15,1.05),'#fecaca');label('x1 x x2 = l',new THREE.Vector3(.62,.18,.42),'#fef3c7');group.add(new THREE.GridHelper(4.6,8,0x334155,0x26303c))}
+draw();
+function resize(){const r=host.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix()}window.addEventListener('resize',resize);resize();function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
 </script>
 </body>
 </html>
