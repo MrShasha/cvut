@@ -1,0 +1,196 @@
+<div class="graphics-widget" style="background:#1e1e1e; color:#e0e0e0; padding:20px; border-radius:8px; font-family:monospace; max-width:720px; box-shadow:0 4px 12px rgba(0,0,0,0.3); margin: 20px 0;">
+  <div style="display:flex; background:#151515; border-radius:4px; padding:2px; margin-bottom:15px; border:1px solid #333;">
+    <button id="kosaraju-btn-f1" style="flex:1; background:#264f78; color:#fff; border:none; padding:8px; cursor:pointer; font-family:monospace; border-radius:3px;">Fáze 1: Původní G (DFS na zásobník)</button>
+    <button id="kosaraju-btn-f2" style="flex:1; background:transparent; color:#888; border:none; padding:8px; cursor:pointer; font-family:monospace; border-radius:3px;">Fáze 2: Transponovaný Gᵀ (Sběr SCC)</button>
+  </div>
+
+  <div style="display:flex; gap:20px; flex-wrap:wrap; justify-content:center;">
+    <div>
+      <canvas id="kosarajuCanvas" width="440" height="240" style="background:#111; border:1px solid #333; display:block;"></canvas>
+      <div style="display:flex; gap:10px; margin-top:8px;">
+        <button id="kosaraju-step-btn" style="flex:1; background:#2d2d2d; color:#fff; border:1px solid #555; padding:6px; border-radius:4px; cursor:pointer; font-family:monospace;">Krok vpřed &gt;</button>
+        <button id="kosaraju-reset-btn" style="background:#2d2d2d; color:#f44747; border:1px solid #555; padding:6px; border-radius:4px; cursor:pointer; font-family:monospace;">Reset</button>
+      </div>
+    </div>
+    
+    <div style="flex:1; min-width:200px; display:flex; flex-direction:column; justify-content:start; font-size:12px;">
+      <div style="font-weight:bold; color:#569cd6; border-bottom:1px solid #333; padding-bottom:5px; margin-bottom:10px;">STAV STRUKTUR</div>
+      
+      <div style="background:#151515; padding:8px; border-radius:4px; margin-bottom:10px;">
+        <span style="color:#888;">Zásobník S (top vpravo):</span>
+        <div id="kosaraju-stack" style="color:#ce9178; font-weight:bold; margin-top:4px; min-height:18px; word-break:break-all; letter-spacing:1px;">[]</div>
+      </div>
+
+      <div style="background:#151515; padding:8px; border-radius:4px; margin-bottom:10px; flex:1; min-height:80px;">
+        <span style="color:#888;">Nalezené SCC:</span>
+        <div id="kosaraju-scc-list" style="margin-top:4px; line-height:1.4;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:15px; background:#151515; padding:12px; border-radius:4px; font-size:13px; border:1px solid #2d2d2d;">
+    <div style="color:#888; margin-bottom:4px;">Průběh provádění:</div>
+    <div id="kosaraju-math-feedback" style="color:#b5cea8;">Graf inicializován dle schématu. Klikněte na Krok vpřed.</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('kosarajuCanvas');
+  const ctx = canvas.getContext('2d');
+
+  const nodes = [
+    {id: 'a', x: 50,  y: 60},  {id: 'b', x: 160, y: 60},
+    {id: 'c', x: 270, y: 60},  {id: 'd', x: 380, y: 60},
+    {id: 'e', x: 50,  y: 180}, {id: 'f', x: 160, y: 180},
+    {id: 'g', x: 270, y: 180}, {id: 'h', x: 380, y: 180}
+  ];
+
+  const edges = [
+    {from: 0, to: 1, curve: 0},  {from: 1, to: 2, curve: 0},
+    {from: 1, to: 4, curve: 0},  {from: 1, to: 5, curve: 0},
+    {from: 2, to: 3, curve: 20}, {from: 2, to: 6, curve: 0},
+    {from: 3, to: 2, curve: 20}, {from: 3, to: 7, curve: 20},
+    {from: 4, to: 0, curve: 0},  {from: 4, to: 5, curve: 0},
+    {from: 5, to: 6, curve: 20}, {from: 6, to: 5, curve: 20},
+    {from: 7, to: 3, curve: 20}, {from: 7, to: 6, curve: 0}
+  ];
+
+  let phase = 1;
+  let stepIndex = 0;
+
+  const timelineF1 = [
+    { msg: 'Spouštíme $$DFS(a)$$.', v: ['#ff8c00','#555','#555','#555','#555','#555','#555','#555'], e: [0], st: [] },
+    { msg: 'Pokračujeme na b.', v: ['#ff8c00','#ff8c00','#555','#555','#555','#555','#555','#555'], e: [0,1], st: [] },
+    { msg: 'Z b jdeme na c.', v: ['#ff8c00','#ff8c00','#ff8c00','#555','#555','#555','#555','#555'], e: [0,1,2], st: [] },
+    { msg: 'Z c jdeme na d.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#555','#555','#555'], e: [0,1,2,5], st: [] },
+    { msg: 'Z d skočíme na h.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#555','#555','#ff8c00'], e: [0,1,2,5,8], st: [] },
+    { msg: 'Z h vidíme zpět d (rozpracován). Druhá hrana vede do g. Navštěvujeme g.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#555','#ff8c00','#ff8c00'], e: [0,1,2,5,8,14], st: [] },
+    { msg: 'Z g jdeme do f.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#ff8c00','#ff8c00','#ff8c00'], e: [0,1,2,5,8,14,12], st: [] },
+    { msg: 'Z f vede hrana zpět do g (rozpracován). f nemá další sousedy, uzavíráme ho. Push na S.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#4ec9b0','#ff8c00','#ff8c00'], e: [0,1,2,5,8,14,12], st: ['f'] },
+    { msg: 'Návrat do g. Všechny větve zpracovány. Uzavíráme g. Push na S.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#4ec9b0','#4ec9b0','#ff8c00'], e: [0,1,2,5,8,14], st: ['f','g'] },
+    { msg: 'Návrat do h. Všechny větve zpracovány. Uzavíráme h. Push na S.', v: ['#ff8c00','#ff8c00','#ff8c00','#ff8c00','#555','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1,2,5,8], st: ['f','g','h'] },
+    { msg: 'Návrat do d. Soused c je rozpracován. Uzavíráme d. Push na S.', v: ['#ff8c00','#ff8c00','#ff8c00','#4ec9b0','#555','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1,2,5], st: ['f','g','h','d'] },
+    { msg: 'Návrat do c. Soused g je již uzavřen. Uzavíráme c. Push na S.', v: ['#ff8c00','#ff8c00','#4ec9b0','#4ec9b0','#555','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1], st: ['f','g','h','d','c'] },
+    { msg: 'Návrat do b. Větev do f je uzavřena. Zkoušíme hranu do e. Navštěvujeme e.', v: ['#ff8c00','#ff8c00','#4ec9b0','#4ec9b0','#ff8c00','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1,3], st: ['f','g','h','d','c'] },
+    { msg: 'Z e vidíme a (rozpracován) a f (uzavřen). Uzavíráme e. Push na S.', v: ['#ff8c00','#ff8c00','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0,1], st: ['f','g','h','d','c','e'] },
+    { msg: 'Návrat do b. Vše zpracováno. Uzavíráme b. Push na S.', v: ['#ff8c00','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0'], e: [0], st: ['f','g','h','d','c','e','b'] },
+    { msg: 'Návrat do a. Uzavíráme výchozí kořen. Push na S. Fáze 1 kompletní.', v: ['#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0','#4ec9b0'], e: [], st: ['f','g','h','d','c','e','b','a'] }
+  ];
+
+  const timelineF2 = [
+    { msg: 'Hrany otočeny na $$G^T$$. Na vrcholu S leží vrchol a.', v: ['#555','#555','#555','#555','#555','#555','#555','#555'], e: [], st: ['f','g','h','d','c','e','b','a'], scc: [] },
+    { msg: 'Pop(S) &rarr; a. Spouštíme $$DFS(a)$$ v $$G^T$$. Cesta skočí na e.', v: ['#ff8c00','#555','#555','#555','#ff8c00','#555','#555','#555'], e: [9], st: ['f','g','h','d','c','e','b'], scc: [] },
+    { msg: 'Z e skočíme na b v $$G^T$$.', v: ['#ff8c00','#ff8c00','#555','#555','#ff8c00','#555','#555','#555'], e: [9,2], st: ['f','g','h','d','c','e'], scc: [] },
+    { msg: 'Z b už nelze pokračovat do nespustěných uzlů. Izolována první SCC: {a, e, b}.', v: ['#ce9178','#ce9178','#555','#555','#ce9178','#555','#555','#555'], e: [], st: ['f','g','h','d','c'], scc: ['{a, e, b}'] },
+    { msg: 'Pop(S) postupně bere b, e (přeskočit). Další na řadě je c. Spouštíme $$DFS(c)$$. Jdeme na d.', v: ['#ce9178','#ce9178','#ff8c00','#ff8c00','#ce9178','#555','#555','#555'], e: [7], st: ['f','g','h'], scc: ['{a, e, b}'] },
+    { msg: 'Z d skočíme v $$G^T$$ na h.', v: ['#ce9178','#ce9178','#ff8c00','#ff8c00','#ce9178','#555','#555','#ff8c00'], e: [7,13], st: ['f','g'], scc: ['{a, e, b}'] },
+    { msg: 'Z h už nelze expandovat dál. Izolována druhá SCC: {c, d, h}.', v: ['#ce9178','#ce9178','#4ec9b0','#4ec9b0','#ce9178','#555','#555','#4ec9b0'], e: [], st: ['f','g'], scc: ['{a, e, b}', '{c, d, h}'] },
+    { msg: 'Pop(S) bere h, d (přeskočit). Další na řadě je g. Spouštíme $$DFS(g)$$. Vidíme f.', v: ['#ce9178','#ce9178','#4ec9b0','#4ec9b0','#ce9178','#ff8c00','#ff8c00','#4ec9b0'], e: [11], st: ['f'], scc: ['{a, e, b}', '{c, d, h}'] },
+    { msg: 'Z f už není kam jít. Průchod hotov. Třetí SCC: {g, f}. Všechny uzly zpracovány.', v: ['#ce9178','#ce9178','#4ec9b0','#4ec9b0','#ce9178','#b5cea8','#b5cea8','#4ec9b0'], e: [], st: [], scc: ['{a, e, b}', '{c, d, h}', '{g, f}'] }
+  ];
+
+  function drawEdge(fx, fy, tx, ty, color, curve, isT) {
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = 2;
+
+    if (isT) { let tmpX = fx; let tmpY = fy; fx = tx; fy = ty; tx = tmpX; ty = tmpY; }
+
+    let angle = Math.atan2(ty - fy, tx - fx);
+    let r = 15;
+    let sx = fx + r * Math.cos(angle);
+    let sy = fy + r * Math.sin(angle);
+    let ex = tx - r * Math.cos(angle);
+    let ey = ty - r * Math.sin(angle);
+
+    ctx.beginPath();
+    if (curve === 0) {
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+      
+      // Arrow head
+      ctx.beginPath(); ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - 7 * Math.cos(angle - Math.PI/6), ey - 7 * Math.sin(angle - Math.PI/6));
+      ctx.lineTo(ex - 7 * Math.cos(angle + Math.PI/6), ey - 7 * Math.sin(angle + Math.PI/6));
+      ctx.fill();
+    } else {
+      // Quadratic curve for bidirected links
+      let cx = (sx + ex) / 2 + curve * Math.cos(angle + Math.PI/2);
+      let cy = (sy + ey) / 2 + curve * Math.sin(angle + Math.PI/2);
+      ctx.moveTo(sx, sy);
+      ctx.quadraticCurveTo(cx, cy, ex, ey);
+      ctx.stroke();
+
+      let tAngle = Math.atan2(ey - cy, ex - cx);
+      ctx.beginPath(); ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - 7 * Math.cos(tAngle - Math.PI/6), ey - 7 * Math.sin(tAngle - Math.PI/6));
+      ctx.lineTo(ex - 7 * Math.cos(tAngle + Math.PI/6), ey - 7 * Math.sin(tAngle + Math.PI/6));
+      ctx.fill();
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let timeline = (phase === 1) ? timelineF1 : timelineF2;
+    let state = timeline[stepIndex] || timeline[timeline.length - 1];
+
+    edges.forEach((e, idx) => {
+      let active = state.e.includes(idx);
+      let c = active ? (phase === 1 ? '#ff8c00' : '#4ec9b0') : '#444';
+      drawEdge(nodes[e.from].x, nodes[e.from].y, nodes[e.to].x, nodes[e.to].y, c, e.curve, (phase === 2));
+    });
+
+    nodes.forEach((n, idx) => {
+      ctx.fillStyle = '#151515';
+      ctx.strokeStyle = state.v[idx];
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(n.x, n.y, 14, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = '#fff';
+      ctx.font = '12px monospace';
+      ctx.fillText(n.id, n.x - 4, n.y + 4);
+    });
+
+    document.getElementById('kosaraju-stack').innerText = `[ ${state.st.join(', ')} ]`;
+    document.getElementById('kosaraju-math-feedback').innerHTML = state.msg;
+    
+    let listHTML = '';
+    if (state.scc) {
+      state.scc.forEach((c, i) => {
+        let colors = ['#ce9178', '#4ec9b0', '#b5cea8'];
+        listHTML += `<div style="color:${colors[i] || '#fff'}">SCC ${i+1}: ${c}</div>`;
+      });
+    }
+    document.getElementById('kosaraju-scc-list').innerHTML = listHTML || '<span style="color:#555;">Žádné komponenty</span>';
+  }
+
+  document.getElementById('kosaraju-btn-f1').addEventListener('click', () => {
+    phase = 1; stepIndex = 0;
+    document.getElementById('kosaraju-btn-f1').style.background = '#264f78';
+    document.getElementById('kosaraju-btn-f1').style.color = '#fff';
+    document.getElementById('kosaraju-btn-f2').style.background = 'transparent';
+    document.getElementById('kosaraju-btn-f2').style.color = '#888';
+    draw();
+  });
+
+  document.getElementById('kosaraju-btn-f2').addEventListener('click', () => {
+    phase = 2; stepIndex = 0;
+    document.getElementById('kosaraju-btn-f2').style.background = '#264f78';
+    document.getElementById('kosaraju-btn-f2').style.color = '#fff';
+    document.getElementById('kosaraju-btn-f1').style.background = 'transparent';
+    document.getElementById('kosaraju-btn-f1').style.color = '#888';
+    draw();
+  });
+
+  document.getElementById('kosaraju-step-btn').addEventListener('click', () => {
+    let max = (phase === 1) ? timelineF1.length : timelineF2.length;
+    if (stepIndex < max - 1) { stepIndex++; draw(); }
+  });
+
+  document.getElementById('kosaraju-reset-btn').addEventListener('click', () => { stepIndex = 0; draw(); });
+
+  draw();
+})();
+</script>
