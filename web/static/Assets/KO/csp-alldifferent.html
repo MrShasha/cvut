@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Alldifferent jako parovani</title>
+  <style>
+    :root{--bg:#111827;--panel:#172033;--ink:#e5e7eb;--muted:#9ca3af;--line:#334155;--blue:#38bdf8;--green:#34d399;--red:#fb7185;--amber:#fbbf24}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,Segoe UI,Arial,sans-serif}
+    .wrap{max-width:1180px;margin:0 auto;padding:18px;display:grid;grid-template-columns:1fr 360px;gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
+    h1{font-size:22px;margin:0 0 4px}.muted{color:var(--muted);margin:0 0 10px}svg{width:100%;height:410px;background:#0b1220;border:1px solid var(--line);border-radius:8px}
+    .edge{stroke:#475569;stroke-width:2}.edge.match{stroke:var(--green);stroke-width:5}.edge.bad{stroke:var(--red);stroke-width:4;stroke-dasharray:8 6}
+    .node{fill:#1e293b;stroke:#64748b;stroke-width:2}.value{fill:#143042}.hot{stroke:var(--amber);stroke-width:4}.txt{fill:var(--ink);font-weight:800;text-anchor:middle;dominant-baseline:middle}
+    .controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}button{background:#24324a;color:var(--ink);border:1px solid #475569;border-radius:7px;padding:9px 12px;cursor:pointer}.primary{background:#0e7490;border-color:#22d3ee}
+    .pill{display:inline-block;padding:4px 9px;border-radius:999px;background:#26364f;margin:3px;color:#cbd5e1}.ok{background:#064e3b}.fail{background:#7f1d1d}
+    @media(max-width:860px){.wrap{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="panel">
+      <h1>Globální omezení alldifferent</h1>
+      <p class="muted">Místo mnoha binárních ≠ omezení se díváme na bipartitní graf proměnné–hodnoty.</p>
+      <svg id="svg" viewBox="0 0 760 410"></svg>
+      <div class="controls"><button id="feasible" class="primary">splnitelný příklad</button><button id="hall">Hallův konflikt</button></div>
+    </main>
+    <aside class="panel">
+      <h2 id="title">Perfektní párování existuje</h2>
+      <p id="desc"></p>
+      <div id="domains"></div>
+      <p class="muted">Globální propagátor vidí, jestli lze každé proměnné dát unikátní hodnotu. Binární AC tento pohled často nemá.</p>
+    </aside>
+  </div>
+  <script>
+    const examples={
+      feasible:{title:"Perfektní párování existuje",desc:"Každá proměnná dostane jinou hodnotu: x1=e, x2=b, x3=c, x4=d.",vars:["x1","x2","x3","x4"],vals:["a","b","c","d","e"],dom:{x1:["b","c","d","e"],x2:["b","d"],x3:["a","b","c","d"],x4:["b","d"]},match:[["x1","e"],["x2","b"],["x3","c"],["x4","d"]]},
+      hall:{title:"Infeasible: Hallův konflikt",desc:"Tři proměnné mají dohromady jen dvě možné hodnoty {1,2}. Párování velikosti 3 neexistuje.",vars:["x1","x2","x3"],vals:["1","2"],dom:{x1:["1","2"],x2:["1","2"],x3:["1","2"]},match:[],bad:true}
+    };
+    let cur=examples.feasible;
+    function render(){
+      const svg=document.getElementById("svg"); svg.innerHTML=""; const leftX=160,rightX=600,top=70,gap=82;
+      const pos={}; cur.vars.forEach((v,i)=>pos[v]=[leftX,top+i*gap]); cur.vals.forEach((v,i)=>pos[v]=[rightX,top+i*gap]);
+      const isMatch=(x,v)=>cur.match.some(e=>e[0]===x&&e[1]===v);
+      cur.vars.forEach(x=>cur.dom[x].forEach(v=>{const [x1,y1]=pos[x], [x2,y2]=pos[v]; const line=document.createElementNS("http://www.w3.org/2000/svg","line"); line.setAttribute("x1",x1+34);line.setAttribute("y1",y1);line.setAttribute("x2",x2-34);line.setAttribute("y2",y2);line.setAttribute("class","edge "+(isMatch(x,v)?"match":cur.bad?"bad":""));svg.appendChild(line)}));
+      [...cur.vars,...cur.vals].forEach(n=>{const [x,y]=pos[n]; const c=document.createElementNS("http://www.w3.org/2000/svg","circle"); c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",34);c.setAttribute("class","node "+(cur.vals.includes(n)?"value ":"")+(cur.bad?"hot":"")); svg.appendChild(c); const t=document.createElementNS("http://www.w3.org/2000/svg","text"); t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("class","txt");t.textContent=n;svg.appendChild(t)});
+      title.textContent=cur.title; desc.textContent=cur.desc;
+      domains.innerHTML=cur.vars.map(v=>`<div><b>${v}</b>${cur.dom[v].map(x=>`<span class="pill ${cur.bad?"fail":"ok"}">${x}</span>`).join("")}</div>`).join("");
+    }
+    feasible.onclick=()=>{cur=examples.feasible;render()}; hall.onclick=()=>{cur=examples.hall;render()}; render();
+  </script>
+</body>
+</html>

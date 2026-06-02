@@ -1,121 +1,712 @@
 <!DOCTYPE html>
 <html lang="cs">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DNS algoritmus | interaktivní 3D animace</title>
-<style>
-:root{
-  --bg:#07101f;--panel:rgba(15,27,50,.94);--panel2:rgba(20,36,64,.92);--line:rgba(137,166,211,.2);
-  --text:#edf5ff;--muted:#98a9c9;--cyan:#57e3df;--blue:#63a9ff;--orange:#ffbd78;
-  --green:#74e6a8;--violet:#ae96ff;--pink:#ff87ae;--shadow:0 20px 50px rgba(0,0,0,.24);
-}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:18px;color:var(--text);font:14px/1.45 Inter,"Segoe UI",system-ui,sans-serif;
-background:radial-gradient(circle at 8% 3%,rgba(68,112,220,.2),transparent 29rem),radial-gradient(circle at 92% 92%,rgba(42,205,183,.13),transparent 30rem),var(--bg)}
-button,input{font:inherit}button{cursor:pointer}.shell{width:min(1460px,100%);margin:auto}
-.hero{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:13px}.eyebrow{color:var(--cyan);font-size:11px;font-weight:850;letter-spacing:.18em;text-transform:uppercase}
-h1{margin:4px 0 0;font-size:clamp(22px,2.8vw,31px);letter-spacing:-.045em}.hero p{max-width:790px;margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.55}
-.badge{flex:none;padding:10px 13px;border:1px solid rgba(87,227,223,.4);border-radius:14px;color:var(--cyan);background:rgba(87,227,223,.08);font-size:12px;font-weight:850;text-align:center}
-.toolbar{display:flex;justify-content:space-between;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:11px;padding:10px 12px;border:1px solid var(--line);border-radius:15px;background:var(--panel);box-shadow:var(--shadow)}
-.group{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.hint{color:var(--muted);font-size:11px}.btn,.play{padding:7px 11px;border:1px solid transparent;border-radius:9px;color:var(--muted);background:rgba(255,255,255,.045);font-size:12px;font-weight:800;transition:.18s}
-.btn:hover{color:var(--text);border-color:rgba(99,169,255,.5);transform:translateY(-1px)}.play{color:#06172c;background:linear-gradient(135deg,var(--cyan),#7cbcff)}.play:hover{transform:translateY(-1px)}
-input[type=range]{width:74px;accent-color:var(--cyan)}.layout{display:grid;grid-template-columns:minmax(0,1fr) 325px;gap:12px}
-.scene,.card{border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:var(--shadow)}.scene{overflow:hidden}.canvas-wrap{position:relative;padding:8px}
-canvas{display:block;width:100%;border:1px solid rgba(137,166,211,.14);border-radius:12px;background:#091426;cursor:grab;touch-action:none}canvas.drag{cursor:grabbing}
-.canvas-tip{position:absolute;top:19px;left:20px;padding:6px 8px;border:1px solid rgba(137,166,211,.2);border-radius:8px;color:var(--muted);background:rgba(5,13,27,.78);font-size:10px;pointer-events:none}
-.tooltip{position:absolute;display:none;z-index:3;padding:7px 9px;border:1px solid rgba(87,227,223,.35);border-radius:8px;color:#dffefd;background:rgba(6,18,34,.95);font:700 11px/1.45 ui-monospace,Consolas,monospace;pointer-events:none;white-space:pre-line}
-.lesson{display:grid;gap:6px;padding:12px 15px 14px;border-top:1px solid var(--line);background:rgba(7,15,30,.58)}.kicker{color:var(--cyan);font-size:10px;font-weight:850;letter-spacing:.16em;text-transform:uppercase}.lesson-title{font-size:16px;font-weight:850}.lesson-text{color:var(--muted);font-size:12px;line-height:1.55}
-.formula{padding:8px 10px;border:1px solid rgba(99,169,255,.24);border-radius:8px;color:#d7eaff;background:rgba(99,169,255,.075);font:700 11px/1.5 ui-monospace,Consolas,monospace;white-space:pre-line}
-.side{display:grid;align-content:start;gap:10px}.card{padding:12px}.card h2{margin:0 0 9px;color:#dbeaff;font-size:11px;font-weight:850;letter-spacing:.11em;text-transform:uppercase}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:9px}.stat{padding:7px 4px;border:1px solid rgba(137,166,211,.14);border-radius:8px;background:rgba(255,255,255,.025);text-align:center}.sv{font-size:17px;font-weight:900}.sl{margin-top:2px;color:var(--muted);font-size:8px;letter-spacing:.08em;text-transform:uppercase}
-.phases{display:grid;gap:4px}.phase{display:flex;align-items:center;gap:7px;padding:6px 8px;border:1px solid rgba(137,166,211,.12);border-radius:8px;color:var(--muted);font-size:10px;background:rgba(255,255,255,.018)}
-.phase b{width:17px;height:17px;border-radius:50%;background:rgba(137,166,211,.13);font-size:9px;line-height:17px;text-align:center}.phase span{margin-left:auto;font:700 9px ui-monospace,Consolas,monospace}.phase.active{border-color:rgba(255,189,120,.58);color:var(--orange);background:rgba(255,189,120,.08)}.phase.done{border-color:rgba(116,230,168,.28);color:var(--green);background:rgba(116,230,168,.04)}
-.focus-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.focus{padding:6px 3px;border:1px solid rgba(137,166,211,.14);border-radius:7px;color:var(--muted);background:rgba(255,255,255,.025);font:750 10px ui-monospace,Consolas,monospace}.focus.active{border-color:rgba(174,150,255,.7);color:#e5ddff;background:rgba(174,150,255,.13)}
-.equation{margin-top:8px;padding:8px 9px;border:1px solid rgba(174,150,255,.24);border-radius:8px;color:#e6deff;background:rgba(174,150,255,.07);font:700 10px/1.55 ui-monospace,Consolas,monospace;white-space:pre-line}.complexity{padding:8px 9px;border:1px solid rgba(87,227,223,.22);border-radius:8px;color:var(--cyan);background:rgba(87,227,223,.065);font:750 10px/1.58 ui-monospace,Consolas,monospace;white-space:pre-line}.note{margin-top:7px;color:var(--muted);font-size:10px;line-height:1.5}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;color:var(--muted);font-size:9px}.legend i{display:inline-block;width:7px;height:7px;margin-right:3px;border-radius:50%}
-@media(max-width:1000px){.layout{grid-template-columns:1fr}.side{grid-template-columns:repeat(3,1fr)}}@media(max-width:760px){.side{grid-template-columns:1fr}.hero{align-items:start;flex-direction:column}}
-</style>
-</head>
-<body>
-<main class="shell">
-  <header class="hero">
-    <div>
-      <div class="eyebrow">Paralelní algoritmy / násobení matic</div>
-      <h1>DNS algoritmus: výpočet rozložený do 3D prostoru</h1>
-      <p>Každý procesor <strong>P(i,k,j)</strong> spočítá právě jeden člen součtu <strong>A[i][k] × B[k][j]</strong>. Natoč si kubus myší a sleduj, jak se operandy nejprve rozdistribuují a potom složí do výsledné roviny <strong>C</strong>.</p>
-    </div>
-    <div class="badge">3 × 3 × 3<br><span style="color:var(--muted);font-size:10px">27 procesorů</span></div>
-  </header>
-  <section class="toolbar">
-    <div class="group"><button class="btn" id="cameraBtn">↻ Výchozí pohled</button><span class="hint">Tažení = otočení · kolečko = zoom · najeď na procesor pro detail</span></div>
-    <div class="group">
-      <label class="hint">rychlost <input id="speed" type="range" min="500" max="2200" step="100" value="1200"></label>
-      <button class="btn" id="resetBtn">↻ Reset</button><button class="btn" id="backBtn">◀ Zpět</button><button class="btn" id="nextBtn">Další ▶</button><button class="play" id="playBtn">▶ Přehrát</button>
-    </div>
-  </section>
-  <section class="layout">
-    <div class="scene">
-      <div class="canvas-wrap"><canvas id="cv"></canvas><div class="canvas-tip">interaktivní 3D prostor</div><div class="tooltip" id="tooltip"></div></div>
-      <div class="lesson"><div class="kicker" id="kicker"></div><div class="lesson-title" id="lessonTitle"></div><div class="lesson-text" id="lessonText"></div><div class="formula" id="formula"></div></div>
-    </div>
-    <aside class="side">
-      <section class="card"><h2>Průběh algoritmu</h2><div class="stats"><div class="stat"><div class="sv" id="stepStat">0/6</div><div class="sl">krok</div></div><div class="stat"><div class="sv" id="activeStat">0</div><div class="sl">přenosů</div></div><div class="stat"><div class="sv" id="doneStat">0/9</div><div class="sl">hotová C</div></div></div><div class="phases" id="phases"></div></section>
-      <section class="card"><h2>Sledovaný prvek výsledku</h2><div class="focus-grid" id="focusGrid"></div><div class="equation" id="equation"></div><div class="legend"><span><i style="background:var(--cyan)"></i>A[i][k]</span><span><i style="background:var(--orange)"></i>B[k][j]</span><span><i style="background:var(--violet)"></i>součin</span><span><i style="background:var(--green)"></i>výsledek C</span></div></section>
-      <section class="card"><h2>Proč třetí rozměr?</h2><div class="complexity">P(i,k,j): A[i][k] × B[k][j]
-C[i][j] = Σₖ A[i][k]B[k][j]
 
-Tₚ(n³ proc.) = Θ(log n)
-Tₚ(p=q³) = Θ(n² / p^(2/3)
-              + (n/q) log q)</div><div class="note">Oproti Cannonovi dovolí DNS využít mnohem více procesorů: až O(n³ / log³ n). Redukce je v animaci rozepsaná po vlnách, aby bylo vidět každé sčítání; implementace ji provádí stromově v Θ(log q).</div></section>
-    </aside>
-  </section>
-</main>
-<script>
-const q=3,A=[[2,1,3],[1,2,0],[3,1,2]],B=[[1,2,1],[0,1,3],[2,1,2]];
-const C=A.map((r,i)=>B[0].map((_,j)=>r.reduce((s,v,k)=>s+v*B[k][j],0)));
-const COLORS={a:'#57e3df',b:'#ffbd78',prod:'#ae96ff',sum:'#74e6a8',dim:'#6f83a8',focus:'#ff87ae'};
-const stages=[
- {key:'start',title:'Vstupní data leží ve dvou kolmých rovinách',kicker:'0 / MAPOVÁNÍ DAT',text:'Blok A[i][k] začíná na čelní rovině j=0. Blok B[k][j] začíná na levé rovině i=0. Průsečík obou broadcastů je procesor P(i,k,j).',formula:'souřadnice procesoru = (i, k, j)\ni = řádek C · k = člen sumy · j = sloupec C'},
- {key:'a',title:'Broadcast A podél osy j',kicker:'1 / DISTRIBUCE A',text:'Každý blok A[i][k] letí z roviny j=0 dozadu podél své tyrkysové tyče. Po této fázi jej mají všechny procesory P(i,k,*).',formula:'P(i,k,0) → P(i,k,*) : A[i][k]\nčas = (tₛ + t𝓌 · m) log q'},
- {key:'b',title:'Broadcast B podél osy i',kicker:'2 / DISTRIBUCE B',text:'Každý blok B[k][j] letí z roviny i=0 doprava. Každý procesor nyní vlastní právě dvojici operandů, kterou potřebuje.',formula:'P(0,k,j) → P(*,k,j) : B[k][j]\nP(i,k,j) má A[i][k] i B[k][j]'},
- {key:'mul',title:'27 lokálních násobení proběhne souběžně',kicker:'3 / LOKÁLNÍ VÝPOČET',text:'Uvnitř každého procesoru se tyrkysový a oranžový operand spojí do fialového dílčího součinu. Pro vybraný C[i][j] sleduj zvýrazněnou svislou věž.',formula:'partial(i,k,j) = A[i][k] × B[k][j]\nkaždý P(i,k,j) počítá jediný člen sumy'},
- {key:'r1',title:'Redukce: první mezisoučty míří do roviny k=0',kicker:'4 / REDUKCE · VLNA 1',text:'Příspěvky z prostřední roviny k=1 se přesunou do výstupní roviny k=0 a přičtou se k prvním příspěvkům.',formula:'sum₁(i,j) = partial(i,0,j) + partial(i,1,j)'},
- {key:'r2',title:'Redukce: poslední příspěvky dokončí výsledky',kicker:'5 / REDUKCE · VLNA 2',text:'Příspěvky ze zadní roviny k=2 doputují ke stejným výstupům. Každá zelená buňka nyní obsahuje úplný skalární součin.',formula:'C[i][j] = sum₁(i,j) + partial(i,2,j)'},
- {key:'done',title:'Výsledná matice C leží v rovině k=0',kicker:'6 / HOTOVO',text:'Třetí rozměr rozložil jednotlivé členy sumy mezi samostatné procesory. Po redukci zůstane v přední výstupní rovině devět hotových prvků C.',formula:'C = A × B = [[8, 8, 11], [1, 4, 7], [7, 9, 10]]'}
-];
-const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),tip=document.getElementById('tooltip');
-let cur=0,playing=false,busy=false,raf=0,playTimer=0,anim=null,hover=null,focus={i:0,j:0},camera={yaw:-.72,pitch:.54,zoom:1};
-let W=0,H=0,dpr=1,projected=[];
-const $=id=>document.getElementById(id), clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), ease=t=>1-Math.pow(1-t,3);
-function node(i,k,j){return{i,k,j,id:`${i}${k}${j}`}}function allNodes(){const a=[];for(let i=0;i<q;i++)for(let k=0;k<q;k++)for(let j=0;j<q;j++)a.push(node(i,k,j));return a}
-const nodes=allNodes(), partial=(i,k,j)=>A[i][k]*B[k][j];
-function resize(){const r=cv.getBoundingClientRect(),nw=Math.max(400,Math.floor(r.width)),nh=Math.max(470,Math.min(620,Math.floor(nw*.58))),nd=Math.max(1,devicePixelRatio||1);if(nw===W&&nh===H&&nd===dpr)return;W=nw;H=nh;dpr=nd;cv.width=W*dpr;cv.height=H*dpr;cv.style.height=H+'px'}
-function xyz(n){return{x:(n.i-1)*108,y:(1-n.k)*108,z:(n.j-1)*108}}function proj(p){let x=p.x,z=p.z,y=p.y;const cy=Math.cos(camera.yaw),sy=Math.sin(camera.yaw),cp=Math.cos(camera.pitch),sp=Math.sin(camera.pitch);const x1=x*cy-z*sy,z1=x*sy+z*cy,y1=y*cp-z1*sp,z2=y*sp+z1*cp,s=1.06*camera.zoom;return{x:W*.49+x1*s,y:H*.48-y1*s,z:z2}}
-function line(a,b,color,width=1,dash=[]){ctx.save();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();ctx.restore()}
-function rr(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r)}
-function stageIndex(key){return stages.findIndex(s=>s.key===key)}function reached(key){return cur>=stageIndex(key)}
-function focusNode(n){return n.i===focus.i&&n.j===focus.j}function outputValue(i,j){if(cur<4)return null;if(cur===4)return partial(i,0,j)+partial(i,1,j);return C[i][j]}
-function moveList(key){const m=[];if(key==='a')for(let i=0;i<q;i++)for(let k=0;k<q;k++)for(let j=1;j<q;j++)m.push({from:node(i,k,0),to:node(i,k,j),label:`A${i}${k}`,color:COLORS.a,delay:(i+k+j)*.025});if(key==='b')for(let k=0;k<q;k++)for(let j=0;j<q;j++)for(let i=1;i<q;i++)m.push({from:node(0,k,j),to:node(i,k,j),label:`B${k}${j}`,color:COLORS.b,delay:(i+k+j)*.025});if(key==='r1'||key==='r2'){const k=key==='r1'?1:2;for(let i=0;i<q;i++)for(let j=0;j<q;j++)m.push({from:node(i,k,j),to:node(i,0,j),label:String(partial(i,k,j)),color:COLORS.sum,delay:(i+j)*.045})}return m}
-function drawPlane(k,color){const ps=[proj(xyz(node(0,k,0))),proj(xyz(node(2,k,0))),proj(xyz(node(2,k,2))),proj(xyz(node(0,k,2)))];ctx.save();ctx.fillStyle=color;ctx.strokeStyle=color.replace('.08','.22');ctx.beginPath();ps.forEach((p,n)=>n?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.closePath();ctx.fill();ctx.stroke();ctx.restore()}
-function drawAxes(){const o=proj({x:-155,y:-155,z:-155}),axes=[{p:proj({x:185,y:-155,z:-155}),c:COLORS.blue,t:'i · řádek C'},{p:proj({x:-155,y:185,z:-155}),c:COLORS.orange,t:'k · člen sumy'},{p:proj({x:-155,y:-155,z:185}),c:COLORS.a,t:'j · sloupec C'}];axes.forEach(a=>{line(o,a.p,a.c,2);ctx.fillStyle=a.c;ctx.font='700 11px "Segoe UI"';ctx.fillText(a.t,a.p.x+5,a.p.y-4)})}
-function drawGrid(){for(let i=0;i<q;i++)for(let k=0;k<q;k++)for(let j=0;j<q;j++){if(i<2)line(proj(xyz(node(i,k,j))),proj(xyz(node(i+1,k,j))),'rgba(121,151,197,.17)');if(k<2)line(proj(xyz(node(i,k,j))),proj(xyz(node(i,k+1,j))),'rgba(121,151,197,.17)');if(j<2)line(proj(xyz(node(i,k,j))),proj(xyz(node(i,k,j+1))),'rgba(121,151,197,.17)')}}
-function nodeLabel(n){if(cur===0){const bits=[];if(n.j===0)bits.push(`A${n.i}${n.k}`);if(n.i===0)bits.push(`B${n.k}${n.j}`);return bits.join('·')}if(cur===1)return`A${n.i}${n.k}`;if(cur===2)return`A·B`;if(cur===3)return String(partial(n.i,n.k,n.j));if(n.k===0)return String(outputValue(n.i,n.j));return cur<6?String(partial(n.i,n.k,n.j)):''}
-function nodeColor(n){if(cur>=4&&n.k===0)return COLORS.sum;if(cur>=3)return COLORS.prod;if(cur===2)return COLORS.orange;if(cur===1)return COLORS.a;return n.j===0?COLORS.a:n.i===0?COLORS.orange:COLORS.dim}
-function drawNode(n,p){const f=focusNode(n),out=cur>=4&&n.k===0,dim=cur===6&&n.k!==0,r=f?13:11,col=nodeColor(n);ctx.save();ctx.globalAlpha=dim?.18:1;if(f){ctx.shadowColor=COLORS.focus;ctx.shadowBlur=17}else if(out){ctx.shadowColor=COLORS.sum;ctx.shadowBlur=13}ctx.fillStyle='rgba(8,19,37,.96)';ctx.strokeStyle=f?COLORS.focus:col;ctx.lineWidth=f?2.5:1.7;ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.shadowBlur=0;ctx.fillStyle=col;ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,Math.PI*2);ctx.fill();const lbl=nodeLabel(n);if(lbl){ctx.fillStyle=f?'#fff':col;ctx.font=(f?'800 ':'700 ')+(f?'10px':'9px')+' ui-monospace,Consolas';ctx.textAlign='center';ctx.fillText(lbl,p.x,p.y-r-5)}ctx.restore()}
-function drawFlights(t){if(!anim)return;moveList(anim.key).forEach(m=>{const a=proj(xyz(m.from)),b=proj(xyz(m.to)),u=clamp((t-m.delay)/(1-m.delay),0,1),e=ease(u);line(a,b,m.color+'55',1.3,[4,4]);if(u<=0||u>=1)return;const x=a.x+(b.x-a.x)*e,y=a.y+(b.y-a.y)*e-18*Math.sin(Math.PI*u);ctx.save();ctx.shadowColor=m.color;ctx.shadowBlur=14;ctx.fillStyle=m.color;ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#07101f';ctx.font='800 7px ui-monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(m.label,x,y);ctx.restore()})}
-function drawMul(t){if(!anim||anim.key!=='mul')return;nodes.forEach(n=>{const p=proj(xyz(n)),u=clamp(t-(n.i+n.k+n.j)*.018,0,1);if(!u)return;ctx.save();ctx.strokeStyle=COLORS.prod+(u<.7?'77':'cc');ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,15+Math.sin(u*Math.PI)*8,0,Math.PI*2);ctx.stroke();ctx.restore()})}
-function draw(){resize();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,W,H);const g=ctx.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0b1930');g.addColorStop(1,'#07101f');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(137,166,211,.035)';for(let x=20;x<W;x+=28){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=20;y<H;y+=28){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
- if(cur>=4)drawPlane(0,'rgba(116,230,168,.08)');else if(cur===1)for(let j=0;j<q;j++)drawPlane(j,'rgba(87,227,223,.035)');drawAxes();drawGrid();const sorted=nodes.map(n=>({n,p:proj(xyz(n))})).sort((a,b)=>b.p.z-a.p.z);projected=sorted;sorted.forEach(x=>drawNode(x.n,x.p));const t=anim?anim.t:1;drawFlights(t);drawMul(t)}
-function equation(){const{i,j}=focus,parts=[0,1,2].map(k=>`${A[i][k]}×${B[k][j]}=${partial(i,k,j)}`);if(cur<3)return`C[${i}][${j}] čeká na své tři členy:\n${parts.join('  +  ')}`;if(cur===3)return`C[${i}][${j}] = ${parts.join('  +  ')}\nTři fialové součiny zatím leží v různých vrstvách k.`;if(cur===4)return`C[${i}][${j}] : (${parts[0]}) + (${parts[1]}) = ${partial(i,0,j)+partial(i,1,j)}\nJeště čekáme na (${parts[2]}).`;return`C[${i}][${j}] = ${parts.map(x=>'('+x+')').join(' + ')} = ${C[i][j]}`}
-function render(){const s=stages[cur];$('kicker').textContent=s.kicker;$('lessonTitle').textContent=s.title;$('lessonText').textContent=s.text;$('formula').textContent=s.formula;$('stepStat').textContent=`${cur}/6`;$('activeStat').textContent=anim?moveList(anim.key).length:cur===3?'27':'0';$('doneStat').textContent=cur<4?'0/9':cur===4?'0/9':'9/9';$('equation').textContent=equation();$('playBtn').textContent=playing?'⏸ Pauza':cur===6?'↻ Přehrát':'▶ Přehrát';$('backBtn').disabled=busy||cur===0;$('nextBtn').disabled=busy||cur===6;$('phases').innerHTML=stages.map((x,i)=>`<div class="phase ${i===cur?'active':i<cur?'done':''}"><b>${i}</b>${x.title.split(':')[0]}<span>${x.key}</span></div>`).join('');draw()}
-function buildFocus(){let h='';for(let i=0;i<q;i++)for(let j=0;j<q;j++)h+=`<button class="focus ${i===focus.i&&j===focus.j?'active':''}" data-i="${i}" data-j="${j}">C[${i}][${j}]</button>`;$('focusGrid').innerHTML=h;$('focusGrid').querySelectorAll('button').forEach(b=>b.onclick=()=>{focus={i:+b.dataset.i,j:+b.dataset.j};buildFocus();render()})}
-function animate(key,done){cancelAnimationFrame(raf);busy=true;anim={key,t:0};render();let last=0;const duration=+$('speed').value;function tick(ts){if(!last)last=ts;anim.t=clamp(anim.t+(ts-last)/duration,0,1);last=ts;draw();if(anim.t<1)raf=requestAnimationFrame(tick);else{anim=null;busy=false;render();done&&done()}}raf=requestAnimationFrame(tick)}
-function advance(done){if(cur>=6){done&&done();return}cur++;const key=stages[cur].key;if(['a','b','mul','r1','r2'].includes(key))animate(key,done);else{render();done&&done()}}
-function back(){if(busy)return;playing=false;clearTimeout(playTimer);if(cur>0)cur--;render()}function reset(){cancelAnimationFrame(raf);clearTimeout(playTimer);cur=0;anim=null;busy=playing=false;render()}
-function play(){if(playing){playing=false;clearTimeout(playTimer);render();return}if(cur===6)cur=0;playing=true;render();const go=()=>{if(!playing||cur===6){playing=false;render();return}advance(()=>{if(playing)playTimer=setTimeout(go,180)})};go()}
-function cameraReset(){camera={yaw:-.72,pitch:.54,zoom:1};draw()}
-$('nextBtn').onclick=()=>advance();$('backBtn').onclick=back;$('resetBtn').onclick=reset;$('playBtn').onclick=play;$('cameraBtn').onclick=cameraReset;
-let drag=null;cv.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY,yaw:camera.yaw,pitch:camera.pitch};cv.setPointerCapture(e.pointerId);cv.classList.add('drag')};cv.onpointermove=e=>{const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;if(drag){camera.yaw=drag.yaw+(e.clientX-drag.x)*.009;camera.pitch=clamp(drag.pitch-(e.clientY-drag.y)*.009,-1.15,1.15);draw()}hover=projected.find(x=>(x.p.x-mx)**2+(x.p.y-my)**2<190);if(hover){const n=hover.n;tip.style.display='block';tip.style.left=(mx+17)+'px';tip.style.top=(my+17)+'px';tip.textContent=`P(${n.i},${n.k},${n.j})\nA[${n.i}][${n.k}] = ${A[n.i][n.k]}\nB[${n.k}][${n.j}] = ${B[n.k][n.j]}\npartial = ${partial(n.i,n.k,n.j)}`}else tip.style.display='none'};cv.onpointerup=()=>{drag=null;cv.classList.remove('drag')};cv.onpointerleave=()=>{drag=null;tip.style.display='none';cv.classList.remove('drag')};cv.onwheel=e=>{e.preventDefault();camera.zoom=clamp(camera.zoom*(e.deltaY>0?.91:1.1),.68,1.48);draw()};window.onresize=draw;
-buildFocus();render();
-</script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DNS algoritmus | interaktivní 3D animace</title>
+  <style>
+    :root {
+      --bg: #07101f;
+      --panel: rgba(15, 27, 50, .94);
+      --panel2: rgba(20, 36, 64, .92);
+      --line: rgba(137, 166, 211, .2);
+      --text: #edf5ff;
+      --muted: #98a9c9;
+      --cyan: #57e3df;
+      --blue: #63a9ff;
+      --orange: #ffbd78;
+      --green: #74e6a8;
+      --violet: #ae96ff;
+      --pink: #ff87ae;
+      --red: #ff6f91;
+      --shadow: 0 20px 50px rgba(0, 0, 0, .24);
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 18px;
+      color: var(--text);
+      font: 14px/1.45 Inter, "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(circle at 8% 3%, rgba(68, 112, 220, .2), transparent 29rem), radial-gradient(circle at 92% 92%, rgba(42, 205, 183, .13), transparent 30rem), var(--bg)
+    }
+
+    button,
+    input {
+      font: inherit
+    }
+
+    button {
+      cursor: pointer
+    }
+
+    .shell {
+      width: min(1540px, 100%);
+      margin: auto
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 13px
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .18em;
+      text-transform: uppercase
+    }
+
+    h1 {
+      margin: 4px 0 0;
+      font-size: clamp(22px, 2.8vw, 31px);
+      letter-spacing: -.045em
+    }
+
+    .hero p {
+      max-width: 880px;
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55
+    }
+
+    .badge {
+      flex: none;
+      padding: 10px 13px;
+      border: 1px solid rgba(87, 227, 223, .4);
+      border-radius: 14px;
+      color: var(--cyan);
+      background: rgba(87, 227, 223, .08);
+      font-size: 12px;
+      font-weight: 850;
+      text-align: center
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 9px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 11px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: var(--panel);
+      box-shadow: var(--shadow)
+    }
+
+    .group {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 11px
+    }
+
+    .btn,
+    .play {
+      padding: 7px 11px;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .045);
+      font-size: 12px;
+      font-weight: 800;
+      transition: .18s
+    }
+
+    .btn:hover {
+      color: var(--text);
+      border-color: rgba(99, 169, 255, .5);
+      transform: translateY(-1px)
+    }
+
+    .play {
+      color: #06172c;
+      background: linear-gradient(135deg, var(--cyan), #7cbcff)
+    }
+
+    .play:hover {
+      transform: translateY(-1px)
+    }
+
+    .btn.active {
+      border-color: rgba(87, 227, 223, .55);
+      color: var(--cyan);
+      background: rgba(87, 227, 223, .08)
+    }
+
+    input[type=range] {
+      width: 74px;
+      accent-color: var(--cyan)
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 12px
+    }
+
+    .scene,
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: var(--shadow)
+    }
+
+    .scene {
+      overflow: hidden
+    }
+
+    .canvas-wrap {
+      position: relative;
+      padding: 8px
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      border: 1px solid rgba(137, 166, 211, .14);
+      border-radius: 12px;
+      background: #091426;
+      cursor: grab;
+      touch-action: none
+    }
+
+    canvas.drag {
+      cursor: grabbing
+    }
+
+    .canvas-tip {
+      position: absolute;
+      top: 19px;
+      left: 20px;
+      padding: 6px 8px;
+      border: 1px solid rgba(137, 166, 211, .2);
+      border-radius: 8px;
+      color: var(--muted);
+      background: rgba(5, 13, 27, .78);
+      font-size: 10px;
+      pointer-events: none
+    }
+
+    .tooltip {
+      position: absolute;
+      display: none;
+      z-index: 3;
+      padding: 8px 10px;
+      border: 1px solid rgba(87, 227, 223, .35);
+      border-radius: 9px;
+      color: #dffefd;
+      background: rgba(6, 18, 34, .96);
+      font: 700 11px/1.45 ui-monospace, Consolas, monospace;
+      pointer-events: none;
+      white-space: pre-line;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, .35)
+    }
+
+    .lesson {
+      display: grid;
+      gap: 6px;
+      padding: 12px 15px 14px;
+      border-top: 1px solid var(--line);
+      background: rgba(7, 15, 30, .58)
+    }
+
+    .kicker {
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: .16em;
+      text-transform: uppercase
+    }
+
+    .lesson-title {
+      font-size: 16px;
+      font-weight: 850
+    }
+
+    .lesson-text {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55
+    }
+
+    .formula {
+      padding: 8px 10px;
+      border: 1px solid rgba(99, 169, 255, .24);
+      border-radius: 8px;
+      color: #d7eaff;
+      background: rgba(99, 169, 255, .075);
+      font: 700 11px/1.5 ui-monospace, Consolas, monospace;
+      white-space: pre-line
+    }
+
+    .side {
+      display: grid;
+      align-content: start;
+      gap: 10px
+    }
+
+    .card {
+      padding: 12px
+    }
+
+    .card h2 {
+      margin: 0 0 9px;
+      color: #dbeaff;
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .11em;
+      text-transform: uppercase
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 9px
+    }
+
+    .stat {
+      padding: 7px 4px;
+      border: 1px solid rgba(137, 166, 211, .14);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .025);
+      text-align: center
+    }
+
+    .sv {
+      font-size: 17px;
+      font-weight: 900
+    }
+
+    .sl {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 8px;
+      letter-spacing: .08em;
+      text-transform: uppercase
+    }
+
+    .phases {
+      display: grid;
+      gap: 4px
+    }
+
+    .phase {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 8px;
+      border: 1px solid rgba(137, 166, 211, .12);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 10px;
+      background: rgba(255, 255, 255, .018)
+    }
+
+    .phase b {
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: rgba(137, 166, 211, .13);
+      font-size: 9px;
+      line-height: 17px;
+      text-align: center
+    }
+
+    .phase span {
+      margin-left: auto;
+      font: 700 9px ui-monospace, Consolas, monospace
+    }
+
+    .phase.active {
+      border-color: rgba(255, 189, 120, .58);
+      color: var(--orange);
+      background: rgba(255, 189, 120, .08)
+    }
+
+    .phase.done {
+      border-color: rgba(116, 230, 168, .28);
+      color: var(--green);
+      background: rgba(116, 230, 168, .04)
+    }
+
+    .focus-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px
+    }
+
+    .focus {
+      padding: 6px 3px;
+      border: 1px solid rgba(137, 166, 211, .14);
+      border-radius: 7px;
+      color: var(--muted);
+      background: rgba(255, 255, 255, .025);
+      font: 750 10px ui-monospace, Consolas, monospace
+    }
+
+    .focus.active {
+      border-color: rgba(174, 150, 255, .7);
+      color: #e5ddff;
+      background: rgba(174, 150, 255, .13)
+    }
+
+    .equation {
+      margin-top: 8px;
+      padding: 8px 9px;
+      border: 1px solid rgba(174, 150, 255, .24);
+      border-radius: 8px;
+      color: #e6deff;
+      background: rgba(174, 150, 255, .07);
+      font: 700 10px/1.55 ui-monospace, Consolas, monospace;
+      white-space: pre-line
+    }
+
+    .complexity {
+      padding: 8px 9px;
+      border: 1px solid rgba(87, 227, 223, .22);
+      border-radius: 8px;
+      color: var(--cyan);
+      background: rgba(87, 227, 223, .065);
+      font: 750 10px/1.58 ui-monospace, Consolas, monospace;
+      white-space: pre-line
+    }
+
+    .note {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.5
+    }
+
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 9px
+    }
+
+    .legend i {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-right: 3px;
+      border-radius: 50%
+    }
+
+    .data-card {
+      display: grid;
+      gap: 8px
+    }
+
+    .data-row {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 8px;
+      align-items: start;
+      padding: 7px 8px;
+      border: 1px solid rgba(137, 166, 211, .13);
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .022)
+    }
+
+    .tag {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      height: 22px;
+      border-radius: 999px;
+      font: 900 10px ui-monospace, Consolas;
+      background: rgba(137, 166, 211, .1);
+      color: #dbeaff
+    }
+
+    .tag.a {
+      background: rgba(87, 227, 223, .12);
+      color: var(--cyan);
+      border: 1px solid rgba(87, 227, 223, .3)
+    }
+
+    .tag.b {
+      background: rgba(255, 189, 120, .12);
+      color: var(--orange);
+      border: 1px solid rgba(255, 189, 120, .3)
+    }
+
+    .tag.p {
+      background: rgba(174, 150, 255, .12);
+      color: var(--violet);
+      border: 1px solid rgba(174, 150, 255, .3)
+    }
+
+    .tag.c {
+      background: rgba(116, 230, 168, .12);
+      color: var(--green);
+      border: 1px solid rgba(116, 230, 168, .3)
+    }
+
+    .data-row p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45
+    }
+
+    .comm-list {
+      display: grid;
+      gap: 6px
+    }
+
+    .comm {
+      padding: 8px 9px;
+      border-radius: 9px;
+      border: 1px solid rgba(137, 166, 211, .14);
+      background: rgba(255, 255, 255, .02);
+      font-size: 10px;
+      color: var(--muted);
+      line-height: 1.5
+    }
+
+    .comm b {
+      color: #edf5ff
+    }
+
+    .comm code {
+      color: var(--cyan);
+      font-family: ui-monospace, Consolas
+    }
+
+    .comm.active {
+      border-color: rgba(255, 189, 120, .45);
+      background: rgba(255, 189, 120, .055)
+    }
+
+    @media(max-width:1120px) {
+      .layout {
+        grid-template-columns: 1fr
+      }
+
+      .side {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media(max-width:760px) {
+      .side {
+        grid-template-columns: 1fr
+      }
+
+      .hero {
+        align-items: start;
+        flex-direction: column
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Paralelní algoritmy / násobení matic</div>
+        <h1>DNS algoritmus: data, procesory a komunikace ve 3D</h1>
+        <p>Každý procesor <strong>P(i,k,j)</strong> počítá člen <strong>A[i][k] × B[k][j]</strong>. V grafu jsou teď
+          přímo popisky vlastnictví dat, roviny matic, broadcasty i redukční komunikace, aby bylo jasné, kde data leží a
+          komu patří.</p>
+      </div>
+      <div class="badge">3 × 3 × 3<br><span style="color:var(--muted);font-size:10px">27 procesorů</span></div>
+    </header>
+    <section class="toolbar">
+      <div class="group"><button class="btn" id="cameraBtn">↻ Výchozí pohled</button><button class="btn active"
+          id="labelsBtn">Popisky v grafu: zap</button><span class="hint">Tažení = otočení · kolečko = zoom · najeď na
+          procesor pro detail vlastnictví</span></div>
+      <div class="group">
+        <label class="hint">rychlost <input id="speed" type="range" min="500" max="2400" step="100"
+            value="1300"></label>
+        <button class="btn" id="resetBtn">↻ Reset</button><button class="btn" id="backBtn">◀ Zpět</button><button
+          class="btn" id="nextBtn">Další ▶</button><button class="play" id="playBtn">▶ Přehrát</button>
+      </div>
+    </section>
+    <section class="layout">
+      <div class="scene">
+        <div class="canvas-wrap"><canvas id="cv"></canvas>
+          <div class="canvas-tip">decentní popisky jsou součástí scény</div>
+          <div class="tooltip" id="tooltip"></div>
+        </div>
+        <div class="lesson">
+          <div class="kicker" id="kicker"></div>
+          <div class="lesson-title" id="lessonTitle"></div>
+          <div class="lesson-text" id="lessonText"></div>
+          <div class="formula" id="formula"></div>
+        </div>
+      </div>
+      <aside class="side">
+        <section class="card">
+          <h2>Průběh algoritmu</h2>
+          <div class="stats">
+            <div class="stat">
+              <div class="sv" id="stepStat">0/6</div>
+              <div class="sl">krok</div>
+            </div>
+            <div class="stat">
+              <div class="sv" id="activeStat">0</div>
+              <div class="sl">zpráv</div>
+            </div>
+            <div class="stat">
+              <div class="sv" id="doneStat">0/9</div>
+              <div class="sl">hotová C</div>
+            </div>
+          </div>
+          <div class="phases" id="phases"></div>
+        </section>
+        <section class="card">
+          <h2>Data vlastněná procesory v kroku</h2>
+          <div class="data-card" id="ownership"></div>
+        </section>
+        <section class="card">
+          <h2>Komunikace v kroku</h2>
+          <div class="comm-list" id="comms"></div>
+        </section>
+        <section class="card">
+          <h2>Sledovaný prvek výsledku</h2>
+          <div class="focus-grid" id="focusGrid"></div>
+          <div class="equation" id="equation"></div>
+          <div class="legend"><span><i style="background:var(--cyan)"></i>A[i][k]</span><span><i
+                style="background:var(--orange)"></i>B[k][j]</span><span><i
+                style="background:var(--violet)"></i>partial</span><span><i
+                style="background:var(--green)"></i>C[i][j]</span></div>
+        </section>
+        <section class="card">
+          <h2>Komunikační model</h2>
+          <div class="complexity">Broadcast A: q² kolektivních broadcastů délky q
+            Broadcast B: q² kolektivních broadcastů délky q
+            Lokální násobení: bez komunikace
+            Redukce podél k: q² redukcí délky q
+
+            Tₚ(n³ proc.) ≈ Θ(log n) komunikace + O(1) výpočet
+            obecně p=q³: broadcast/reduce přes log q</div>
+          <div class="note">Animace ukazuje redukci ve dvou vlnách pro q=3. V analýze se běžně počítá stromová redukce,
+            tedy komunikační hloubka Θ(log q), ne sekvenční sběr q zpráv.</div>
+        </section>
+      </aside>
+    </section>
+  </main>
+  <script>
+    const q = 3, A = [[2, 1, 3], [1, 2, 0], [3, 1, 2]], B = [[1, 2, 1], [0, 1, 3], [2, 1, 2]];
+    const C = A.map((r, i) => B[0].map((_, j) => r.reduce((s, v, k) => s + v * B[k][j], 0)));
+    const COLORS = { a: '#57e3df', b: '#ffbd78', prod: '#ae96ff', sum: '#74e6a8', dim: '#6f83a8', focus: '#ff87ae', blue: '#63a9ff', red: '#ff6f91', cyan: '#57e3df', orange: '#ffbd78', green: '#74e6a8', violet: '#ae96ff' };
+    const stages = [
+      { key: 'start', title: 'Vstupní data leží ve dvou zdrojových rovinách', kicker: '0 / MAPOVÁNÍ DAT', text: 'Matice A je rozložena v rovině j=0: procesor P(i,k,0) vlastní A[i][k]. Matice B je rozložena v rovině i=0: procesor P(0,k,j) vlastní B[k][j]. Všimni si, že souřadnice procesoru přímo odpovídají indexům násobení.', formula: 'P(i,k,j)\ni = řádek výsledku C\nk = člen skalárního součinu\nj = sloupec výsledku C' },
+      { key: 'a', title: 'Broadcast A: každý prvek A se kopíruje podél osy j', kicker: '1 / DISTRIBUCE A', text: 'Každé A[i][k] se musí dostat ke všem sloupcům výsledku j, protože stejný prvek řádku A se použije při výpočtu všech C[i][j]. Po broadcastu jej vlastní celá řada procesorů P(i,k,*).', formula: 'P(i,k,0) → P(i,k,*) : A[i][k]\npo kroku: každý P(i,k,j) vlastní A[i][k]' },
+      { key: 'b', title: 'Broadcast B: každý prvek B se kopíruje podél osy i', kicker: '2 / DISTRIBUCE B', text: 'Každé B[k][j] se musí dostat ke všem řádkům výsledku i. Po této fázi má každý procesor P(i,k,j) přesně dvojici operandů, kterou potřebuje.', formula: 'P(0,k,j) → P(*,k,j) : B[k][j]\npo kroku: P(i,k,j) vlastní A[i][k] i B[k][j]' },
+      { key: 'mul', title: 'Lokální výpočet: 27 součinů bez další komunikace', kicker: '3 / LOKÁLNÍ VÝPOČET', text: 'Každý procesor si ze svých lokálních operandů spočítá jeden dílčí součin. Z pohledu Tp je to výpočetní fáze, ale komunikačně nic neposílá.', formula: 'partial(i,k,j) = A[i][k] × B[k][j]\nkaždý P(i,k,j) drží jeden partial' },
+      { key: 'r1', title: 'Redukce přes osu k: první vlna sčítání', kicker: '4 / REDUKCE · VLNA 1', text: 'Pro každý výsledek C[i][j] existuje svislá věž procesorů se stejným i a j, ale různým k. V první vlně se partial z k=1 posílá do procesoru P(i,0,j).', formula: 'P(i,1,j) → P(i,0,j)\nsum₁(i,j)=partial(i,0,j)+partial(i,1,j)' },
+      { key: 'r2', title: 'Redukce přes osu k: dokončení výsledné matice C', kicker: '5 / REDUKCE · VLNA 2', text: 'Z vrstvy k=2 dorazí poslední příspěvek. Procesor P(i,0,j) se stává vlastníkem finální hodnoty C[i][j].', formula: 'P(i,2,j) → P(i,0,j)\nC[i][j]=Σₖ partial(i,k,j)' },
+      { key: 'done', title: 'Výsledná matice C zůstává ve výstupní rovině k=0', kicker: '6 / HOTOVO', text: 'Třetí rozměr rozdělil skalární součiny mezi procesory. Redukce po ose k je zase spojila do devíti prvků výsledné matice C.', formula: 'C = A × B = [[8, 8, 11], [1, 4, 7], [7, 9, 10]]' }
+    ];
+    const ownershipText = {
+      start: [['a', 'A', 'P(i,k,0) vlastní A[i][k] v rovině j=0.'], ['b', 'B', 'P(0,k,j) vlastní B[k][j] v rovině i=0.'], ['p', 'P', 'Ostatní procesory jsou zatím jen cílová místa budoucích kopií.']],
+      a: [['a', 'A', 'Po broadcastu A vlastní každý P(i,k,j) prvek A[i][k].'], ['b', 'B', 'B je zatím pouze ve zdrojové rovině i=0.'], ['p', 'P', 'Procesor ještě nemá kompletní dvojici operandů, pokud neleží v i=0.']],
+      b: [['a', 'A', 'A už je ve všech procesorech se stejným i,k.'], ['b', 'B', 'B už je ve všech procesorech se stejným k,j.'], ['p', 'P', 'Každý P(i,k,j) nyní vlastní přesně A[i][k] a B[k][j].']],
+      mul: [['a', 'A', 'A a B zůstávají lokální data procesoru.'], ['b', 'B', 'Neprobíhá síťová komunikace.'], ['p', 'partial', 'P(i,k,j) vlastní partial = A[i][k]×B[k][j].']],
+      r1: [['p', 'partial', 'Partial z k=1 se posílá do výstupní vrstvy k=0.'], ['c', 'sum₁', 'P(i,0,j) drží mezisoučet z k=0 a k=1.'], ['b', 'komunikace', 'Současně běží 9 redukcí, jedna pro každý C[i][j].']],
+      r2: [['p', 'partial', 'Partial z k=2 doplňuje poslední člen sumy.'], ['c', 'C', 'P(i,0,j) se stává vlastníkem hotového C[i][j].'], ['b', 'komunikace', 'V obecné verzi je to stromová reduce po ose k.']],
+      done: [['c', 'C', 'Rovina k=0 obsahuje celou výslednou matici C.'], ['p', 'ostatní', 'Vrstvy k=1 a k=2 už nejsou nositeli finálního výsledku.'], ['b', 'analýza', 'Výpočet se platí lokálně, komunikace se platí broadcasty a redukcí.']]
+    };
+    const commText = {
+      start: ['Žádná síťová komunikace: pouze počáteční rozložení bloků.', 'Mapování dat: A na j=0, B na i=0.'],
+      a: ['q² broadcastů pro A: pro každé (i,k) jeden broadcast do všech j.', 'Aktivní směr komunikace: osa j. V animaci tyrkysové zprávy.'],
+      b: ['q² broadcastů pro B: pro každé (k,j) jeden broadcast do všech i.', 'Aktivní směr komunikace: osa i. V animaci oranžové zprávy.'],
+      mul: ['Komunikace = 0. Každý procesor už má oba operandy.', 'Tato fáze ovlivňuje lokální práci, ale ne message cost.'],
+      r1: ['q² souběžných redukcí: pro každé (i,j) jedna věž přes osu k.', 'První vlna: k=1 → k=0. V animaci zelené zprávy.'],
+      r2: ['Druhá vlna pro q=3: k=2 → k=0.', 'V obecném DNS se tato fáze modeluje jako reduce s hloubkou Θ(log q).'],
+      done: ['Komunikace skončila. Výstupní vlastníci jsou procesory P(i,0,j).', 'Při výpočtech Tp/izoeffektivity se sčítá broadcast A + broadcast B + reduce.']
+    };
+    const cv = document.getElementById('cv'), ctx = cv.getContext('2d'), tip = document.getElementById('tooltip');
+    let cur = 0, playing = false, busy = false, raf = 0, playTimer = 0, anim = null, hover = null, focus = { i: 0, j: 0 }, camera = { yaw: -.72, pitch: .54, zoom: 1 }, labelsOn = true;
+    let W = 0, H = 0, dpr = 1, projected = [];
+    const $ = id => document.getElementById(id), clamp = (v, a, b) => Math.max(a, Math.min(b, v)), ease = t => 1 - Math.pow(1 - t, 3);
+    function node(i, k, j) { return { i, k, j, id: `${i}${k}${j}` } } function allNodes() { const a = []; for (let i = 0; i < q; i++)for (let k = 0; k < q; k++)for (let j = 0; j < q; j++)a.push(node(i, k, j)); return a }
+    const nodes = allNodes(), partial = (i, k, j) => A[i][k] * B[k][j];
+    function resize() { const r = cv.getBoundingClientRect(), nw = Math.max(520, Math.floor(r.width)), nh = Math.max(540, Math.min(720, Math.floor(nw * .62))), nd = Math.max(1, devicePixelRatio || 1); if (nw === W && nh === H && nd === dpr) return; W = nw; H = nh; dpr = nd; cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + 'px' }
+    function xyz(n) { return { x: (n.i - 1) * 116, y: (1 - n.k) * 116, z: (n.j - 1) * 116 } } function proj(p) { let x = p.x, z = p.z, y = p.y; const cy = Math.cos(camera.yaw), sy = Math.sin(camera.yaw), cp = Math.cos(camera.pitch), sp = Math.sin(camera.pitch); const x1 = x * cy - z * sy, z1 = x * sy + z * cy, y1 = y * cp - z1 * sp, z2 = y * sp + z1 * cp, s = 1.08 * camera.zoom; return { x: W * .49 + x1 * s, y: H * .49 - y1 * s, z: z2 } }
+    function line(a, b, color, width = 1, dash = []) { ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width; ctx.setLineDash(dash); ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.restore() }
+    function roundRectPath(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r) }
+    function stageIndex(key) { return stages.findIndex(s => s.key === key) } function focusNode(n) { return n.i === focus.i && n.j === focus.j } function outputValue(i, j) { if (cur < 4) return null; if (cur === 4) return partial(i, 0, j) + partial(i, 1, j); return C[i][j] }
+    function moveList(key) { const m = []; if (key === 'a') for (let i = 0; i < q; i++)for (let k = 0; k < q; k++)for (let j = 1; j < q; j++)m.push({ from: node(i, k, 0), to: node(i, k, j), label: `A${i}${k}`, color: COLORS.a, delay: (i + k + j) * .025 }); if (key === 'b') for (let k = 0; k < q; k++)for (let j = 0; j < q; j++)for (let i = 1; i < q; i++)m.push({ from: node(0, k, j), to: node(i, k, j), label: `B${k}${j}`, color: COLORS.b, delay: (i + k + j) * .025 }); if (key === 'r1' || key === 'r2') { const k = key === 'r1' ? 1 : 2; for (let i = 0; i < q; i++)for (let j = 0; j < q; j++)m.push({ from: node(i, k, j), to: node(i, 0, j), label: String(partial(i, k, j)), color: COLORS.sum, delay: (i + j) * .045 }) } return m }
+    function rgba(hex, a) { if (!hex || typeof hex !== 'string') hex = '#57e3df'; const v = parseInt(hex.slice(1), 16); return `rgba(${v >> 16 & 255},${v >> 8 & 255},${v & 255},${a})` }
+    function drawPlaneByPoints(points, color, label) { const ps = points.map(p => proj(p)); ctx.save(); ctx.fillStyle = color; ctx.strokeStyle = color.replace(/,\.0?8\)/, ',.23)').replace(/,0\.08\)/, ',0.23)'); ctx.beginPath(); ps.forEach((p, n) => n ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore(); if (label && labelsOn) { const c = ps.reduce((s, p) => ({ x: s.x + p.x / ps.length, y: s.y + p.y / ps.length }), { x: 0, y: 0 }); labelBox(c.x - 78, c.y - 16, label, 120, 'rgba(6,18,34,.72)', color.includes('87') ? COLORS.a : COLORS.orange) } }
+    function planeK(k, color, label) { drawPlaneByPoints([xyz(node(0, k, 0)), xyz(node(2, k, 0)), xyz(node(2, k, 2)), xyz(node(0, k, 2))], color, label) }
+    function planeJ(j, color, label) { drawPlaneByPoints([xyz(node(0, 0, j)), xyz(node(2, 0, j)), xyz(node(2, 2, j)), xyz(node(0, 2, j))], color, label) }
+    function planeI(i, color, label) { drawPlaneByPoints([xyz(node(i, 0, 0)), xyz(node(i, 2, 0)), xyz(node(i, 2, 2)), xyz(node(i, 0, 2))], color, label) }
+    function drawAxes() { const o = proj({ x: -170, y: -170, z: -170 }), axes = [{ p: proj({ x: 205, y: -170, z: -170 }), c: COLORS.blue, t: 'i = řádek C' }, { p: proj({ x: -170, y: 205, z: -170 }), c: COLORS.orange, t: 'k = člen sumy' }, { p: proj({ x: -170, y: -170, z: 205 }), c: COLORS.a, t: 'j = sloupec C' }]; axes.forEach(a => { line(o, a.p, a.c, 2); ctx.fillStyle = a.c; ctx.font = '800 11px "Segoe UI"'; ctx.fillText(a.t, a.p.x + 5, a.p.y - 4) }) }
+    function drawGrid() { for (let i = 0; i < q; i++)for (let k = 0; k < q; k++)for (let j = 0; j < q; j++) { if (i < 2) line(proj(xyz(node(i, k, j))), proj(xyz(node(i + 1, k, j))), 'rgba(121,151,197,.17)'); if (k < 2) line(proj(xyz(node(i, k, j))), proj(xyz(node(i, k + 1, j))), 'rgba(121,151,197,.17)'); if (j < 2) line(proj(xyz(node(i, k, j))), proj(xyz(node(i, k, j + 1))), 'rgba(121,151,197,.17)') } }
+    function hasA(n) { return cur >= 1 || n.j === 0 } function hasB(n) { return cur >= 2 || n.i === 0 } function hasPartial(n) { return cur >= 3 } function hasFinalC(n) { return cur >= 5 && n.k === 0 }
+    function nodeLabel(n) { if (cur === 0) { const bits = []; if (n.j === 0) bits.push(`A${n.i}${n.k}`); if (n.i === 0) bits.push(`B${n.k}${n.j}`); return bits.join('·') } if (cur === 1) return `A${n.i}${n.k}`; if (cur === 2) return `A·B`; if (cur === 3) return String(partial(n.i, n.k, n.j)); if (n.k === 0) return String(outputValue(n.i, n.j)); return cur < 6 ? String(partial(n.i, n.k, n.j)) : '' }
+    function nodeColor(n) { if (cur >= 5 && n.k === 0) return COLORS.sum; if (cur >= 4 && n.k === 0) return COLORS.sum; if (cur >= 3) return COLORS.prod; if (cur === 2) return hasB(n) ? COLORS.orange : COLORS.dim; if (cur === 1) return hasA(n) ? COLORS.a : COLORS.dim; return n.j === 0 ? COLORS.a : n.i === 0 ? COLORS.orange : COLORS.dim }
+    function drawOwnershipGlyph(n, p, r) { if (!labelsOn) return; const items = []; if (hasA(n)) items.push(COLORS.a); if (hasB(n)) items.push(COLORS.orange); if (hasPartial(n)) items.push(COLORS.prod); if (hasFinalC(n)) items.push(COLORS.sum); if (!items.length) return; ctx.save(); ctx.lineWidth = 2.5; items.forEach((c, idx) => { ctx.strokeStyle = c; ctx.beginPath(); const start = -Math.PI / 2 + idx * (Math.PI * 2 / items.length), end = start + (Math.PI * 2 / items.length) - .13; ctx.arc(p.x, p.y, r + 5, start, end); ctx.stroke() }); ctx.restore() }
+    function drawNode(n, p) { const f = focusNode(n), out = cur >= 4 && n.k === 0, dim = cur === 6 && n.k !== 0, r = f ? 14 : 11, col = nodeColor(n); ctx.save(); ctx.globalAlpha = dim ? .20 : 1; if (f) { ctx.shadowColor = COLORS.focus; ctx.shadowBlur = 18 } else if (out) { ctx.shadowColor = COLORS.sum; ctx.shadowBlur = 13 } ctx.fillStyle = 'rgba(8,19,37,.96)'; ctx.strokeStyle = f ? COLORS.focus : col; ctx.lineWidth = f ? 2.5 : 1.7; ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke(); ctx.shadowBlur = 0; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2); ctx.fill(); drawOwnershipGlyph(n, p, r); const lbl = nodeLabel(n); if (lbl) { ctx.fillStyle = f ? '#fff' : col; ctx.font = (f ? '850 ' : '750 ') + (f ? '10px' : '9px') + ' ui-monospace,Consolas'; ctx.textAlign = 'center'; ctx.fillText(lbl, p.x, p.y - r - 8) } ctx.restore() }
+    function drawFlights(t) { if (!anim) return; moveList(anim.key).forEach(m => { const a = proj(xyz(m.from)), b = proj(xyz(m.to)), u = clamp((t - m.delay) / (1 - m.delay), 0, 1), e = ease(u); line(a, b, m.color + '66', 1.4, [4, 4]); if (u <= 0 || u >= 1) return; const x = a.x + (b.x - a.x) * e, y = a.y + (b.y - a.y) * e - 18 * Math.sin(Math.PI * u); ctx.save(); ctx.shadowColor = m.color; ctx.shadowBlur = 15; ctx.fillStyle = m.color; ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#07101f'; ctx.font = '900 7px ui-monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(m.label, x, y); ctx.restore() }) }
+    function drawMul(t) { if (!anim || anim.key !== 'mul') return; nodes.forEach(n => { const p = proj(xyz(n)), u = clamp(t - (n.i + n.k + n.j) * .018, 0, 1); if (!u) return; ctx.save(); ctx.strokeStyle = COLORS.prod + (u < .7 ? '77' : 'cc'); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, 15 + Math.sin(u * Math.PI) * 8, 0, Math.PI * 2); ctx.stroke(); ctx.restore() }) }
+    function labelBox(x, y, text, w = 160, bg = 'rgba(6,18,34,.74)', accent = COLORS.cyan) { const lines = text.split('\n'), lh = 14, h = lines.length * lh + 12; ctx.save(); ctx.fillStyle = bg; ctx.strokeStyle = rgba(accent, .55); ctx.lineWidth = 1; roundRectPath(x, y, w, h, 8); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#eaf6ff'; ctx.font = '800 10px "Segoe UI"'; lines.forEach((l, i) => ctx.fillText(l, x + 8, y + 14 + i * lh)); ctx.restore() }
+    function callout(point, text, dx, dy, w = 175, accent = COLORS.cyan) { const p = proj(point), x = clamp(p.x + dx, 12, W - w - 12), y = clamp(p.y + dy, 44, H - 80); line(p, { x: x + 10, y: y + 14 }, rgba(accent, .45), 1, [3, 3]); labelBox(x, y, text, w, 'rgba(6,18,34,.78)', accent) }
+    function drawMatrixMini() { if (!labelsOn) return; const s = 27, x = W - 244, y = 14; ctx.save(); labelBox(x, y, 'Matice A: A[i][k]\nzdrojová rovina j=0', 216, 'rgba(6,18,34,.66)', COLORS.a); drawSmallMatrix(A, x + 12, y + 43, s, COLORS.a, 'i', 'k'); labelBox(x, y + 150, 'Matice B: B[k][j]\nzdrojová rovina i=0', 216, 'rgba(6,18,34,.66)', COLORS.orange); drawSmallMatrix(B, x + 12, y + 193, s, COLORS.orange, 'k', 'j'); if (cur >= 5) { labelBox(x, y + 300, 'Matice C: C[i][j]\nvlastníci P(i,0,j)', 216, 'rgba(6,18,34,.66)', COLORS.sum); drawSmallMatrix(C, x + 12, y + 343, s, COLORS.sum, 'i', 'j') } ctx.restore() }
+    function drawSmallMatrix(M, x, y, s, color, ra, ca) { ctx.save(); ctx.font = '800 10px ui-monospace'; ctx.fillStyle = color; ctx.fillText(ra + '↓  ' + ca + '→', x, y - 6); for (let r = 0; r < 3; r++)for (let c = 0; c < 3; c++) { ctx.fillStyle = rgba(color, .12); ctx.strokeStyle = rgba(color, .45); roundRectPath(x + c * s, y + r * s, s - 4, s - 4, 5); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#edf5ff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '850 11px ui-monospace'; ctx.fillText(M[r][c], x + c * s + s / 2 - 2, y + r * s + s / 2 - 2) } ctx.restore() }
+    function drawFocusTower() { if (cur < 3) return; for (let k = 0; k < 2; k++)line(proj(xyz(node(focus.i, k, focus.j))), proj(xyz(node(focus.i, k + 1, focus.j))), rgba(COLORS.focus, .85), 4); if (labelsOn) callout(xyz(node(focus.i, 1, focus.j)), `věž pro C[${focus.i}][${focus.j}]\nstejné i,j · různé k`, 26, -38, 150, COLORS.focus) }
+    function drawAnnotations() {
+      if (!labelsOn) return; const key = stages[cur].key; if (key === 'start') { callout(xyz(node(1, 1, 0)), 'rovina j=0\nzde leží A[i][k]', -220, -50, 142, COLORS.a); callout(xyz(node(0, 1, 1)), 'rovina i=0\nzde leží B[k][j]', 70, -78, 142, COLORS.orange); callout(xyz(node(1, 1, 1)), 'P(i,k,j)\ncílový procesor', 34, 38, 130, COLORS.blue) }
+      if (key === 'a') { callout(xyz(node(1, 1, 1)), 'A se šíří po ose j\nP(i,k,*) má stejné A', -225, -70, 175, COLORS.a); callout(xyz(node(2, 0, 2)), 'B ještě není všude\nčeká na broadcast B', 18, 36, 155, COLORS.orange) }
+      if (key === 'b') { callout(xyz(node(1, 1, 1)), 'teď má každý procesor\nA[i][k] i B[k][j]', -210, -76, 178, COLORS.prod); callout(xyz(node(2, 1, 1)), 'B se šíří po ose i\nP(*,k,j) má stejné B', 22, 40, 175, COLORS.orange) }
+      if (key === 'mul') { callout(xyz(node(focus.i, 1, focus.j)), `P(${focus.i},k,${focus.j}) počítají\n3 dílčí součiny pro C[${focus.i}][${focus.j}]`, 35, -80, 190, COLORS.prod) }
+      if (key === 'r1') { callout(xyz(node(focus.i, 0, focus.j)), `cílový vlastník\nP(${focus.i},0,${focus.j}) sbírá sumu`, 30, -82, 165, COLORS.sum); callout(xyz(node(focus.i, 1, focus.j)), `zpráva z k=1\npartial → mezisoučet`, -210, 20, 160, COLORS.sum) }
+      if (key === 'r2') { callout(xyz(node(focus.i, 2, focus.j)), `poslední příspěvek\nz vrstvy k=2`, -205, -20, 150, COLORS.sum); callout(xyz(node(focus.i, 0, focus.j)), `hotové C[${focus.i}][${focus.j}]\nv P(${focus.i},0,${focus.j})`, 35, -80, 160, COLORS.sum) }
+      if (key === 'done') { callout(xyz(node(1, 0, 1)), 'výstupní rovina k=0\nobsahuje celou C', -225, -60, 165, COLORS.sum); callout(xyz(node(2, 2, 2)), 'ostatní vrstvy už\nnejsou výstup', 20, 30, 140, COLORS.dim) }
+    }
+    function drawCommunicationGuides() {
+      if (cur === 1) { for (let i = 0; i < q; i++)for (let k = 0; k < q; k++)line(proj(xyz(node(i, k, 0))), proj(xyz(node(i, k, 2))), rgba(COLORS.a, .28), 3, [7, 5]) }
+      if (cur === 2) { for (let k = 0; k < q; k++)for (let j = 0; j < q; j++)line(proj(xyz(node(0, k, j))), proj(xyz(node(2, k, j))), rgba(COLORS.orange, .28), 3, [7, 5]) }
+      if (cur >= 4 && cur <= 5) { for (let i = 0; i < q; i++)for (let j = 0; j < q; j++)line(proj(xyz(node(i, 0, j))), proj(xyz(node(i, 2, j))), rgba(COLORS.sum, .23), 3, [7, 5]) }
+    }
+    function draw() {
+      resize(); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H); const g = ctx.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#0b1930'); g.addColorStop(1, '#07101f'); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H); ctx.strokeStyle = 'rgba(137,166,211,.035)'; for (let x = 20; x < W; x += 28) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke() } for (let y = 20; y < H; y += 28) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke() }
+      if (cur === 0) { planeJ(0, 'rgba(87,227,223,.08)', 'A plane'); planeI(0, 'rgba(255,189,120,.08)', 'B plane') } else if (cur === 1) { for (let j = 0; j < q; j++)planeJ(j, 'rgba(87,227,223,.035)', j === 2 ? 'kopie A po j' : '') } else if (cur === 2) { for (let i = 0; i < q; i++)planeI(i, 'rgba(255,189,120,.032)', i === 2 ? 'kopie B po i' : '') } if (cur >= 4) planeK(0, 'rgba(116,230,168,.08)', 'výstup k=0');
+      drawAxes(); drawGrid(); drawCommunicationGuides(); drawFocusTower(); const sorted = nodes.map(n => ({ n, p: proj(xyz(n)) })).sort((a, b) => b.p.z - a.p.z); projected = sorted; sorted.forEach(x => drawNode(x.n, x.p)); const t = anim ? anim.t : 1; drawFlights(t); drawMul(t); drawAnnotations(); drawMatrixMini()
+    }
+    function equation() { const { i, j } = focus, parts = [0, 1, 2].map(k => `${A[i][k]}×${B[k][j]}=${partial(i, k, j)}`); if (cur < 3) return `C[${i}][${j}] čeká na tři členy:\n${parts.join('  +  ')}\nV grafu je to svislá věž P(${i},k,${j}).`; if (cur === 3) return `C[${i}][${j}] = ${parts.join('  +  ')}\nTři fialové partials leží ve vrstvách k=0,1,2.`; if (cur === 4) return `C[${i}][${j}] : (${parts[0]}) + (${parts[1]}) = ${partial(i, 0, j) + partial(i, 1, j)}\nJeště čekáme na (${parts[2]}).`; return `C[${i}][${j}] = ${parts.map(x => '(' + x + ')').join(' + ')} = ${C[i][j]}\nVlastník výsledku: P(${i},0,${j}).` }
+    function renderOwnership() { const key = stages[cur].key; $('ownership').innerHTML = ownershipText[key].map(([cls, t, txt]) => `<div class="data-row"><span class="tag ${cls}">${t}</span><p>${txt}</p></div>`).join('') }
+    function renderComms() { const key = stages[cur].key; $('comms').innerHTML = commText[key].map((txt, i) => `<div class="comm ${i === 0 ? 'active' : ''}">${txt.replace(/(q²|Θ\(log q\)|broadcast|reduce|k=1|k=2|k=0)/g, '<b>$1</b>').replace(/(P\([^)]*\)|A\[i\]\[k\]|B\[k\]\[j\]|C\[i\]\[j\])/g, '<code>$1</code>')}</div>`).join('') }
+    function render() { const s = stages[cur]; $('kicker').textContent = s.kicker; $('lessonTitle').textContent = s.title; $('lessonText').textContent = s.text; $('formula').textContent = s.formula; $('stepStat').textContent = `${cur}/6`; $('activeStat').textContent = anim ? moveList(anim.key).length : (cur === 1 || cur === 2 ? '18' : cur === 3 ? '0' : cur === 4 || cur === 5 ? '9' : '0'); $('doneStat').textContent = cur < 5 ? '0/9' : cur === 5 ? '9/9' : '9/9'; $('equation').textContent = equation(); $('playBtn').textContent = playing ? '⏸ Pauza' : cur === 6 ? '↻ Přehrát' : '▶ Přehrát'; $('backBtn').disabled = busy || cur === 0; $('nextBtn').disabled = busy || cur === 6; $('phases').innerHTML = stages.map((x, i) => `<div class="phase ${i === cur ? 'active' : i < cur ? 'done' : ''}"><b>${i}</b>${x.title.split(':')[0]}<span>${x.key}</span></div>`).join(''); renderOwnership(); renderComms(); draw() }
+    function buildFocus() { let h = ''; for (let i = 0; i < q; i++)for (let j = 0; j < q; j++)h += `<button class="focus ${i === focus.i && j === focus.j ? 'active' : ''}" data-i="${i}" data-j="${j}">C[${i}][${j}]</button>`; $('focusGrid').innerHTML = h; $('focusGrid').querySelectorAll('button').forEach(b => b.onclick = () => { focus = { i: +b.dataset.i, j: +b.dataset.j }; buildFocus(); render() }) }
+    function animate(key, done) { cancelAnimationFrame(raf); busy = true; anim = { key, t: 0 }; render(); let last = 0; const duration = +$('speed').value; function tick(ts) { if (!last) last = ts; anim.t = clamp(anim.t + (ts - last) / duration, 0, 1); last = ts; draw(); if (anim.t < 1) raf = requestAnimationFrame(tick); else { anim = null; busy = false; render(); done && done() } } raf = requestAnimationFrame(tick) }
+    function advance(done) { if (cur >= 6) { done && done(); return } cur++; const key = stages[cur].key; if (['a', 'b', 'mul', 'r1', 'r2'].includes(key)) animate(key, done); else { render(); done && done() } }
+    function back() { if (busy) return; playing = false; clearTimeout(playTimer); if (cur > 0) cur--; render() } function reset() { cancelAnimationFrame(raf); clearTimeout(playTimer); cur = 0; anim = null; busy = playing = false; render() }
+    function play() { if (playing) { playing = false; clearTimeout(playTimer); render(); return } if (cur === 6) cur = 0; playing = true; render(); const go = () => { if (!playing || cur === 6) { playing = false; render(); return } advance(() => { if (playing) playTimer = setTimeout(go, 220) }) }; go() }
+    function cameraReset() { camera = { yaw: -.72, pitch: .54, zoom: 1 }; draw() }
+    $('nextBtn').onclick = () => advance(); $('backBtn').onclick = back; $('resetBtn').onclick = reset; $('playBtn').onclick = play; $('cameraBtn').onclick = cameraReset; $('labelsBtn').onclick = () => { labelsOn = !labelsOn; $('labelsBtn').textContent = `Popisky v grafu: ${labelsOn ? 'zap' : 'vyp'}`; $('labelsBtn').classList.toggle('active', labelsOn); draw() };
+    let drag = null; cv.onpointerdown = e => { drag = { x: e.clientX, y: e.clientY, yaw: camera.yaw, pitch: camera.pitch }; cv.setPointerCapture(e.pointerId); cv.classList.add('drag') }; cv.onpointermove = e => { const r = cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top; if (drag) { camera.yaw = drag.yaw + (e.clientX - drag.x) * .009; camera.pitch = clamp(drag.pitch - (e.clientY - drag.y) * .009, -1.15, 1.15); draw() } hover = projected.find(x => (x.p.x - mx) ** 2 + (x.p.y - my) ** 2 < 210); if (hover) { const n = hover.n; tip.style.display = 'block'; tip.style.left = (mx + 17) + 'px'; tip.style.top = (my + 17) + 'px'; tip.textContent = `P(${n.i},${n.k},${n.j})\nvlastní: ${[hasA(n) ? `A[${n.i}][${n.k}]=${A[n.i][n.k]}` : null, hasB(n) ? `B[${n.k}][${n.j}]=${B[n.k][n.j]}` : null, hasPartial(n) ? `partial=${partial(n.i, n.k, n.j)}` : null, hasFinalC(n) ? `C[${n.i}][${n.j}]=${C[n.i][n.j]}` : null].filter(Boolean).join(' · ') || 'zatím žádný operand'}\nrole: ${n.k === 0 ? 'výstupní vrstva redukce' : 'mezivrstva redukce'}` } else tip.style.display = 'none' }; cv.onpointerup = () => { drag = null; cv.classList.remove('drag') }; cv.onpointerleave = () => { drag = null; tip.style.display = 'none'; cv.classList.remove('drag') }; cv.onwheel = e => { e.preventDefault(); camera.zoom = clamp(camera.zoom * (e.deltaY > 0 ? .91 : 1.1), .68, 1.5); draw() }; window.onresize = draw;
+    buildFocus(); render();
+  </script>
 </body>
+
 </html>

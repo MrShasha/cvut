@@ -1,0 +1,306 @@
+<div id="complexity-widget" class="graphics-widget">
+  <style>
+    .graphics-widget {
+      --bg-color: #1e1e1e;
+      --panel-bg: #2d2d2d;
+      --text-color: #e0e0e0;
+      --accent-color: #007acc;
+      --f-color: #ff4d4d;
+      --g-color: #4da6ff;
+      --border-color: #444;
+      
+      background: var(--bg-color);
+      color: var(--text-color);
+      padding: 16px;
+      border-radius: 8px;
+      font-family: monospace;
+      border: 1px solid var(--border-color);
+      max-width: 800px;
+      margin: 20px auto;
+    }
+    .widget-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 16px;
+    }
+    @media (max-width: 600px) {
+      .widget-layout { grid-template-columns: 1fr; }
+    }
+    .canvas-container {
+      position: relative;
+      background: #111;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .controls-panel {
+      background: var(--panel-bg);
+      padding: 12px;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .control-group label {
+      font-size: 12px;
+      color: #aaa;
+    }
+    .control-group input[type="range"] {
+      width: 100%;
+    }
+    .radio-group {
+      display: flex;
+      gap: 8px;
+    }
+    .radio-group label {
+      background: #3a3a3a;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .radio-group input { display: none; }
+    .radio-group input:checked + label {
+      background: var(--accent-color);
+      color: #fff;
+    }
+    .math-feedback {
+      grid-column: 1 / -1;
+      background: #111;
+      padding: 12px;
+      border-radius: 4px;
+      border-left: 4px solid var(--accent-color);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .math-feedback span.f-text { color: var(--f-color); font-weight: bold; }
+    .math-feedback span.g-text { color: var(--g-color); font-weight: bold; }
+  </style>
+
+  <div class="widget-layout">
+    <div class="canvas-container">
+      <canvas id="comp-canvas" width="500" height="350"></canvas>
+    </div>
+    
+    <div class="controls-panel">
+      <div class="control-group">
+        <label>Typ meze (Asymptotická vazba)</label>
+        <div class="radio-group">
+          <input type="radio" id="mode-o" name="bound-mode" value="O" checked>
+          <label for="mode-o">O(g(n)) - Horní</label>
+          <input type="radio" id="mode-omega" name="bound-mode" value="Omega">
+          <label for="mode-omega">Ω(g(n)) - Dolní</label>
+          <input type="radio" id="mode-theta" name="bound-mode" value="Theta">
+          <label for="mode-theta">Θ(g(n)) - Těsná</label>
+        </div>
+      </div>
+      
+      <div class="control-group">
+        <label>Konstanta c₁: <span id="c1-val">2.0</span></label>
+        <input type="range" id="param-c1" min="0.5" max="5.0" step="0.1" value="2.0">
+      </div>
+      
+      <div id="c2-container" class="control-group" style="display:none;">
+        <label>Konstanta c₂: <span id="c2-val">0.5</span></label>
+        <input type="range" id="param-c2" min="0.1" max="1.5" step="0.1" value="0.5">
+      </div>
+      
+      <div class="control-group">
+        <label>Bod n₀: <span id="n0-val">40</span></label>
+        <input type="range" id="param-n0" min="10" max="150" step="1" value="40">
+      </div>
+    </div>
+
+    <div class="math-feedback" id="comp-math">
+      Pro všechna n ≥ n₀ platí vztah definující vybranou asymptotickou mez.
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const canvas = document.getElementById('comp-canvas');
+      const ctx = canvas.getContext('2d');
+      const modeOs = document.getElementsByName('bound-mode');
+      const c1Slider = document.getElementById('param-c1');
+      const c2Slider = document.getElementById('param-c2');
+      const n0Slider = document.getElementById('param-n0');
+      const c2Container = document.getElementById('c2-container');
+      
+      const c1Val = document.getElementById('c1-val');
+      const c2Val = document.getElementById('c2-val');
+      const n0Val = document.getElementById('n0-val');
+      const mathFeedback = document.getElementById('comp-math');
+
+      let mode = 'O';
+
+      function f(n) {
+        return 0.015 * (n * n) + 2 * n + 20; 
+      }
+
+      function g(n) {
+        return 0.02 * (n * n);
+      }
+
+      function isAsymptoticallyValid(c1, c2, n0) {
+        for (let n = n0; n <= 200; n += 1) {
+          if (mode === 'O' && f(n) > c1 * g(n)) return false;
+          if (mode === 'Omega' && f(n) < c2 * g(n)) return false;
+          if (mode === 'Theta' && (f(n) < c2 * g(n) || f(n) > c1 * g(n))) return false;
+        }
+        return true;
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const c1 = parseFloat(c1Slider.value);
+        const c2 = parseFloat(c2Slider.value);
+        const n0 = parseInt(n0Slider.value);
+
+        const padding = 40;
+        const graphWidth = canvas.width - padding * 2;
+        const graphHeight = canvas.height - padding * 2;
+        
+        const maxN = 200;
+        const maxVal = 600;
+
+        function toScreen(nx, ny) {
+          const x = padding + (nx / maxN) * graphWidth;
+          const y = canvas.height - padding - (ny / maxVal) * graphHeight;
+          return {x, y};
+        }
+
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for(let i = 0; i <= 4; i++) {
+          let nTick = (maxN / 4) * i;
+          let pt = toScreen(nTick, 0);
+          ctx.moveTo(pt.x, canvas.height - padding);
+          ctx.lineTo(pt.x, padding);
+          ctx.fillStyle = '#888';
+          ctx.fillText(nTick, pt.x - 10, canvas.height - padding + 15);
+        }
+        for(let i = 0; i <= 4; i++) {
+          let vTick = (maxVal / 4) * i;
+          let pt = toScreen(0, vTick);
+          ctx.moveTo(padding, pt.y);
+          ctx.lineTo(canvas.width - padding, pt.y);
+          ctx.fillStyle = '#888';
+          ctx.fillText(vTick, padding - 30, pt.y + 4);
+        }
+        ctx.stroke();
+
+        ctx.strokeStyle = '#555';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(padding, padding);
+        ctx.lineTo(padding, canvas.height - padding);
+        ctx.lineTo(canvas.width - padding, canvas.height - padding);
+        ctx.stroke();
+
+        let ptN0 = toScreen(n0, 0);
+        ctx.fillStyle = 'rgba(0, 122, 204, 0.15)';
+        ctx.fillRect(ptN0.x, padding, canvas.width - padding - ptN0.x, graphHeight);
+        
+        ctx.strokeStyle = '#007acc';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(ptN0.x, padding);
+        ctx.lineTo(ptN0.x, canvas.height - padding);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#007acc';
+        ctx.fillText('n₀', ptN0.x - 5, padding - 8);
+
+        function drawCurve(func, color, coef) {
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          for(let nx = 0; nx <= maxN; nx += 2) {
+            let ny = func(nx) * (coef !== undefined ? coef : 1);
+            let pt = toScreen(nx, ny);
+            if(nx === 0) ctx.moveTo(pt.x, pt.y);
+            else if (pt.y >= padding && pt.y <= canvas.height - padding) ctx.lineTo(pt.x, pt.y);
+          }
+          ctx.stroke();
+        }
+
+        drawCurve(f, '#ff4d4d'); 
+        
+        if (mode === 'O' || mode === 'Theta') {
+          drawCurve(g, '#4da6ff', c1); 
+        }
+        if (mode === 'Omega' || mode === 'Theta') {
+          drawCurve(g, '#22c55e', c2); 
+        }
+
+        ctx.font = '11px monospace';
+        ctx.fillStyle = '#ff4d4d';
+        ctx.fillText('f(n)', canvas.width - padding - 35, toScreen(maxN, f(maxN)).y - 5);
+        
+        if (mode === 'O' || mode === 'Theta') {
+          ctx.fillStyle = '#4da6ff';
+          ctx.fillText(`c₁·g(n)`, canvas.width - padding - 55, toScreen(maxN, g(maxN)*c1).y - 5);
+        }
+        if (mode === 'Omega' || mode === 'Theta') {
+          ctx.fillStyle = '#22c55e';
+          ctx.fillText(`c₂·g(n)`, canvas.width - padding - 55, toScreen(maxN, g(maxN)*c2).y - 5);
+        }
+
+        updateMath(c1, c2, n0);
+      }
+
+      function updateMath(c1, c2, n0) {
+        c1Val.textContent = c1.toFixed(1);
+        c2Val.textContent = c2.toFixed(1);
+        n0Val.textContent = n0;
+
+        let f_n0 = f(n0).toFixed(0);
+        let g_n0 = g(n0).toFixed(0);
+        let c1_g = (c1 * g(n0)).toFixed(0);
+        let c2_g = (c2 * g(n0)).toFixed(0);
+        
+        let isValidGlobal = isAsymptoticallyValid(c1, c2, n0) ? 'PLATÍ' : 'NEPLATÍ PRO VŠECHNA n ≥ n₀';
+
+        if (mode === 'O') {
+          mathFeedback.innerHTML = `<strong>Definice O(g(n)):</strong> f(n) ≤ c₁ · g(n) pro všechna n ≥ n₀.<br>` +
+            `V bodě n₀ = ${n0}: <span class="f-text">${f_n0}</span> ≤ ${c1.toFixed(1)} · <span class="g-text">${g_n0}</span> ` +
+            `➔ <span class="f-text">${f_n0}</span> ≤ <strong>${c1_g}</strong> (Pro definovaný rozsah: <strong>${isValidGlobal}</strong>)`;
+        } else if (mode === 'Omega') {
+          mathFeedback.innerHTML = `<strong>Definice Ω(g(n)):</strong> f(n) ≥ c₂ · g(n) pro všechna n ≥ n₀.<br>` +
+            `V bodě n₀ = ${n0}: <span class="f-text">${f_n0}</span> ≥ ${c2.toFixed(1)} · <span class="g-text">${g_n0}</span> ` +
+            `➔ <span class="f-text">${f_n0}</span> ≥ <strong>${c2_g}</strong> (Pro definovaný rozsah: <strong>${isValidGlobal}</strong>)`;
+        } else {
+          mathFeedback.innerHTML = `<strong>Definice Θ(g(n)):</strong> c₂ · g(n) ≤ f(n) ≤ c₁ · g(n) pro všechna n ≥ n₀.<br>` +
+            `V bodě n₀ = ${n0}: <strong>${c2_g}</strong> ≤ <span class="f-text">${f_n0}</span> ≤ <strong>${c1_g}</strong> (Pro definovaný rozsah: <strong>${isValidGlobal}</strong>)`;
+        }
+      }
+
+      [c1Slider, c2Slider, n0Slider].forEach(slider => slider.addEventListener('input', draw));
+      
+      modeOs.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+          mode = e.target.value;
+          if (mode === 'Theta') {
+            c2Container.style.display = 'flex';
+          } else {
+            c2Container.style.display = 'none';
+          }
+          draw();
+        });
+      });
+
+      draw();
+    })();
+  </script>
+</div>

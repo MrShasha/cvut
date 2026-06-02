@@ -3,5 +3,7 @@
   "alwaysUpdateLinks": true,
   "userIgnoreFilters": [
     "web/"
-  ]
+  ],
+  "promptDelete": false,
+  "showUnsupportedFiles": true
 }
