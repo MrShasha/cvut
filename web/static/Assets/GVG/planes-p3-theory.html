@@ -1,67 +1,46 @@
 <!doctype html>
 <html lang="cs">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Roviny v P3</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GVG - roviny v P3</title>
 <style>
-html,body{margin:0;height:100%;background:#111820;color:#e7edf5;font-family:Inter,Segoe UI,system-ui,sans-serif;overflow:hidden}
-.wrap{height:100%;display:grid;grid-template-columns:minmax(0,1fr) 270px}
-#scene{min-width:0;height:100%;position:relative}
-.panel{border-left:1px solid rgba(148,163,184,.22);background:rgba(15,23,32,.95);padding:16px;box-sizing:border-box}
-h1{font-size:18px;margin:0 0 8px;font-weight:760;letter-spacing:0}
-p{font-size:13px;line-height:1.45;color:#bcc8d8;margin:8px 0}
-.tabs{display:flex;gap:6px;margin:12px 0 14px}
-button{border:1px solid rgba(148,163,184,.26);background:#1a2430;color:#dce7f5;border-radius:7px;padding:8px 10px;font-weight:700;cursor:pointer}
-button.active{background:#2563eb;border-color:#60a5fa;color:white}
-.formula{font-family:Consolas,Menlo,monospace;background:#0b1118;border:1px solid rgba(148,163,184,.2);border-radius:7px;padding:10px;margin:10px 0;color:#e5e7eb}
-.legend{display:grid;gap:8px;margin-top:14px}
-.item{display:flex;align-items:center;gap:9px;font-size:12px;color:#cbd5e1}
-.sw{width:14px;height:14px;border-radius:3px}
-@media (max-width:760px){.wrap{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}.panel{border-left:0;border-top:1px solid rgba(148,163,184,.22);padding:12px}.tabs{margin:8px 0}.formula{display:none}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#111820;color:#e7edf5;font-family:"Segoe UI",Inter,system-ui,sans-serif;padding:14px;overflow:hidden}.widget{display:grid;grid-template-columns:minmax(0,1fr)320px;gap:12px;height:100%;min-height:0}.scene,.panel{border:1px solid #334155;border-radius:8px;background:#18202b;min-width:0}.scene{overflow:hidden}svg{display:block;width:100%;height:100%}.grid{stroke:#263244;stroke-width:1}.axis{stroke:#94a3b8;stroke-width:2;marker-end:url(#arrowGray)}.plane{fill:rgba(56,189,248,.22);stroke:#38bdf8;stroke-width:3}.idealPlane{fill:rgba(167,139,250,.09);stroke:#a78bfa;stroke-width:2;stroke-dasharray:7 7}.idealLine{stroke:#fbbf24;stroke-width:4;stroke-dasharray:8 6}.edge{stroke:#38bdf8;stroke-width:2}.on{fill:#22c55e;stroke:#dcfce7;stroke-width:3}.off{fill:#f97316;stroke:#ffedd5;stroke-width:3}.lineOn{stroke:#22c55e;stroke-width:3}.dash{stroke:#94a3b8;stroke-width:2;stroke-dasharray:7 7}text{fill:#dbe4f0;font-size:15px;font-weight:750}.tiny{fill:#94a3b8;font-size:12px}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{font-size:18px;margin:0;color:#f8fafc}.muted{font-size:13px;line-height:1.45;color:#aebccd;margin:0}.tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.tab{border:1px solid #3d4b5f;border-radius:6px;background:#202a38;color:#e5e7eb;padding:8px 6px;cursor:pointer;font:inherit;font-weight:700}.tab.active,.tab:hover{border-color:#60a5fa;background:#173454}.card{border:1px solid #2f3b4d;border-radius:7px;background:#111923;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:7px;font-family:Consolas,Menlo,monospace;color:#f8fafc;font-size:12px;line-height:1.55}.result{margin-top:auto;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.11);color:#bae6fd;border-radius:7px;padding:10px;font-size:13px;line-height:1.45}@media(max-width:840px){body{overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene{min-height:480px}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div id="scene"></div>
+<main class="widget">
+  <section class="scene">
+    <svg id="scene" viewBox="0 0 820 620">
+      <defs>
+        <marker id="arrowGray" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#94a3b8"/></marker>
+      </defs>
+    </svg>
+  </section>
   <aside class="panel">
     <h1>Rovina jako 4-vektor</h1>
-    <p>V P3 rovinu nereprezentujeme sadou bodů, ale homogenním vektorem koeficientů.</p>
+    <p class="muted">V P³ je rovina reprezentována homogenním vektorem π=[a,b,c,d]ᵀ.</p>
     <div class="tabs">
       <button class="tab active" data-mode="incidence">Incidence</button>
       <button class="tab" data-mode="scale">Násobek</button>
       <button class="tab" data-mode="ideal">Ideální řez</button>
     </div>
-    <div id="text"></div>
-    <div class="legend">
-      <div class="item"><span class="sw" style="background:#38bdf8"></span>rovina π</div>
-      <div class="item"><span class="sw" style="background:#22c55e"></span>body na rovině</div>
-      <div class="item"><span class="sw" style="background:#f97316"></span>bod mimo rovinu</div>
-      <div class="item"><span class="sw" style="background:#fbbf24"></span>ideální průnik</div>
-    </div>
+    <div class="card" id="explain"></div>
+    <div class="result">Přímky v P³ nejsou duální k bodům; roviny ano.</div>
   </aside>
-</div>
-<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-const host=document.getElementById('scene'),text=document.getElementById('text');
-const scene=new THREE.Scene();scene.background=new THREE.Color(0x111820);
-const camera=new THREE.PerspectiveCamera(48,1,.1,100);camera.position.set(4.7,4.2,5.2);
-const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));host.appendChild(renderer.domElement);
-const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.target.set(.25,.35,.25);controls.minDistance=3;controls.maxDistance=14;
-scene.add(new THREE.AmbientLight(0xffffff,.72));const light=new THREE.DirectionalLight(0xffffff,.75);light.position.set(4,5,3);scene.add(light);
-const root=new THREE.Group();scene.add(root);let mode='incidence';
-function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath()}
-function label(text,color='#e5e7eb'){const c=document.createElement('canvas');c.width=320;c.height=74;const ctx=c.getContext('2d');ctx.font='700 26px Segoe UI, sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='rgba(15,23,32,.82)';ctx.strokeStyle='rgba(255,255,255,.18)';rr(ctx,14,9,292,55,10);ctx.fill();ctx.stroke();ctx.fillStyle=color;ctx.fillText(text,160,38);const tex=new THREE.CanvasTexture(c);const mat=new THREE.SpriteMaterial({map:tex,transparent:true,depthTest:false,depthWrite:false});const s=new THREE.Sprite(mat);s.scale.set(1.1,.28,1);s.renderOrder=40;return s}
-function addLabel(g,t,p,c){const s=label(t,c);s.position.copy(p);g.add(s)}
-function addGrid(){const grid=new THREE.GridHelper(6,12,0x344256,0x253142);grid.position.y=0;root.add(grid);const ax=new THREE.AxesHelper(3.2);root.add(ax);addLabel(root,'x',new THREE.Vector3(3.55,0,0),'#fecaca');addLabel(root,'y',new THREE.Vector3(0,3.55,0),'#bbf7d0');addLabel(root,'z',new THREE.Vector3(0,0,3.55),'#bfdbfe')}
-function addPlane(){const pts=[new THREE.Vector3(1.93,.13,-1.06),new THREE.Vector3(.13,1.93,-1.06),new THREE.Vector3(-1.26,.53,1.73),new THREE.Vector3(.53,-1.26,1.73)];const geo=new THREE.BufferGeometry().setFromPoints(pts);geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();const mat=new THREE.MeshStandardMaterial({color:0x38bdf8,transparent:true,opacity:.26,side:THREE.DoubleSide,depthWrite:false});const mesh=new THREE.Mesh(geo,mat);root.add(mesh);const edges=new THREE.EdgesGeometry(geo);root.add(new THREE.LineSegments(edges,new THREE.LineBasicMaterial({color:0x38bdf8,transparent:true,opacity:.9})));addLabel(root,'π: x+y+z-1=0',new THREE.Vector3(.65,.7,.75),'#e0f2fe')}
-function sphere(p,color,name){const s=new THREE.Mesh(new THREE.SphereGeometry(.095,28,16),new THREE.MeshStandardMaterial({color,roughness:.45,emissive:color,emissiveIntensity:.14}));s.position.copy(p);root.add(s);addLabel(root,name,p.clone().add(new THREE.Vector3(.24,.18,.18)),'#f8fafc')}
-function line(a,b,color,dashed=false){const geo=new THREE.BufferGeometry().setFromPoints([a,b]);const mat=dashed?new THREE.LineDashedMaterial({color,dashSize:.18,gapSize:.12,transparent:true,opacity:.9}):new THREE.LineBasicMaterial({color});const l=new THREE.Line(geo,mat);if(dashed)l.computeLineDistances();root.add(l)}
-function rebuild(){root.clear();addGrid();addPlane();sphere(new THREE.Vector3(1,0,0),0x22c55e,'A [1,0,0,1]');sphere(new THREE.Vector3(0,1,0),0x22c55e,'B [0,1,0,1]');sphere(new THREE.Vector3(0,0,1),0x22c55e,'C [0,0,1,1]');sphere(new THREE.Vector3(1.2,1.2,1.2),0xf97316,'Q mimo');if(mode==='incidence'){line(new THREE.Vector3(1,0,0),new THREE.Vector3(0,1,0),0x22c55e);line(new THREE.Vector3(0,1,0),new THREE.Vector3(0,0,1),0x22c55e);text.innerHTML='<p>Rovina π=[a,b,c,d]^T obsahuje právě ty body X, pro které vyjde skalární součin nula.</p><div class=\"formula\">π^T X = ax+by+cz+dw = 0</div><p>Pro π=[1,1,1,-1]^T leží A, B i C na rovině, protože jejich součet souřadnic je 1.</p>'}if(mode==='scale'){text.innerHTML='<p>Stejně jako bod nebo přímka v P2 je i rovina určena jen až na nenulový násobek.</p><div class=\"formula\">π ~ λπ, λ != 0</div><p>Rovnice x+y+z-1=0 a 2x+2y+2z-2=0 popisují stejnou rovinu.</p>';addLabel(root,'2π je tatáž rovina',new THREE.Vector3(-.85,1.6,.85),'#bfdbfe')}if(mode==='ideal'){const a=new THREE.Vector3(2,-1,-1),b=new THREE.Vector3(-1,2,-1);line(a,b,0xfbbf24,true);addLabel(root,'π ∩ π∞',new THREE.Vector3(.2,.9,-1),'#fde68a');text.innerHTML='<p>Když v rovnici nastavíme w=0, dostaneme ideální přímku dané roviny.</p><div class=\"formula\">x+y+z = 0, w = 0</div><p>Ta reprezentuje směry všech afinních přímek, které v této rovině leží.</p>'}}
-for(const b of document.querySelectorAll('.tab'))b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));rebuild()};
-function resize(){const r=host.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix()}window.addEventListener('resize',resize);resize();rebuild();function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
+</main>
+<script>
+const svg=document.getElementById('scene'),explain=document.getElementById('explain');let mode='incidence';
+function add(t,a){const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);svg.appendChild(e);return e}
+function txt(s,x,y,c=''){const e=add('text',{x,y,class:c});e.textContent=s}
+function line(a,b,cls){add('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],class:cls})}
+const A=[360,210],B=[610,285],C=[560,470],D=[310,390];
+const pA=[360,210],pB=[610,285],pC=[560,470],q=[215,390];
+function base(){svg.innerHTML=svg.querySelector('defs').outerHTML;for(let i=0;i<8;i++){line([120+i*70,520],[250+i*70,575],'grid')}for(let i=0;i<9;i++){line([120+i*70,520],[40+i*70,575],'grid')}line([110,525],[740,525],'axis');line([110,525],[110,150],'axis');line([110,525],[300,590],'axis');txt('x',745,520);txt('y',116,150);txt('z',305,595);add('polygon',{points:`${A} ${B} ${C} ${D}`,class:'plane'});txt('π: x+y+z-1=0',370,500,'tiny')}
+function points(){line(pA,pB,'lineOn');line(pB,pC,'lineOn');add('circle',{cx:pA[0],cy:pA[1],r:10,class:'on'});add('circle',{cx:pB[0],cy:pB[1],r:10,class:'on'});add('circle',{cx:pC[0],cy:pC[1],r:10,class:'on'});add('circle',{cx:q[0],cy:q[1],r:11,class:'off'});txt('A [1,0,0,1]',pA[0]+14,pA[1]-14);txt('B [0,1,0,1]',pB[0]+14,pB[1]-14);txt('C [0,0,1,1]',pC[0]+14,pC[1]+24);txt('Q mimo',q[0]-58,q[1]-18)}
+function ideal(){const P=[205,190],Q=[445,255],R=[420,430],S=[180,365];add('polygon',{points:`${P} ${Q} ${R} ${S}`,class:'idealPlane'});line([215,350],[410,205],'idealLine');txt('π∞: w=0',210,180,'tiny');txt('π ∩ π∞: x+y+z=0',275,222,'tiny')}
+function render(){base();if(mode==='incidence'){points();explain.innerHTML='<strong>Incidence</strong><span class="formula">π=[1,1,1,-1]ᵀ<br>πᵀA=1+0+0-1=0<br>πᵀB=0, πᵀC=0<br>πᵀQ=1.2+1.2+1.2-1≠0</span>'}if(mode==='scale'){points();txt('π ~ 2π',185,220,'tiny');explain.innerHTML='<strong>Násobek</strong><span class="formula">π ~ λπ, λ≠0<br>[1,1,1,-1]ᵀ ~ [2,2,2,-2]ᵀ<br>stejná množina bodů</span>'}if(mode==='ideal'){points();ideal();explain.innerHTML='<strong>Ideální řez</strong><span class="formula">π ∩ π∞:<br>x+y+z=0, w=0<br>ideální přímka roviny π</span>'}}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));render()});render();
 </script>
 </body>
 </html>

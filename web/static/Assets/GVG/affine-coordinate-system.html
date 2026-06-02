@@ -1,19 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GVG - afinni souradny system</title>
 <style>
-*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#14171c;color:#e6edf3;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{display:grid;grid-template-columns:minmax(0,1fr)310px;gap:12px;height:100%;min-height:0}.scene,.panel{border:1px solid #343b46;border-radius:8px;background:#1d222b}.scene{overflow:hidden}svg{display:block;width:100%;height:100%;min-height:0}.grid{stroke:#2b313b;stroke-width:1}.axis{stroke:#64748b;stroke-width:2}.basisOld{stroke:#38bdf8;stroke-width:4;marker-end:url(#arrowBlue)}.basisNew{stroke:#f59e0b;stroke-width:4;marker-end:url(#arrowOrange)}.point{fill:#22c55e;stroke:#dcfce7;stroke-width:3;filter:drop-shadow(0 0 8px rgba(34,197,94,.45))}.guide{stroke:#94a3b8;stroke-width:2;stroke-dasharray:7 7;opacity:.7}text{fill:#dbe4f0;font-size:15px;font-weight:750}.tiny{fill:#94a3b8;font-size:12px}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{margin:0;color:#f8fafc;font-size:18px}.muted{margin:0;color:#9ca3af;font-size:13px;line-height:1.45}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.tab{border:1px solid #3c4655;border-radius:6px;background:#252c37;color:#e5e7eb;padding:8px 6px;cursor:pointer}.tab.active,.tab:hover{border-color:#60a5fa;background:#17304e}.card{border:1px solid #303743;border-radius:7px;background:#171c24;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:6px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.result{margin-top:auto;border-radius:7px;padding:10px;background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.35);font-size:13px;line-height:1.45}@media(max-width:840px){body{overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene svg{min-height:460px}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#14171c;color:#e6edf3;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{display:grid;grid-template-columns:minmax(0,1fr)310px;gap:12px;height:100%;min-height:0}.scene,.panel{border:1px solid #343b46;border-radius:8px;background:#1d222b}.scene{overflow:hidden}svg{display:block;width:100%;height:100%}.grid{stroke:#2b313b;stroke-width:1}.axis{stroke:#64748b;stroke-width:2}.basisOld{stroke:#38bdf8;stroke-width:4;marker-end:url(#arrowBlue)}.basisNew{stroke:#f59e0b;stroke-width:4;marker-end:url(#arrowOrange)}.point{fill:#22c55e;stroke:#dcfce7;stroke-width:3;filter:drop-shadow(0 0 8px rgba(34,197,94,.45))}.guide{stroke:#94a3b8;stroke-width:2;stroke-dasharray:7 7;opacity:.7}.vector{stroke:#e5e7eb;stroke-width:2.4;marker-end:url(#arrowWhite)}text{fill:#dbe4f0;font-size:15px;font-weight:750}.tiny{fill:#94a3b8;font-size:12px}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow-y:auto}h1{margin:0;color:#f8fafc;font-size:18px}.muted{margin:0;color:#9ca3af;font-size:13px;line-height:1.45}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.tab{border:1px solid #3c4655;border-radius:6px;background:#252c37;color:#e5e7eb;padding:8px 6px;cursor:pointer}.tab.active,.tab:hover{border-color:#60a5fa;background:#17304e}.card{border:1px solid #303743;border-radius:7px;background:#171c24;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:6px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.result{margin-top:auto;border-radius:7px;padding:10px;background:rgba(34,197,94,.12);color:#bbf7d0;border:1px solid rgba(34,197,94,.35);font-size:13px;line-height:1.45}@media(max-width:840px){body{overflow:auto}.widget{grid-template-columns:1fr;height:auto}.scene{min-height:460px}}
 </style>
-</head><body><main class="widget"><section class="scene"><svg id="scene" viewBox="0 0 780 600"><defs><marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#38bdf8"/></marker><marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#f59e0b"/></marker></defs></svg></section><aside class="panel"><h1>Afinní souřadný systém</h1><p class="muted">Stejný bod má jiné souřadnice, když změníme počátek nebo bázi.</p><div class="tabs"><button class="tab active" data-mode="old">Systém β</button><button class="tab" data-mode="new">Systém β'</button><button class="tab" data-mode="both">Porovnání</button></div><div class="card" id="explain"><strong>Starý systém</strong><span class="formula">X = O + 2b1 + 1b2</span></div><div class="card"><strong>Vztah</strong><span class="formula">x_β = A x_β' + o'_β</span></div><div class="result">Geometrický bod X se nemění, mění se jen jeho souřadnice.</div></aside></main><script>
-const svg=document.getElementById('scene'),explain=document.getElementById('explain');let mode='old';const W=780,H=600,p=72,min=-1,max=5;const sx=x=>p+(x-min)/(max-min)*(W-2*p),sy=y=>H-p-(y-min)/(max-min)*(H-2*p);
+</head>
+<body>
+<main class="widget">
+  <section class="scene">
+    <svg id="scene" viewBox="0 0 780 600">
+      <defs>
+        <marker id="arrowBlue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#38bdf8"/></marker>
+        <marker id="arrowOrange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#f59e0b"/></marker>
+        <marker id="arrowWhite" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#e5e7eb"/></marker>
+      </defs>
+    </svg>
+  </section>
+  <aside class="panel">
+    <h1>Afinní souřadný systém</h1>
+    <p class="muted">Stejný bod má jiné souřadnice, když změníme počátek nebo bázi.</p>
+    <div class="tabs">
+      <button class="tab active" data-mode="old">Systém β</button>
+      <button class="tab" data-mode="new">Systém β'</button>
+      <button class="tab" data-mode="both">Porovnání</button>
+    </div>
+    <div class="card" id="explain"><strong>Starý systém</strong><span class="formula">X = O + 2b1 + 1b2</span></div>
+    <div class="card"><strong>Vztah</strong><span class="formula">x_β = A x_β' + o'_β</span></div>
+    <div class="result">Geometrický bod X se nemění, mění se jen jeho souřadnice.</div>
+  </aside>
+</main>
+<script>
+const svg=document.getElementById('scene'),explain=document.getElementById('explain');let mode='old';
+const W=780,H=600,p=72,min=-1,max=5;
+const sx=x=>p+(x-min)/(max-min)*(W-2*p),sy=y=>H-p-(y-min)/(max-min)*(H-2*p);
 const O=[0,0],b1=[1,0],b2=[0,1],Op=[1,1],c1=[1,.5],c2=[0,-1],X=[2,1];
-function add(t,a){const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);svg.appendChild(e);return e}function line(a,b,cls){add('line',{x1:sx(a[0]),y1:sy(a[1]),x2:sx(b[0]),y2:sy(b[1]),class:cls})}function txt(s,x,y,c=''){const e=add('text',{x:sx(x),y:sy(y),class:c});e.textContent=s}function plus(a,b,k=1){return[a[0]+k*b[0],a[1]+k*b[1]]}
+function add(t,a){const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);svg.appendChild(e);return e}
+function line(a,b,cls){add('line',{x1:sx(a[0]),y1:sy(a[1]),x2:sx(b[0]),y2:sy(b[1]),class:cls})}
+function txt(s,x,y,c=''){const e=add('text',{x:sx(x),y:sy(y),class:c});e.textContent=s}
+function plus(a,b,k=1){return[a[0]+k*b[0],a[1]+k*b[1]]}
 function grid(){svg.innerHTML=svg.querySelector('defs').outerHTML;for(let i=-1;i<=5;i++){add('line',{x1:sx(i),y1:sy(-1),x2:sx(i),y2:sy(5),class:'grid'});add('line',{x1:sx(-1),y1:sy(i),x2:sx(5),y2:sy(i),class:'grid'})}line([-1,0],[5,0],'axis');line([0,-1],[0,5],'axis')}
-function drawOld(){line(O,plus(O,b1,1.4),'basisOld');line(O,plus(O,b2,1.4),'basisOld');txt('O',-.25,-.15);txt('b1',1.35,-.1);txt('b2',.1,1.45);line(O,[2,0],'guide');line([2,0],X,'guide')}
-function drawNew(){line(Op,plus(Op,c1,1.4),'basisNew');line(Op,plus(Op,c2,1.4),'basisNew');txt(\"O'\",.78,.82);txt(\"b1'\",2.38,1.72);txt(\"b2'\",1.1,.25);line(Op,plus(Op,c1,1),'guide');line(plus(Op,c1,1),X,'guide')}
-function render(){grid();if(mode==='old'||mode==='both')drawOld();if(mode==='new'||mode==='both')drawNew();add('circle',{cx:sx(X[0]),cy:sy(X[1]),r:10,class:'point'});txt('X',2.12,1.28);if(mode==='old')explain.innerHTML='<strong>Starý systém β</strong><span class="formula">X = O + 2b1 + 1b2<br>x_β = (2,1)</span>';if(mode==='new')explain.innerHTML=\"<strong>Nový systém β'</strong><span class='formula'>X = O' + 1b1' + 0.5b2'<br>x_β' = (1,0.5)</span>\";if(mode==='both')explain.innerHTML='<strong>Porovnání</strong><span class="formula">bod X je stejný<br>souřadnice závisí na (O,β)</span>'}
+function drawOld(){line(O,plus(O,b1,1.45),'basisOld');line(O,plus(O,b2,1.45),'basisOld');txt('O',-.25,-.15);txt('b1',1.35,-.1);txt('b2',.1,1.45);line(O,[2,0],'guide');line([2,0],X,'guide');line(O,X,'vector');txt('x = φ(O,X)',.75,.85,'tiny')}
+function drawNew(){line(Op,plus(Op,c1,1.45),'basisNew');line(Op,plus(Op,c2,1.45),'basisNew');txt("O'",.78,.82);txt("b1'",2.35,1.72);txt("b2'",1.08,.22);line(Op,plus(Op,c1,1),'guide');line(plus(Op,c1,1),X,'guide');line(Op,X,'vector');txt("x' = φ(O',X)",1.55,1.45,'tiny')}
+function render(){grid();if(mode==='old'||mode==='both')drawOld();if(mode==='new'||mode==='both')drawNew();if(mode==='both'){line(O,Op,'vector');txt("o' = φ(O,O')",.55,.42,'tiny')}add('circle',{cx:sx(X[0]),cy:sy(X[1]),r:10,class:'point'});txt('X',2.12,1.28);if(mode==='old')explain.innerHTML='<strong>Starý systém β</strong><span class="formula">X = O + 2b1 + 1b2<br>x_β = (2,1)</span>';if(mode==='new')explain.innerHTML="<strong>Nový systém β'</strong><span class='formula'>X = O' + 1b1' + 0.5b2'<br>x_β' = (1,0.5)</span>";if(mode==='both')explain.innerHTML="<strong>Porovnání</strong><span class='formula'>O + 2b1 + b2 = O' + b1' + 0.5b2'</span>"}
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t===b));render()});render();
-</script></body></html>
+</script>
+</body>
+</html>
