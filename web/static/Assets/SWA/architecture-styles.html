@@ -6,574 +6,547 @@
   <title>Architectural Styles Overview</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: #111827;
-      --panel-2: #162033;
-      --line: rgba(148, 163, 184, .24);
-      --text: #e5eefc;
-      --muted: #9caec6;
-      --cyan: #22d3ee;
-      --blue: #60a5fa;
-      --green: #34d399;
-      --amber: #fbbf24;
-      --rose: #fb7185;
-      --violet: #a78bfa;
-      --shadow: 0 22px 60px rgba(0, 0, 0, .32);
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --line: #d7dee8;
+      --line-strong: #94a3b8;
+      --text: #172033;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --blue-soft: #eff6ff;
+      --green: #0f766e;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --violet: #6d28d9;
+      --violet-soft: #f5f3ff;
+      --rose: #be123c;
+      --rose-soft: #fff1f2;
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      min-width: 880px;
-      padding: 14px;
-      overflow-x: auto;
+      min-height: 100vh;
       color: var(--text);
-      background:
-        radial-gradient(circle at 5% 0%, rgba(34, 211, 238, .14), transparent 28rem),
-        radial-gradient(circle at 100% 100%, rgba(167, 139, 250, .12), transparent 30rem),
-        var(--bg);
+      background: var(--bg);
       font-family: "Segoe UI", system-ui, sans-serif;
       font-size: 14px;
+      letter-spacing: 0;
     }
 
     button { font: inherit; }
 
-    .shell { max-width: 1260px; margin: 0 auto; }
-
-    .topbar,
-    .stage,
-    .panel {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(17, 24, 39, .84);
-      box-shadow: var(--shadow);
+    .widget {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 10px;
+      min-height: 100vh;
+      padding: 12px;
     }
 
-    .topbar {
+    .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 14px;
       padding: 12px 14px;
-      margin-bottom: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
     }
 
-    .eyebrow,
-    .panel-title,
-    .label {
+    .eyebrow {
+      margin-bottom: 2px;
       color: var(--muted);
-      font-size: 10px;
-      font-weight: 850;
-      letter-spacing: .12em;
+      font-size: 11px;
+      font-weight: 750;
       text-transform: uppercase;
     }
 
     h1 {
-      margin: 2px 0 0;
+      margin: 0;
       font-size: 20px;
+      line-height: 1.2;
       letter-spacing: 0;
     }
 
     .subtitle {
-      margin-top: 4px;
-      max-width: 780px;
+      max-width: 880px;
+      margin-top: 5px;
       color: var(--muted);
       line-height: 1.45;
     }
 
     .controls {
       display: flex;
-      align-items: center;
-      gap: 8px;
       flex: 0 0 auto;
+      gap: 6px;
     }
 
-    .btn {
-      border: 1px solid rgba(96, 165, 250, .45);
-      border-radius: 8px;
-      padding: 7px 10px;
-      color: #dbeafe;
-      background: rgba(30, 41, 59, .9);
-      font-weight: 750;
+    .btn,
+    .tab {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--text);
+      background: #fff;
+      font-weight: 700;
       cursor: pointer;
     }
 
+    .btn {
+      padding: 7px 10px;
+      min-width: 70px;
+    }
+
     .btn.primary {
-      border-color: rgba(34, 211, 238, .65);
-      color: #07111f;
-      background: linear-gradient(135deg, var(--cyan), var(--blue));
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 330px;
-      gap: 10px;
-    }
-
-    .stage {
-      overflow: hidden;
-      background:
-        linear-gradient(rgba(148, 163, 184, .045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(148, 163, 184, .045) 1px, transparent 1px),
-        rgba(15, 23, 42, .75);
-      background-size: 24px 24px;
+      border-color: #1d4ed8;
+      color: #fff;
+      background: var(--blue);
     }
 
     .tabs {
       display: flex;
       gap: 6px;
-      padding: 10px;
       overflow-x: auto;
-      border-bottom: 1px solid var(--line);
-      background: rgba(15, 23, 42, .55);
+      padding: 2px 0 4px;
     }
 
     .tab {
-      min-width: max-content;
-      border: 1px solid rgba(148, 163, 184, .20);
-      border-radius: 8px;
+      flex: 0 0 auto;
       padding: 7px 9px;
       color: var(--muted);
-      background: rgba(30, 41, 59, .78);
-      font-size: 11px;
-      font-weight: 800;
-      cursor: pointer;
+      font-size: 12px;
+      white-space: nowrap;
     }
 
     .tab.active {
-      border-color: rgba(34, 211, 238, .72);
-      color: #ecfeff;
-      background: rgba(8, 145, 178, .34);
+      border-color: #1d4ed8;
+      color: #1d4ed8;
+      background: var(--blue-soft);
     }
 
-    .diagram-wrap {
+    .main {
       display: grid;
-      grid-template-rows: auto 1fr auto;
+      grid-template-columns: minmax(0, 1fr) 310px;
       gap: 10px;
-      min-height: 500px;
-      padding: 12px;
+      min-height: 0;
     }
 
-    .legend {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 10px;
-      color: var(--muted);
-      font-size: 11px;
+    .diagram-panel,
+    .notes {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
     }
 
-    .legend span { display: inline-flex; align-items: center; gap: 5px; }
-    .dot { width: 9px; height: 9px; border-radius: 99px; display: inline-block; }
-    .dot.core { background: var(--cyan); }
-    .dot.data { background: var(--green); }
-    .dot.external { background: var(--amber); }
-    .dot.risk { background: var(--rose); }
+    .diagram-panel {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      min-height: 520px;
+      overflow: hidden;
+    }
 
     svg {
       width: 100%;
-      height: 390px;
-      border: 1px solid rgba(148, 163, 184, .18);
-      border-radius: 12px;
-      background: rgba(15, 23, 42, .74);
+      height: 100%;
+      min-height: 470px;
+      background:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 36px 36px;
+      background-color: #fff;
+    }
+
+    .caption {
+      min-height: 58px;
+      padding: 10px 12px;
+      border-top: 1px solid var(--line);
+      background: #fbfdff;
+      line-height: 1.45;
+    }
+
+    .caption b { color: var(--blue); }
+
+    .notes {
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .note-section {
+      display: grid;
+      gap: 6px;
+    }
+
+    .note-title {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .note-section p {
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    li {
+      margin: 4px 0;
+      line-height: 1.35;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .badge {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--muted);
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .box {
+      fill: rgba(248, 250, 252, .76);
+      stroke: #cbd5e1;
+      stroke-width: 1.5;
+      stroke-dasharray: 6 5;
+    }
+
+    .box-label {
+      fill: #64748b;
+      font-size: 12px;
+      font-weight: 750;
     }
 
     .edge {
       fill: none;
-      stroke: rgba(148, 163, 184, .45);
-      stroke-width: 3;
+      stroke: #9aa8bb;
+      stroke-width: 2.2;
       marker-end: url(#arrow);
     }
 
-    .edge.async { stroke-dasharray: 8 7; }
+    .edge.async { stroke-dasharray: 7 6; }
     .edge.active {
-      stroke: var(--cyan);
-      stroke-width: 5;
-      filter: drop-shadow(0 0 8px rgba(34, 211, 238, .42));
+      stroke: var(--blue);
+      stroke-width: 3.4;
     }
 
-    .edge.risk { stroke: rgba(251, 113, 133, .68); }
-
-    .node rect,
-    .node circle,
-    .node path {
-      fill: rgba(17, 24, 39, .96);
-      stroke: rgba(203, 213, 225, .72);
-      stroke-width: 2;
+    .edge-label-bg {
+      fill: #fff;
+      stroke: #e2e8f0;
+      stroke-width: 1;
     }
 
-    .node.core rect,
-    .node.core circle { stroke: var(--cyan); }
-    .node.data rect,
-    .node.data circle { stroke: var(--green); }
-    .node.external rect,
-    .node.external circle { stroke: var(--amber); }
-    .node.risk rect,
-    .node.risk circle { stroke: var(--rose); }
-    .node.active rect,
-    .node.active circle {
-      fill: rgba(8, 145, 178, .38);
-      stroke: #67e8f9;
-      filter: drop-shadow(0 0 10px rgba(34, 211, 238, .42));
-    }
-
-    .node text {
-      fill: #f8fafc;
-      font-weight: 850;
+    .edge-label {
+      fill: #475569;
+      font-size: 10.5px;
+      font-weight: 700;
       text-anchor: middle;
       dominant-baseline: middle;
-      font-size: 12px;
     }
 
-    .node .sub {
-      fill: var(--muted);
-      font-size: 10px;
-      font-weight: 650;
+    .node rect {
+      stroke-width: 1.7;
     }
 
-    .edge-label rect {
-      fill: rgba(15, 23, 42, .94);
-      stroke: rgba(148, 163, 184, .26);
-      rx: 5;
-    }
-
-    .edge-label text {
-      fill: #cbd5e1;
-      font-size: 10px;
+    .node .title {
+      fill: var(--text);
+      font-size: 12.5px;
       font-weight: 800;
       text-anchor: middle;
       dominant-baseline: middle;
     }
 
+    .node .sub {
+      fill: #64748b;
+      font-size: 10.5px;
+      font-weight: 650;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .node.core rect,
+    .node.service rect {
+      fill: var(--blue-soft);
+      stroke: #3b82f6;
+    }
+
+    .node.actor rect {
+      fill: #f8fafc;
+      stroke: #94a3b8;
+    }
+
+    .node.data rect {
+      fill: var(--green-soft);
+      stroke: #10b981;
+    }
+
+    .node.integration rect,
+    .node.broker rect {
+      fill: var(--violet-soft);
+      stroke: #8b5cf6;
+    }
+
+    .node.risk rect {
+      fill: var(--amber-soft);
+      stroke: #f59e0b;
+    }
+
+    .node.active rect {
+      stroke: var(--blue);
+      stroke-width: 3;
+    }
+
     .packet {
-      fill: var(--amber);
-      stroke: rgba(255, 255, 255, .75);
-      stroke-width: 1.5;
-      filter: drop-shadow(0 0 8px rgba(251, 191, 36, .58));
+      fill: var(--blue);
+      stroke: #fff;
+      stroke-width: 2;
     }
 
-    .caption {
-      min-height: 78px;
-      border-left: 3px solid var(--cyan);
-      border-radius: 8px;
-      padding: 10px 11px;
-      color: #dbeafe;
-      background: rgba(8, 145, 178, .13);
-      line-height: 1.45;
-    }
+    @media (max-width: 900px) {
+      .header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
 
-    .caption strong { color: #f8fafc; }
+      .main {
+        grid-template-columns: 1fr;
+      }
 
-    .side {
-      display: grid;
-      gap: 10px;
-      align-content: start;
-    }
-
-    .panel {
-      padding: 12px;
-      background: rgba(17, 24, 39, .88);
-    }
-
-    .bullets {
-      display: grid;
-      gap: 7px;
-      margin-top: 8px;
-    }
-
-    .bullet {
-      position: relative;
-      padding-left: 14px;
-      color: #d5deec;
-      line-height: 1.35;
-      font-size: 12px;
-    }
-
-    .bullet:before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: .55em;
-      width: 6px;
-      height: 6px;
-      border-radius: 99px;
-      background: var(--cyan);
-    }
-
-    .trade {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .trade-box {
-      border: 1px solid rgba(148, 163, 184, .17);
-      border-radius: 9px;
-      padding: 8px;
-      background: rgba(15, 23, 42, .66);
-    }
-
-    .trade-box b {
-      display: block;
-      margin-bottom: 5px;
-      color: #f8fafc;
-      font-size: 11px;
-    }
-
-    .trade-box.good { border-color: rgba(52, 211, 153, .32); }
-    .trade-box.bad { border-color: rgba(251, 113, 133, .32); }
-
-    .metric {
-      display: grid;
-      grid-template-columns: 90px 1fr;
-      align-items: center;
-      gap: 8px;
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 11px;
-    }
-
-    .bar {
-      height: 8px;
-      overflow: hidden;
-      border-radius: 99px;
-      background: rgba(148, 163, 184, .16);
-    }
-
-    .bar i {
-      display: block;
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--blue), var(--cyan));
-    }
-
-    @media (max-width: 980px) {
-      body { min-width: 0; }
-      .layout { grid-template-columns: 1fr; }
-      .side { grid-template-columns: 1fr 1fr; }
-      svg { height: 360px; }
-    }
-
-    @media (max-width: 720px) {
-      body { padding: 10px; }
-      .topbar { align-items: flex-start; flex-direction: column; }
-      .side { grid-template-columns: 1fr; }
-      svg { height: 330px; }
+      .diagram-panel {
+        min-height: 500px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="topbar">
+  <div class="widget">
+    <header class="header">
       <div>
         <div class="eyebrow">Software architecture</div>
-        <h1 id="title">Architectural style</h1>
+        <h1 id="title"></h1>
         <div class="subtitle" id="subtitle"></div>
       </div>
       <div class="controls">
         <button class="btn" id="prevBtn">Prev</button>
-        <button class="btn primary" id="playBtn">Pause flow</button>
+        <button class="btn primary" id="playBtn">Pause</button>
         <button class="btn" id="nextBtn">Next</button>
       </div>
-    </div>
+    </header>
 
-    <div class="layout">
-      <main class="stage">
-        <div class="tabs" id="tabs"></div>
-        <div class="diagram-wrap">
-          <div class="legend">
-            <span><i class="dot core"></i>core / business</span>
-            <span><i class="dot data"></i>data / storage</span>
-            <span><i class="dot external"></i>external actor</span>
-            <span><i class="dot risk"></i>risk / bottleneck</span>
-          </div>
-          <svg id="diagram" viewBox="0 0 860 420" role="img" aria-label="Architecture diagram">
-            <defs>
-              <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(203,213,225,.75)"></path>
-              </marker>
-            </defs>
-          </svg>
-          <div class="caption" id="caption"></div>
-        </div>
-      </main>
+    <nav class="tabs" id="tabs" aria-label="Architectural styles"></nav>
 
-      <aside class="side">
-        <section class="panel">
-          <div class="panel-title">Kdy se hodi</div>
-          <div class="bullets" id="fits"></div>
+    <main class="main">
+      <section class="diagram-panel">
+        <svg id="diagram" viewBox="0 0 900 520" role="img" aria-label="Architecture style diagram">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#9aa8bb"></path>
+            </marker>
+          </defs>
+        </svg>
+        <div class="caption" id="caption"></div>
+      </section>
+
+      <aside class="notes">
+        <section class="note-section">
+          <div class="note-title">Princip</div>
+          <p id="idea"></p>
         </section>
-
-        <section class="panel">
-          <div class="panel-title">Trade-off</div>
-          <div class="trade">
-            <div class="trade-box good">
-              <b>Podporuje</b>
-              <div class="bullets" id="benefits"></div>
-            </div>
-            <div class="trade-box bad">
-              <b>Zhorsuje</b>
-              <div class="bullets" id="risks"></div>
-            </div>
-          </div>
+        <section class="note-section">
+          <div class="note-title">Kdy použít</div>
+          <ul id="fits"></ul>
         </section>
-
-        <section class="panel">
-          <div class="panel-title">Quality attributes</div>
-          <div id="metrics"></div>
+        <section class="note-section">
+          <div class="note-title">Pozor na</div>
+          <ul id="risks"></ul>
+        </section>
+        <section class="note-section">
+          <div class="note-title">Quality attributes</div>
+          <div class="badge-row" id="qualities"></div>
         </section>
       </aside>
-    </div>
+    </main>
   </div>
 
   <script>
-    const styles = [
+    function n(id, label, sub, x, y, kind = "core", w = 128, h = 54) {
+      return { id, label, sub, x, y, kind, w, h };
+    }
+
+    function e(from, to, label = "", type = "") {
+      return { from, to, label, type };
+    }
+
+    function b(label, x, y, w, h) {
+      return { label, x, y, w, h };
+    }
+
+    const diagrams = [
       {
         id: "monolith",
         tab: "Monolith",
         title: "Monolithic architecture",
-        subtitle: "Jedna aplikace, jedna hlavni codebase a obvykle jeden deployable artifact. Jednoducha volba pro start, pokud ma system jasne hranice uvnitr kodu.",
-        fits: ["MVP a mensi tym", "CRUD nebo jednodussi domena", "rychly start bez vysoke DevOps zralosti"],
-        benefits: ["jednoduchy deployment", "jednoduche transakce", "snadne lokalni ladeni"],
-        risks: ["rust couplingu", "skaluje se cela aplikace", "vetsi tym si prekazi v jedne codebase"],
-        metrics: { simplicity: 90, scalability: 42, deployability: 58, testability: 68 },
-        steps: [
-          "Uzivatel posle request do jedne aplikace.",
-          "Aplikace uvnitr vola casti pro users, orders, payments a admin.",
-          "Vsechny casti sdili jednu databazi a jeden deployment."
-        ],
+        subtitle: "Jedna aplikace, jedna codebase a jeden hlavní deployable artifact.",
+        idea: "Všechny části systému běží uvnitř jedné aplikace. Komunikace mezi moduly je lokální, ale časem může růst vnitřní coupling.",
+        fits: ["MVP nebo menší tým", "jednodušší doména", "rychlý start bez vysoké DevOps komplexity"],
+        risks: ["změny v jedné části mohou ovlivnit celý systém", "škáluje se celý monolit", "velká codebase se hůř udržuje"],
+        qualities: ["simple deploy", "strong transactions", "lower operational cost"],
+        boxes: [b("one deployable application", 250, 116, 360, 286)],
         nodes: [
-          n("client", "Client", "UI", 95, 210, "external"),
-          n("app", "Monolith", "single deployable", 380, 210, "core", 210, 170),
-          n("users", "Users", "package", 320, 168, "core", 82, 42),
-          n("orders", "Orders", "package", 440, 168, "core", 82, 42),
-          n("payments", "Payments", "package", 320, 252, "core", 92, 42),
-          n("admin", "Admin", "package", 445, 252, "core", 82, 42),
-          n("db", "Database", "shared", 700, 210, "data")
+          n("client", "Client", "UI", 86, 260, "actor"),
+          n("api", "API", "controller", 330, 180, "core", 118, 50),
+          n("orders", "Orders", "module", 480, 180, "core", 118, 50),
+          n("payments", "Payments", "module", 330, 315, "core", 118, 50),
+          n("admin", "Admin", "module", 480, 315, "core", 118, 50),
+          n("db", "Database", "shared", 760, 260, "data", 130, 56)
         ],
         edges: [
-          e("client", "app", "HTTP"),
-          e("app", "users", "internal call"),
-          e("app", "orders", "internal call"),
-          e("app", "payments", "internal call"),
-          e("app", "db", "SQL")
+          e("client", "api", "request"),
+          e("api", "orders", "local call"),
+          e("orders", "payments", "local call"),
+          e("payments", "admin", "local call"),
+          e("orders", "db", "SQL")
+        ],
+        steps: [
+          "Klient volá jednu aplikaci.",
+          "Aplikace uvnitř přesměruje práci na modul.",
+          "Moduly spolu komunikují lokálně.",
+          "Vše používá jeden společný deployment.",
+          "Data jsou typicky v jedné sdílené databázi."
         ]
       },
       {
         id: "layered",
         tab: "Layered",
         title: "Layered architecture",
-        subtitle: "System je rozdelen do horizontalnich technickych vrstev. Zavislosi typicky smeruji shora dolu: controller, service, repository, database.",
-        fits: ["enterprise CRUD aplikace", "framework-driven backend", "tym potrebuje jednoduchou orientaci v kodu"],
-        benefits: ["srozumitelna struktura", "separace odpovednosti", "snadne testovani vrstev"],
-        risks: ["zbytecne pruchody vrstvami", "zmena muze prochazet vice vrstvami", "cross-cutting concerns"],
-        metrics: { simplicity: 84, scalability: 48, deployability: 55, testability: 80 },
-        steps: [
-          "Request prijde do presentation/controller vrstvy.",
-          "Business pravidla se resi ve service nebo domain vrstve.",
-          "Persistence vrstva pracuje s databazi."
-        ],
+        subtitle: "Technické vrstvy jsou seřazené shora dolů: UI/API, application, domain, persistence.",
+        idea: "Každá vrstva má jinou odpovědnost. Závislosti typicky směřují dolů a výšší vrstva používá službu nižší vrstvy.",
+        fits: ["enterprise CRUD aplikace", "framework-driven backend", "tým potřebuje jednoduchou strukturu"],
+        risks: ["změna často prochází více vrstvami", "může vzniknout anemický domain model", "cross-cutting concerns se špatně umisťují"],
+        qualities: ["clear structure", "testable layers", "familiar pattern"],
         nodes: [
-          n("client", "Client", "browser/mobile", 105, 210, "external"),
-          n("presentation", "Presentation", "controller/API", 330, 80, "core", 270, 58),
-          n("service", "Application", "service/use case", 330, 170, "core", 270, 58),
-          n("domain", "Domain", "business logic", 330, 260, "core", 270, 58),
-          n("repo", "Data access", "repository/DAO", 330, 350, "core", 270, 58),
-          n("db", "Database", "storage", 690, 350, "data")
+          n("client", "Client", "browser/mobile", 92, 260, "actor", 136, 54),
+          n("presentation", "Presentation", "controller/API", 405, 90, "core", 270, 56),
+          n("application", "Application", "use cases", 405, 180, "core", 270, 56),
+          n("domain", "Domain", "business rules", 405, 270, "core", 270, 56),
+          n("persistence", "Persistence", "repository/DAO", 405, 360, "core", 270, 56),
+          n("db", "Database", "storage", 742, 360, "data", 136, 56)
         ],
         edges: [
-          e("client", "presentation", "request"),
-          e("presentation", "service", "call"),
-          e("service", "domain", "rules"),
-          e("domain", "repo", "load/save"),
-          e("repo", "db", "SQL")
+          e("client", "presentation", "HTTP"),
+          e("presentation", "application", "call"),
+          e("application", "domain", "rules"),
+          e("domain", "persistence", "load/save"),
+          e("persistence", "db", "SQL")
+        ],
+        steps: [
+          "Request vstoupí do presentation vrstvy.",
+          "Application vrstva řídí use case.",
+          "Domain vrstva provádí business pravidla.",
+          "Persistence vrstva načítá nebo ukládá data.",
+          "Databáze je za persistence vrstvou."
         ]
       },
       {
         id: "modular",
         tab: "Modular monolith",
         title: "Modular monolith",
-        subtitle: "Jeden deployment, ale vnitrne jasne moduly podle business oblasti. Cilem je drzet boundaries bez distribuovane komplexity.",
-        fits: ["rostouci system", "vice business oblasti", "tym zatim nepotrebuje nezavisle deploymenty"],
-        benefits: ["nizka operacni komplexita", "jasne hranice modulu", "dobry mezikrok pred microservices"],
-        risks: ["boundaries musi byt hlidane", "stale jeden deployment", "riziko Big Ball of Mud"],
-        metrics: { simplicity: 76, scalability: 55, deployability: 62, testability: 78 },
-        steps: [
-          "Request vstoupi do jedne aplikace.",
-          "Aplikace smeruje volani na konkretni business modul.",
-          "Moduly komunikuji pres verejna rozhrani, ne pres cizi internals."
-        ],
+        subtitle: "Jeden deployment, ale uvnitř jasné business moduly.",
+        idea: "Modular monolith drží nízkou provozní komplexitu monolitu, ale zavádí pevné hranice mezi moduly.",
+        fits: ["rostoucí systém", "tým ještě nepotřebuje nezávislé deploymenty", "dobrý mezikrok před microservices"],
+        risks: ["hranice se musí aktivně hlídat", "stále jeden deployment", "při špatné disciplíně vznikne Big Ball of Mud"],
+        qualities: ["low ops cost", "business modules", "good migration path"],
+        boxes: [b("single deployable, strict module boundaries", 245, 105, 390, 310)],
         nodes: [
-          n("client", "Client", "UI", 90, 210, "external"),
-          n("shell", "Application shell", "single deploy", 360, 210, "core", 210, 250),
-          n("user", "User module", "public API", 305, 125, "core", 105, 48),
-          n("order", "Order module", "public API", 425, 125, "core", 105, 48),
-          n("payment", "Payment", "public API", 305, 250, "core", 105, 48),
-          n("inventory", "Inventory", "public API", 425, 250, "core", 105, 48),
-          n("db", "Database", "shared or schemas", 690, 210, "data")
+          n("client", "Client", "UI", 84, 260, "actor"),
+          n("shell", "App shell", "routing", 320, 260, "core", 120, 54),
+          n("customer", "Customer", "module", 480, 150, "core", 120, 50),
+          n("order", "Order", "module", 480, 235, "core", 120, 50),
+          n("payment", "Payment", "module", 480, 320, "core", 120, 50),
+          n("db", "Database", "schemas/tables", 760, 260, "data", 134, 56)
         ],
         edges: [
           e("client", "shell", "request"),
-          e("shell", "order", "route"),
+          e("shell", "customer", "module API"),
+          e("shell", "order", "module API"),
           e("order", "payment", "module API"),
-          e("order", "inventory", "module API"),
-          e("shell", "db", "transaction")
+          e("order", "db", "transaction")
+        ],
+        steps: [
+          "Klient stále volá jednu aplikaci.",
+          "Application shell vybere správný business modul.",
+          "Moduly mají veřejná rozhraní.",
+          "Moduly nesahají do cizích interních detailů.",
+          "Deployment zůstává jeden."
         ]
       },
       {
         id: "hexagonal",
         tab: "Hexagonal",
         title: "Hexagonal architecture",
-        subtitle: "Business core je uprostred. Externi technologie jsou adapters a komunikuji s core pres ports, tedy rozhrani.",
-        fits: ["domena s dulezitymi business rules", "potreba testovat core bez DB/UI", "externi technologie se mohou menit"],
-        benefits: ["nizky coupling na frameworky", "vyborna testovatelnost core", "snazsi vymena adapteru"],
-        risks: ["vice abstrakci", "vyssi startovni komplexita", "overkill pro trivialni CRUD"],
-        metrics: { simplicity: 58, scalability: 58, deployability: 62, testability: 92 },
-        steps: [
-          "Driver adapter, napr. REST controller, vola vstupni port.",
-          "Application/domain core provede business pravidla.",
-          "Core vola vystupni port, ktery implementuje DB nebo externi service adapter."
-        ],
+        subtitle: "Business core je oddělený od technologií pomocí ports and adapters.",
+        idea: "Core neví, jestli ho volá REST controller, CLI nebo test. Stejně tak neví, jestli persistence je PostgreSQL nebo externí API.",
+        fits: ["důležitá business logika", "potřeba testovat core bez DB/UI", "časté změny externích technologií"],
+        risks: ["více abstrakcí", "overkill pro trivial CRUD", "ports musí mít dobrý domain význam"],
+        qualities: ["testable core", "low framework coupling", "replaceable adapters"],
+        boxes: [b("business core", 345, 176, 210, 156)],
         nodes: [
-          n("api", "REST adapter", "driving", 120, 105, "external"),
-          n("ui", "UI adapter", "driving", 120, 310, "external"),
-          n("core", "Domain core", "business rules", 420, 210, "core", 190, 150),
-          n("inport", "Input port", "use case API", 300, 210, "core", 92, 48),
-          n("outport", "Output port", "repository/API", 545, 210, "core", 98, 48),
-          n("db", "DB adapter", "PostgreSQL", 735, 120, "data"),
-          n("ext", "External API", "payment", 735, 300, "external")
+          n("rest", "REST adapter", "driving", 105, 140, "actor", 136, 54),
+          n("ui", "UI adapter", "driving", 105, 360, "actor", 136, 54),
+          n("in", "Input port", "use case", 300, 260, "integration", 120, 52),
+          n("core", "Domain", "business rules", 450, 260, "core", 140, 70),
+          n("out", "Output port", "repository", 610, 260, "integration", 128, 52),
+          n("db", "DB adapter", "PostgreSQL", 790, 160, "data", 130, 54),
+          n("external", "External API", "payment", 790, 360, "actor", 130, 54)
         ],
         edges: [
-          e("api", "inport", "call"),
-          e("ui", "inport", "call"),
-          e("inport", "core", "use case"),
-          e("core", "outport", "port"),
-          e("outport", "db", "adapter"),
-          e("outport", "ext", "adapter")
+          e("rest", "in", "call"),
+          e("ui", "in", "call"),
+          e("in", "core", "use case"),
+          e("core", "out", "port"),
+          e("out", "db", "adapter"),
+          e("out", "external", "adapter")
+        ],
+        steps: [
+          "Driver adapter přijme vstup zvenku.",
+          "Adapter volá input port.",
+          "Core provede business pravidla bez znalosti frameworku.",
+          "Core používá output port.",
+          "Konkrétní adapter řeší DB nebo externí systém.",
+          "Technologie lze měnit bez přepsání core."
         ]
       },
       {
         id: "microkernel",
         tab: "Microkernel",
         title: "Microkernel architecture",
-        subtitle: "Stabilni jadro poskytuje minimum spolecnych schopnosti. Funkce se pridavaji pres plugins s jasnym plugin API.",
-        fits: ["IDE, browser, editor", "produktova platforma", "system s volitelnymi rozsirenimi"],
-        benefits: ["snadne rozsireni", "stabilni core", "plugins lze pridavat a odebirat"],
-        risks: ["tezky navrh plugin API", "verzovani kontraktu", "testovani kombinaci pluginu"],
-        metrics: { simplicity: 55, scalability: 52, deployability: 70, testability: 64 },
-        steps: [
-          "Core poskytuje lifecycle, security a spolecne API.",
-          "Pluginy se registruji pres plugin contract.",
-          "Uzivatel spousti funkce, ktere core deleguje na spravny plugin."
-        ],
+        subtitle: "Stabilní core a rozšíření přes plugins.",
+        idea: "Core poskytuje základní runtime, lifecycle a plugin API. Funkce se přidávají jako plugins s jasným contractem.",
+        fits: ["IDE, editor, browser", "produktová platforma", "systém s volitelnými rozšířeními"],
+        risks: ["těžký návrh plugin API", "verzování plugin contractu", "testování kombinací pluginů"],
+        qualities: ["extensible", "stable core", "plugin ecosystem"],
         nodes: [
-          n("user", "User", "commands", 95, 210, "external"),
-          n("core", "Microkernel", "core runtime", 405, 210, "core", 180, 120),
-          n("api", "Plugin API", "contract", 405, 335, "core", 150, 46),
-          n("p1", "Plugin A", "feature", 690, 90, "external"),
-          n("p2", "Plugin B", "feature", 720, 210, "external"),
-          n("p3", "Plugin C", "feature", 690, 330, "external")
+          n("user", "User", "commands", 90, 260, "actor"),
+          n("core", "Core system", "runtime", 390, 240, "core", 150, 86),
+          n("api", "Plugin API", "contract", 390, 355, "integration", 140, 52),
+          n("p1", "Plugin A", "feature", 690, 120, "service", 130, 54),
+          n("p2", "Plugin B", "feature", 735, 260, "service", 130, 54),
+          n("p3", "Plugin C", "feature", 690, 400, "service", 130, 54)
         ],
         edges: [
           e("user", "core", "command"),
@@ -581,175 +554,187 @@
           e("api", "p1", "load"),
           e("api", "p2", "load"),
           e("api", "p3", "load")
+        ],
+        steps: [
+          "Uživatel spustí funkci přes core.",
+          "Core drží stabilní základ systému.",
+          "Plugin API definuje povolené rozhraní.",
+          "Plugin se připojí přes contract.",
+          "Další pluginy lze přidat bez změny core."
         ]
       },
       {
         id: "client-server",
         tab: "Client-server",
         title: "Client-server architecture",
-        subtitle: "Klient zobrazuje UI a posila requesty. Server centralizuje business logiku, data nebo sdilene sluzby.",
-        fits: ["web a mobile aplikace", "centralizovana data", "vice typu klientu nad jednim backendem"],
-        benefits: ["jasne rozdeleni odpovednosti", "centralni sprava dat", "server lze skaluje nezavisle na klientech"],
-        risks: ["server jako bottleneck", "sitova latence", "autentizace a security komunikace"],
-        metrics: { simplicity: 78, scalability: 64, deployability: 68, testability: 70 },
-        steps: [
-          "Browser, mobile nebo desktop klient posle request.",
-          "Server provede business logiku a vola databazi.",
-          "Response se vrati klientovi, ktery zobrazi vysledek."
-        ],
+        subtitle: "Klient zobrazuje UI a server centralizuje data nebo business logiku.",
+        idea: "Více klientů může používat stejný server. Server poskytuje sdílené služby a přístup k databázi.",
+        fits: ["web a mobile aplikace", "centralizovaná data", "více typů klientů nad jedním backendem"],
+        risks: ["server může být bottleneck", "síťová latence", "nutná security komunikace"],
+        qualities: ["central data", "shared backend", "clear split"],
         nodes: [
-          n("web", "Web client", "browser", 95, 105, "external"),
-          n("mobile", "Mobile app", "iOS/Android", 95, 210, "external"),
-          n("desktop", "Desktop", "client", 95, 315, "external"),
-          n("server", "Server", "API/business", 430, 210, "core", 170, 120),
-          n("db", "Database", "central data", 720, 210, "data")
+          n("web", "Web client", "browser", 95, 130, "actor"),
+          n("mobile", "Mobile app", "client", 95, 260, "actor"),
+          n("desktop", "Desktop", "client", 95, 390, "actor"),
+          n("server", "Server", "API/business", 450, 260, "core", 160, 90),
+          n("db", "Database", "central", 760, 260, "data", 130, 56)
         ],
         edges: [
           e("web", "server", "HTTPS"),
-          e("mobile", "server", "REST/gRPC"),
+          e("mobile", "server", "REST"),
           e("desktop", "server", "request"),
           e("server", "db", "SQL")
+        ],
+        steps: [
+          "Klient pošle request přes síť.",
+          "Server zpracuje business logiku.",
+          "Různí klienti mohou používat stejné server API.",
+          "Server čte nebo zapisuje centralizovaná data."
         ]
       },
       {
         id: "soa",
         tab: "SOA",
-        title: "Service-oriented architecture",
-        subtitle: "Enterprise system je skladan z vetsich sluzeb s kontrakty. Casto se pouziva message bus nebo ESB pro integraci.",
-        fits: ["enterprise integrace", "sdilene business capabilities", "heterogenni systemy v organizaci"],
-        benefits: ["reuse sluzeb", "standardizovane kontrakty", "integrace mezi systemy"],
-        risks: ["ESB bottleneck", "centralizovana governance", "vysoky management overhead"],
-        metrics: { simplicity: 42, scalability: 63, deployability: 56, testability: 55 },
-        steps: [
-          "Consumer vola business service pres standardni contract.",
-          "Service bus smeruje zpravu nebo orchestruje proces.",
-          "Enterprise services se skladaji do business workflow."
-        ],
+        title: "Service-Oriented Architecture",
+        subtitle: "Enterprise služby komunikují přes standardní contracts a často přes service bus.",
+        idea: "SOA se zaměřuje na znovupoužitelné business services a integraci enterprise systémů.",
+        fits: ["enterprise integrace", "legacy systems", "standardizované service contracts"],
+        risks: ["ESB bottleneck", "příliš centralizovaná governance", "business logika v busu"],
+        qualities: ["interoperability", "governance", "reuse"],
         nodes: [
-          n("consumer", "Consumer", "portal/app", 95, 210, "external"),
-          n("bus", "ESB / bus", "contracts", 390, 210, "risk", 160, 90),
-          n("crm", "CRM service", "customer", 680, 90, "core"),
-          n("order", "Order service", "orders", 720, 210, "core"),
-          n("billing", "Billing", "invoice", 680, 330, "core")
+          n("consumer", "Consumer", "portal/app", 90, 260, "actor"),
+          n("bus", "ESB / Service Bus", "routing + contracts", 405, 260, "integration", 170, 78),
+          n("crm", "CRM Service", "customer", 720, 110, "service"),
+          n("order", "Order Service", "orders", 760, 260, "service"),
+          n("billing", "Billing Service", "invoice", 720, 410, "service")
         ],
         edges: [
           e("consumer", "bus", "SOAP/REST"),
           e("bus", "crm", "route"),
           e("bus", "order", "orchestrate"),
           e("bus", "billing", "route")
+        ],
+        steps: [
+          "Consumer volá službu přes standardní contract.",
+          "Service bus řeší routing nebo transformaci.",
+          "Business služba poskytuje enterprise capability.",
+          "SOA často skládá více služeb do procesu."
         ]
       },
       {
         id: "event-driven",
         tab: "Event-driven",
         title: "Event-driven architecture",
-        subtitle: "Komponenty spolu nemluvi primym volanim, ale publikuji a odebíraji udalosti pres broker, topic nebo queue.",
-        fits: ["asynchronni workflow", "vice consumeru na stejne udalosti", "stream processing a real-time systemy"],
-        benefits: ["loose coupling", "snadne pridani consumeru", "dobra horizontalni skalovatelnost"],
-        risks: ["eventual consistency", "tezsi debugging flow", "idempotency, ordering a duplicity"],
-        metrics: { simplicity: 45, scalability: 88, deployability: 76, testability: 52 },
-        steps: [
-          "Producer publikuje udalost, napr. OrderCreated.",
-          "Broker ji doruci consumerum podle topicu nebo queue.",
-          "Kazdy consumer reaguje samostatne a muze publikovat dalsi udalost."
-        ],
+        subtitle: "Komponenty publikují a odebírají události přes broker.",
+        idea: "Producer nemusí znát všechny consumery. Systém reaguje na fakta, která už nastala.",
+        fits: ["asynchronní workflow", "více consumerů na jednu událost", "stream processing"],
+        risks: ["eventual consistency", "složitější debugging", "duplicity, ordering a idempotency"],
+        qualities: ["loose coupling", "scalable consumers", "async flow"],
         nodes: [
-          n("order", "Order service", "producer", 120, 210, "core"),
-          n("broker", "Event broker", "topic/queue", 410, 210, "risk", 160, 92),
-          n("payment", "Payment", "consumer", 720, 90, "core"),
-          n("inventory", "Inventory", "consumer", 730, 210, "core"),
-          n("email", "Notification", "consumer", 720, 330, "core")
+          n("order", "Order Service", "producer", 130, 260, "service"),
+          n("broker", "Event Broker", "topic / queue", 430, 260, "broker", 160, 78),
+          n("payment", "Payment", "consumer", 730, 110, "service"),
+          n("inventory", "Inventory", "consumer", 760, 260, "service"),
+          n("notify", "Notification", "consumer", 730, 410, "service")
         ],
         edges: [
           e("order", "broker", "OrderCreated", "async"),
           e("broker", "payment", "event", "async"),
           e("broker", "inventory", "event", "async"),
-          e("broker", "email", "event", "async")
+          e("broker", "notify", "event", "async")
+        ],
+        steps: [
+          "Producer publikuje událost.",
+          "Broker uloží nebo směruje message.",
+          "Payment reaguje nezávisle.",
+          "Inventory reaguje nezávisle.",
+          "Notification se přidá bez změny produceru."
         ]
       },
       {
         id: "microservices",
         tab: "Microservices",
         title: "Microservices architecture",
-        subtitle: "System je rozdelen na male sluzby kolem business capabilities. Kazda sluzba muze mit vlastni deployment, data a ownership.",
-        fits: ["velky system s vice tymy", "nezavisle deploymenty", "nezavisle skálovani business oblasti"],
-        benefits: ["team autonomy", "fault isolation", "technology choice per service"],
-        risks: ["distributed complexity", "network failures", "data consistency a observability"],
-        metrics: { simplicity: 34, scalability: 90, deployability: 86, testability: 48 },
-        steps: [
-          "API gateway nebo klient smeruje request na konkretni sluzbu.",
-          "Sluzby komunikuji synchronne nebo asynchronne.",
-          "Kazda sluzba vlastni svoje data, coz zlepsuje autonomii, ale komplikuje consistency."
-        ],
+        subtitle: "Služby jsou rozdělené kolem business capabilities a mohou se nasazovat nezávisle.",
+        idea: "Každá služba má vlastní odpovědnost, API contract a často vlastní databázi. Výhodou je autonomie, cenou distribuovaná komplexita.",
+        fits: ["velký systém s více týmy", "nezávislé deploymenty", "nezávislé škálování částí systému"],
+        risks: ["network failures", "data consistency", "vyšší potřeba observability a DevOps"],
+        qualities: ["team autonomy", "independent deploy", "fault isolation"],
         nodes: [
-          n("client", "Client", "web/mobile", 80, 210, "external"),
-          n("gateway", "API Gateway", "edge", 250, 210, "core"),
-          n("user", "User svc", "own data", 480, 90, "core"),
-          n("order", "Order svc", "own data", 500, 210, "core"),
-          n("pay", "Payment svc", "own data", 480, 330, "core"),
-          n("db1", "User DB", "", 720, 90, "data", 92, 44),
-          n("db2", "Order DB", "", 740, 210, "data", 92, 44),
-          n("db3", "Pay DB", "", 720, 330, "data", 92, 44)
+          n("client", "Client", "web/mobile", 75, 260, "actor"),
+          n("gateway", "API Gateway", "edge", 235, 260, "integration", 130, 56),
+          n("user", "User Service", "profile", 455, 120, "service"),
+          n("order", "Order Service", "orders", 455, 260, "service"),
+          n("payment", "Payment Service", "payments", 455, 400, "service"),
+          n("userDb", "User DB", "owned", 730, 120, "data"),
+          n("orderDb", "Order DB", "owned", 730, 260, "data"),
+          n("paymentDb", "Payment DB", "owned", 730, 400, "data")
         ],
         edges: [
           e("client", "gateway", "HTTPS"),
           e("gateway", "order", "route"),
-          e("order", "user", "API call"),
-          e("order", "pay", "API/event"),
-          e("user", "db1", "owns"),
-          e("order", "db2", "owns"),
-          e("pay", "db3", "owns")
+          e("order", "user", "API"),
+          e("order", "payment", "API/event"),
+          e("user", "userDb", "owns"),
+          e("order", "orderDb", "owns"),
+          e("payment", "paymentDb", "owns")
+        ],
+        steps: [
+          "Klient volá gateway.",
+          "Gateway směruje request na správnou službu.",
+          "Order Service si vyžádá potřebná data přes API.",
+          "Platba může být synchronní nebo event-driven.",
+          "Každá služba vlastní svoji databázi.",
+          "Order data nemění jiná služba přímo.",
+          "Payment data jsou také izolovaná."
         ]
       },
       {
         id: "pipes",
         tab: "Pipes and filters",
         title: "Pipes and filters",
-        subtitle: "Data prochazeji sekvenci nezavislych filtru. Kazdy filtr transformuje, validuje nebo obohacuje data.",
-        fits: ["ETL", "compiler pipeline", "image/audio processing", "stream processing"],
-        benefits: ["modularni data flow", "reuse filtru", "snadne testovani jednotlivych kroku"],
-        risks: ["latence cele pipeline", "error handling mezi kroky", "stavove filtry komplikuji navrh"],
-        metrics: { simplicity: 72, scalability: 76, deployability: 66, testability: 86 },
-        steps: [
-          "Input data vstoupi do prvniho filtru.",
-          "Kazdy filtr provede jednu transformaci.",
-          "Output posledniho filtru je vysledek cele pipeline."
-        ],
+        subtitle: "Data procházejí sérií nezávislých filtrů.",
+        idea: "Každý filtr dělá jednu transformaci. Pipe předává výstup jednoho filtru jako vstup dalšího.",
+        fits: ["ETL", "compiler pipeline", "stream processing", "image/audio processing"],
+        risks: ["latence celé pipeline", "error handling mezi kroky", "stavové filtry komplikují návrh"],
+        qualities: ["clear data flow", "reusable filters", "easy unit tests"],
         nodes: [
-          n("input", "Input", "file/event", 80, 210, "external"),
-          n("parse", "Parse", "filter 1", 240, 210, "core"),
-          n("validate", "Validate", "filter 2", 400, 210, "core"),
-          n("transform", "Transform", "filter 3", 560, 210, "core"),
-          n("output", "Output", "DB/API", 740, 210, "data")
+          n("input", "Input", "data", 80, 260, "actor"),
+          n("parse", "Parse", "filter", 245, 260, "core"),
+          n("validate", "Validate", "filter", 415, 260, "core"),
+          n("transform", "Transform", "filter", 590, 260, "core"),
+          n("output", "Output", "result", 765, 260, "data")
         ],
         edges: [
           e("input", "parse", "pipe"),
           e("parse", "validate", "pipe"),
           e("validate", "transform", "pipe"),
           e("transform", "output", "pipe")
+        ],
+        steps: [
+          "Input vstoupí do prvního filtru.",
+          "Parser převede vstup do struktury.",
+          "Validator zkontroluje pravidla.",
+          "Transform filtr změní tvar dat.",
+          "Output je výsledek celé pipeline."
         ]
       },
       {
         id: "blackboard",
         tab: "Blackboard",
         title: "Blackboard architecture",
-        subtitle: "Specializovane knowledge sources sdili casticne vysledky pres spolecnou tabuli. Control unit rozhoduje, kdo bude pracovat dal.",
-        fits: ["AI reasoning", "diagnosticke systemy", "NLP a komplexni analyza", "problem bez pevne sekvence kroku"],
-        benefits: ["kombinuje vice expertu", "iterativni skladani reseni", "vhodne pro nejednoznacne problemy"],
-        risks: ["vysoka komplexita", "nedeterministicke chovani", "tezke testovani control unit"],
-        metrics: { simplicity: 30, scalability: 58, deployability: 45, testability: 35 },
-        steps: [
-          "Knowledge source precte aktualni stav blackboardu.",
-          "Prida casticny vysledek nebo hypotezu.",
-          "Control unit vybere dalsi zdroj znalosti podle stavu reseni."
-        ],
+        subtitle: "Specializované knowledge sources sdílí částečné výsledky přes společnou tabuli.",
+        idea: "Řešení vzniká iterativně. Control unit rozhoduje, který knowledge source má podle aktuálního stavu pracovat dál.",
+        fits: ["AI reasoning", "diagnostika", "NLP", "problémy bez pevné sekvence kroků"],
+        risks: ["vysoká komplexita", "nedeterministické chování", "těžké testování control unit"],
+        qualities: ["expert collaboration", "iterative solving", "shared state"],
         nodes: [
-          n("bb", "Blackboard", "shared state", 420, 210, "data", 180, 110),
-          n("control", "Control unit", "scheduler", 420, 55, "risk"),
-          n("ks1", "Expert A", "vision", 140, 140, "core"),
-          n("ks2", "Expert B", "rules", 140, 300, "core"),
-          n("ks3", "Expert C", "ML model", 700, 140, "core"),
-          n("ks4", "Expert D", "validator", 700, 300, "core")
+          n("control", "Control Unit", "scheduler", 450, 80, "integration"),
+          n("bb", "Blackboard", "shared state", 450, 260, "data", 170, 78),
+          n("ks1", "Expert A", "rules", 160, 170, "service"),
+          n("ks2", "Expert B", "ML model", 160, 350, "service"),
+          n("ks3", "Expert C", "validator", 735, 170, "service"),
+          n("ks4", "Expert D", "heuristics", 735, 350, "service")
         ],
         edges: [
           e("control", "ks1", "activate"),
@@ -757,61 +742,76 @@
           e("ks2", "bb", "read/write"),
           e("bb", "ks3", "read"),
           e("ks4", "bb", "validate")
+        ],
+        steps: [
+          "Control unit vybere další knowledge source.",
+          "Expert A přidá částečný závěr.",
+          "Expert B čte a doplňuje blackboard.",
+          "Expert C použije aktuální stav.",
+          "Expert D validuje nebo zpřesní výsledek."
         ]
       },
       {
         id: "space",
         tab: "Space-based",
         title: "Space-based architecture",
-        subtitle: "Aplikacni processing a data jsou rozprostrena do vice processing units s in-memory data gridem. Cilem je odstranit centralni DB bottleneck.",
-        fits: ["extremni zatez", "low-latency systems", "real-time analytics", "high-performance transakce"],
-        benefits: ["vysoka skalovatelnost", "rychly pristup k datam v RAM", "mensi tlak na centralni DB"],
-        risks: ["velmi vysoka komplexita", "consistency management", "narocna infrastruktura"],
-        metrics: { simplicity: 25, scalability: 96, deployability: 52, testability: 42 },
-        steps: [
-          "Load balancer smeruje request na processing unit.",
-          "Processing unit pracuje s lokalni casti in-memory gridu.",
-          "Grid replikuje nebo distribuuje data mezi uzly."
+        subtitle: "Processing units a in-memory data grid omezují centrální bottleneck.",
+        idea: "Aplikace běží ve více processing units. Data jsou distribuovaná a replikovaná v middleware/data grid vrstvě.",
+        fits: ["extrémní zátěž", "low-latency systémy", "real-time analytics", "high-performance transakce"],
+        risks: ["velmi vysoká komplexita", "consistency management", "náročná infrastruktura"],
+        qualities: ["high scalability", "low latency", "data grid"],
+        boxes: [
+          b("processing units", 300, 80, 430, 170),
+          b("virtualized middleware / data grid", 300, 310, 430, 120)
         ],
         nodes: [
-          n("client", "Client", "traffic", 70, 210, "external"),
-          n("lb", "Load balancer", "routing", 220, 210, "core"),
-          n("pu1", "PU 1", "logic + RAM", 455, 95, "core"),
-          n("pu2", "PU 2", "logic + RAM", 515, 210, "core"),
-          n("pu3", "PU 3", "logic + RAM", 455, 325, "core"),
-          n("grid", "Data grid", "replication", 720, 210, "data", 150, 90)
+          n("client", "Client", "traffic", 75, 260, "actor"),
+          n("lb", "Load Balancer", "route", 235, 260, "integration"),
+          n("pu1", "PU 1", "logic + RAM", 390, 160, "service"),
+          n("pu2", "PU 2", "logic + RAM", 520, 160, "service"),
+          n("pu3", "PU 3", "logic + RAM", 650, 160, "service"),
+          n("grid1", "Grid A", "partition", 390, 360, "data", 110, 48),
+          n("grid2", "Grid B", "partition", 520, 360, "data", 110, 48),
+          n("grid3", "Grid C", "partition", 650, 360, "data", 110, 48),
+          n("store", "Storage", "optional", 820, 360, "data", 110, 48)
         ],
         edges: [
           e("client", "lb", "request"),
           e("lb", "pu1", "route"),
           e("lb", "pu2", "route"),
           e("lb", "pu3", "route"),
-          e("pu1", "grid", "sync"),
-          e("pu2", "grid", "sync"),
-          e("pu3", "grid", "sync")
+          e("pu1", "grid1", "sync"),
+          e("pu2", "grid2", "sync"),
+          e("pu3", "grid3", "sync"),
+          e("grid3", "store", "persist")
+        ],
+        steps: [
+          "Traffic jde přes load balancer.",
+          "Request může obsloužit první processing unit.",
+          "Jiný request může obsloužit další processing unit.",
+          "Processing units se škálují horizontálně.",
+          "Data jsou blízko výpočtu v gridu.",
+          "Grid se replikuje nebo partitionuje.",
+          "Každá partition drží část stavu.",
+          "Trvalé úložiště může být až za gridem."
         ]
       },
       {
         id: "p2p",
         tab: "Peer-to-peer",
         title: "Peer-to-peer architecture",
-        subtitle: "Kazdy node muze byt klient i server. Sit nema jeden centralni bod, pres ktery musi projit vsechna komunikace.",
+        subtitle: "Každý node může být klient i server.",
+        idea: "Komunikace nemusí procházet centrálním serverem. Peers sdílí data nebo práci přímo mezi sebou.",
         fits: ["file sharing", "blockchain", "distributed storage", "decentralized collaboration"],
-        benefits: ["decentralizace", "odolnost bez centralniho serveru", "zdroje sdili primo peers"],
-        risks: ["slozitejsi security", "promenliva kvalita sluzby", "tezsi kontrola obsahu a consistency"],
-        metrics: { simplicity: 38, scalability: 84, deployability: 68, testability: 42 },
-        steps: [
-          "Peer objevi dalsi peers v siti.",
-          "Request nejde pres centralni server, ale primo mezi uzly.",
-          "Data nebo prace se siri po siti podle protokolu."
-        ],
+        risks: ["složitější security", "proměnlivá kvalita služby", "těžší kontrola consistency"],
+        qualities: ["decentralized", "resilient", "shared resources"],
         nodes: [
-          n("a", "Peer A", "client/server", 420, 65, "core"),
-          n("b", "Peer B", "client/server", 635, 155, "core"),
-          n("c", "Peer C", "client/server", 580, 330, "core"),
-          n("d", "Peer D", "client/server", 255, 330, "core"),
-          n("e", "Peer E", "client/server", 200, 155, "core"),
-          n("tracker", "Discovery", "optional", 420, 210, "external")
+          n("a", "Peer A", "client/server", 450, 85, "service"),
+          n("b", "Peer B", "client/server", 690, 190, "service"),
+          n("c", "Peer C", "client/server", 610, 415, "service"),
+          n("d", "Peer D", "client/server", 300, 415, "service"),
+          n("e", "Peer E", "client/server", 220, 190, "service"),
+          n("disc", "Discovery", "optional", 450, 260, "integration")
         ],
         edges: [
           e("a", "b", "share"),
@@ -819,146 +819,97 @@
           e("c", "d", "share"),
           e("d", "e", "share"),
           e("e", "a", "share"),
-          e("tracker", "a", "discover"),
-          e("tracker", "c", "discover")
+          e("disc", "a", "discover"),
+          e("disc", "c", "discover")
+        ],
+        steps: [
+          "Peer najde další nodes v síti.",
+          "Peer A komunikuje přímo s Peer B.",
+          "Peer B posílá data dál.",
+          "Síť pokračuje i bez centrálního serveru.",
+          "Peers sdílí resources mezi sebou.",
+          "Discovery může být jen pomocná služba.",
+          "Po discovery komunikace probíhá přímo."
         ]
       },
       {
         id: "orchestration",
         tab: "Orchestration",
         title: "Orchestration",
-        subtitle: "Centralni orchestrator ridi business proces a vola jednotlive sluzby ve spravnem poradi.",
-        fits: ["proces musi byt snadno citelny", "workflow ma jasny vlastnik", "potrebujeme centralni retry/compensation logic"],
-        benefits: ["flow je na jednom miste", "snazsi pochopeni procesu", "jednodussi rizeni chyb"],
-        risks: ["orchestrator bottleneck", "coupling na centralni komponentu", "riziko distributed monolith"],
-        metrics: { simplicity: 66, scalability: 58, deployability: 62, testability: 68 },
-        steps: [
-          "Order orchestrator prijme pozadavek na objednavku.",
-          "Postupne vola Payment, Inventory a Shipping.",
-          "Orchestrator rozhodne o potvrzeni nebo kompenzaci."
-        ],
+        subtitle: "Centrální orchestrator řídí workflow a volá služby ve správném pořadí.",
+        idea: "Orchestrator vlastní proces. Každé službě pošle command a podle výsledku pokračuje nebo spustí kompenzaci.",
+        fits: ["workflow musí být dobře čitelný", "proces má jasného vlastníka", "potřebujeme centralizované řízení chyb"],
+        risks: ["orchestrator může být bottleneck", "riziko příliš centrální business logiky", "vyšší coupling na proces controller"],
+        qualities: ["explicit flow", "central compensation", "easy monitoring"],
         nodes: [
-          n("client", "Client", "checkout", 85, 210, "external"),
-          n("orc", "Order orchestrator", "central flow", 360, 210, "risk", 180, 95),
-          n("pay", "Payment", "service", 675, 90, "core"),
-          n("inv", "Inventory", "service", 710, 210, "core"),
-          n("ship", "Shipping", "service", 675, 330, "core")
+          n("client", "Client", "checkout", 80, 260, "actor"),
+          n("orc", "Order Orchestrator", "process owner", 395, 260, "integration", 175, 78),
+          n("payment", "Payment", "service", 720, 115, "service"),
+          n("inventory", "Inventory", "service", 760, 260, "service"),
+          n("shipping", "Shipping", "service", 720, 405, "service")
         ],
         edges: [
           e("client", "orc", "create order"),
-          e("orc", "pay", "1 pay"),
-          e("orc", "inv", "2 reserve"),
-          e("orc", "ship", "3 ship")
+          e("orc", "payment", "1 pay"),
+          e("orc", "inventory", "2 reserve"),
+          e("orc", "shipping", "3 ship")
+        ],
+        steps: [
+          "Klient spustí business proces.",
+          "Orchestrator pošle command na Payment.",
+          "Po úspěchu pokračuje na Inventory.",
+          "Nakonec pošle command na Shipping."
         ]
       },
       {
         id: "choreography",
         tab: "Choreography",
         title: "Choreography",
-        subtitle: "Sluzby nerezi centralni ridic. Kazda sluzba reaguje na udalosti a publikuje dalsi udalosti.",
-        fits: ["loose coupling mezi sluzbami", "autonomie tymu", "asynchronni business procesy"],
-        benefits: ["zadny centralni orchestrator", "lepsi autonomie", "dobra eventova skalovatelnost"],
-        risks: ["globalni flow je mene viditelny", "debugging pres eventy", "eventual consistency"],
-        metrics: { simplicity: 40, scalability: 82, deployability: 78, testability: 48 },
-        steps: [
-          "Order Service publikuje OrderCreated.",
-          "Payment a Inventory nezavisle reaguji a publikuji vlastni udalosti.",
-          "Notification nebo Shipping se spusti az po dalsich eventech."
-        ],
+        subtitle: "Služby reagují na eventy bez centrálního orchestratoru.",
+        idea: "Každá služba zná své reakce na události. Celkový proces vzniká z řetězce eventů.",
+        fits: ["loose coupling", "autonomie týmů", "asynchronní business procesy"],
+        risks: ["global flow je méně viditelný", "debugging přes eventy", "eventual consistency"],
+        qualities: ["no central controller", "async", "service autonomy"],
         nodes: [
-          n("order", "Order", "OrderCreated", 150, 210, "core"),
-          n("broker", "Event broker", "topics", 410, 210, "risk", 145, 80),
-          n("pay", "Payment", "PaymentDone", 690, 95, "core"),
-          n("inv", "Inventory", "Reserved", 720, 210, "core"),
-          n("notif", "Notification", "EmailSent", 690, 325, "core")
+          n("order", "Order", "OrderCreated", 135, 260, "service"),
+          n("broker", "Event Broker", "topics", 430, 260, "broker", 155, 74),
+          n("payment", "Payment", "PaymentDone", 710, 115, "service"),
+          n("inventory", "Inventory", "Reserved", 760, 260, "service"),
+          n("notify", "Notification", "EmailSent", 710, 405, "service")
         ],
         edges: [
-          e("order", "broker", "event", "async"),
-          e("broker", "pay", "OrderCreated", "async"),
-          e("broker", "inv", "OrderCreated", "async"),
-          e("pay", "broker", "PaymentDone", "async"),
-          e("inv", "broker", "Reserved", "async"),
-          e("broker", "notif", "notify", "async")
+          e("order", "broker", "OrderCreated", "async"),
+          e("broker", "payment", "event", "async"),
+          e("broker", "inventory", "event", "async"),
+          e("payment", "broker", "PaymentDone", "async"),
+          e("inventory", "broker", "Reserved", "async"),
+          e("broker", "notify", "notify", "async")
+        ],
+        steps: [
+          "Order publikuje událost.",
+          "Payment reaguje na OrderCreated.",
+          "Inventory reaguje na stejnou událost.",
+          "Payment publikuje další fakt.",
+          "Inventory publikuje další fakt.",
+          "Notification reaguje až podle eventů."
         ]
       }
     ];
-
-    function n(id, label, sub, x, y, kind, w = 128, h = 58) {
-      return { id, label, sub, x, y, kind, w, h };
-    }
-
-    function e(from, to, label, type = "") {
-      return { from, to, label, type };
-    }
-
-    const byId = new Map(styles.map((s, i) => [s.id, { style: s, index: i }]));
-    const params = new URLSearchParams(location.search);
-    let current = byId.get(params.get("style"))?.index ?? 0;
-    let step = 0;
-    let playing = true;
-    let timer = null;
 
     const svg = document.getElementById("diagram");
     const title = document.getElementById("title");
     const subtitle = document.getElementById("subtitle");
     const caption = document.getElementById("caption");
     const tabs = document.getElementById("tabs");
+    const idea = document.getElementById("idea");
     const playBtn = document.getElementById("playBtn");
 
-    function initTabs() {
-      tabs.innerHTML = "";
-      styles.forEach((style, index) => {
-        const button = document.createElement("button");
-        button.className = "tab";
-        button.textContent = style.tab;
-        button.addEventListener("click", () => selectStyle(index));
-        tabs.appendChild(button);
-      });
-    }
-
-    function selectStyle(index) {
-      current = (index + styles.length) % styles.length;
-      step = 0;
-      render();
-      restart();
-    }
-
-    function renderList(id, items) {
-      const root = document.getElementById(id);
-      root.innerHTML = "";
-      items.forEach(text => {
-        const div = document.createElement("div");
-        div.className = "bullet";
-        div.textContent = text;
-        root.appendChild(div);
-      });
-    }
-
-    function renderMetrics(metrics) {
-      const root = document.getElementById("metrics");
-      root.innerHTML = "";
-      Object.entries(metrics).forEach(([key, value]) => {
-        const row = document.createElement("div");
-        row.className = "metric";
-        row.innerHTML = `<span>${key}</span><div class="bar"><i style="width:${value}%"></i></div>`;
-        root.appendChild(row);
-      });
-    }
-
-    function nodeCenter(node) {
-      return { x: node.x, y: node.y };
-    }
-
-    function edgePath(a, b) {
-      const dx = b.x - a.x;
-      const dy = b.y - a.y;
-      const curve = Math.abs(dy) > 80 ? Math.sign(dy || 1) * 35 : 0;
-      const c1x = a.x + dx * .42;
-      const c1y = a.y + curve;
-      const c2x = a.x + dx * .58;
-      const c2y = b.y - curve;
-      return `M ${a.x} ${a.y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${b.x} ${b.y}`;
-    }
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("style");
+    let current = Math.max(0, diagrams.findIndex(item => item.id === requested));
+    let step = 0;
+    let playing = true;
+    let timer = null;
 
     function svgEl(tag, attrs = {}) {
       const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
@@ -966,112 +917,223 @@
       return el;
     }
 
-    function renderDiagram(style) {
-      [...svg.querySelectorAll(".runtime")].forEach(el => el.remove());
-      const nodeMap = new Map(style.nodes.map(node => [node.id, node]));
-      const activeEdge = style.edges[step % style.edges.length];
-      const activeIds = new Set(activeEdge ? [activeEdge.from, activeEdge.to] : []);
+    function nodeMap(diagram) {
+      return new Map(diagram.nodes.map(node => [node.id, node]));
+    }
 
-      const edgeLayer = svgEl("g", { class: "runtime edges" });
-      style.edges.forEach((edge, index) => {
-        const a = nodeCenter(nodeMap.get(edge.from));
-        const b = nodeCenter(nodeMap.get(edge.to));
-        const path = svgEl("path", {
-          class: `edge ${edge.type || ""} ${index === step % style.edges.length ? "active" : ""}`,
-          d: edgePath(a, b)
-        });
-        edgeLayer.appendChild(path);
+    function trimPoint(from, to) {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      if (dx === 0 && dy === 0) return { x: from.x, y: from.y };
+      const scale = 1 / Math.max(Math.abs(dx) / (from.w / 2), Math.abs(dy) / (from.h / 2));
+      return { x: from.x + dx * scale, y: from.y + dy * scale };
+    }
 
-        const mx = (a.x + b.x) / 2;
-        const my = (a.y + b.y) / 2 - 8;
-        const label = svgEl("g", { class: "edge-label" });
-        label.appendChild(svgEl("rect", { x: mx - 42, y: my - 12, width: 84, height: 23 }));
-        const text = svgEl("text", { x: mx, y: my });
-        text.textContent = edge.label;
-        label.appendChild(text);
-        edgeLayer.appendChild(label);
+    function edgePath(edge, nodes) {
+      const from = nodes.get(edge.from);
+      const to = nodes.get(edge.to);
+      const start = trimPoint(from, to);
+      const end = trimPoint(to, from);
+      return `M ${start.x} ${start.y} L ${end.x} ${end.y}`;
+    }
+
+    function midpoint(path) {
+      const nums = path.match(/-?\d+(\.\d+)?/g).map(Number);
+      return { x: (nums[0] + nums[2]) / 2, y: (nums[1] + nums[3]) / 2 };
+    }
+
+    function renderList(id, items) {
+      const root = document.getElementById(id);
+      root.innerHTML = "";
+      items.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        root.appendChild(li);
       });
-      svg.appendChild(edgeLayer);
+    }
 
-      const nodeLayer = svgEl("g", { class: "runtime nodes" });
-      style.nodes.forEach(node => {
-        const group = svgEl("g", { class: `node ${node.kind || ""} ${activeIds.has(node.id) ? "active" : ""}` });
+    function renderBadges(items) {
+      const root = document.getElementById("qualities");
+      root.innerHTML = "";
+      items.forEach(item => {
+        const span = document.createElement("span");
+        span.className = "badge";
+        span.textContent = item;
+        root.appendChild(span);
+      });
+    }
+
+    function renderTabs() {
+      tabs.innerHTML = "";
+      diagrams.forEach((diagram, index) => {
+        const button = document.createElement("button");
+        button.className = "tab";
+        button.textContent = diagram.tab;
+        button.addEventListener("click", () => selectDiagram(index));
+        tabs.appendChild(button);
+      });
+    }
+
+    function renderBoxes(diagram) {
+      const layer = svgEl("g", { class: "runtime" });
+      (diagram.boxes || []).forEach(box => {
+        layer.appendChild(svgEl("rect", {
+          class: "box",
+          x: box.x,
+          y: box.y,
+          width: box.w,
+          height: box.h,
+          rx: 8
+        }));
+        const label = svgEl("text", {
+          class: "box-label",
+          x: box.x + 12,
+          y: box.y + 22
+        });
+        label.textContent = box.label;
+        layer.appendChild(label);
+      });
+      svg.appendChild(layer);
+    }
+
+    function renderEdges(diagram) {
+      const nodes = nodeMap(diagram);
+      const layer = svgEl("g", { class: "runtime" });
+      const activeIndex = step % diagram.edges.length;
+
+      diagram.edges.forEach((edge, index) => {
+        const pathData = edgePath(edge, nodes);
+        const path = svgEl("path", {
+          class: `edge ${edge.type || ""} ${index === activeIndex ? "active" : ""}`,
+          d: pathData
+        });
+        layer.appendChild(path);
+
+        if (edge.label) {
+          const mid = midpoint(pathData);
+          const group = svgEl("g", { class: "edge-label-group" });
+          group.appendChild(svgEl("rect", {
+            class: "edge-label-bg",
+            x: mid.x - 40,
+            y: mid.y - 12,
+            width: 80,
+            height: 22,
+            rx: 5
+          }));
+          const text = svgEl("text", { class: "edge-label", x: mid.x, y: mid.y });
+          text.textContent = edge.label;
+          group.appendChild(text);
+          layer.appendChild(group);
+        }
+
+        if (index === activeIndex) {
+          const packet = svgEl("circle", { class: "packet", r: 6 });
+          const motion = svgEl("animateMotion", {
+            dur: "1.8s",
+            repeatCount: "indefinite",
+            path: pathData
+          });
+          packet.appendChild(motion);
+          layer.appendChild(packet);
+        }
+      });
+
+      svg.appendChild(layer);
+    }
+
+    function renderNodes(diagram) {
+      const activeEdge = diagram.edges[step % diagram.edges.length];
+      const activeIds = new Set([activeEdge.from, activeEdge.to]);
+      const layer = svgEl("g", { class: "runtime" });
+
+      diagram.nodes.forEach(node => {
+        const group = svgEl("g", {
+          class: `node ${node.kind} ${activeIds.has(node.id) ? "active" : ""}`
+        });
         group.appendChild(svgEl("rect", {
           x: node.x - node.w / 2,
           y: node.y - node.h / 2,
           width: node.w,
           height: node.h,
-          rx: 12
+          rx: 7
         }));
-        const text = svgEl("text", { x: node.x, y: node.y - (node.sub ? 7 : 0) });
-        text.textContent = node.label;
-        group.appendChild(text);
+
+        const main = svgEl("text", {
+          class: "title",
+          x: node.x,
+          y: node.y - (node.sub ? 7 : 0)
+        });
+        main.textContent = node.label;
+        group.appendChild(main);
+
         if (node.sub) {
-          const sub = svgEl("text", { class: "sub", x: node.x, y: node.y + 13 });
+          const sub = svgEl("text", {
+            class: "sub",
+            x: node.x,
+            y: node.y + 14
+          });
           sub.textContent = node.sub;
           group.appendChild(sub);
         }
-        nodeLayer.appendChild(group);
-      });
-      svg.appendChild(nodeLayer);
 
-      if (activeEdge) {
-        const a = nodeCenter(nodeMap.get(activeEdge.from));
-        const b = nodeCenter(nodeMap.get(activeEdge.to));
-        const packet = svgEl("circle", { class: "packet runtime", r: 7 });
-        const animX = svgEl("animate", {
-          attributeName: "cx",
-          values: `${a.x};${(a.x + b.x) / 2};${b.x}`,
-          dur: "1.6s",
-          repeatCount: "indefinite"
-        });
-        const animY = svgEl("animate", {
-          attributeName: "cy",
-          values: `${a.y};${(a.y + b.y) / 2};${b.y}`,
-          dur: "1.6s",
-          repeatCount: "indefinite"
-        });
-        packet.appendChild(animX);
-        packet.appendChild(animY);
-        svg.appendChild(packet);
-      }
+        layer.appendChild(group);
+      });
+
+      svg.appendChild(layer);
+    }
+
+    function renderDiagram() {
+      [...svg.querySelectorAll(".runtime")].forEach(el => el.remove());
+      const diagram = diagrams[current];
+      renderBoxes(diagram);
+      renderEdges(diagram);
+      renderNodes(diagram);
     }
 
     function render() {
-      const style = styles[current];
-      title.textContent = style.title;
-      subtitle.textContent = style.subtitle;
+      const diagram = diagrams[current];
+      title.textContent = diagram.title;
+      subtitle.textContent = diagram.subtitle;
+      idea.textContent = diagram.idea;
+      renderList("fits", diagram.fits);
+      renderList("risks", diagram.risks);
+      renderBadges(diagram.qualities);
       [...tabs.children].forEach((tab, index) => tab.classList.toggle("active", index === current));
-      const activeStep = style.steps[step % style.steps.length];
-      const edge = style.edges[step % style.edges.length];
-      caption.innerHTML = `<strong>${edge?.label || "Flow"}:</strong> ${activeStep}`;
-      renderList("fits", style.fits);
-      renderList("benefits", style.benefits);
-      renderList("risks", style.risks);
-      renderMetrics(style.metrics);
-      renderDiagram(style);
+      tabs.children[current]?.scrollIntoView({ block: "nearest", inline: "center" });
+
+      const edge = diagram.edges[step % diagram.edges.length];
+      const text = diagram.steps[step % diagram.steps.length];
+      caption.innerHTML = `<b>${edge.label || "Flow"}:</b> ${text}`;
+      renderDiagram();
+    }
+
+    function selectDiagram(index) {
+      current = (index + diagrams.length) % diagrams.length;
+      step = 0;
+      render();
+      restart();
     }
 
     function tick() {
-      const style = styles[current];
-      step = (step + 1) % Math.max(style.edges.length, style.steps.length);
+      const diagram = diagrams[current];
+      step = (step + 1) % Math.max(diagram.edges.length, diagram.steps.length);
       render();
     }
 
     function restart() {
       clearInterval(timer);
       if (playing) timer = setInterval(tick, 2400);
-      playBtn.textContent = playing ? "Pause flow" : "Play flow";
+      playBtn.textContent = playing ? "Pause" : "Play";
     }
 
-    document.getElementById("prevBtn").addEventListener("click", () => selectStyle(current - 1));
-    document.getElementById("nextBtn").addEventListener("click", () => selectStyle(current + 1));
+    document.getElementById("prevBtn").addEventListener("click", () => selectDiagram(current - 1));
+    document.getElementById("nextBtn").addEventListener("click", () => selectDiagram(current + 1));
     playBtn.addEventListener("click", () => {
       playing = !playing;
       restart();
     });
 
-    initTabs();
+    renderTabs();
     render();
     restart();
   </script>
