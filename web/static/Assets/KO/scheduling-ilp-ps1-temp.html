@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ILP for PS1 temp Cmax</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff;
+      --panel: #f8fafc;
+      --line: #d8e0ea;
+      --text: #111827;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --amber: #d97706;
+      --red: #dc2626;
+      --violet: #7c3aed;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+    .wrap {
+      height: 820px;
+      padding: 16px;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+    }
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    h1 { margin: 0 0 5px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+    .subtitle { margin: 0; max-width: 780px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+    .controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    button {
+      min-width: 38px;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      font: 700 14px/1 Inter, ui-sans-serif, system-ui, sans-serif;
+      cursor: pointer;
+    }
+    button:hover { background: #f8fafc; border-color: #94a3b8; }
+    .count { min-width: 72px; color: var(--muted); font-size: 13px; text-align: center; }
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .tab {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 10px 12px;
+    }
+    .tab span { display: block; margin-bottom: 4px; color: var(--muted); font-size: 12px; }
+    .tab strong {
+      display: block;
+      color: var(--text);
+      font: 800 14px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .main {
+      display: grid;
+      grid-template-columns: minmax(640px, 1.25fr) minmax(350px, 0.75fr);
+      gap: 12px;
+      min-height: 0;
+    }
+    .panel {
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .viz { padding: 10px; }
+    svg { display: block; width: 100%; height: 100%; }
+    .side {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 10px;
+      padding: 12px;
+      background: var(--panel);
+    }
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+    .step h2 { margin: 0 0 6px; font-size: 18px; line-height: 1.25; letter-spacing: 0; }
+    .step p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .calc {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 11px;
+      font: 800 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-line;
+    }
+    .notes {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      overflow: auto;
+      color: #374151;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .notes b { color: #111827; }
+    @media (max-width: 930px) {
+      .wrap { height: 1000px; }
+      .tabs { grid-template-columns: 1fr; }
+      .main { grid-template-columns: 1fr; grid-template-rows: minmax(560px, 1fr) 390px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="head">
+      <div>
+        <h1>ILP formulace pro PS1|temp|Cmax</h1>
+        <p class="subtitle">Stejný problém lze modelovat buď přes časové sloty, nebo přes relativní pořadí dvojic úloh.</p>
+      </div>
+      <div class="controls">
+        <button id="prev" type="button" aria-label="Předchozí krok">&#8592;</button>
+        <button id="play" type="button">Play</button>
+        <button id="next" type="button" aria-label="Další krok">&#8594;</button>
+        <span id="counter" class="count"></span>
+      </div>
+    </header>
+
+    <section class="tabs" aria-label="Modely">
+      <div class="tab"><span>time-indexed</span><strong>x_it = 1 ⇔ T_i startuje v čase t</strong></div>
+      <div class="tab"><span>relative-order</span><strong>x_ij = 1 ⇔ T_i je před T_j</strong></div>
+    </section>
+
+    <main class="main">
+      <section class="panel viz">
+        <svg id="viz" viewBox="0 0 960 620" aria-label="ILP visualization"></svg>
+      </section>
+      <aside class="panel side">
+        <div class="step">
+          <h2 id="stepTitle"></h2>
+          <p id="stepText"></p>
+        </div>
+        <div class="calc" id="calc"></div>
+        <div class="notes" id="notes"></div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const tasks = [
+      { id: "T1", p: 1, start: 0, color: "#dbeafe", stroke: "#2563eb" },
+      { id: "T2", p: 2, start: 2, color: "#dcfce7", stroke: "#16a34a" },
+      { id: "T3", p: 1, start: 1, color: "#fde68a", stroke: "#d97706" }
+    ];
+    const UB = 5;
+    const steps = [
+      {
+        title: "1. Time-indexed proměnné",
+        text: "Pro každou úlohu a každý časový slot vytvoříme binární proměnnou x_it.",
+        calc: "x_it ∈ {0,1}\nx_it = 1 ⇔ T_i startuje v čase t",
+        mode: "time-vars",
+        note: "<b>Výhoda:</b> kapacita zdroje se čte přímo po časových slotech."
+      },
+      {
+        title: "2. Každá úloha startuje jednou",
+        text: "V každém řádku matice musí být právě jedna jednička.",
+        calc: "Σ_t x_it = 1   pro každé i\nnapř. T2: x_20+x_21+...+x_24 = 1",
+        mode: "once",
+        note: "Jednička v řádku určuje start time: s_i = Σ_t t · x_it."
+      },
+      {
+        title: "3. Temporální omezení",
+        text: "Constraint s_i + l_ij <= s_j se v time-indexed modelu přepíše přes vážené součty startů.",
+        calc: "s_i = Σ_t t x_it\nΣ_t t x_it + l_ij <= Σ_t t x_jt\npříklad: s1 + 2 <= s2",
+        mode: "temp",
+        note: "Na ukázkovém rozvrhu je s1=0 a s2=2, takže 0+2<=2."
+      },
+      {
+        title: "4. Kapacita zdroje",
+        text: "V každém čase smí běžet nejvýše jedna úloha. Proto sčítáme všechny starty, které by v daném čase ještě běžely.",
+        calc: "Σ_i Σ_{k=max(0,t-p_i+1)}^t x_ik <= 1\npro každý čas t",
+        mode: "capacity",
+        note: "Na čase t=2 běží T2, protože startuje v 2 a p2=2."
+      },
+      {
+        title: "5. Relative-order model",
+        text: "Místo časové matice držíme starty s_i a pro každou dvojici binární proměnnou pořadí.",
+        calc: "s_i ∈ R\nx_ij ∈ {0,1}\nx_ij=1 ⇔ T_i před T_j",
+        mode: "order",
+        note: "<b>Výhoda:</b> počet proměnných nezávisí na UB. <b>Cena:</b> potřebujeme Big-M."
+      },
+      {
+        title: "6. Big-M kapacitní podmínka",
+        text: "Pro každou dvojici úloh vynutíme, že jedna skončí před startem druhé.",
+        calc: "p_j <= s_i - s_j + UB·x_ij <= UB - p_i\nx_ij=1: T_i před T_j\nx_ij=0: T_j před T_i",
+        mode: "bigm",
+        note: "UB funguje jako vypínač jedné větve disjunkce."
+      },
+      {
+        title: "7. Trade-off",
+        text: "Time-indexed model je přirozený pro malý horizont. Relative-order model je kompaktnější pro velké UB.",
+        calc: "time-indexed: O(n·UB) proměnných\nrelative-order: O(n²) proměnných",
+        mode: "compare",
+        note: "Oba modely popisují stejný rozvrhovací problém, jen jiným způsobem."
+      }
+    ];
+
+    let index = 0;
+    let timer = null;
+    const svg = document.getElementById("viz");
+
+    function svgEl(tag, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      for (const [name, value] of Object.entries(attrs)) el.setAttribute(name, value);
+      return el;
+    }
+
+    function text(parent, value, x, y, opts = {}) {
+      const el = svgEl("text", {
+        x, y,
+        fill: opts.fill || "#111827",
+        "font-size": opts.size || 13,
+        "font-weight": opts.weight || 700,
+        "text-anchor": opts.anchor || "start",
+        "font-family": opts.family || "Inter, Arial, sans-serif"
+      });
+      el.textContent = value;
+      parent.appendChild(el);
+      return el;
+    }
+
+    function drawMatrix(step) {
+      const x = 50, y = 72, cw = 58, ch = 42;
+      text(svg, "Time-indexed matice x_it", x, 34, { size: 18, weight: 900 });
+      for (let t = 0; t < UB; t++) text(svg, String(t), x + 70 + t * cw + cw / 2, y - 16, { anchor: "middle", size: 12, fill: "#64748b" });
+      tasks.forEach((task, i) => {
+        const rowY = y + i * ch;
+        text(svg, task.id, x + 16, rowY + 27, { size: 13, weight: 900 });
+        for (let t = 0; t < UB; t++) {
+          const active = t === task.start;
+          const highlight = (step.mode === "once" && active) ||
+            (step.mode === "temp" && (task.id === "T1" || task.id === "T2") && active) ||
+            (step.mode === "capacity" && task.id === "T2" && active);
+          svg.appendChild(svgEl("rect", {
+            x: x + 70 + t * cw,
+            y: rowY,
+            width: cw - 4,
+            height: ch - 4,
+            rx: 6,
+            fill: active ? task.color : "#f8fafc",
+            stroke: highlight ? "#dc2626" : (active ? task.stroke : "#d8e0ea"),
+            "stroke-width": highlight ? 3 : 1.5
+          }));
+          text(svg, active ? "1" : "0", x + 70 + t * cw + cw / 2, rowY + 25, { anchor: "middle", size: 13, weight: 900, fill: active ? "#111827" : "#94a3b8" });
+        }
+      });
+    }
+
+    function drawGantt(step) {
+      const x = 50, y = 275, scale = 70;
+      text(svg, "Ukázkový rozvrh", x, y - 34, { size: 18, weight: 900 });
+      svg.appendChild(svgEl("line", { x1: x + 55, y1: y + 78, x2: x + 55 + UB * scale, y2: y + 78, stroke: "#111827", "stroke-width": 2 }));
+      for (let t = 0; t <= UB; t++) {
+        const xx = x + 55 + t * scale;
+        svg.appendChild(svgEl("line", { x1: xx, y1: y + 20, x2: xx, y2: y + 92, stroke: "#d8e0ea", "stroke-width": 1 }));
+        text(svg, String(t), xx, y + 112, { anchor: "middle", size: 12, fill: "#64748b" });
+      }
+      tasks.forEach(task => {
+        const bx = x + 55 + task.start * scale;
+        svg.appendChild(svgEl("rect", { x: bx, y: y + 38, width: task.p * scale, height: 38, rx: 6, fill: task.color, stroke: task.stroke, "stroke-width": 2 }));
+        text(svg, task.id, bx + task.p * scale / 2, y + 63, { anchor: "middle", size: 13, weight: 900 });
+      });
+      if (step.mode === "capacity") {
+        const xx = x + 55 + 2 * scale;
+        svg.appendChild(svgEl("line", { x1: xx, y1: y + 16, x2: xx, y2: y + 95, stroke: "#dc2626", "stroke-width": 3 }));
+        text(svg, "t=2", xx, y + 10, { anchor: "middle", size: 13, fill: "#dc2626", weight: 900 });
+      }
+    }
+
+    function drawOrder(step) {
+      const x = 560, y = 74;
+      text(svg, "Relative-order model", x, 34, { size: 18, weight: 900 });
+      const nodes = [
+        { id: "T1", x: x + 56, y: y + 42 },
+        { id: "T2", x: x + 210, y: y + 42 },
+        { id: "T3", x: x + 132, y: y + 150 }
+      ];
+      for (const a of nodes) {
+        svg.appendChild(svgEl("circle", { cx: a.x, cy: a.y, r: 30, fill: "#fff", stroke: "#94a3b8", "stroke-width": 2 }));
+        text(svg, a.id, a.x, a.y + 5, { anchor: "middle", size: 14, weight: 900 });
+      }
+      const pairs = [["T1", "T2"], ["T1", "T3"], ["T3", "T2"]];
+      const nodeById = Object.fromEntries(nodes.map(n => [n.id, n]));
+      pairs.forEach(([a, b], idx) => {
+        const na = nodeById[a], nb = nodeById[b];
+        const active = step.mode === "bigm" && idx === 0;
+        svg.appendChild(svgEl("line", { x1: na.x, y1: na.y, x2: nb.x, y2: nb.y, stroke: active ? "#dc2626" : "#cbd5e1", "stroke-width": active ? 3 : 2 }));
+        text(svg, `x_${a[1]}${b[1]}`, (na.x + nb.x) / 2, (na.y + nb.y) / 2 - 8, { anchor: "middle", size: 12, fill: active ? "#dc2626" : "#64748b" });
+      });
+
+      const boxY = y + 220;
+      svg.appendChild(svgEl("rect", { x, y: boxY, width: 330, height: 122, rx: 8, fill: "#f8fafc", stroke: "#d8e0ea", "stroke-width": 2 }));
+      text(svg, "Big-M disjunkce pro dvojici", x + 18, boxY + 30, { size: 15, weight: 900 });
+      text(svg, "x_12=1:  s2 >= s1+p1", x + 18, boxY + 60, { size: 12, fill: step.mode === "bigm" ? "#dc2626" : "#374151" });
+      text(svg, "x_12=0:  s1 >= s2+p2", x + 18, boxY + 84, { size: 12, fill: "#374151" });
+      text(svg, "UB vypne neaktivní větev", x + 18, boxY + 108, { size: 12, fill: "#64748b" });
+    }
+
+    function drawCompare(step) {
+      if (step.mode !== "compare") return;
+      const x = 560, y = 456;
+      svg.appendChild(svgEl("rect", { x, y, width: 330, height: 92, rx: 8, fill: "#f0fdf4", stroke: "#86efac", "stroke-width": 2 }));
+      text(svg, "Kdy který model?", x + 18, y + 30, { size: 15, weight: 900, fill: "#15803d" });
+      text(svg, "malé UB -> time-indexed", x + 18, y + 56, { size: 12, fill: "#166534" });
+      text(svg, "velké UB, malé n -> relative-order", x + 18, y + 78, { size: 12, fill: "#166534" });
+    }
+
+    function draw() {
+      const step = steps[index];
+      svg.innerHTML = "";
+      drawMatrix(step);
+      drawGantt(step);
+      drawOrder(step);
+      drawCompare(step);
+    }
+
+    function render() {
+      const step = steps[index];
+      draw();
+      document.getElementById("stepTitle").textContent = step.title;
+      document.getElementById("stepText").textContent = step.text;
+      document.getElementById("calc").textContent = step.calc;
+      document.getElementById("notes").innerHTML = step.note;
+      document.getElementById("counter").textContent = `${index + 1} / ${steps.length}`;
+    }
+
+    function go(delta) {
+      index = Math.max(0, Math.min(steps.length - 1, index + delta));
+      render();
+    }
+
+    document.getElementById("prev").addEventListener("click", () => go(-1));
+    document.getElementById("next").addEventListener("click", () => go(1));
+    document.getElementById("play").addEventListener("click", () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+        document.getElementById("play").textContent = "Play";
+        return;
+      }
+      document.getElementById("play").textContent = "Pause";
+      timer = setInterval(() => {
+        if (index === steps.length - 1) {
+          clearInterval(timer);
+          timer = null;
+          document.getElementById("play").textContent = "Play";
+          return;
+        }
+        go(1);
+      }, 1300);
+    });
+
+    render();
+  </script>
+</body>
+</html>

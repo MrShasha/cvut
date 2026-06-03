@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Temporal constraints</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff;
+      --panel: #f8fafc;
+      --line: #d8e0ea;
+      --text: #111827;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --amber: #d97706;
+      --red: #dc2626;
+      --violet: #7c3aed;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+    .wrap {
+      height: 760px;
+      padding: 16px;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+    }
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    h1 { margin: 0 0 5px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+    .subtitle { margin: 0; max-width: 760px; color: var(--muted); font-size: 14px; line-height: 1.4; }
+    .controls { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    button {
+      min-width: 38px;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      font: 700 14px/1 Inter, ui-sans-serif, system-ui, sans-serif;
+      cursor: pointer;
+    }
+    button:hover { background: #f8fafc; border-color: #94a3b8; }
+    .count { min-width: 72px; color: var(--muted); font-size: 13px; text-align: center; }
+    .formula-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .formula {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 10px 12px;
+      min-width: 0;
+    }
+    .formula span { display: block; margin-bottom: 4px; color: var(--muted); font-size: 12px; }
+    .formula strong {
+      display: block;
+      color: var(--text);
+      font: 800 14px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .main {
+      display: grid;
+      grid-template-columns: minmax(620px, 1.2fr) minmax(340px, 0.8fr);
+      gap: 12px;
+      min-height: 0;
+    }
+    .panel {
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .viz { padding: 10px; }
+    svg { display: block; width: 100%; height: 100%; }
+    .side {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 10px;
+      padding: 12px;
+      background: var(--panel);
+    }
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+    .step h2 { margin: 0 0 6px; font-size: 18px; line-height: 1.25; letter-spacing: 0; }
+    .step p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .calc {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 11px;
+      font: 800 14px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-line;
+    }
+    .notes {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      overflow: auto;
+      color: #374151;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .notes b { color: #111827; }
+    .sign-table {
+      width: 100%;
+      margin-top: 12px;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .sign-table th,
+    .sign-table td {
+      padding: 6px 7px;
+      border-top: 1px solid #e5e7eb;
+      text-align: left;
+      vertical-align: top;
+    }
+    .sign-table th {
+      color: #64748b;
+      font-weight: 800;
+      background: #f8fafc;
+    }
+    .sign-table td:first-child {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    @media (max-width: 900px) {
+      .wrap { height: 940px; }
+      .formula-row { grid-template-columns: 1fr; }
+      .main { grid-template-columns: 1fr; grid-template-rows: minmax(500px, 1fr) 360px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="head">
+      <div>
+        <h1>Temporální omezení</h1>
+        <p class="subtitle">Hrana v grafu neurčuje pořadí sama o sobě. Určuje dolní mez rozdílu startů: kdy nejdřív smí začít cílová úloha.</p>
+      </div>
+      <div class="controls">
+        <button id="prev" type="button" aria-label="Předchozí krok">&#8592;</button>
+        <button id="play" type="button">Play</button>
+        <button id="next" type="button" aria-label="Další krok">&#8594;</button>
+        <span id="counter" class="count"></span>
+      </div>
+    </header>
+
+    <section class="formula-row" aria-label="Základní vzorce">
+      <div class="formula"><span>hrana i → j</span><strong>s_i + l_ij ≤ s_j</strong></div>
+      <div class="formula"><span>stejné jako</span><strong>s_j - s_i ≥ l_ij</strong></div>
+      <div class="formula"><span>max lag d</span><strong>s_j ≤ s_i+d ⇔ s_j-d ≤ s_i</strong></div>
+    </section>
+
+    <main class="main">
+      <section class="panel viz">
+        <svg id="viz" viewBox="0 0 900 560" aria-label="Temporal constraint visualization"></svg>
+      </section>
+      <aside class="panel side">
+        <div class="step">
+          <h2 id="stepTitle"></h2>
+          <p id="stepText"></p>
+        </div>
+        <div class="calc" id="calc"></div>
+        <div class="notes" id="notes"></div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const steps = [
+      {
+        title: "1. Základní čtení hrany",
+        text: "Hrana Ti -> Tj s vahou l_ij znamená dolní mez na rozdíl startů.",
+        calc: "s_i + l_ij <= s_j\ns_j - s_i >= l_ij",
+        mode: "basic",
+        l: 4,
+        note: "<b>Pozor:</b> není to obecně jen precedence. Je to constraint na starty."
+      },
+      {
+        title: "2. Klasická precedence",
+        text: "Když l_ij = p_i, cílová úloha Tj může začít až po dokončení Ti.",
+        calc: "p_i = 3, l_ij = 3\ns_i + p_i <= s_j",
+        mode: "case",
+        l: 3,
+        note: "<b>Normální precedence:</b> Ti musí doběhnout před startem Tj."
+      },
+      {
+        title: "3. Minimální čekání po dokončení",
+        text: "Když l_ij > p_i, po skončení Ti musí být ještě pauza.",
+        calc: "p_i = 3, l_ij = 5\ns_j >= s_i + 5\nčekání po Ti = 2",
+        mode: "case",
+        l: 5,
+        note: "<b>Příklad:</b> cooldown, chemická reakce, čas na stabilizaci."
+      },
+      {
+        title: "4. Překryv úloh",
+        text: "Když 0 < l_ij < p_i, Tj může začít ještě během Ti.",
+        calc: "p_i = 3, l_ij = 1\nTj smí začít 1 jednotku po startu Ti",
+        mode: "case",
+        l: 1,
+        note: "<b>Příklad:</b> další fáze může začít po obdržení první části dat, ne až po celé úloze."
+      },
+      {
+        title: "5. Nulové omezení",
+        text: "Když l_ij = 0, Tj nesmí začít dřív než Ti. Může ale začít ve stejný čas.",
+        calc: "s_i <= s_j",
+        mode: "case",
+        l: 0,
+        note: "<b>Smysl:</b> synchronizace startů nebo slabé pořadí startů."
+      },
+      {
+        title: "6. Záporná váha",
+        text: "Záporné l_ij dovoluje, aby Tj začala před Ti, ale jen omezeně.",
+        calc: "l_ij = -2\ns_j >= s_i - 2\nTj smí začít max. 2 před Ti",
+        mode: "case",
+        l: -2,
+        note: "<b>To není max delay po Ti.</b> Je to stále dolní mez na s_j - s_i."
+      },
+      {
+        title: "7. Max delay se píše obráceně",
+        text: "Podmínku Tj musí začít nejpozději d po Ti zapíšeme opačnou hranou.",
+        calc: "chceme: s_j <= s_i + d\npříklad: s_i=2, d=4 => s_j <= 6\nukázka: s_j=5 je OK\nhrana j -> i s l_ji = -d",
+        mode: "reverse",
+        l: -4,
+        note: "<b>Klíčová oprava:</b> červená hranice omezuje pouze start Tj. Samotná úloha Tj může pokračovat za hranici. Upper bound se v grafu s constrainty s_i+l_ij<=s_j dává jako opačná hrana se zápornou vahou."
+      }
+    ];
+
+    let index = 0;
+    let timer = null;
+    const svg = document.getElementById("viz");
+
+    function svgEl(tag, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      for (const [name, value] of Object.entries(attrs)) el.setAttribute(name, value);
+      return el;
+    }
+
+    function text(parent, value, x, y, opts = {}) {
+      const el = svgEl("text", {
+        x, y,
+        fill: opts.fill || "#111827",
+        "font-size": opts.size || 13,
+        "font-weight": opts.weight || 700,
+        "text-anchor": opts.anchor || "start",
+        "font-family": opts.family || "Inter, Arial, sans-serif"
+      });
+      el.textContent = value;
+      parent.appendChild(el);
+      return el;
+    }
+
+    function markerDefs() {
+      const defs = svgEl("defs");
+      for (const [id, color] of [["arrow", "#64748b"], ["arrow-red", "#dc2626"]]) {
+        const marker = svgEl("marker", { id, markerWidth: 12, markerHeight: 12, refX: 10, refY: 6, orient: "auto" });
+        marker.appendChild(svgEl("path", { d: "M2,2 L10,6 L2,10 Z", fill: color }));
+        defs.appendChild(marker);
+      }
+      svg.appendChild(defs);
+    }
+
+    function drawGraph(step) {
+      text(svg, "Grafová podmínka", 34, 36, { size: 18, weight: 900 });
+      const x1 = 128, x2 = 332, y = 112;
+      svg.appendChild(svgEl("circle", { cx: x1, cy: y, r: 34, fill: "#dbeafe", stroke: "#2563eb", "stroke-width": 2 }));
+      svg.appendChild(svgEl("circle", { cx: x2, cy: y, r: 34, fill: "#dcfce7", stroke: "#16a34a", "stroke-width": 2 }));
+      text(svg, "Ti", x1, y + 5, { anchor: "middle", size: 17, weight: 900 });
+      text(svg, "Tj", x2, y + 5, { anchor: "middle", size: 17, weight: 900 });
+      const reverse = step.mode === "reverse";
+      const from = reverse ? x2 - 34 : x1 + 34;
+      const to = reverse ? x1 + 34 : x2 - 34;
+      svg.appendChild(svgEl("path", {
+        d: `M ${from} ${y} C ${reverse ? 260 : 200} ${y - 58}, ${reverse ? 200 : 260} ${y - 58}, ${to} ${y}`,
+        fill: "none",
+        stroke: reverse ? "#dc2626" : "#64748b",
+        "stroke-width": 3,
+        "marker-end": reverse ? "url(#arrow-red)" : "url(#arrow)"
+      }));
+      text(svg, reverse ? "l_ji = -d" : `l_ij = ${step.l}`, 230, y - 58, { anchor: "middle", size: 14, fill: reverse ? "#dc2626" : "#374151" });
+      text(svg, reverse ? "s_j - d <= s_i" : "s_i + l_ij <= s_j", 88, 188, { size: 15, weight: 900, fill: reverse ? "#dc2626" : "#111827" });
+    }
+
+    function drawTimeline(step) {
+      const x = 84, y = 295, scale = 62;
+      text(svg, "Časová osa", 34, 246, { size: 18, weight: 900 });
+      svg.appendChild(svgEl("line", { x1: x, y1: y, x2: x + 11 * scale, y2: y, stroke: "#111827", "stroke-width": 2 }));
+      for (let t = -2; t <= 8; t++) {
+        const xx = x + (t + 2) * scale;
+        svg.appendChild(svgEl("line", { x1: xx, y1: y - 8, x2: xx, y2: y + 8, stroke: "#94a3b8", "stroke-width": 1 }));
+        text(svg, String(t), xx, y + 28, { size: 11, fill: "#64748b", anchor: "middle" });
+      }
+
+      const si = 2;
+      const pi = 3;
+      const sj = step.mode === "reverse" ? 5 : Math.max(-1, si + step.l);
+      const xi = x + (si + 2) * scale;
+      const xj = x + (sj + 2) * scale;
+      const widthI = pi * scale;
+      const widthJ = 2 * scale;
+      const bound = step.mode === "reverse" ? si + 4 : si + step.l;
+      const xb = x + (bound + 2) * scale;
+
+      if (step.mode === "reverse") {
+        const allowedX = x;
+        const boundaryX = xb;
+        svg.appendChild(svgEl("rect", {
+          x: allowedX,
+          y: y - 40,
+          width: boundaryX - allowedX,
+          height: 84,
+          fill: "#dcfce7",
+          opacity: 0.18
+        }));
+      }
+
+      svg.appendChild(svgEl("rect", { x: xi, y: y - 82, width: widthI, height: 38, rx: 6, fill: "#dbeafe", stroke: "#2563eb", "stroke-width": 2 }));
+      text(svg, "Ti", xi + widthI / 2, y - 57, { anchor: "middle", size: 14, weight: 900 });
+      text(svg, "s_i", xi, y - 92, { anchor: "middle", size: 12, fill: "#2563eb" });
+      text(svg, "s_i+p_i", xi + widthI, y - 92, { anchor: "middle", size: 12, fill: "#2563eb" });
+
+      svg.appendChild(svgEl("rect", { x: xj, y: y - 34, width: widthJ, height: 38, rx: 6, fill: "#dcfce7", stroke: "#16a34a", "stroke-width": 2 }));
+      text(svg, "Tj", xj + widthJ / 2, y - 9, { anchor: "middle", size: 14, weight: 900 });
+      text(svg, "s_j", xj, y + 56, { anchor: "middle", size: 12, fill: "#16a34a" });
+
+      svg.appendChild(svgEl("line", { x1: xb, y1: y - 105, x2: xb, y2: y + 50, stroke: "#dc2626", "stroke-width": 2, "stroke-dasharray": "6 5" }));
+      text(svg, step.mode === "reverse" ? "nejpozději s_i+d" : "nejdříve s_i+l_ij", xb, y - 118, { anchor: "middle", size: 12, fill: "#dc2626" });
+
+      if (step.mode === "reverse") {
+        text(svg, "povolený start Tj: s_j ≤ s_i+d", 474, 202, { size: 13, fill: "#16a34a" });
+        text(svg, "hranice omezuje start, ne celý blok Tj", 474, 222, { size: 13, fill: "#dc2626" });
+      } else if (step.l < 0) {
+        text(svg, "Tj může být vlevo od Ti, ale ne libovolně daleko", 450, 202, { size: 13, fill: "#dc2626" });
+      } else {
+        text(svg, "Tj musí začít vpravo od červené hranice", 466, 202, { size: 13, fill: "#dc2626" });
+      }
+    }
+
+    function draw() {
+      const step = steps[index];
+      svg.innerHTML = "";
+      markerDefs();
+      drawGraph(step);
+      drawTimeline(step);
+    }
+
+    function render() {
+      const step = steps[index];
+      draw();
+      document.getElementById("stepTitle").textContent = step.title;
+      document.getElementById("stepText").textContent = step.text;
+      document.getElementById("calc").textContent = step.calc;
+      document.getElementById("notes").innerHTML = `${step.note}
+        <table class="sign-table">
+          <thead><tr><th>znaménko</th><th>význam</th></tr></thead>
+          <tbody>
+            <tr><td>l = p_i</td><td>klasická precedence</td></tr>
+            <tr><td>l &gt; p_i</td><td>čekání po dokončení</td></tr>
+            <tr><td>0 &lt; l &lt; p_i</td><td>překryv úloh</td></tr>
+            <tr><td>l = 0</td><td>stejný nebo pozdější start</td></tr>
+            <tr><td>l &lt; 0</td><td>Tj smí začít před Ti omezeně</td></tr>
+          </tbody>
+        </table>`;
+      document.getElementById("counter").textContent = `${index + 1} / ${steps.length}`;
+    }
+
+    function go(delta) {
+      index = Math.max(0, Math.min(steps.length - 1, index + delta));
+      render();
+    }
+
+    document.getElementById("prev").addEventListener("click", () => go(-1));
+    document.getElementById("next").addEventListener("click", () => go(1));
+    document.getElementById("play").addEventListener("click", () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+        document.getElementById("play").textContent = "Play";
+        return;
+      }
+      document.getElementById("play").textContent = "Pause";
+      timer = setInterval(() => {
+        if (index === steps.length - 1) {
+          clearInterval(timer);
+          timer = null;
+          document.getElementById("play").textContent = "Play";
+          return;
+        }
+        go(1);
+      }, 1300);
+    });
+
+    render();
+  </script>
+</body>
+</html>
