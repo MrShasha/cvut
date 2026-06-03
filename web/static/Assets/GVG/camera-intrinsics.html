@@ -15,14 +15,14 @@
   <aside class="panel">
     <h1>Vnitrni parametry kamery</h1>
     <p class="muted">Matice K popisuje, jak se ortogonalni kamerove souradnice prepisou do obrazove baze beta.</p>
-    <div class="card"><strong>Geometrie</strong><span class="formula">f: vzdalenost C od roviny pi<br>u0: principal point<br>b1,b2: obrazove osy, meritko a skew</span></div>
+    <div class="card"><strong>Geometrie</strong><span class="formula">f: vzdalenost C od roviny pi<br>u0: principal point<br>b1,b2: obrazove osy<br>gamma1,gamma2: ortogonalni kamera souradnice</span></div>
     <div class="card legend">
       <span><i class="sw" style="background:#22c55e"></i>kamera C a opticka osa</span>
       <span><i class="sw" style="background:#38bdf8"></i>obrazova rovina pi</span>
       <span><i class="sw" style="background:#a78bfa"></i>obrazova baze b1,b2</span>
       <span><i class="sw" style="background:#f59e0b"></i>f a principal point u0</span>
     </div>
-    <div class="card"><strong>Matice</strong><span class="formula">K = [k11 k12 k13; 0 k22 k23; 0 0 1]<br>k11,k22: meritko/focal<br>k12: skew<br>k13,k23: principal point</span></div>
+    <div class="card"><strong>Matice</strong><span class="formula">K = [k11 k12 k13; 0 k22 k23; 0 0 1]<br>k11,k22: meritko/focal<br>k12: skew mezi osami b1,b2<br>k13,k23: principal point</span></div>
     <div class="result">K je vnitrni cast projekce: zmeni souradnice paprsku, ne polohu kamery v prostoru.</div>
   </aside>
 </main>
@@ -36,12 +36,12 @@ const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamp
 scene.add(new THREE.AmbientLight(0xffffff,.8));const light=new THREE.DirectionalLight(0xffffff,.9);light.position.set(5,6,5);scene.add(light);
 const g=new THREE.Group();scene.add(g);g.add(new THREE.GridHelper(5,10,0x334155,0x26303c));
 const C=new THREE.Vector3(0,0,0), f=1.25, o=new THREE.Vector3(.32,.22,f), b1=new THREE.Vector3(1.05,0,0), b2=new THREE.Vector3(.35,.78,0), b3=o.clone().sub(C);
-function labelText(t,color='#e5e7eb'){const c=document.createElement('canvas');c.width=360;c.height=74;const x=c.getContext('2d');x.font='700 24px Segoe UI, sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillStyle='rgba(17,24,34,.86)';x.strokeStyle='rgba(255,255,255,.18)';x.roundRect?.(12,8,336,56,10);if(x.roundRect){x.fill();x.stroke()}else{x.fillRect(12,8,336,56)}x.fillStyle=color;x.fillText(t,180,38);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false,depthWrite:false}));s.scale.set(1.18,.24,1);s.renderOrder=30;return s}
+function labelText(t,color='#e5e7eb'){const c=document.createElement('canvas');c.width=220;c.height=58;const x=c.getContext('2d');x.font='700 20px Segoe UI, sans-serif';x.textAlign='center';x.textBaseline='middle';x.fillStyle='rgba(17,24,34,.72)';x.strokeStyle='rgba(255,255,255,.14)';x.roundRect?.(10,8,200,42,7);if(x.roundRect){x.fill();x.stroke()}else{x.fillRect(10,8,200,42)}x.fillStyle=color;x.fillText(t,110,29);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true,depthTest:false,depthWrite:false}));s.scale.set(.72,.19,1);s.renderOrder=30;return s}
 function lab(t,p,c){const s=labelText(t,c);s.position.copy(p);g.add(s)}function sphere(p,c,t){const m=new THREE.Mesh(new THREE.SphereGeometry(.075,24,14),new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:.12}));m.position.copy(p);g.add(m);if(t)lab(t,p.clone().add(new THREE.Vector3(.16,.13,.12)),'#f8fafc')}
 function arrow(a,b,c,t){const d=b.clone().sub(a);g.add(new THREE.ArrowHelper(d.clone().normalize(),a,d.length(),c,.17,.08));if(t)lab(t,a.clone().add(b).multiplyScalar(.5).add(new THREE.Vector3(.1,.1,.06)),'#f8fafc')}
 function line(a,b,c,dashed=false){const geo=new THREE.BufferGeometry().setFromPoints([a,b]);const mat=dashed?new THREE.LineDashedMaterial({color:c,dashSize:.13,gapSize:.09,transparent:true,opacity:.8}):new THREE.LineBasicMaterial({color:c});const l=new THREE.Line(geo,mat);if(dashed)l.computeLineDistances();g.add(l)}
 function plane(){const pts=[o.clone().addScaledVector(b1,-1.3).addScaledVector(b2,-1.1),o.clone().addScaledVector(b1,1.3).addScaledVector(b2,-1.1),o.clone().addScaledVector(b1,1.3).addScaledVector(b2,1.1),o.clone().addScaledVector(b1,-1.3).addScaledVector(b2,1.1)];const geo=new THREE.BufferGeometry().setFromPoints(pts);geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();g.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x38bdf8,transparent:true,opacity:.18,side:THREE.DoubleSide,depthWrite:false})));g.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:0x38bdf8})));lab('pi',pts[1].clone().add(new THREE.Vector3(.2,.15,0)),'#bae6fd')}
-plane();sphere(C,0x22c55e,'C');sphere(o,0xf59e0b,'u0');arrow(C,o,0x22c55e,'b3 / f');arrow(o,o.clone().add(b1),0xa78bfa,'b1');arrow(o,o.clone().add(b2),0xa78bfa,'b2');line(C,o,0xf59e0b,true);line(o,o.clone().add(new THREE.Vector3(0,0,-f)),0xf59e0b,true);lab('f',new THREE.Vector3(-.12,.04,.65),'#fef3c7');const x=o.clone().addScaledVector(b1,.65).addScaledVector(b2,.45);sphere(x,0xffffff,'x');line(C,x,0xfbbf24);arrow(o,o.clone().add(new THREE.Vector3(1,0,0)),0x94a3b8,'gamma1');arrow(o,o.clone().add(new THREE.Vector3(0,1,0)),0x94a3b8,'gamma2');lab('skew + scale',o.clone().add(new THREE.Vector3(.95,.75,.12)),'#ddd6fe');
+plane();sphere(C,0x22c55e,'C');sphere(o,0xf59e0b,'u0');arrow(C,o,0x22c55e);arrow(o,o.clone().add(b1),0xa78bfa,'b1');arrow(o,o.clone().add(b2),0xa78bfa,'b2');line(C,o,0xf59e0b,true);line(o,o.clone().add(new THREE.Vector3(0,0,-f)),0xf59e0b,true);lab('f',new THREE.Vector3(-.08,.08,.65),'#fef3c7');const x=o.clone().addScaledVector(b1,.65).addScaledVector(b2,.45);sphere(x,0xffffff,'x');line(C,x,0xfbbf24);arrow(o,o.clone().add(new THREE.Vector3(1,0,0)),0x94a3b8);arrow(o,o.clone().add(new THREE.Vector3(0,1,0)),0x94a3b8);
 function resize(){const r=host.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
 </script>
 </body>
