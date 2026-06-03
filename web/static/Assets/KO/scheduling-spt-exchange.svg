@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="620" viewBox="0 0 1100 620" role="img" aria-labelledby="title desc">
+  <title id="title">SPT exchange argument</title>
+  <desc id="desc">Comparison of two adjacent schedules: long job before short job versus SPT order with the short job first.</desc>
+  <defs>
+    <pattern id="hatch-red" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+      <line x1="0" y1="0" x2="0" y2="12" stroke="#ef4444" stroke-width="4"/>
+    </pattern>
+    <marker id="arrow-red" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#ef4444"/>
+    </marker>
+    <style>
+      .title,
+      .subtitle,
+      .label,
+      .small,
+      .formula,
+      .red {
+        paint-order: stroke;
+        stroke: #fff;
+        stroke-width: 6px;
+        stroke-linejoin: round;
+      }
+      .title { font: 700 34px Arial, sans-serif; fill: #111827; }
+      .subtitle { font: 600 18px Arial, sans-serif; fill: #374151; }
+      .label { font: 600 18px Arial, sans-serif; fill: #111827; }
+      .small { font: 500 15px Arial, sans-serif; fill: #374151; }
+      .formula { font: 600 19px "Consolas", "Courier New", monospace; fill: #111827; }
+      .red { font: 500 15px Arial, sans-serif; fill: #dc2626; }
+      .muted { fill: #64748b; }
+      .axis { stroke: #111827; stroke-width: 3; }
+      .bar-long { fill: #f8fafc; stroke: #111827; stroke-width: 4; }
+      .bar-short { fill: #dbeafe; stroke: #111827; stroke-width: 4; }
+      .good { fill: #dcfce7; stroke: #16a34a; stroke-width: 2; }
+      .bad { fill: #fee2e2; stroke: #dc2626; stroke-width: 2; }
+      .note { fill: #fff7ed; stroke: #f97316; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect width="1100" height="620" fill="#fff"/>
+
+  <text x="52" y="60" class="title">SPT: kratší úloha má být před delší</text>
+  <text x="54" y="92" class="subtitle">Dvě sousední úlohy začínají v čase s, platí p_a ≤ p_b.</text>
+
+  <rect x="720" y="38" width="326" height="72" rx="10" class="note"/>
+  <text x="742" y="68" class="formula">rozdíl = (špatně) - (SPT)</text>
+  <text x="742" y="94" class="formula">= p_b - p_a ≥ 0</text>
+
+  <!-- Wrong order -->
+  <text x="54" y="170" class="label">Špatně: T_b → T_a</text>
+  <text x="54" y="197" class="small muted">dlouhá úloha blokuje krátkou</text>
+  <line x1="120" y1="255" x2="950" y2="255" class="axis"/>
+  <line x1="220" y1="225" x2="220" y2="285" class="axis"/>
+  <text x="206" y="308" class="formula">s</text>
+
+  <rect x="220" y="190" width="440" height="70" class="bar-long"/>
+  <text x="405" y="233" class="label">T_b</text>
+  <text x="395" y="282" class="small">p_b dlouhá</text>
+
+  <rect x="220" y="268" width="440" height="34" fill="url(#hatch-red)" opacity="0.75"/>
+  <text x="302" y="326" class="small">T_a čeká celé p_b</text>
+
+  <rect x="660" y="190" width="140" height="70" class="bar-short"/>
+  <text x="708" y="233" class="label">T_a</text>
+  <text x="681" y="282" class="small">p_a krátká</text>
+
+  <line x1="660" y1="225" x2="660" y2="285" stroke="#111827" stroke-width="2"/>
+  <line x1="800" y1="225" x2="800" y2="285" stroke="#111827" stroke-width="2"/>
+  <text x="612" y="171" class="formula">C_b = s + p_b</text>
+  <text x="770" y="171" class="formula">C_a = s + p_b + p_a</text>
+  <text x="828" y="237" class="formula">ΣC = 2s + 2p_b + p_a</text>
+
+  <path d="M 646 126 C 600 132, 560 145, 525 183" fill="none" stroke="#ef4444" stroke-width="4" marker-end="url(#arrow-red)"/>
+  <text x="402" y="124" class="red">problém: krátká úloha čeká za dlouhou</text>
+
+  <!-- Good order -->
+  <text x="54" y="405" class="label">SPT: T_a → T_b</text>
+  <text x="54" y="432" class="small muted">seřadit vzestupně podle p_j</text>
+  <line x1="120" y1="490" x2="950" y2="490" class="axis"/>
+  <line x1="220" y1="460" x2="220" y2="520" class="axis"/>
+  <text x="206" y="543" class="formula">s</text>
+
+  <rect x="220" y="425" width="140" height="70" class="bar-short"/>
+  <text x="268" y="468" class="label">T_a</text>
+  <text x="242" y="517" class="small">p_a krátká</text>
+
+  <rect x="360" y="425" width="440" height="70" class="bar-long"/>
+  <text x="545" y="468" class="label">T_b</text>
+  <text x="535" y="517" class="small">p_b dlouhá</text>
+
+  <rect x="220" y="503" width="140" height="34" fill="url(#hatch-red)" opacity="0.75"/>
+  <text x="224" y="562" class="small">T_b čeká jen p_a</text>
+
+  <line x1="360" y1="460" x2="360" y2="520" stroke="#111827" stroke-width="2"/>
+  <line x1="800" y1="460" x2="800" y2="520" stroke="#111827" stroke-width="2"/>
+  <text x="305" y="407" class="formula">C_a = s + p_a</text>
+  <text x="545" y="407" class="formula">C_b = s + p_a + p_b</text>
+  <text x="828" y="472" class="formula">ΣC = 2s + 2p_a + p_b</text>
+
+  <rect x="830" y="520" width="210" height="54" rx="10" class="good"/>
+  <text x="850" y="543" class="label">SPT není horší</text>
+  <text x="850" y="565" class="small">proto krátké jdou první</text>
+</svg>

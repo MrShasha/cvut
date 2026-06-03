@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bratleyho algoritmus</title>
+  <style>
+    :root {
+      --bg: #111827;
+      --panel: #172033;
+      --ink: #e5e7eb;
+      --muted: #9ca3af;
+      --line: #334155;
+      --blue: #38bdf8;
+      --green: #34d399;
+      --red: #fb7185;
+      --amber: #fbbf24;
+      --violet: #a78bfa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 15px/1.45 Inter, "Segoe UI", Arial, sans-serif;
+    }
+
+    .wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 350px;
+      gap: 16px;
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 14px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 19px;
+      letter-spacing: 0;
+    }
+
+    .muted {
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
+
+    svg {
+      width: 100%;
+      height: 360px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background:
+        linear-gradient(rgba(148, 163, 184, .06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, .06) 1px, transparent 1px),
+        #0b1220;
+      background-size: 32px 32px;
+    }
+
+    .edge {
+      stroke: #475569;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .edge.active { stroke: var(--amber); stroke-width: 4; }
+    .edge.pruned { stroke: var(--red); stroke-width: 3; stroke-dasharray: 7 5; }
+    .edge.best { stroke: var(--green); stroke-width: 4; }
+
+    .node rect {
+      fill: #0b1220;
+      stroke: #64748b;
+      stroke-width: 1.5;
+    }
+
+    .node.active rect { stroke: var(--amber); stroke-width: 3; }
+    .node.pruned rect { stroke: var(--red); stroke-width: 3; }
+    .node.best rect { stroke: var(--green); stroke-width: 3; }
+
+    .node text {
+      fill: var(--ink);
+      font: 800 12px Consolas, monospace;
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .task-table {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .task {
+      border: 1px solid #475569;
+      border-radius: 8px;
+      background: #0b1220;
+      padding: 8px;
+    }
+
+    .task strong {
+      display: block;
+      color: #dbeafe;
+      font-size: 15px;
+    }
+
+    .task span {
+      display: block;
+      color: #cbd5e1;
+      font: 800 12px Consolas, monospace;
+    }
+
+    .gantt {
+      position: relative;
+      height: 74px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0b1220;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .axis {
+      position: absolute;
+      left: 28px;
+      right: 18px;
+      bottom: 18px;
+      height: 2px;
+      background: #475569;
+    }
+
+    .tick {
+      position: absolute;
+      bottom: 4px;
+      color: #94a3b8;
+      font: 800 11px Consolas, monospace;
+      transform: translateX(-50%);
+    }
+
+    .bar {
+      position: absolute;
+      top: 16px;
+      height: 32px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      color: #0f172a;
+      font: 900 12px Consolas, monospace;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.28);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 1px solid #475569;
+      border-radius: 7px;
+      padding: 9px 12px;
+      color: var(--ink);
+      background: #24324a;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 750;
+    }
+
+    button.primary {
+      border-color: #22d3ee;
+      background: #0e7490;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-bottom: 8px;
+      border-radius: 999px;
+      padding: 3px 8px;
+      color: #cbd5e1;
+      background: #26364f;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .formula {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      color: #dbeafe;
+      background: #0b1220;
+      font: 800 13px Consolas, monospace;
+      white-space: pre-line;
+    }
+
+    .hint {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 880px) {
+      .wrap { grid-template-columns: 1fr; }
+      svg { height: 330px; }
+      .task-table { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="panel">
+      <h1>Bratleyho algoritmus: příklad</h1>
+      <p class="muted">Uzel stromu je prefix rozvrhu a čas dokončení poslední úlohy.</p>
+      <div class="task-table" id="tasks"></div>
+      <svg id="tree" viewBox="0 0 820 360" aria-label="Bratley branch and bound tree"></svg>
+      <div class="gantt" id="gantt"></div>
+      <div class="controls">
+        <button id="prev">← zpět</button>
+        <button class="primary" id="next">další krok →</button>
+        <button id="reset">reset</button>
+      </div>
+    </main>
+
+    <aside class="panel">
+      <span class="badge" id="badge"></span>
+      <h2 id="title"></h2>
+      <p id="text"></p>
+      <div class="formula" id="formula"></div>
+      <p class="hint" id="hint"></p>
+    </aside>
+  </div>
+
+  <script>
+    const NS = "http://www.w3.org/2000/svg";
+    const tasks = [
+      { id: "T1", r: 4, p: 2, ed: 8, color: "#38bdf8" },
+      { id: "T2", r: 1, p: 1, ed: 5, color: "#34d399" },
+      { id: "T3", r: 1, p: 2, ed: 6, color: "#fbbf24" },
+      { id: "T4", r: 0, p: 2, ed: 4, color: "#a78bfa" }
+    ];
+
+    const nodes = {
+      root: { label: "root", x: 410, y: 28 },
+      n1: { label: "T1 / 6", x: 130, y: 92 },
+      n2: { label: "T2 / 2", x: 315, y: 92 },
+      n3: { label: "T3 / 3", x: 505, y: 92 },
+      n4: { label: "T4 / 2", x: 690, y: 92 },
+      n21: { label: "T2,T1 / 6", x: 205, y: 170 },
+      n23: { label: "T2,T3 / 4", x: 315, y: 170 },
+      n24: { label: "T2,T4 / 4", x: 425, y: 170 },
+      n243: { label: "T2,T4,T3 / 6", x: 425, y: 245 },
+      n2431: { label: "T2,T4,T3,T1 / 8", x: 425, y: 318 },
+      n42: { label: "T4,T2 / 3", x: 620, y: 170 },
+      n423: { label: "T4,T2,T3 / 5", x: 620, y: 245 },
+      n4231: { label: "T4,T2,T3,T1 / 7", x: 620, y: 318 }
+    };
+
+    const links = [
+      ["root", "n1"], ["root", "n2"], ["root", "n3"], ["root", "n4"],
+      ["n2", "n21"], ["n2", "n23"], ["n2", "n24"],
+      ["n24", "n243"], ["n243", "n2431"],
+      ["n4", "n42"], ["n42", "n423"], ["n423", "n4231"]
+    ];
+
+    const schedules = {
+      empty: [],
+      t1: [{ id: "T1", start: 4, end: 6 }],
+      t2: [{ id: "T2", start: 1, end: 2 }],
+      t3: [{ id: "T3", start: 1, end: 3 }],
+      t4: [{ id: "T4", start: 0, end: 2 }],
+      t21: [
+        { id: "T2", start: 1, end: 2 },
+        { id: "T1", start: 4, end: 6 }
+      ],
+      t23: [
+        { id: "T2", start: 1, end: 2 },
+        { id: "T3", start: 2, end: 4 }
+      ],
+      t24: [
+        { id: "T2", start: 1, end: 2 },
+        { id: "T4", start: 2, end: 4 }
+      ],
+      t243: [
+        { id: "T2", start: 1, end: 2 },
+        { id: "T4", start: 2, end: 4 },
+        { id: "T3", start: 4, end: 6 }
+      ],
+      firstFeasible: [
+        { id: "T2", start: 1, end: 2 },
+        { id: "T4", start: 2, end: 4 },
+        { id: "T3", start: 4, end: 6 },
+        { id: "T1", start: 6, end: 8 }
+      ],
+      best: [
+        { id: "T4", start: 0, end: 2 },
+        { id: "T2", start: 2, end: 3 },
+        { id: "T3", start: 3, end: 5 },
+        { id: "T1", start: 5, end: 7 }
+      ]
+    };
+
+    const steps = [
+      {
+        title: "1. Zadání",
+        text: "Hledáme pořadí čtyř úloh na jednom stroji. Každá úloha má release time r, délku p a hard deadline ed.",
+        formula: "r = (4,1,1,0)\np = (2,1,2,2)\ned = (8,5,6,4)",
+        visible: ["root"],
+        active: ["root"],
+        pruned: [],
+        best: [],
+        schedule: "empty"
+      },
+      {
+        title: "2. Přidáme první větev: T1",
+        text: "Z kořene zkusíme dát T1 na první pozici. Uzel dostane štítek T1 / 6.",
+        formula: "prefix: T1\nC_last = 0\ns1 = max(0, r1=4) = 4\nC1 = 4 + p1=2 = 6",
+        visible: ["root", "n1"],
+        active: ["n1"],
+        pruned: [],
+        best: [],
+        schedule: "t1"
+      },
+      {
+        title: "3. T1 větev ořízneme",
+        text: "Po prefixu T1 už nejde stihnout T4. T4 by začala nejdříve v 6 a skončila v 8, ale její deadline je 4.",
+        formula: "po prefixu T1 je C_last=6\n\nnejdříve T4:\ns4=max(6,r4=0)=6\nC4=6+p4=2=8\n8 > ed4=4\n\n⇒ prune",
+        visible: ["root", "n1"],
+        active: ["n1"],
+        pruned: ["n1"],
+        best: [],
+        schedule: "t1"
+      },
+      {
+        title: "4. Přidáme větev T2",
+        text: "Další možnost z kořene je T2. T2 je dostupná od času 1 a skončí v čase 2.",
+        formula: "prefix: T2\nC_last = 0\ns2=max(0,r2=1)=1\nC2=1+p2=1=2",
+        visible: ["root", "n1", "n2"],
+        active: ["n2"],
+        pruned: ["n1"],
+        best: [],
+        schedule: "t2"
+      },
+      {
+        title: "5. Z T2 zkusíme T1",
+        text: "Prefix T2→T1 je zatím přípustný. T1 čeká na release time 4, proto mezi T2 a T1 vznikne idle time.",
+        formula: "prefix: T2 → T1\npo T2 je C_last=2\ns1=max(2,r1=4)=4\nC1=4+p1=2=6\n6 ≤ ed1=8",
+        visible: ["root", "n1", "n2", "n21"],
+        active: ["n21"],
+        pruned: ["n1"],
+        best: [],
+        schedule: "t21"
+      },
+      {
+        title: "6. T2→T1 ořízneme",
+        text: "Po T2→T1 už nejde stihnout T4. T4 by skončila v 8, ale musí skončit do 4.",
+        formula: "po prefixu T2→T1 je C_last=6\n\nnejdříve T4:\ns4=max(6,r4=0)=6\nC4=6+2=8\n8 > ed4=4\n\n⇒ prune",
+        visible: ["root", "n1", "n2", "n21"],
+        active: ["n21"],
+        pruned: ["n1", "n21"],
+        best: [],
+        schedule: "t21"
+      },
+      {
+        title: "7. Z T2 zkusíme T3",
+        text: "Prefix T2→T3 skončí v čase 4. Vypadá přípustně, ale hned zkontrolujeme zbývající T4.",
+        formula: "prefix: T2 → T3\npo T2 je C_last=2\ns3=max(2,r3=1)=2\nC3=2+p3=2=4\n4 ≤ ed3=6",
+        visible: ["root", "n1", "n2", "n21", "n23"],
+        active: ["n23"],
+        pruned: ["n1", "n21"],
+        best: [],
+        schedule: "t23"
+      },
+      {
+        title: "8. T2→T3 ořízneme",
+        text: "Po T2→T3 už T4 nejde stihnout. T4 by začala v 4 a skončila v 6, deadline má 4.",
+        formula: "po prefixu T2→T3 je C_last=4\n\nnejdříve T4:\ns4=max(4,r4=0)=4\nC4=4+2=6\n6 > ed4=4\n\n⇒ prune",
+        visible: ["root", "n1", "n2", "n21", "n23"],
+        active: ["n23"],
+        pruned: ["n1", "n21", "n23"],
+        best: [],
+        schedule: "t23"
+      },
+      {
+        title: "9. Z T2 zkusíme T4",
+        text: "Prefix T2→T4 je přípustný. T4 skončí přesně ve svém deadlinu.",
+        formula: "prefix: T2 → T4\npo T2 je C_last=2\ns4=max(2,r4=0)=2\nC4=2+p4=2=4\n4 ≤ ed4=4",
+        visible: ["root", "n1", "n2", "n21", "n23", "n24"],
+        active: ["n24"],
+        pruned: ["n1", "n21", "n23"],
+        best: [],
+        schedule: "t24"
+      },
+      {
+        title: "10. Pokračujeme T2→T4→T3",
+        text: "Po T2→T4 vybereme T3. Skončí v čase 6, tedy přesně v deadlinu.",
+        formula: "prefix: T2 → T4 → T3\npo T2,T4 je C_last=4\ns3=max(4,r3=1)=4\nC3=4+2=6\n6 ≤ ed3=6",
+        visible: ["root", "n1", "n2", "n21", "n23", "n24", "n243"],
+        active: ["n243"],
+        pruned: ["n1", "n21", "n23"],
+        best: [],
+        schedule: "t243"
+      },
+      {
+        title: "11. První kompletní rozvrh",
+        text: "Doplníme T1. Všechny deadliny sedí, takže máme první přípustné řešení a horní mez Cmax=8.",
+        formula: "T2: 1-2\nT4: 2-4\nT3: 4-6\nT1: 6-8\n\nvšechny Cj ≤ edj\nUB = Cmax = 8",
+        visible: ["root", "n1", "n2", "n21", "n23", "n24", "n243", "n2431"],
+        active: ["n2431"],
+        pruned: ["n1", "n21", "n23"],
+        best: ["n2431"],
+        schedule: "firstFeasible"
+      },
+      {
+        title: "12. BRTP test pro Cmax=8 neprojde",
+        text: "Rozvrh je přípustný, ale ještě nemáme důkaz optimality. BRTP blok začíná T2 v čase r2=1, jenže další úloha T4 má menší release time r4=0.",
+        formula: "blok: T2 → T4 → T3 → T1\n\n1) T2 začíná v r2=1 ✓\n2) blok je bez idle time ✓\n3) r2 ≤ r_i pro ostatní? ne\n   r2=1 > r4=0\n\n⇒ BRTP ne, hledáme dál",
+        visible: ["root", "n1", "n2", "n21", "n23", "n24", "n243", "n2431"],
+        active: ["n2431"],
+        pruned: ["n1", "n21", "n23"],
+        best: ["n2431"],
+        schedule: "firstFeasible",
+        hint: "Když BRTP neprojde, rozvrh může být feasible, ale algoritmus ještě nesmí skončit."
+      },
+      {
+        title: "13. Přidáme větev T3 z kořene",
+        text: "Zkusíme začít úlohou T3. T3 skončí v čase 3.",
+        formula: "prefix: T3\nC_last=0\ns3=max(0,r3=1)=1\nC3=1+p3=2=3",
+        visible: ["root", "n1", "n2", "n3", "n21", "n23", "n24", "n243", "n2431"],
+        active: ["n3"],
+        pruned: ["n1", "n21", "n23"],
+        best: ["n2431"],
+        schedule: "t3"
+      },
+      {
+        title: "14. T3 větev ořízneme",
+        text: "Po T3 by T4 skončila nejdříve v čase 5, ale její deadline je 4.",
+        formula: "po prefixu T3 je C_last=3\n\nnejdříve T4:\ns4=max(3,r4=0)=3\nC4=3+2=5\n5 > ed4=4\n\n⇒ prune",
+        visible: ["root", "n1", "n2", "n3", "n21", "n23", "n24", "n243", "n2431"],
+        active: ["n3"],
+        pruned: ["n1", "n21", "n23", "n3"],
+        best: ["n2431"],
+        schedule: "t3"
+      },
+      {
+        title: "15. Přidáme větev T4",
+        text: "Teď zkusíme začít úlohou T4. To dává smysl, protože T4 má nejtvrdší deadline.",
+        formula: "prefix: T4\nC_last=0\ns4=max(0,r4=0)=0\nC4=0+p4=2\n2 ≤ ed4=4",
+        visible: ["root", "n1", "n2", "n3", "n4", "n21", "n23", "n24", "n243", "n2431"],
+        active: ["n4"],
+        pruned: ["n1", "n21", "n23", "n3"],
+        best: ["n2431"],
+        schedule: "t4"
+      },
+      {
+        title: "16. Pokračujeme T4→T2",
+        text: "Po T4 zvolíme T2. T2 je dostupná a skončí v čase 3.",
+        formula: "prefix: T4 → T2\npo T4 je C_last=2\ns2=max(2,r2=1)=2\nC2=2+p2=1=3\n3 ≤ ed2=5",
+        visible: ["root", "n1", "n2", "n3", "n4", "n21", "n23", "n24", "n243", "n2431", "n42"],
+        active: ["n42"],
+        pruned: ["n1", "n21", "n23", "n3"],
+        best: ["n2431"],
+        schedule: "best"
+      },
+      {
+        title: "17. Pokračujeme T4→T2→T3",
+        text: "T3 skončí v čase 5, tedy před deadlinem 6. Zbývá T1.",
+        formula: "prefix: T4 → T2 → T3\npo T4,T2 je C_last=3\ns3=max(3,r3=1)=3\nC3=3+p3=2=5\n5 ≤ ed3=6",
+        visible: ["root", "n1", "n2", "n3", "n4", "n21", "n23", "n24", "n243", "n2431", "n42", "n423"],
+        active: ["n423"],
+        pruned: ["n1", "n21", "n23", "n3"],
+        best: ["n2431"],
+        schedule: "best"
+      },
+      {
+        title: "18. Najdeme lepší kompletní rozvrh",
+        text: "Doplníme T1. Dostaneme Cmax=7, což je lepší než předchozí horní mez 8.",
+        formula: "T4: 0-2\nT2: 2-3\nT3: 3-5\nT1: 5-7\n\nvšechny Cj ≤ edj\nCmax = 7 < 8",
+        visible: ["root", "n1", "n2", "n3", "n4", "n21", "n23", "n24", "n243", "n2431", "n42", "n423", "n4231"],
+        active: ["n4231"],
+        pruned: ["n1", "n21", "n23", "n3"],
+        best: ["n4231"],
+        schedule: "best"
+      },
+      {
+        title: "19. BRTP test pro Cmax=7 projde",
+        text: "Teď máme nejen přípustný rozvrh, ale i důkaz optimality. Celý koncový blok začíná úlohou T4 přesně v jejím release time a běží bez idle time.",
+        formula: "blok: T4 → T2 → T3 → T1\n\n1) T4 začíná v r4=0 ✓\n2) bez idle time: 0-2-3-5-7 ✓\n3) r4 ≤ r2,r3,r1:\n   0 ≤ 1,1,4 ✓\n\n⇒ BRTP ano\n⇒ Cmax=7 je optimální",
+        visible: ["root", "n1", "n2", "n3", "n4", "n21", "n23", "n24", "n243", "n2431", "n42", "n423", "n4231"],
+        active: ["n4231"],
+        pruned: ["n1", "n21", "n23", "n3"],
+        best: ["n4231"],
+        schedule: "best",
+        hint: "BRTP je certifikát: když projde, nemá smysl hledat lepší rozvrh v Bratleyho stromu."
+      },
+      {
+        title: "20. Výsledek",
+        text: "Bratley postupně zkouší prefixy, ale neperspektivní větve zahazuje hned. V tomto příkladu je nejlepší nalezené pořadí T4→T2→T3→T1.",
+        formula: "optimální rozvrh:\nT4 → T2 → T3 → T1\n\nCmax = 7\nBRTP: ano",
+        visible: Object.keys(nodes),
+        active: [],
+        pruned: ["n1", "n3", "n21", "n23"],
+        best: ["n4231"],
+        schedule: "best"
+      }
+    ];
+
+    let step = 0;
+    const svg = document.getElementById("tree");
+    const gantt = document.getElementById("gantt");
+
+    function el(name, attrs = {}) {
+      const node = document.createElementNS(NS, name);
+      Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+      return node;
+    }
+
+    function cls(id, active) {
+      if (active.best.includes(id)) return "best";
+      if (active.pruned.includes(id)) return "pruned";
+      if (active.active.includes(id)) return "active";
+      return "";
+    }
+
+    function drawTree(active) {
+      svg.innerHTML = "";
+      links.forEach(([from, to]) => {
+        if (!active.visible.includes(from) || !active.visible.includes(to)) return;
+        const a = nodes[from];
+        const b = nodes[to];
+        const className = `edge ${cls(to, active)}`;
+        svg.append(el("path", {
+          d: `M ${a.x} ${a.y + 18} L ${b.x} ${b.y - 18}`,
+          class: className
+        }));
+      });
+      Object.entries(nodes).forEach(([id, node]) => {
+        if (!active.visible.includes(id)) return;
+        const g = el("g", { class: `node ${cls(id, active)}` });
+        const width = id === "root" ? 78 : 128;
+        g.append(el("rect", { x: node.x - width / 2, y: node.y - 18, width, height: 36, rx: 7 }));
+        const t = el("text", { x: node.x, y: node.y + 1 });
+        t.textContent = node.label;
+        g.append(t);
+        svg.append(g);
+      });
+    }
+
+    function drawGantt(key) {
+      const rows = schedules[key];
+      const taskById = Object.fromEntries(tasks.map(task => [task.id, task]));
+      const total = 8;
+      const left = 32;
+      const width = gantt.clientWidth - 52;
+      gantt.innerHTML = '<div class="axis"></div>';
+      for (let i = 0; i <= total; i += 1) {
+        const tick = document.createElement("div");
+        tick.className = "tick";
+        tick.style.left = `${left + width * i / total}px`;
+        tick.textContent = i;
+        gantt.append(tick);
+      }
+      rows.forEach(row => {
+        const task = taskById[row.id];
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        bar.style.left = `${left + width * row.start / total}px`;
+        bar.style.width = `${Math.max(30, width * (row.end - row.start) / total)}px`;
+        bar.style.background = task.color;
+        bar.textContent = row.id;
+        gantt.append(bar);
+      });
+    }
+
+    function render() {
+      const active = steps[step];
+      drawTree(active);
+      drawGantt(active.schedule);
+      document.getElementById("badge").textContent = `${step + 1} / ${steps.length}`;
+      document.getElementById("title").textContent = active.title;
+      document.getElementById("text").textContent = active.text;
+      document.getElementById("formula").textContent = active.formula;
+      document.getElementById("hint").textContent = active.hint || "Kontrola uzlu: po prefixu spočítej, zda některá zbývající úloha už nemůže stihnout svůj deadline.";
+    }
+
+    document.getElementById("tasks").innerHTML = tasks.map(task => `
+      <div class="task">
+        <strong>${task.id}</strong>
+        <span>r=${task.r}, p=${task.p}</span>
+        <span>ed=${task.ed}</span>
+      </div>`).join("");
+    document.getElementById("next").onclick = () => { step = Math.min(steps.length - 1, step + 1); render(); };
+    document.getElementById("prev").onclick = () => { step = Math.max(0, step - 1); render(); };
+    document.getElementById("reset").onclick = () => { step = 0; render(); };
+    addEventListener("resize", render);
+    render();
+  </script>
+</body>
+</html>
