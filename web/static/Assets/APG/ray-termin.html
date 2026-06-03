@@ -1,0 +1,283 @@
+<div id="ray-termination-widget" style="font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; max-width: 800px; margin: 20px auto; border: 1px solid #333; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+        <div>
+            <h3 style="margin: 0 0 10px 0; color: #569cd6; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Shadow Ray (Any-Hit)</h3>
+            <canvas id="canvas-shadow" width="380" height="220" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block;"></canvas>
+        </div>
+        <div>
+            <h3 style="margin: 0 0 10px 0; color: #4fc1ff; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Primary Ray (Closest-Hit)</h3>
+            <canvas id="canvas-primary" width="380" height="220" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block;"></canvas>
+        </div>
+    </div>
+
+    <div style="background: #252526; padding: 15px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #3c3c3c;">
+        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 10px;">
+            <button id="btn-trace" style="background: #0e639c; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: inherit; font-weight: bold;">Trace Rays</button>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                <input type="checkbox" id="chk-bvh-order" style="cursor: pointer;"> Testovat vzdálenější objekt jako první (Worst-case BVH)
+            </label>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 12px;">
+            <div>
+                <label style="display: block; margin-bottom: 5px;">Pozice Okluderu 1 (Blízký):</label>
+                <input type="range" id="sld-obj1-y" min="40" max="180" value="110" style="width: 100%;">
+            </div>
+            <div>
+                <label style="display: block; margin-bottom: 5px;">Pozice Okluderu 2 (Vzdálený):</label>
+                <input type="range" id="sld-obj2-y" min="40" max="180" value="150" style="width: 100%;">
+            </div>
+        </div>
+    </div>
+
+    <div style="background: #000; padding: 15px; border-radius: 4px; font-size: 13px; line-height: 1.5; border: 1px solid #222;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <div style="color: #6a9955; margin-bottom: 5px;">// Logika a stav Shadow Ray:</div>
+                <div id="math-shadow-eval" style="color: #ce9178; font-weight: bold; margin-bottom: 5px;">Stav: Čeká na spuštění</div>
+                <div id="math-shadow-count" style="color: #b5cea8;">Provedené testy: 0</div>
+                <pre id="code-shadow" style="margin: 5px 0 0 0; color: #d4d4d4; font-size: 11px; opacity: 0.6;"></pre>
+            </div>
+            <div>
+                <div style="color: #6a9955; margin-bottom: 5px;">// Logika a stav Primary Ray:</div>
+                <div id="math-primary-eval" style="color: #ce9178; font-weight: bold; margin-bottom: 5px;">Stav: Čeká na spuštění</div>
+                <div id="math-primary-count" style="color: #b5cea8;">Provedené testy: 0</div>
+                <pre id="code-primary" style="margin: 5px 0 0 0; color: #d4d4d4; font-size: 11px; opacity: 0.6;"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const shadowCanvas = document.getElementById('canvas-shadow');
+    const primaryCanvas = document.getElementById('canvas-primary');
+    const ctxS = shadowCanvas.getContext('2d');
+    const ctxP = primaryCanvas.getContext('2d');
+
+    const sldObj1Y = document.getElementById('sld-obj1-y');
+    const sldObj2Y = document.getElementById('sld-obj2-y');
+    const chkBvhOrder = document.getElementById('chk-bvh-order');
+    const btnTrace = document.getElementById('btn-trace');
+
+    const mathShadowEval = document.getElementById('math-shadow-eval');
+    const mathShadowCount = document.getElementById('math-shadow-count');
+    const mathPrimaryEval = document.getElementById('math-primary-eval');
+    const mathPrimaryCount = document.getElementById('math-primary-count');
+
+    const codeShadow = document.getElementById('code-shadow');
+    const codePrimary = document.getElementById('code-primary');
+
+    let animProgress = 1.0;
+    let isAnimating = false;
+
+    const setup = {
+        light: { x: 50, y: 110 },
+        surface: { x: 330, y: 110 },
+        camera: { x: 50, y: 110 },
+        obj1: { x: 160, r: 25 },
+        obj2: { x: 250, r: 20 }
+    };
+
+    function checkIntersection(rayX, rayY, objX, objY, objR) {
+        const dx = rayX - objX;
+        const dy = rayY - objY;
+        return (dx * dx + dx * dy) <= (objR * objR); 
+    }
+
+    function lineCircleIntersect(x1, y1, x2, y2, cx, cy, r) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const len = Math.sqrt(dx*dx + dy*dy);
+        const u = ((cx - x1) * dx + (cy - y1) * dy) / (len * len);
+        if (u < 0 || u > 1) return false;
+        const ix = x1 + u * dx;
+        const iy = y1 + u * dy;
+        const distSq = (ix - cx)*(ix - cx) + (iy - cy)*(iy - cy);
+        return distSq <= r * r;
+    }
+
+    function drawScene() {
+        const o1y = parseInt(sldObj1Y.value);
+        const o2y = parseInt(sldObj2Y.value);
+
+        [ {ctx: ctxS, title: 'SHADOW RAY', mode: 'shadow'}, {ctx: ctxP, title: 'PRIMARY RAY', mode: 'primary'} ].forEach(cfg => {
+            const c = cfg.ctx;
+            c.clearRect(0, 0, 380, height = 220);
+
+            c.lineWidth = 1;
+            c.strokeStyle = '#333';
+            for(let i=0; i<380; i+=20) {
+                c.beginPath(); c.moveTo(i, 0); c.lineTo(i, 220); c.stroke();
+            }
+            for(let i=0; i<220; i+=20) {
+                c.beginPath(); c.moveTo(0, i); c.lineTo(380, i); c.stroke();
+            }
+
+            c.beginPath();
+            c.fillStyle = '#444';
+            c.arc(setup.obj1.x, o1y, setup.obj1.r, 0, Math.PI*2);
+            c.fill();
+            c.strokeStyle = '#666';
+            c.stroke();
+            c.fillStyle = '#fff';
+            c.font = '10px monospace';
+            c.fillText('Obj 1 (t1)', setup.obj1.x - 25, o1y + 4);
+
+            c.beginPath();
+            c.fillStyle = '#444';
+            c.arc(setup.obj2.x, o2y, setup.obj2.r, 0, Math.PI*2);
+            c.fill();
+            c.stroke();
+            c.fillStyle = '#fff';
+            c.fillText('Obj 2 (t2)', setup.obj2.x - 25, o2y + 4);
+
+            if(cfg.mode === 'shadow') {
+                c.beginPath();
+                c.fillStyle = '#ffdf6d';
+                c.arc(setup.light.x, setup.light.y, 8, 0, Math.PI*2);
+                c.fill();
+                c.fillStyle = '#000';
+                c.fillText('L', setup.light.x - 3, setup.light.y + 3);
+
+                c.beginPath();
+                c.fillStyle = '#569cd6';
+                c.fillRect(setup.surface.x - 5, setup.surface.y - 15, 10, 30);
+                c.fillStyle = '#fff';
+                c.fillText('P', setup.surface.x - 3, setup.surface.y - 20);
+
+                const currentX = setup.surface.x + (setup.light.x - setup.surface.x) * animProgress;
+                const currentY = setup.surface.y + (setup.light.y - setup.surface.y) * animProgress;
+
+                c.beginPath();
+                c.strokeStyle = '#6a9955';
+                c.lineWidth = 2;
+                c.moveTo(setup.surface.x, setup.surface.y);
+                c.lineTo(currentX, currentY);
+                c.stroke();
+
+                c.beginPath();
+                c.fillStyle = '#ff5555';
+                c.arc(currentX, currentY, 4, 0, Math.PI*2);
+                c.fill();
+            } else {
+                c.beginPath();
+                c.fillStyle = '#4fc1ff';
+                c.fillRect(setup.camera.x - 8, setup.camera.y - 8, 16, 16);
+                c.fillStyle = '#000';
+                c.fillText('Cam', setup.camera.x - 8, setup.camera.y + 4);
+
+                const currentX = setup.camera.x + (setup.surface.x - setup.camera.x) * animProgress;
+                const currentY = setup.camera.y + (setup.surface.y - setup.camera.y) * animProgress;
+
+                c.beginPath();
+                c.strokeStyle = '#4fc1ff';
+                c.lineWidth = 2;
+                c.moveTo(setup.camera.x, setup.camera.y);
+                c.lineTo(currentX, currentY);
+                c.stroke();
+
+                c.beginPath();
+                c.fillStyle = '#ff5555';
+                c.arc(currentX, currentY, 4, 0, Math.PI*2);
+                c.fill();
+            }
+        });
+    }
+
+    function updateLogic() {
+        const o1y = parseInt(sldObj1Y.value);
+        const o2y = parseInt(sldObj2Y.value);
+        const worstCase = chkBvhOrder.checked;
+
+        const hit1S = lineCircleIntersect(setup.surface.x, setup.surface.y, setup.light.x, setup.light.y, setup.obj1.x, o1y, setup.obj1.r);
+        const hit2S = lineCircleIntersect(setup.surface.x, setup.surface.y, setup.light.x, setup.light.y, setup.obj2.x, o2y, setup.obj2.r);
+
+        let shadowTests = 0;
+        let shadowStatus = "Nenalezen zásah (Osvětleno)";
+        let shadowColor = "#b5cea8";
+
+        if (!worstCase) {
+            shadowTests += 1;
+            if (hit1S) {
+                shadowStatus = "Zásah Obj 1 -> EARLY TERMINATION";
+                shadowColor = "#f44747";
+            } else {
+                shadowTests += 1;
+                if (hit2S) {
+                    shadowStatus = "Zásah Obj 2 -> EARLY TERMINATION";
+                    shadowColor = "#f44747";
+                }
+            }
+        } else {
+            shadowTests += 1;
+            if (hit2S) {
+                shadowStatus = "Zásah Obj 2 -> EARLY TERMINATION";
+                shadowColor = "#f44747";
+            } else {
+                shadowTests += 1;
+                if (hit1S) {
+                    shadowStatus = "Zásah Obj 1 -> EARLY TERMINATION";
+                    shadowColor = "#f44747";
+                }
+            }
+        }
+
+        mathShadowEval.innerText = `Stav: ${shadowStatus}`;
+        mathShadowEval.style.color = shadowColor;
+        mathShadowCount.innerText = `Provedené testy geometrie: ${shadowTests} / 2`;
+
+        const hit1P = lineCircleIntersect(setup.camera.x, setup.camera.y, setup.surface.x, setup.surface.y, setup.obj1.x, o1y, setup.obj1.r);
+        const hit2P = lineCircleIntersect(setup.camera.x, setup.camera.y, setup.surface.x, setup.surface.y, setup.obj2.x, o2y, setup.obj2.r);
+
+        let primaryTests = 2; 
+        let primaryStatus = "Žádný okluder (Paprsek letí dál)";
+        let primaryColor = "#b5cea8";
+
+        if (hit1P && hit2P) {
+            primaryStatus = `Zásah obou (Obj 1 t_min=${(setup.obj1.x/380).toFixed(2)}, Obj 2 t=${(setup.obj2.x/380).toFixed(2)}) -> Vybrán nejbližší`;
+            primaryColor = "#4fc1ff";
+        } else if (hit1P) {
+            primaryStatus = "Zásah Obj 1 (t_min)";
+            primaryColor = "#4fc1ff";
+        } else if (hit2P) {
+            primaryStatus = "Zásah Obj 2 (t_min)";
+            primaryColor = "#4fc1ff";
+        }
+
+        mathPrimaryEval.innerText = `Stav: ${primaryStatus}`;
+        mathPrimaryEval.style.color = primaryColor;
+        mathPrimaryCount.innerText = `Provedené testy geometrie: ${primaryTests} / 2 (Nutno otestovat vše)`;
+
+        codeShadow.textContent = `bool any_hit() {\n  if(test(Obj1)) return true; // Stop\n  if(test(Obj2)) return true;\n  return false;\n}`;
+        codePrimary.textContent = `void closest_hit() {\n  for(obj in scene) {\n    t = test(obj);\n    if(t < t_min) t_min = t;\n  } // Bez early termination\n}`;
+    }
+
+    function animate() {
+        if(animProgress < 1.0) {
+            animProgress += 0.02;
+            drawScene();
+            requestAnimationFrame(animate);
+        } else {
+            isAnimating = false;
+            updateLogic();
+        }
+    }
+
+    btnTrace.addEventListener('click', () => {
+        if (isAnimating) return;
+        isAnimating = true;
+        animProgress = 0.0;
+        animate();
+    });
+
+    [sldObj1Y, sldObj2Y, chkBvhOrder].forEach(el => el.addEventListener('input', () => {
+        if(!isAnimating) {
+            drawScene();
+            updateLogic();
+        }
+    }));
+
+    drawScene();
+    updateLogic();
+})();
+</script>
