@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GVG - object plane homography calibration</title>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#121820;color:#e5edf7;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{height:100%;display:grid;grid-template-columns:minmax(0,1fr)350px;gap:12px}.scene,.panel{border:1px solid #334155;border-radius:8px;background:#18202b}.scene{position:relative;overflow:hidden}.scene canvas{display:block;width:100%!important;height:100%!important;cursor:grab}.hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:rgba(203,213,225,.58);font-size:12px;pointer-events:none}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow:auto}h1{font-size:18px;margin:0;color:#f8fafc}.muted{margin:0;color:#aebccd;font-size:13px;line-height:1.45}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{border:1px solid #3d4b5f;border-radius:7px;background:#17202b;color:#e5edf7;padding:8px 9px;font-weight:700;cursor:pointer}.tabs button.active{background:#1d4ed8;border-color:#60a5fa}.card{border:1px solid #2f3b4d;border-radius:7px;background:#111923;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:7px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.legend{display:grid;gap:7px}.legend span{display:flex;align-items:center;gap:8px}.sw{width:12px;height:12px;border-radius:50%;flex:0 0 auto}.result{margin-top:auto;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.11);color:#bbf7d0;border-radius:7px;padding:10px;font-size:13px;line-height:1.45}@media(max-width:900px){body{overflow:auto}.widget{grid-template-columns:1fr}.scene{min-height:560px}}
+</style>
+</head>
+<body>
+<main class="widget">
+  <section id="scene" class="scene"><div class="hint">Tahni = rotace | Scroll = zoom | Prave tlacitko = posun</div></section>
+  <aside class="panel">
+    <h1>Homografie roviny objektu</h1>
+    <p class="muted">Znamy ctverec je rovina se souradnicemi X=(u,v,1). Kamera ho zobrazi do obrazovych bodu x.</p>
+    <div class="tabs">
+      <button data-mode="projection">Projekce</button>
+      <button data-mode="columns">Sloupce H</button>
+      <button data-mode="omega">Omega</button>
+    </div>
+    <div id="info" class="card"></div>
+    <div class="card legend">
+      <span><i class="sw" style="background:#22c55e"></i>rovina objektu a body X_i</span>
+      <span><i class="sw" style="background:#38bdf8"></i>obrazova rovina pi a body x_i</span>
+      <span><i class="sw" style="background:#f59e0b"></i>paprsky z centra kamery C</span>
+      <span><i class="sw" style="background:#a78bfa"></i>smery ctverce / sloupce h1,h2</span>
+    </div>
+    <div class="result">Spravny duvod rovnic pro Omega: v rovine objektu jsou osy ctverce kolme a stejne dlouhe; po projekci to neni videt eukleidovsky, ale plati to pres metrickou matici Omega.</div>
+  </aside>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+const host=document.getElementById('scene'),info=document.getElementById('info'),scene=new THREE.Scene();scene.background=new THREE.Color(0x121820);
+const camera=new THREE.PerspectiveCamera(45,1,.1,100);camera.position.set(5.6,4.2,5.9);
+const renderer=new THREE.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));host.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.target.set(.3,.35,1.25);controls.minDistance=3;controls.maxDistance=14;
+scene.add(new THREE.AmbientLight(0xffffff,.82));const light=new THREE.DirectionalLight(0xffffff,.9);light.position.set(5,6,5);scene.add(light);
+let group=new THREE.Group();scene.add(group);let mode='projection';
+const C=new THREE.Vector3(-2.15,0,0),piX=-.62;
+const O=new THREE.Vector3(.9,-.7,.75),e1=new THREE.Vector3(1.35,.32,.1);
+const tilt=new THREE.Vector3(-.28,.9,-.34).normalize();
+const e2=new THREE.Vector3().crossVectors(tilt,e1).normalize().multiplyScalar(e1.length());
+const X=[O,O.clone().add(e1),O.clone().add(e1).add(e2),O.clone().add(e2)];
+function project(P){const t=(piX-C.x)/(P.x-C.x);return C.clone().add(P.clone().sub(C).multiplyScalar(t))}
+function lab(t,p,c='#e5e7eb'){const cv=document.createElement('canvas');cv.width=230;cv.height=58;const x=cv.getContext('2d');x.font='700 20px Segoe UI';x.textAlign='center';x.textBaseline='middle';x.fillStyle='rgba(17,24,34,.74)';x.strokeStyle='rgba(255,255,255,.14)';x.roundRect?.(10,8,210,42,7);if(x.roundRect){x.fill();x.stroke()}else{x.fillRect(10,8,210,42)}x.fillStyle=c;x.fillText(t,115,29);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthTest:false,depthWrite:false}));s.position.copy(p);s.scale.set(.76,.19,1);s.renderOrder=30;group.add(s)}
+function line(a,b,c,d=false,o=1){const geo=new THREE.BufferGeometry().setFromPoints([a,b]);const mat=d?new THREE.LineDashedMaterial({color:c,dashSize:.13,gapSize:.08,transparent:true,opacity:o}):new THREE.LineBasicMaterial({color:c,transparent:o<1,opacity:o});const l=new THREE.Line(geo,mat);if(d)l.computeLineDistances();group.add(l)}
+function sphere(p,c,t){const m=new THREE.Mesh(new THREE.SphereGeometry(.07,24,14),new THREE.MeshStandardMaterial({color:c,emissive:c,emissiveIntensity:.1}));m.position.copy(p);group.add(m);if(t)lab(t,p.clone().add(new THREE.Vector3(.13,.13,.09)),'#f8fafc')}
+function arrow(a,b,c,t){const d=b.clone().sub(a);group.add(new THREE.ArrowHelper(d.clone().normalize(),a,d.length(),c,.15,.07));if(t)lab(t,a.clone().lerp(b,.55).add(new THREE.Vector3(.07,.1,.06)),'#ddd6fe')}
+function quad(pts,c,o,name,labelColor='#e5e7eb'){const geo=new THREE.BufferGeometry().setFromPoints(pts);geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();group.add(new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:c,transparent:true,opacity:o,side:THREE.DoubleSide,depthWrite:false})));group.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:c})));if(name)lab(name,pts[1].clone().add(new THREE.Vector3(.15,.18,0)),labelColor)}
+function draw(){scene.remove(group);group=new THREE.Group();scene.add(group);group.add(new THREE.GridHelper(7,14,0x334155,0x26303c));
+  const x=X.map(project);
+  quad([new THREE.Vector3(piX,-1.35,.2),new THREE.Vector3(piX,1.25,.2),new THREE.Vector3(piX,1.25,2.65),new THREE.Vector3(piX,-1.35,2.65)],0x38bdf8,.14,'pi','#bae6fd');
+  quad(X,0x22c55e,.14,'object plane','#bbf7d0');quad(x,0x38bdf8,.18,'image','#bae6fd');
+  sphere(C,0x3b82f6,'C');X.forEach((p,i)=>sphere(p,0x22c55e,'X'+(i+1)));x.forEach((p,i)=>sphere(p,0x38bdf8,'x'+(i+1)));
+  for(let i=0;i<4;i++){line(C,X[i],0xf59e0b,true,.62);line(X[i],X[(i+1)%4],0x22c55e);line(x[i],x[(i+1)%4],0x38bdf8)}
+  if(mode==='projection'){lab('lambda_i x_i = H X_i',new THREE.Vector3(-.85,-.95,2.25),'#fde68a')}
+  if(mode==='columns'){arrow(X[0],X[1],0xa78bfa,'object u');arrow(X[0],X[3],0xa78bfa,'object v');line(x[0],x[1],0xa78bfa,false,1);line(x[0],x[3],0xa78bfa,false,1);lab('h1: obraz smeru u',x[0].clone().lerp(x[1],.5).add(new THREE.Vector3(0,.12,0)),'#ddd6fe');lab('h2: obraz smeru v',x[0].clone().lerp(x[3],.5).add(new THREE.Vector3(0,-.12,0)),'#ddd6fe')}
+  if(mode==='omega'){arrow(X[0],X[1],0xa78bfa,'r1');arrow(X[0],X[3],0xa78bfa,'r2');const right=X[0].clone().add(e1.clone().multiplyScalar(.32)).add(e2.clone().multiplyScalar(.32));lab('r1 perpendicular r2',right,'#ddd6fe');line(x[0],x[1],0xa78bfa,false,1);line(x[0],x[3],0xa78bfa,false,1);lab('not Euclidean in image',x[0].clone().add(new THREE.Vector3(0,-.35,.1)),'#fecaca')}
+  const messages={projection:['Homografie H','Protoze vsechny body X_i lezi v jedne rovine, cela perspektivni projekce roviny do obrazu jde popsat jednou 3x3 homografii:<br><br>lambda_i x_i = H X_i'],columns:['Proc h1 a h2','Pro rovinu Z=0 plati H = K [r1 r2 t]. Prvni dva sloupce jsou h1 = K r1 a h2 = K r2. Ridí obrazy dvou os ctverce.'],omega:['Rovnice pro Omega','Osy ctverce jsou v prostoru kolme a stejne dlouhe:<br><br>r1^T r2 = 0, r1^T r1 = r2^T r2<br><br>Protoze Omega = K^-T K^-1, dostaneme:<br>h1^T Omega h2 = 0<br>h1^T Omega h1 - h2^T Omega h2 = 0']}[mode];
+  info.innerHTML=`<strong>${messages[0]}</strong><span class="formula">${messages[1]}</span>`;
+}
+document.querySelectorAll('button').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x.dataset.mode===mode));draw()});document.querySelector('[data-mode="projection"]').classList.add('active');draw();
+function resize(){const r=host.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix()}addEventListener('resize',resize);resize();function animate(){requestAnimationFrame(animate);controls.update();renderer.render(scene,camera)}animate();
+</script>
+</body>
+</html>
