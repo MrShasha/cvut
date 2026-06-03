@@ -148,17 +148,16 @@ function ex1Triangulation() {
     i1.clone().add(new THREE.Vector3(0,.22,-.16)),
     i1.clone().add(new THREE.Vector3(0,.22,.16)),
     i1.clone().add(new THREE.Vector3(0,-.22,.16))
-  ], C.green, .12, 'obraz 1');
+  ], C.green, .12, 'obrazova rovina 1');
   planeQuad([
     i2.clone().add(new THREE.Vector3(-.18,0,-.18)),
     i2.clone().add(new THREE.Vector3(.18,0,-.18)),
     i2.clone().add(new THREE.Vector3(.18,0,.18)),
     i2.clone().add(new THREE.Vector3(-.18,0,.18))
-  ], C.blue, .12, 'obraz 2');
+  ], C.blue, .12, 'obrazova rovina 2');
   label('u1=(2,1), zeta1=1', c1.clone().lerp(x,.45).add(new THREE.Vector3(-.2,.18,0)), '#bbf7d0');
   label('u2=(2,0), zeta2=1', c2.clone().lerp(x,.45).add(new THREE.Vector3(.18,.18,0)), '#bfdbfe');
-  planeQuad([new THREE.Vector3(.25,-.8,-.1),new THREE.Vector3(.25,1.8,-.1),new THREE.Vector3(.25,1.8,2.0),new THREE.Vector3(.25,-.8,2.0)], C.blue, .1, 'schematicka obrazova rovina');
-  setInfo('Priklad 1: linearni triangulace', 'Dva obrazove body urcuji dva projekcni paprsky. Hledany 3D bod je jejich spolecny prusecik.', '<strong>Kontrola</strong><span class="formula">x1_beta=(2,1,1)^T, x2_beta=(2,0,1)^T<br>Q1[X;1]=(2,1,1)^T<br>~Q2[X;1]=(2,0,1)^T<br>X=(1,1,1)^T<br>zeta1=zeta2=1</span>', 'Barevne body na paprscich jsou obrazove body v obou kamerach. Paprsky se protinaji v X a obe hloubky jsou kladne.');
+  setInfo('Priklad 1: linearni triangulace', 'Kazda kamera ma vlastni obrazovou rovinu: x1 lezi v obraze kamery 1 a x2 v obraze kamery 2. Tyto dva obrazove body urcuji dva projekcni paprsky.', '<strong>Kontrola</strong><span class="formula">x1_beta=(2,1,1)^T, x2_beta=(2,0,1)^T<br>Q1[X;1]=(2,1,1)^T<br>~Q2[X;1]=(2,0,1)^T<br>X=(1,1,1)^T<br>zeta1=zeta2=1</span>', 'Obrazove body nejsou na jedne spolecne obrazove rovine; patri do dvou ruznych kamer. Paprsky se protinaji v X a obe hloubky jsou kladne.');
 }
 function ex2Scale() {
   reset(new THREE.Vector3(0,.25,1.05), new THREE.Vector3(5.2,3.8,5.8));
