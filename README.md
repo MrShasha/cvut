@@ -17,14 +17,14 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 | ✅ Dokončené | Pokročilá algoritmizace 💀     | Matěj         |
 ### Softwarové inženýrství
 
-| Stav             | Předmět                       | Poznámka |
-| ---------------- | ----------------------------- | -------- |
-| ✅ Dokončené      | Databáze 2 😊                 | Jirka    |
-| ✅ Dokončené      | Softwarové architektury 😊    | Artur    |
-| ❌ Nerozpracované | Bezpečnost systémů 😊         |          |
-| ✅ Dokončené      | Efektivní software 🤨         | Jirka    |
-| 🟡 Rozpracované  | Paralelní algoritmy 💀        | Jirka    |
-| ✅ Dokončené      | Zajištění kvality software 😊 | Artur    |
+| Stav            | Předmět                       | Poznámka |
+| --------------- | ----------------------------- | -------- |
+| ✅ Dokončené     | Databáze 2 😊                 | Jirka    |
+| ✅ Dokončené     | Softwarové architektury 😊    | Artur    |
+| ✅ Dokončené     | Bezpečnost systémů 😊         | Jirka    |
+| ✅ Dokončené     | Efektivní software 🤨         | Jirka    |
+| 🟡 Rozpracované | Paralelní algoritmy 💀        | Jirka    |
+| ✅ Dokončené     | Zajištění kvality software 😊 | Artur    |
 ### Počítačová grafika
 
 | Stav             | Předmět                                 | Poznámka |
