@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Muntz-Coffman level algorithm</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff;
+      --panel: #f8fafc;
+      --line: #d8e0ea;
+      --text: #111827;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --amber: #d97706;
+      --red: #dc2626;
+      --violet: #7c3aed;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+    .wrap {
+      height: 820px;
+      padding: 16px;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+    }
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    h1 {
+      margin: 0 0 5px;
+      font-size: 22px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      margin: 0;
+      max-width: 780px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button {
+      min-width: 38px;
+      height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--text);
+      font: 700 14px/1 Inter, ui-sans-serif, system-ui, sans-serif;
+      cursor: pointer;
+    }
+    button:hover { background: #f8fafc; border-color: #94a3b8; }
+    .count {
+      min-width: 72px;
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+    }
+    .formula-row {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr 1fr;
+      gap: 8px;
+    }
+    .formula {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 10px 12px;
+      min-width: 0;
+    }
+    .formula span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+    .formula strong {
+      display: block;
+      color: var(--text);
+      font: 800 14px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .main {
+      display: grid;
+      grid-template-columns: minmax(640px, 1.25fr) minmax(350px, 0.75fr);
+      gap: 12px;
+      min-height: 0;
+    }
+    .panel {
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .viz { padding: 10px; }
+    svg { display: block; width: 100%; height: 100%; }
+    .side {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 10px;
+      padding: 12px;
+      background: var(--panel);
+    }
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+    .step h2 {
+      margin: 0 0 6px;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .calc {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 11px;
+      font: 800 14px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-line;
+    }
+    .table {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 8px 9px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      color: var(--muted);
+      font-weight: 800;
+      z-index: 1;
+    }
+    td:last-child, th:last-child { text-align: right; }
+    tr.hot td { background: #fff7ed; }
+    tr.done td { color: #64748b; }
+    @media (max-width: 940px) {
+      .wrap { height: 1040px; }
+      .formula-row { grid-template-columns: 1fr; }
+      .main { grid-template-columns: 1fr; grid-template-rows: minmax(570px, 1fr) 400px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="head">
+      <div>
+        <h1>Muntz-Coffmanův level algoritmus</h1>
+        <p class="subtitle">Příklad pro R=2 ukazuje všechny důležité události kroku δ: dokončení, vyrovnání priority čekající úlohy a změnu rychlostí β.</p>
+      </div>
+      <div class="controls">
+        <button id="prev" type="button" aria-label="Předchozí krok">&#8592;</button>
+        <button id="play" type="button">Play</button>
+        <button id="next" type="button" aria-label="Další krok">&#8594;</button>
+        <span id="counter" class="count"></span>
+      </div>
+    </header>
+
+    <section class="formula-row" aria-label="Vzorce">
+      <div class="formula">
+        <span>level úlohy</span>
+        <strong>ℓj = p'j + max{ℓk : j → k}</strong>
+      </div>
+      <div class="formula">
+        <span>ready množina</span>
+        <strong>Z(t) = {j : pred(j) hotovi}</strong>
+      </div>
+      <div class="formula">
+        <span>rychlost skupiny</span>
+        <strong>β = min(1, h / |S|)</strong>
+      </div>
+    </section>
+
+    <main class="main">
+      <section class="panel viz">
+        <svg id="viz" viewBox="0 0 960 620" aria-label="Muntz-Coffman visualization"></svg>
+      </section>
+      <aside class="panel side">
+        <div class="step">
+          <h2 id="stepTitle"></h2>
+          <p id="stepText"></p>
+        </div>
+        <div class="calc" id="calc"></div>
+        <div class="table">
+          <table>
+            <thead>
+              <tr><th>úloha</th><th>p</th><th>succ</th><th>ℓ</th></tr>
+            </thead>
+            <tbody id="levelTable"></tbody>
+          </table>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const jobs = {
+      T1: { id: "T1", p: 3, level: 8, succ: ["T4"], x: 90, y: 95, color: "#dbeafe", stroke: "#2563eb" },
+      T2: { id: "T2", p: 4, level: 9, succ: ["T4"], x: 90, y: 180, color: "#dbeafe", stroke: "#2563eb" },
+      T3: { id: "T3", p: 3, level: 8, succ: ["T5"], x: 90, y: 265, color: "#dbeafe", stroke: "#2563eb" },
+      T4: { id: "T4", p: 5, level: 5, succ: ["T8"], x: 255, y: 135, color: "#dcfce7", stroke: "#16a34a" },
+      T5: { id: "T5", p: 3, level: 5, succ: ["T6", "T7"], x: 255, y: 265, color: "#dcfce7", stroke: "#16a34a" },
+      T6: { id: "T6", p: 1, level: 1, succ: ["T8"], x: 430, y: 230, color: "#fde68a", stroke: "#d97706" },
+      T7: { id: "T7", p: 2, level: 2, succ: ["T8"], x: 430, y: 310, color: "#fde68a", stroke: "#d97706" },
+      T8: { id: "T8", p: 0, level: 0, succ: [], x: 600, y: 185, color: "#f3e8ff", stroke: "#7c3aed" }
+    };
+    const order = ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8"];
+    const edges = [["T1", "T4"], ["T2", "T4"], ["T4", "T8"], ["T3", "T5"], ["T5", "T6"], ["T5", "T7"], ["T6", "T8"], ["T7", "T8"]];
+
+    const steps = [
+      {
+        title: "1. Levely z konce grafu",
+        text: "Dummy T8 má p=0. Level každé úlohy je její délka plus největší level následníka.",
+        calc: "ℓ8=0\nℓ6=1, ℓ7=2\nℓ4=5, ℓ5=3+max(1,2)=5\nℓ1=3+5=8\nℓ2=4+5=9\nℓ3=3+5=8",
+        phase: "levels",
+        hot: []
+      },
+      {
+        title: "2. t=0: první výběr",
+        text: "Ready jsou T1,T2,T3. T2 má nejvyšší level 9, dostane jeden procesor. Druhý procesor se rozdělí mezi T1 a T3.",
+        calc: "Z(0)={T1,T2,T3}\nS1={T2}, β2=1\nS2={T1,T3}, β=1/2\nδspeed: 9-δ = 8-δ/2\nδ = 2",
+        phase: "t0",
+        hot: ["T1", "T2", "T3"]
+      },
+      {
+        title: "3. t=2: změna rychlostí",
+        text: "Po dvou jednotkách se dynamické levely T1,T2,T3 vyrovnají na 7. Od teď se všechny tři dělí o dva procesory rovnoměrně.",
+        calc: "p'1=p'2=p'3=2\nS={T1,T2,T3}\nh=2, |S|=3\nβ=2/3\nδfinish = 2/(2/3)=3",
+        phase: "t2",
+        hot: ["T1", "T2", "T3"]
+      },
+      {
+        title: "4. t=5: uvolní se T4 a T5",
+        text: "T1,T2,T3 skončily. Teď jsou ready T4 a T5, obě mají level 5, takže běží obě naplno.",
+        calc: "Z(5)={T4,T5}\nS={T4,T5}, β=1\nδfinish=min(5,3)=3\nv čase 8 skončí T5",
+        phase: "t5",
+        hot: ["T4", "T5"]
+      },
+      {
+        title: "5. t=8: objeví se T6 a T7",
+        text: "T5 skončila, tím uvolnila T6 a T7. T4 a T7 mají aktuální level 2, T6 má level 1, proto T6 ještě čeká.",
+        calc: "Z(8)={T4,T6,T7}\nT4: p'=2 => aktuální level 2\nT7: ℓ=2, T6: ℓ=1\nS={T4,T7}, β=1\nδwait: 2-δ = 1\nδ=1",
+        phase: "t8",
+        hot: ["T4", "T7"]
+      },
+      {
+        title: "6. t=9: T6 dožene prioritu",
+        text: "Po jedné jednotce mají T4,T6,T7 všechny aktuální level 1. Teď se dělí o dva procesory.",
+        calc: "p'4=p'6=p'7=1\nS={T4,T6,T7}\nh=2, |S|=3\nβ=2/3\nδfinish = 1/(2/3)=1.5",
+        phase: "t9",
+        hot: ["T4", "T6", "T7"]
+      },
+      {
+        title: "7. Konec v čase 10.5",
+        text: "T4,T6,T7 doběhly současně, T8 má p=0. Rozvrh končí v čase 10.5.",
+        calc: "t = 9 + 1.5 = 10.5\nT8 je dummy úloha p8=0\nCmax = 10.5",
+        phase: "done",
+        hot: []
+      }
+    ];
+
+    let index = 0;
+    let timer = null;
+    const svg = document.getElementById("viz");
+
+    function svgEl(tag, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      for (const [name, value] of Object.entries(attrs)) el.setAttribute(name, value);
+      return el;
+    }
+
+    function text(parent, value, x, y, opts = {}) {
+      const el = svgEl("text", {
+        x, y,
+        fill: opts.fill || "#111827",
+        "font-size": opts.size || 13,
+        "font-weight": opts.weight || 700,
+        "text-anchor": opts.anchor || "start",
+        "font-family": opts.family || "Inter, Arial, sans-serif"
+      });
+      el.textContent = value;
+      parent.appendChild(el);
+      return el;
+    }
+
+    function markerDefs() {
+      const defs = svgEl("defs");
+      for (const [id, color] of [["arrow", "#64748b"], ["arrow-red", "#dc2626"]]) {
+        const marker = svgEl("marker", { id, markerWidth: 12, markerHeight: 12, refX: 10, refY: 6, orient: "auto" });
+        marker.appendChild(svgEl("path", { d: "M2,2 L10,6 L2,10 Z", fill: color }));
+        defs.appendChild(marker);
+      }
+      svg.appendChild(defs);
+    }
+
+    function drawEdge(a, b, active) {
+      const ja = jobs[a];
+      const jb = jobs[b];
+      svg.appendChild(svgEl("path", {
+        d: `M ${ja.x + 36} ${ja.y} C ${ja.x + 90} ${ja.y}, ${jb.x - 90} ${jb.y}, ${jb.x - 36} ${jb.y}`,
+        fill: "none",
+        stroke: active ? "#dc2626" : "#64748b",
+        "stroke-width": active ? 3 : 2,
+        "marker-end": active ? "url(#arrow-red)" : "url(#arrow)"
+      }));
+    }
+
+    function doneSet(phase) {
+      if (phase === "t5") return new Set(["T1", "T2", "T3"]);
+      if (phase === "t8") return new Set(["T1", "T2", "T3", "T5"]);
+      if (phase === "t9") return new Set(["T1", "T2", "T3", "T5"]);
+      if (phase === "done") return new Set(order);
+      return new Set();
+    }
+
+    function drawNode(id, hot, done) {
+      const job = jobs[id];
+      svg.appendChild(svgEl("circle", {
+        cx: job.x,
+        cy: job.y,
+        r: 32,
+        fill: done ? "#f8fafc" : job.color,
+        stroke: hot ? "#dc2626" : job.stroke,
+        "stroke-width": hot ? 4 : 2
+      }));
+      text(svg, id, job.x, job.y - 4, { anchor: "middle", size: 15, weight: 900 });
+      text(svg, `${job.p}/${job.level}`, job.x, job.y + 17, { anchor: "middle", size: 12, fill: "#475569" });
+    }
+
+    function drawDag(step) {
+      const done = doneSet(step.phase);
+      text(svg, "Graf úloh: p/ℓ", 28, 32, { size: 18, weight: 900 });
+      text(svg, "červeně = právě prioritní / běžící skupina", 28, 54, { size: 12, fill: "#64748b" });
+      for (const [a, b] of edges) drawEdge(a, b, step.hot.includes(a) || step.hot.includes(b));
+      for (const id of order) drawNode(id, step.hot.includes(id), done.has(id));
+    }
+
+    function activeRows(phase) {
+      if (phase === "t0") return [
+        ["T2", "level 9", "β=1"],
+        ["T1,T3", "level 8", "β=1/2"]
+      ];
+      if (phase === "t2") return [["T1,T2,T3", "level 7", "β=2/3"]];
+      if (phase === "t5") return [["T4,T5", "level 5", "β=1"]];
+      if (phase === "t8") return [
+        ["T4,T7", "level 2", "β=1"],
+        ["T6", "level 1", "čeká"]
+      ];
+      if (phase === "t9") return [["T4,T6,T7", "level 1", "β=2/3"]];
+      if (phase === "done") return [["hotovo", "Cmax=10.5", ""]];
+      return [["T1,T2,T3", "ready na startu", ""]];
+    }
+
+    function drawStatus(step) {
+      const x = 650;
+      const y = 64;
+      svg.appendChild(svgEl("rect", { x, y, width: 280, height: 166, rx: 8, fill: "#fff", stroke: "#d8e0ea", "stroke-width": 2 }));
+      text(svg, "Aktuální rozhodnutí", x + 16, y + 30, { size: 16, weight: 900 });
+      activeRows(step.phase).forEach((row, i) => {
+        const yy = y + 58 + i * 30;
+        text(svg, row[0], x + 16, yy, { size: 13, weight: 900, fill: row[2] === "čeká" ? "#64748b" : "#111827" });
+        text(svg, row[1], x + 106, yy, { size: 12, fill: "#475569" });
+        text(svg, row[2], x + 200, yy, { size: 12, fill: row[2] === "čeká" ? "#64748b" : "#dc2626" });
+      });
+    }
+
+    function drawEventRules(step) {
+      const x = 650;
+      const y = 255;
+      svg.appendChild(svgEl("rect", { x, y, width: 280, height: 118, rx: 8, fill: "#f8fafc", stroke: "#d8e0ea", "stroke-width": 2 }));
+      text(svg, "Co může určit δ", x + 16, y + 28, { size: 15, weight: 900 });
+      text(svg, "1. dokončení: min p'j/βj", x + 16, y + 55, { size: 12, fill: step.phase === "t2" || step.phase === "t5" || step.phase === "t9" ? "#dc2626" : "#374151" });
+      text(svg, "2. čekající úloha dožene prioritu", x + 16, y + 78, { size: 12, fill: step.phase === "t8" ? "#dc2626" : "#374151" });
+      text(svg, "3. změna rychlosti / vyrovnání levelů", x + 16, y + 101, { size: 12, fill: step.phase === "t0" ? "#dc2626" : "#374151" });
+    }
+
+    function block(x, y, start, dur, id, active = true) {
+      const scale = 58;
+      const job = jobs[id];
+      const bx = x + 74 + start * scale;
+      const width = dur * scale;
+      svg.appendChild(svgEl("rect", {
+        x: bx, y, width, height: 34, rx: 5,
+        fill: active ? job.color : "#f8fafc",
+        stroke: active ? job.stroke : "#cbd5e1",
+        "stroke-width": 2,
+        opacity: active ? 1 : 0.35
+      }));
+      text(svg, id, bx + width / 2, y + 22, { anchor: "middle", size: 12, weight: 900, fill: active ? "#111827" : "#94a3b8" });
+    }
+
+    function drawSchedule(step) {
+      const x = 38;
+      const y = 410;
+      const scale = 58;
+      text(svg, "Konkrétní realizace preempce na R=2", x, y - 36, { size: 18, weight: 900 });
+      text(svg, "zlomkové β je realizované střídáním úloh v krátkých intervalech", x, y - 14, { size: 12, fill: "#64748b" });
+      for (const t of [0, 1, 2, 3, 4, 5, 8, 9, 10.5]) {
+        const xx = x + 74 + t * scale;
+        svg.appendChild(svgEl("line", { x1: xx, y1: y + 2, x2: xx, y2: y + 96, stroke: t === 10.5 ? "#16a34a" : "#d8e0ea", "stroke-width": t === 10.5 ? 3 : 1 }));
+        text(svg, String(t), xx, y + 122, { size: 11, fill: "#64748b", anchor: "middle" });
+      }
+      text(svg, "P1", x + 16, y + 32, { size: 13, weight: 900 });
+      text(svg, "P2", x + 16, y + 78, { size: 13, weight: 900 });
+      svg.appendChild(svgEl("line", { x1: x + 74, y1: y + 42, x2: x + 74 + 10.5 * scale, y2: y + 42, stroke: "#111827", "stroke-width": 2 }));
+      svg.appendChild(svgEl("line", { x1: x + 74, y1: y + 88, x2: x + 74 + 10.5 * scale, y2: y + 88, stroke: "#111827", "stroke-width": 2 }));
+
+      const visible = {
+        levels: 0,
+        t0: 2,
+        t2: 5,
+        t5: 8,
+        t8: 9,
+        t9: 10.5,
+        done: 10.5
+      }[step.phase] || 0;
+      const b = (row, start, dur, id) => block(x, y + (row === 0 ? 12 : 58), start, dur, id, start < visible);
+      b(0, 0, 2, "T2");
+      b(1, 0, 1, "T1");
+      b(1, 1, 1, "T3");
+      b(0, 2, 1, "T1");
+      b(1, 2, 1, "T2");
+      b(0, 3, 1, "T2");
+      b(1, 3, 1, "T3");
+      b(0, 4, 1, "T3");
+      b(1, 4, 1, "T1");
+      b(0, 5, 3, "T4");
+      b(1, 5, 3, "T5");
+      b(0, 8, 1, "T4");
+      b(1, 8, 1, "T7");
+      b(0, 9, 0.5, "T4");
+      b(1, 9, 0.5, "T6");
+      b(0, 9.5, 0.5, "T6");
+      b(1, 9.5, 0.5, "T7");
+      b(0, 10, 0.5, "T7");
+      b(1, 10, 0.5, "T4");
+      if (step.phase === "done") text(svg, "Cmax=10.5", x + 74 + 10.5 * scale, y - 4, { size: 13, fill: "#16a34a", weight: 900, anchor: "middle" });
+    }
+
+    function renderTable(step) {
+      const done = doneSet(step.phase);
+      document.getElementById("levelTable").innerHTML = order.map(id => {
+        const job = jobs[id];
+        const cls = step.hot.includes(id) ? "hot" : (done.has(id) ? "done" : "");
+        return `<tr class="${cls}"><td>${id}</td><td>${job.p}</td><td>${job.succ.join(",") || "-"}</td><td>${job.level}</td></tr>`;
+      }).join("");
+    }
+
+    function draw() {
+      const step = steps[index];
+      svg.innerHTML = "";
+      markerDefs();
+      drawDag(step);
+      drawStatus(step);
+      drawEventRules(step);
+      drawSchedule(step);
+    }
+
+    function render() {
+      const step = steps[index];
+      draw();
+      renderTable(step);
+      document.getElementById("stepTitle").textContent = step.title;
+      document.getElementById("stepText").textContent = step.text;
+      document.getElementById("calc").textContent = step.calc;
+      document.getElementById("counter").textContent = `${index + 1} / ${steps.length}`;
+    }
+
+    function go(delta) {
+      index = Math.max(0, Math.min(steps.length - 1, index + delta));
+      render();
+    }
+
+    document.getElementById("prev").addEventListener("click", () => go(-1));
+    document.getElementById("next").addEventListener("click", () => go(1));
+    document.getElementById("play").addEventListener("click", () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+        document.getElementById("play").textContent = "Play";
+        return;
+      }
+      document.getElementById("play").textContent = "Pause";
+      timer = setInterval(() => {
+        if (index === steps.length - 1) {
+          clearInterval(timer);
+          timer = null;
+          document.getElementById("play").textContent = "Play";
+          return;
+        }
+        go(1);
+      }, 1400);
+    });
+
+    render();
+  </script>
+</body>
+</html>
