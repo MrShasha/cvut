@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hornuv algoritmus</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #ffffff;
+      --panel: #f8fafc;
+      --line: #cbd5e1;
+      --text: #111827;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --cyan: #0891b2;
+      --yellow: #ca8a04;
+      --red: #dc2626;
+      --green: #16a34a;
+      --violet: #7c3aed;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    .wrap {
+      height: 720px;
+      padding: 18px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 14px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 22px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 8px 11px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button:hover { border-color: #94a3b8; background: #f8fafc; }
+
+    .counter {
+      min-width: 86px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .main {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .chart {
+      padding: 12px;
+      background: #fff;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .side {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+      padding: 14px;
+    }
+
+    .step-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    .step-text {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      min-height: 78px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .card p {
+      margin: 0;
+      font: 600 14px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-line;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    th, td {
+      padding: 7px 8px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: center;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 12px;
+      background: #f8fafc;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 13px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      display: inline-block;
+      margin-right: 5px;
+      vertical-align: -1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>Hornův algoritmus: preemptivní EDF</h1>
+        <p class="subtitle">V každém eventu vezmeme připravenou úlohu s nejmenším due date. Nový release time může běh přerušit.</p>
+      </div>
+      <div class="controls">
+        <button type="button" id="prev">←</button>
+        <button type="button" id="play">Play</button>
+        <button type="button" id="next">→</button>
+        <span class="counter" id="counter"></span>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="panel chart">
+        <svg id="viz" viewBox="0 0 760 520" aria-label="Hornuv algoritmus timeline"></svg>
+      </section>
+
+      <aside class="panel side">
+        <div>
+          <h2 class="step-title" id="stepTitle"></h2>
+          <p class="step-text" id="stepText"></p>
+        </div>
+
+        <div class="cards">
+          <div class="card">
+            <h3>Ready set</h3>
+            <p id="ready"></p>
+          </div>
+          <div class="card">
+            <h3>Výpočet δ</h3>
+            <p id="delta"></p>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr><th>úloha</th><th>p</th><th>r</th><th>d</th><th>stav</th></tr>
+          </thead>
+          <tbody id="jobRows"></tbody>
+        </table>
+      </aside>
+    </main>
+
+    <div class="legend">
+      <span><span class="dot" style="background:#2563eb"></span>T1</span>
+      <span><span class="dot" style="background:#0891b2"></span>T2</span>
+      <span><span class="dot" style="background:#ca8a04"></span>T3</span>
+      <span><span class="dot" style="background:#dc2626"></span>T4</span>
+      <span>↓ release time, dashed line = due date</span>
+    </div>
+  </div>
+
+  <script>
+    const jobs = [
+      { id: "T1", p: 3, r: 0, d: 13, color: "#2563eb" },
+      { id: "T2", p: 2, r: 4, d: 8, color: "#0891b2" },
+      { id: "T3", p: 3, r: 2, d: 11, color: "#ca8a04" },
+      { id: "T4", p: 4, r: 0, d: 16, color: "#dc2626" }
+    ];
+
+    const segments = [
+      { job: "T1", start: 0, end: 2 },
+      { job: "T3", start: 2, end: 4 },
+      { job: "T2", start: 4, end: 6 },
+      { job: "T3", start: 6, end: 7 },
+      { job: "T1", start: 7, end: 8 },
+      { job: "T4", start: 8, end: 12 }
+    ];
+
+    const steps = [
+      {
+        title: "Zadání",
+        text: "Úlohy mají release time r_j, processing time p_j a due date d_j. Preempce je povolena.",
+        ready: "T1, T4 v čase 0",
+        delta: "ještě nic neplánujeme",
+        visible: 0,
+        active: -1
+      },
+      {
+        title: "t = 0: vybereme T1",
+        text: "Připravené jsou T1 a T4. EDF bere menší due date: d1=13 < d4=16.",
+        ready: "{T1(d=13), T4(d=16)}",
+        delta: "δ = min(3, 2-0) = 2",
+        visible: 1,
+        active: 0
+      },
+      {
+        title: "t = 2: přijde T3",
+        text: "T1 ještě zbývá 1 jednotka, ale T3 má bližší due date. Proto T1 přerušíme.",
+        ready: "{T1(rem=1,d=13), T3(d=11), T4(d=16)}",
+        delta: "δ = min(3, 4-2) = 2",
+        visible: 2,
+        active: 1
+      },
+      {
+        title: "t = 4: přijde T2",
+        text: "T2 má nejmenší due date d2=8, proto dostane procesor jako první.",
+        ready: "{T1, T2(d=8), T3(rem=1), T4}",
+        delta: "δ = min(2, ∞) = 2",
+        visible: 3,
+        active: 2
+      },
+      {
+        title: "t = 6: dokončíme T3",
+        text: "Po dokončení T2 je nejurgentnější T3 s d3=11.",
+        ready: "{T1(rem=1), T3(rem=1), T4}",
+        delta: "δ = min(1, ∞) = 1",
+        visible: 4,
+        active: 3
+      },
+      {
+        title: "t = 7: dokončíme T1",
+        text: "Zbývají T1 a T4. EDF vybere T1, protože d1=13 < d4=16.",
+        ready: "{T1(rem=1), T4}",
+        delta: "δ = min(1, ∞) = 1",
+        visible: 5,
+        active: 4
+      },
+      {
+        title: "t = 8: dokončíme T4",
+        text: "Poslední zbývající úloha je T4.",
+        ready: "{T4(rem=4)}",
+        delta: "δ = 4",
+        visible: 6,
+        active: 5
+      },
+      {
+        title: "Výsledek",
+        text: "Completion times: C1=8, C2=6, C3=7, C4=12. Lmax=max(-5,-2,-4,-4)=-2.",
+        ready: "vše dokončeno",
+        delta: "všechny úlohy jsou před due date",
+        visible: 6,
+        active: -1
+      }
+    ];
+
+    let index = 0;
+    let timer = null;
+
+    const svg = document.getElementById("viz");
+    const x0 = 72;
+    const y0 = 70;
+    const width = 620;
+    const scale = width / 16;
+    const rowH = 78;
+
+    function x(t) { return x0 + t * scale; }
+    function jobById(id) { return jobs.find(j => j.id === id); }
+
+    function svgEl(tag, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+      return el;
+    }
+
+    function addText(parent, text, x, y, opts = {}) {
+      const el = svgEl("text", {
+        x, y,
+        "font-size": opts.size || 13,
+        "font-weight": opts.weight || 600,
+        fill: opts.fill || "#111827",
+        "text-anchor": opts.anchor || "start"
+      });
+      el.textContent = text;
+      parent.appendChild(el);
+      return el;
+    }
+
+    function draw(step) {
+      svg.innerHTML = "";
+
+      addText(svg, "T = {T1,T2,T3,T4}", 24, 26, { size: 15, weight: 700 });
+      addText(svg, "p=(3,2,3,4), r=(0,4,2,0), d=(13,8,11,16)", 24, 48, { size: 13, fill: "#475569" });
+
+      for (let t = 0; t <= 16; t += 2) {
+        const line = svgEl("line", { x1: x(t), x2: x(t), y1: y0 - 14, y2: y0 + rowH * 4 - 10, stroke: "#e5e7eb", "stroke-width": 1 });
+        svg.appendChild(line);
+        addText(svg, String(t), x(t), y0 + rowH * 4 + 10, { size: 12, fill: "#64748b", anchor: "middle" });
+      }
+
+      jobs.forEach((job, i) => {
+        const y = y0 + i * rowH;
+        addText(svg, job.id, 26, y + 30, { size: 15, weight: 700 });
+        svg.appendChild(svgEl("line", { x1: x0, x2: x(16), y1: y + 34, y2: y + 34, stroke: "#cbd5e1", "stroke-width": 2 }));
+        svg.appendChild(svgEl("line", { x1: x(job.r), x2: x(job.r), y1: y + 10, y2: y + 34, stroke: job.color, "stroke-width": 3 }));
+        addText(svg, "r=" + job.r, x(job.r), y + 8, { size: 11, fill: job.color, anchor: "middle" });
+        svg.appendChild(svgEl("line", { x1: x(job.d), x2: x(job.d), y1: y + 2, y2: y + 58, stroke: "#94a3b8", "stroke-width": 2, "stroke-dasharray": "5 4" }));
+        addText(svg, "d=" + job.d, x(job.d), y + 72, { size: 11, fill: "#64748b", anchor: "middle" });
+      });
+
+      segments.slice(0, step.visible).forEach((seg, i) => {
+        const job = jobById(seg.job);
+        const row = jobs.findIndex(j => j.id === seg.job);
+        const y = y0 + row * rowH + 14;
+        const rect = svgEl("rect", {
+          x: x(seg.start),
+          y,
+          width: (seg.end - seg.start) * scale,
+          height: 38,
+          rx: 5,
+          fill: job.color,
+          opacity: i === step.active ? 1 : 0.82,
+          stroke: i === step.active ? "#111827" : job.color,
+          "stroke-width": i === step.active ? 3 : 1
+        });
+        svg.appendChild(rect);
+        addText(svg, seg.job, x((seg.start + seg.end) / 2), y + 25, { size: 13, fill: "#fff", anchor: "middle", weight: 800 });
+      });
+    }
+
+    function remainingAfter(visible) {
+      const done = Object.fromEntries(jobs.map(j => [j.id, 0]));
+      segments.slice(0, visible).forEach(s => { done[s.job] += s.end - s.start; });
+      return jobs.map(j => {
+        const rem = j.p - done[j.id];
+        return { ...j, rem, status: rem === 0 ? "hotovo" : rem === j.p ? "čeká" : "rem=" + rem };
+      });
+    }
+
+    function render() {
+      const step = steps[index];
+      draw(step);
+      document.getElementById("stepTitle").textContent = step.title;
+      document.getElementById("stepText").textContent = step.text;
+      document.getElementById("ready").textContent = step.ready;
+      document.getElementById("delta").textContent = step.delta;
+      document.getElementById("counter").textContent = `${index + 1} / ${steps.length}`;
+      document.getElementById("jobRows").innerHTML = remainingAfter(step.visible).map(j => `
+        <tr>
+          <td style="font-weight:700;color:${j.color}">${j.id}</td>
+          <td>${j.p}</td>
+          <td>${j.r}</td>
+          <td>${j.d}</td>
+          <td>${j.status}</td>
+        </tr>
+      `).join("");
+    }
+
+    function go(delta) {
+      index = Math.max(0, Math.min(steps.length - 1, index + delta));
+      render();
+    }
+
+    document.getElementById("prev").addEventListener("click", () => go(-1));
+    document.getElementById("next").addEventListener("click", () => go(1));
+    document.getElementById("play").addEventListener("click", () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+        document.getElementById("play").textContent = "Play";
+        return;
+      }
+      document.getElementById("play").textContent = "Pause";
+      timer = setInterval(() => {
+        if (index === steps.length - 1) {
+          clearInterval(timer);
+          timer = null;
+          document.getElementById("play").textContent = "Play";
+          return;
+        }
+        go(1);
+      }, 1200);
+    });
+
+    render();
+  </script>
+</body>
+</html>
