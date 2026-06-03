@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rothkopf DP</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff;
+      --panel: #f8fafc;
+      --line: #cbd5e1;
+      --text: #111827;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+    .wrap { height: 720px; padding: 18px; display: grid; grid-template-rows: auto 1fr; gap: 14px; }
+    .top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+    h1 { margin: 0 0 4px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+    .subtitle { margin: 0; color: var(--muted); font-size: 14px; }
+    .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    button { border: 1px solid var(--line); background: #fff; color: var(--text); border-radius: 8px; padding: 8px 11px; font-size: 14px; cursor: pointer; }
+    button:hover { border-color: #94a3b8; background: #f8fafc; }
+    .counter { min-width: 86px; text-align: center; color: var(--muted); font-size: 13px; }
+    .main { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; min-height: 0; }
+    .panel { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); overflow: hidden; min-height: 0; }
+    .viz { background: #fff; padding: 12px; }
+    svg { width: 100%; height: 100%; display: block; }
+    .side { display: grid; grid-template-rows: auto auto 1fr; gap: 12px; padding: 14px; }
+    .step-title { margin: 0; font-size: 18px; line-height: 1.25; }
+    .step-text { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .formula { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 12px; font: 700 14px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-line; }
+    .states { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 10px; overflow: auto; }
+    .pill { display: inline-block; margin: 3px; padding: 5px 8px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; font: 700 12px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>Rothkopfův DP pro P||Cmax</h1>
+        <p class="subtitle">Přesný pseudopolynomiální algoritmus: stav je vektor zatížení procesorů po prvních i úlohách.</p>
+      </div>
+      <div class="controls">
+        <button id="prev" type="button">←</button>
+        <button id="play" type="button">Play</button>
+        <button id="next" type="button">→</button>
+        <span id="counter" class="counter"></span>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="panel viz">
+        <svg id="viz" viewBox="0 0 760 520" aria-label="Rothkopf DP grid"></svg>
+      </section>
+      <aside class="panel side">
+        <div>
+          <h2 class="step-title" id="stepTitle"></h2>
+          <p class="step-text" id="stepText"></p>
+        </div>
+        <div class="formula" id="formula"></div>
+        <div class="states" id="states"></div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const p = [2, 3, 4, 2];
+    const R = 2;
+    const UB = p.reduce((a, b) => a + b, 0);
+
+    function normalize(state) {
+      return state.slice().sort((a, b) => a - b);
+    }
+    function key(state) { return normalize(state).join(","); }
+    function parse(k) { return k.split(",").map(Number); }
+
+    const layers = [new Set(["0,0"])];
+    for (const job of p) {
+      const next = new Set();
+      for (const k of layers[layers.length - 1]) {
+        const s = parse(k);
+        for (let r = 0; r < R; r++) {
+          const ns = s.slice();
+          ns[r] += job;
+          next.add(key(ns));
+        }
+      }
+      layers.push(next);
+    }
+
+    const steps = [
+      {
+        title: "1. Stav DP",
+        text: "Pro R=2 je stav dvojice zatížení procesorů. Kvůli symetrii řadíme dvojici vzestupně: (1,4) a (4,1) je stejný stav.",
+        formula: "x_i(t1,t2)=1\n⇔ po prvních i úlohách lze mít zatížení (t1,t2)",
+        layer: 0
+      },
+      {
+        title: "2. Přidáme T1 délky 2",
+        text: "Úlohu můžeme dát na kterýkoli procesor. Po normalizaci vznikne jeden stav.",
+        formula: "(0,0) + 2 → (0,2)",
+        layer: 1
+      },
+      {
+        title: "3. Přidáme T2 délky 3",
+        text: "Z každého stavu větvíme možností: přidat úlohu na P1 nebo P2.",
+        formula: "(0,2)+3 → (2,3) nebo (0,5)",
+        layer: 2
+      },
+      {
+        title: "4. Přidáme T3 délky 4",
+        text: "Počet stavů roste. Pro větší R má tabulka R dimenzí, proto vzniká faktor UB^R.",
+        formula: "složitost: O(n · UB^R)\npro R=2 ještě přehledné\npro R=10 prakticky exploduje",
+        layer: 3
+      },
+      {
+        title: "5. Přidáme T4 délky 2",
+        text: "Po poslední úloze prohlédneme všechny dosažitelné stavy a vybereme minimální maximum zatížení.",
+        formula: "Cmax* = min max(t1,t2)\npřes všechny dosažitelné stavy",
+        layer: 4
+      },
+      {
+        title: "Výsledek",
+        text: "Pro p=(2,3,4,2) je nejlepší stav (5,6), tedy optimální Cmax je 6.",
+        formula: "stav (5,6):\nP1 = 2+3 = 5\nP2 = 4+2 = 6\nCmax* = 6",
+        layer: 4,
+        best: "5,6"
+      }
+    ];
+
+    let index = 0;
+    let timer = null;
+    const svg = document.getElementById("viz");
+
+    function svgEl(tag, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+      return el;
+    }
+    function text(parent, value, x, y, opts = {}) {
+      const el = svgEl("text", { x, y, "font-size": opts.size || 13, "font-weight": opts.weight || 600, fill: opts.fill || "#111827", "text-anchor": opts.anchor || "start" });
+      el.textContent = value;
+      parent.appendChild(el);
+      return el;
+    }
+
+    function draw(step) {
+      svg.innerHTML = "";
+      const layer = layers[step.layer];
+      const x0 = 80, y0 = 70, size = 34;
+      text(svg, "Dosažitelné stavy zatížení (t1,t2)", 28, 30, { size: 17, weight: 800 });
+      text(svg, `p=(${p.join(",")}), R=2, UB=${UB}`, 28, 54, { size: 13, fill: "#64748b" });
+
+      for (let i = 0; i <= UB; i++) {
+        const x = x0 + i * size;
+        const y = y0 + (UB - i) * size;
+        text(svg, String(i), x + 11, y0 + (UB + 1) * size + 18, { anchor: "middle", size: 10, fill: "#64748b" });
+        text(svg, String(i), x0 - 18, y + 22, { anchor: "middle", size: 10, fill: "#64748b" });
+      }
+      text(svg, "t1", x0 + (UB + 1) * size + 8, y0 + (UB + 1) * size + 18, { size: 12, fill: "#64748b" });
+      text(svg, "t2", x0 - 22, y0 - 12, { size: 12, fill: "#64748b" });
+
+      for (let a = 0; a <= UB; a++) {
+        for (let b = 0; b <= UB; b++) {
+          const x = x0 + a * size;
+          const y = y0 + (UB - b) * size;
+          svg.appendChild(svgEl("rect", { x, y, width: size - 2, height: size - 2, fill: "#f8fafc", stroke: "#e5e7eb" }));
+        }
+      }
+
+      [...layer].forEach(k => {
+        const [a, b] = parse(k);
+        const x = x0 + a * size;
+        const y = y0 + (UB - b) * size;
+        const best = step.best === k;
+        svg.appendChild(svgEl("rect", { x, y, width: size - 2, height: size - 2, rx: 5, fill: best ? "#dcfce7" : "#dbeafe", stroke: best ? "#16a34a" : "#2563eb", "stroke-width": best ? 3 : 2 }));
+      });
+
+      const infoX = 535;
+      text(svg, "Vrstva", infoX, 100, { size: 13, fill: "#64748b" });
+      text(svg, `i = ${step.layer}`, infoX, 126, { size: 24, weight: 800 });
+      text(svg, "zpracované úlohy", infoX, 168, { size: 13, fill: "#64748b" });
+      text(svg, p.slice(0, step.layer).map((v, i) => `T${i + 1}:${v}`).join("  ") || "—", infoX, 194, { size: 14, weight: 800 });
+      text(svg, "počet stavů", infoX, 246, { size: 13, fill: "#64748b" });
+      text(svg, String(layer.size), infoX, 272, { size: 24, weight: 800 });
+      if (step.layer === p.length) {
+        const best = [...layer].map(k => ({ k, m: Math.max(...parse(k)) })).sort((a, b) => a.m - b.m)[0];
+        text(svg, "nejlepší", infoX, 326, { size: 13, fill: "#64748b" });
+        text(svg, `${best.k} ⇒ Cmax=${best.m}`, infoX, 352, { size: 18, weight: 800, fill: "#16a34a" });
+      }
+    }
+
+    function render() {
+      const step = steps[index];
+      draw(step);
+      document.getElementById("stepTitle").textContent = step.title;
+      document.getElementById("stepText").textContent = step.text;
+      document.getElementById("formula").textContent = step.formula;
+      document.getElementById("counter").textContent = `${index + 1} / ${steps.length}`;
+      document.getElementById("states").innerHTML = [...layers[step.layer]].sort((a, b) => Math.max(...parse(a)) - Math.max(...parse(b))).map(k => `<span class="pill">${k}</span>`).join("");
+    }
+    function go(delta) {
+      index = Math.max(0, Math.min(steps.length - 1, index + delta));
+      render();
+    }
+    document.getElementById("prev").addEventListener("click", () => go(-1));
+    document.getElementById("next").addEventListener("click", () => go(1));
+    document.getElementById("play").addEventListener("click", () => {
+      if (timer) { clearInterval(timer); timer = null; document.getElementById("play").textContent = "Play"; return; }
+      document.getElementById("play").textContent = "Pause";
+      timer = setInterval(() => {
+        if (index === steps.length - 1) { clearInterval(timer); timer = null; document.getElementById("play").textContent = "Play"; return; }
+        go(1);
+      }, 1200);
+    });
+    render();
+  </script>
+</body>
+</html>

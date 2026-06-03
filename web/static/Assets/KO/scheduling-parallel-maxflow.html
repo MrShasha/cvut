@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Parallel scheduling as max-flow</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff;
+      --panel: #f8fafc;
+      --line: #cbd5e1;
+      --text: #111827;
+      --muted: #64748b;
+      --blue: #2563eb;
+      --green: #16a34a;
+      --orange: #f97316;
+      --red: #dc2626;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+    .wrap { height: 740px; padding: 18px; display: grid; grid-template-rows: auto 1fr; gap: 14px; }
+    .top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+    h1 { margin: 0 0 4px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+    .subtitle { margin: 0; color: var(--muted); font-size: 14px; }
+    .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    button { border: 1px solid var(--line); background: #fff; color: var(--text); border-radius: 8px; padding: 8px 11px; font-size: 14px; cursor: pointer; }
+    button:hover { border-color: #94a3b8; background: #f8fafc; }
+    .counter { min-width: 86px; text-align: center; color: var(--muted); font-size: 13px; }
+    .main { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; min-height: 0; }
+    .panel { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); overflow: hidden; min-height: 0; }
+    .viz { background: #fff; padding: 12px; }
+    svg { width: 100%; height: 100%; display: block; }
+    .side { display: grid; grid-template-rows: auto auto 1fr; gap: 12px; padding: 14px; }
+    .step-title { margin: 0; font-size: 18px; line-height: 1.25; }
+    .step-text { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .formula { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 12px; font: 700 14px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-line; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 7px 8px; border-bottom: 1px solid #e5e7eb; text-align: center; }
+    th { color: var(--muted); font-size: 12px; background: #f8fafc; }
+    tr:last-child td { border-bottom: 0; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>P|pmtn,rj,dj|Cmax: rozhodovací verze přes max-flow</h1>
+        <p class="subtitle">Pro daný deadline horizont ověříme, zda lze všechen processing time protlačit přes časové intervaly s kapacitou R.</p>
+      </div>
+      <div class="controls">
+        <button id="prev" type="button">←</button>
+        <button id="play" type="button">Play</button>
+        <button id="next" type="button">→</button>
+        <span id="counter" class="counter"></span>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="panel viz">
+        <svg id="viz" viewBox="0 0 780 540" aria-label="Max-flow reduction"></svg>
+      </section>
+      <aside class="panel side">
+        <div>
+          <h2 class="step-title" id="stepTitle"></h2>
+          <p class="step-text" id="stepText"></p>
+        </div>
+        <div class="formula" id="formula"></div>
+        <table>
+          <thead><tr><th>úloha</th><th>p</th><th>r</th><th>d</th><th>eligible intervals</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const R = 2;
+    const jobs = [
+      { id: "T1", p: 2, r: 0, d: 4, color: "#2563eb" },
+      { id: "T2", p: 3, r: 1, d: 6, color: "#0891b2" },
+      { id: "T3", p: 2, r: 3, d: 7, color: "#ca8a04" }
+    ];
+    const intervals = [
+      { id: "I1", a: 0, b: 1 },
+      { id: "I2", a: 1, b: 3 },
+      { id: "I3", a: 3, b: 4 },
+      { id: "I4", a: 4, b: 6 },
+      { id: "I5", a: 6, b: 7 }
+    ];
+    const flow = [
+      ["I1", "T1", 1],
+      ["I2", "T1", 1],
+      ["I2", "T2", 2],
+      ["I3", "T2", 1],
+      ["I4", "T3", 2]
+    ];
+
+    const schedule = [
+      { job: "T1", machine: 1, start: 0, end: 2 },
+      { job: "T2", machine: 2, start: 1, end: 3 },
+      { job: "T2", machine: 1, start: 3, end: 4 },
+      { job: "T3", machine: 1, start: 4, end: 5 },
+      { job: "T3", machine: 2, start: 5, end: 6 }
+    ];
+
+    const steps = [
+      {
+        title: "1. Instance a kapacity",
+        text: "Máme R=2 stejné procesory. V každém časovém intervalu lze zpracovat nejvýše R·délka intervalu jednotek práce.",
+        formula: "T1: p=2, [r,d]=[0,4]\nT2: p=3, [1,6]\nT3: p=2, [3,7]\ncelkem práce = 7",
+        mode: "timeline",
+        flowCount: 0
+      },
+      {
+        title: "2. Rozsekáme čas podle rj a dj",
+        text: "Hraniční body jsou všechny release times a deadlines. Mezi nimi se množina dostupných úloh nemění.",
+        formula: "body: 0,1,3,4,6,7\nintervaly:\nI1=[0,1], I2=[1,3], I3=[3,4], I4=[4,6], I5=[6,7]",
+        mode: "intervals",
+        flowCount: 0
+      },
+      {
+        title: "3. Postavíme síť",
+        text: "Zdroj posílá kapacitu do intervalů. Interval může poslat tok jen do úloh, které jsou v něm dostupné.",
+        formula: "S → Ii: kapacita R·|Ii|\nIi → Tj: pokud [Ii] ⊆ [rj,dj]\nTj → T: kapacita p_j",
+        mode: "network",
+        flowCount: 0
+      },
+      {
+        title: "4. Tok vyjadřuje práci",
+        text: "Jednotka toku z intervalu do úlohy znamená jednotku zpracování této úlohy v daném časovém okně.",
+        formula: "např. I2=[1,3] má kapacitu 4\npošle 1 do T1 a 2 do T2\nžádná úloha neběží paralelně sama se sebou",
+        mode: "network",
+        flowCount: 3
+      },
+      {
+        title: "5. Feasible právě když nasytíme úlohy",
+        text: "Pokud max-flow nasytí všechny hrany Tj→T, každá úloha dostala celý svůj processing time.",
+        formula: "flow value = p1+p2+p3 = 7\nT1: 2/2, T2: 3/3, T3: 2/2\n⇒ přípustný preemptivní rozvrh existuje",
+        mode: "schedule",
+        flowCount: flow.length
+      }
+    ];
+
+    let index = 0;
+    let timer = null;
+    const svg = document.getElementById("viz");
+
+    function svgEl(tag, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+      return el;
+    }
+    function text(parent, value, x, y, opts = {}) {
+      const el = svgEl("text", { x, y, "font-size": opts.size || 13, "font-weight": opts.weight || 600, fill: opts.fill || "#111827", "text-anchor": opts.anchor || "start" });
+      el.textContent = value;
+      parent.appendChild(el);
+      return el;
+    }
+    function job(id) { return jobs.find(j => j.id === id); }
+    function interval(id) { return intervals.find(i => i.id === id); }
+    function eligible(j, it) { return it.a >= j.r && it.b <= j.d; }
+
+    function drawTimeline(step) {
+      const x0 = 82, y0 = 90, scale = 84, rowH = 76;
+      text(svg, "Časová osa a okna úloh", 28, 30, { size: 17, weight: 800 });
+      text(svg, "Preempce dovoluje rozdělit úlohu mezi různé intervaly.", 28, 54, { size: 13, fill: "#64748b" });
+      for (let t = 0; t <= 7; t++) {
+        const x = x0 + t * scale;
+        svg.appendChild(svgEl("line", { x1: x, x2: x, y1: y0 - 20, y2: y0 + rowH * 3, stroke: "#e5e7eb", "stroke-width": 1 }));
+        text(svg, String(t), x, y0 + rowH * 3 + 20, { anchor: "middle", size: 12, fill: "#64748b" });
+      }
+      jobs.forEach((j, i) => {
+        const y = y0 + i * rowH;
+        text(svg, j.id, 30, y + 32, { size: 15, weight: 800, fill: j.color });
+        svg.appendChild(svgEl("line", { x1: x0, x2: x0 + 7 * scale, y1: y + 38, y2: y + 38, stroke: "#cbd5e1", "stroke-width": 2 }));
+        svg.appendChild(svgEl("rect", { x: x0 + j.r * scale, y: y + 12, width: (j.d - j.r) * scale, height: 40, rx: 6, fill: j.color, opacity: 0.14, stroke: j.color, "stroke-width": 2 }));
+        text(svg, `[${j.r},${j.d}], p=${j.p}`, x0 + (j.r + j.d) * scale / 2, y + 38, { anchor: "middle", fill: j.color, weight: 800 });
+      });
+      if (step.mode !== "timeline") {
+        intervals.forEach(it => {
+          const x = x0 + it.a * scale;
+          svg.appendChild(svgEl("line", { x1: x, x2: x, y1: y0 - 30, y2: y0 + rowH * 3 + 6, stroke: "#111827", "stroke-width": 2 }));
+          text(svg, it.id, x0 + (it.a + it.b) * scale / 2, y0 - 36, { anchor: "middle", size: 12, fill: "#111827" });
+        });
+      }
+    }
+
+    function drawNetwork(step) {
+      text(svg, "Max-flow síť", 28, 30, { size: 17, weight: 800 });
+      text(svg, "S→intervaly: kapacita R·délka. Úlohy→T: požadovaný processing time.", 28, 54, { size: 13, fill: "#64748b" });
+      const S = { x: 60, y: 270, label: "S" };
+      const T = { x: 720, y: 270, label: "T" };
+      const intNodes = intervals.map((it, i) => ({ ...it, x: 220, y: 94 + i * 82 }));
+      const jobNodes = jobs.map((j, i) => ({ ...j, x: 500, y: 150 + i * 98 }));
+      function node(n, fill = "#fff", stroke = "#334155") {
+        svg.appendChild(svgEl("circle", { cx: n.x, cy: n.y, r: 28, fill, stroke, "stroke-width": 3 }));
+        text(svg, n.label || n.id, n.x, n.y + 5, { anchor: "middle", weight: 800 });
+      }
+      function line(a, b, label, active = false) {
+        svg.appendChild(svgEl("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: active ? "#16a34a" : "#cbd5e1", "stroke-width": active ? 4 : 2 }));
+        text(svg, label, (a.x + b.x) / 2, (a.y + b.y) / 2 - 5, { anchor: "middle", size: 11, fill: active ? "#16a34a" : "#64748b" });
+      }
+      node(S, "#eff6ff", "#2563eb");
+      node(T, "#f8fafc", "#334155");
+      intNodes.forEach(n => {
+        node({ ...n, label: n.id }, "#fff7ed", "#f97316");
+        line(S, n, `${R}·${n.b - n.a}=${R * (n.b - n.a)}`);
+      });
+      jobNodes.forEach(n => {
+        node(n, "#fff", n.color);
+        line(n, T, `p=${n.p}`);
+      });
+      let activeEdges = new Set(flow.slice(0, step.flowCount).map(f => f[0] + "-" + f[1]));
+      intNodes.forEach(it => {
+        jobNodes.forEach(j => {
+          if (!eligible(j, it)) return;
+          const f = flow.find(e => e[0] === it.id && e[1] === j.id);
+          line(it, j, f && activeEdges.has(it.id + "-" + j.id) ? String(f[2]) : "", activeEdges.has(it.id + "-" + j.id));
+        });
+      });
+    }
+
+    function drawSchedule() {
+      drawNetwork({ flowCount: flow.length });
+      const x0 = 110, y0 = 442, scale = 74, rowH = 36;
+      text(svg, "Jeden možný rozvrh z toku:", 28, y0 - 20, { size: 14, weight: 800 });
+      for (let m = 1; m <= 2; m++) {
+        const y = y0 + (m - 1) * rowH;
+        text(svg, "P" + m, 74, y + 22, { size: 12, weight: 800 });
+        svg.appendChild(svgEl("line", { x1: x0, x2: x0 + 7 * scale, y1: y + 22, y2: y + 22, stroke: "#111827", "stroke-width": 2 }));
+      }
+      for (let t = 0; t <= 7; t++) {
+        const xx = x0 + t * scale;
+        svg.appendChild(svgEl("line", { x1: xx, x2: xx, y1: y0 - 6, y2: y0 + rowH * 2 + 4, stroke: "#e5e7eb", "stroke-width": 1 }));
+        text(svg, String(t), xx, y0 + rowH * 2 + 20, { anchor: "middle", size: 10, fill: "#64748b" });
+      }
+      schedule.forEach(seg => {
+        const j = job(seg.job);
+        const y = y0 + (seg.machine - 1) * rowH + 3;
+        svg.appendChild(svgEl("rect", { x: x0 + seg.start * scale, y, width: (seg.end - seg.start) * scale, height: 24, rx: 4, fill: j.color, opacity: 0.88 }));
+        text(svg, j.id, x0 + (seg.start + seg.end) * scale / 2, y + 17, { anchor: "middle", size: 10, fill: "#fff", weight: 800 });
+      });
+    }
+
+    function draw() {
+      const step = steps[index];
+      svg.innerHTML = "";
+      if (step.mode === "network") drawNetwork(step);
+      else if (step.mode === "schedule") drawSchedule();
+      else drawTimeline(step);
+    }
+
+    function renderRows() {
+      document.getElementById("rows").innerHTML = jobs.map(j => {
+        const e = intervals.filter(it => eligible(j, it)).map(it => it.id).join(", ");
+        return `<tr><td style="font-weight:800;color:${j.color}">${j.id}</td><td>${j.p}</td><td>${j.r}</td><td>${j.d}</td><td>${e}</td></tr>`;
+      }).join("");
+    }
+
+    function render() {
+      const step = steps[index];
+      draw();
+      document.getElementById("stepTitle").textContent = step.title;
+      document.getElementById("stepText").textContent = step.text;
+      document.getElementById("formula").textContent = step.formula;
+      document.getElementById("counter").textContent = `${index + 1} / ${steps.length}`;
+      renderRows();
+    }
+    function go(delta) {
+      index = Math.max(0, Math.min(steps.length - 1, index + delta));
+      render();
+    }
+    document.getElementById("prev").addEventListener("click", () => go(-1));
+    document.getElementById("next").addEventListener("click", () => go(1));
+    document.getElementById("play").addEventListener("click", () => {
+      if (timer) { clearInterval(timer); timer = null; document.getElementById("play").textContent = "Play"; return; }
+      document.getElementById("play").textContent = "Pause";
+      timer = setInterval(() => {
+        if (index === steps.length - 1) { clearInterval(timer); timer = null; document.getElementById("play").textContent = "Play"; return; }
+        go(1);
+      }, 1300);
+    });
+    render();
+  </script>
+</body>
+</html>
