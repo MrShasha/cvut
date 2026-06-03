@@ -1,0 +1,236 @@
+<div id="projective-shadows-widget" style="font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; max-width: 800px; margin: 20px auto; border: 1px solid #333; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+    <h3 style="margin: 0 0 15px 0; color: #dcdcaa; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Projektivní stíny (Blinn 1988) & Stencil Optimalizace</h3>
+    
+    <div style="position: relative; margin-bottom: 20px;">
+        <canvas id="canvas-projective" width="760" height="300" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block; cursor: crosshair;"></canvas>
+        <div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 4px; font-size: 11px; border: 1px solid #444;">
+            <span style="color: #ffdf6d;">● Světlo L</span><br>
+            <span style="color: #4fc1ff;">● Vrchol P</span><br>
+            <span style="color: #9cdcfe;">▬ Přijímač (y = 220)</span>
+        </div>
+    </div>
+
+    <div style="background: #252526; padding: 15px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #3c3c3c; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: bold; color: #569cd6;">Geometrická konfigurace:</label>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 11px; margin-bottom: 4px;">Výška Světla (L.y):</label>
+                <input type="range" id="sld-light-y" min="20" max="210" value="60" style="width: 100%;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 11px; margin-bottom: 4px;">Výška Objektu (P.y):</label>
+                <input type="range" id="sld-poly-y" min="10" max="280" value="130" style="width: 100%;">
+            </div>
+        </div>
+        <div>
+            <label style="display: block; margin-bottom: 12px; font-size: 13px; font-weight: bold; color: #569cd6;">Mechanika Renderu:</label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 10px; cursor: pointer;">
+                <input type="checkbox" id="chk-use-stencil" checked> Aktivovat Stencil Buffer (Oříznutí na přijímač)
+            </label>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                <input type="checkbox" id="chk-show-rays" checked> Zobrazit projekční paprsky
+            </label>
+        </div>
+    </div>
+
+    <div style="background: #000; padding: 15px; border-radius: 4px; font-size: 12px; line-height: 1.6; border: 1px solid #222;">
+        <div style="color: #6a9955; margin-bottom: 8px;">// Výpočet v reálném čase (Projekce na rovinu Y = 220):</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div>
+                <div id="math-t-val" style="color: #b5cea8;">t = Ly / (Ly - Py) = --</div>
+                <div id="math-s-coords" style="color: #b5cea8;">S = [Sx, 220, Sz] = [--, 220, --]</div>
+            </div>
+            <div>
+                <div id="status-artifact" style="font-weight: bold; color: #ce9178;">Artefakty: Žádné</div>
+                <div id="status-stencil" style="color: #9cdcfe;">Stencil test: --</div>
+            </div>
+        </div>
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #222; font-size: 11px; color: #d4d4d4; opacity: 0.8;">
+            <span style="color: #569cd6;">Matice M:</span> <span id="math-matrix">M = [ (n·l+d)·I - l·nᵀ ]</span>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const canvas = document.getElementById('canvas-projective');
+    const ctx = canvas.getContext('2d');
+
+    const sldLightY = document.getElementById('sld-light-y');
+    const sldPolyY = document.getElementById('sld-poly-y');
+    const chkUseStencil = document.getElementById('chk-use-stencil');
+    const chkShowRays = document.getElementById('chk-show-rays');
+
+    const mathTVal = document.getElementById('math-t-val');
+    const mathSCoords = document.getElementById('math-s-coords');
+    const statusArtifact = document.getElementById('status-artifact');
+    const statusStencil = document.getElementById('status-stencil');
+    const mathMatrix = document.getElementById('math-matrix');
+
+    const state = {
+        light: { x: 380, y: 60 },
+        polyOffset: { x: 0, y: 0 },
+        receiverY: 220,
+        basePoints: [
+            {x: -40, y: -20},
+            {x: 40, y: -20},
+            {x: 20, y: 20},
+            {x: -20, y: 20}
+        ]
+    };
+
+    function getPolyPoints() {
+        const centerY = parseInt(sldPolyY.value);
+        const centerX = 380; 
+        return state.basePoints.map(p => ({
+            x: centerX + p.x,
+            y: centerY + p.y
+        }));
+    }
+
+    function projectPoint(L, P, recY) {
+        const num = recY - L.y;
+        const den = P.y - L.y;
+        
+        let t = 0;
+        if (Math.abs(den) < 0.001) {
+            t = num > 0 ? 9999 : -9999;
+        } else {
+            t = num / den;
+        }
+        
+        return {
+            x: L.x + t * (P.x - L.x),
+            y: recY,
+            t: t
+        };
+    }
+
+    function draw() {
+        state.light.y = parseInt(sldLightY.value);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        ctx.strokeStyle = '#222';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < canvas.width; i += 40) {
+            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+        }
+        for (let i = 0; i < canvas.height; i += 40) {
+            ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+        }
+
+        ctx.fillStyle = '#1e1e1e';
+        ctx.fillRect(180, state.receiverY, 400, 15);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#9cdcfe';
+        ctx.beginPath();
+        ctx.moveTo(180, state.receiverY);
+        ctx.lineTo(580, state.receiverY);
+        ctx.stroke();
+        ctx.fillStyle = '#888';
+        ctx.font = '10px monospace';
+        ctx.fillText('Přijímač (Podlaha y=220)', 190, state.receiverY + 12);
+
+        const pts = getPolyPoints();
+        const projections = pts.map(p => projectPoint(state.light, p, state.receiverY));
+
+        let hasAntishadow = false;
+        let hasFalseShadow = false;
+        projections.forEach(p => {
+            if (p.t < 0) hasAntishadow = true;
+            if (p.t >= 0 && p.t < 1) hasFalseShadow = true;
+        });
+
+        if (chkShowRays.checked) {
+            ctx.lineWidth = 1;
+            pts.forEach((p, idx) => {
+                const proj = projections[idx];
+                ctx.strokeStyle = proj.t < 0 ? 'rgba(244, 71, 71, 0.4)' : 'rgba(255, 255, 255, 0.15)';
+                ctx.beginPath();
+                ctx.moveTo(state.light.x, state.light.y);
+                if (proj.t < 0) {
+                    const dx = p.x - state.light.x;
+                    const dy = p.y - state.light.y;
+                    ctx.lineTo(state.light.x - dx * 3, state.light.y - dy * 3);
+                } else {
+                    ctx.lineTo(proj.x, proj.y);
+                }
+                ctx.stroke();
+            });
+        }
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        if (!chkUseStencil.checked) {
+            ctx.fillStyle = hasAntishadow ? 'rgba(244, 71, 71, 0.4)' : 'rgba(0, 0, 0, 0.6)';
+        }
+
+        if (chkUseStencil.checked) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.rect(180, state.receiverY - 1, 400, 3); 
+            ctx.clip();
+        }
+
+        ctx.beginPath();
+        projections.forEach((p, i) => {
+            if (i === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+        });
+        ctx.closePath();
+        ctx.fill();
+
+        if (chkUseStencil.checked) {
+            ctx.restore();
+        }
+
+        ctx.fillStyle = '#3c3c3c';
+        ctx.beginPath();
+        pts.forEach((p, i) => {
+            if (i === 0) ctx.moveTo(p.x, p.y);
+            else ctx.lineTo(p.x, p.y);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#4fc1ff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.fillStyle = '#ffdf6d';
+        ctx.arc(state.light.x, state.light.y, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        const sampleP = pts[0];
+        const sampleS = projections[0];
+        const computedT = (state.receiverY - state.light.y) / (sampleP.y - state.light.y);
+
+        mathTVal.innerText = `t = (Ly - y_rec) / (Ly - Py) = (${state.receiverY} - ${state.light.y}) / (${state.light.y} - ${sampleP.y.toFixed(0)}) = ${computedT.toFixed(3)}`;
+        mathSCoords.innerText = `S = [Sx, ${state.receiverY}, Sz] = [${sampleS.x.toFixed(1)}, ${state.receiverY}, 0.0]`;
+
+        if (hasAntishadow) {
+            statusArtifact.innerText = "Artefakty: ANTISHADOW DETEKOVÁN (t < 0, objekt za rovinou)";
+            statusArtifact.style.color = "#f44747";
+        } else if (hasFalseShadow) {
+            statusArtifact.innerText = "Artefakty: FALSE SHADOW DETEKOVÁN (0 ≤ t < 1, objekt za světlem)";
+            statusArtifact.style.color = "#f44747";
+        } else {
+            statusArtifact.innerText = "Artefakty: Žádné geometrické defekty";
+            statusArtifact.style.color = "#b5cea8";
+        }
+
+        if (chkUseStencil.checked) {
+            statusStencil.innerText = `Stencil Test: AKTIVNÍ (Zamezuje vykreslení mimo podlahu)`;
+            statusStencil.style.color = "#4fc1ff";
+        } else {
+            statusStencil.innerText = "Stencil Test: VYPNUTÝ (Riziko vykreslení falešných stínů v prostoru)";
+            statusStencil.style.color = "#eceaea";
+        }
+
+        const d_val = -state.receiverY; 
+        mathMatrix.innerHTML = `M = [(${0}·${state.light.y} + (${d_val}))·I - l·nᵀ] &rarr; <span style="color:#ce9178;">Vynuluje řádek Y, transformuje souřadnice v homogenním prostoru</span>`;
+    }
+
+    [sldLightY, sldPolyY, chkUseStencil, chkShowRays].forEach(el => el.addEventListener('input', draw));
+    draw();
+})();
+</script>
