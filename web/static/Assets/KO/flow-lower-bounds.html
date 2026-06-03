@@ -252,7 +252,7 @@
     const configs = {
       lower: {
         title: "Dolní meze: odstranění povinného toku",
-        subtitle: "Nejdřív do hran vložíme minimum l(e). Zbytek řešíme jako tok s bilancemi.",
+        subtitle: "Dolní mez je povinné minimum na hraně. Trik je minimum odečíst a vyřešit jen zbývající tok.",
         nodes: {
           A: [190, 220],
           B: [430, 105],
@@ -260,79 +260,92 @@
         },
         edges: [
           { from: "A", to: "B", l: 2, u: 5, label: [305, 130], curve: [280, 145, 345, 112] },
-          { from: "A", to: "C", l: 1, u: 4, label: [305, 310], curve: [280, 295, 345, 328] },
-          { from: "B", to: "C", l: 1, u: 3, label: [485, 220] }
+          { from: "B", to: "C", l: 1, u: 4, label: [485, 220] },
+          { from: "C", to: "A", l: 1, u: 4, label: [305, 310], curve: [345, 328, 280, 295] }
         ],
+        balances: { A: -1, B: 1, C: 0 },
         steps: [
           {
-            title: "1. Původní hrany mají interval [l,u]",
-            text: "Dolní mez l(e) je povinný tok. Nulový tok proto nemusí splňovat kapacitní omezení.",
-            formula: "A→B [2,5]\nA→C [1,4]\nB→C [1,3]",
+            title: "1. Zadání: každá hrana má interval [l,u]",
+            text: "Hrana nemůže nést libovolně málo toku. Například A→B musí mít aspoň 2 a nejvýš 5 jednotek.",
+            formula: "A→B [2,5]\nB→C [1,4]\nC→A [1,4]\n\nl = povinné minimum\nu = maximální kapacita",
             stage: "original"
           },
           {
-            title: "2. Posuneme proměnnou f(e)=l(e)+f'(e)",
-            text: "Povinné minimum dáme stranou. Nová proměnná f'(e) má dolní mez 0 a kapacitu u(e)-l(e).",
-            formula: "A→B: u'=5-2=3\nA→C: u'=4-1=3\nB→C: u'=3-1=2",
+            title: "2. Nejdřív vložíme povinné minimum l(e)",
+            text: "Představ si, že každou hranu hned naplníme jejím minimem. To ještě nemusí být korektní tok v uzlech.",
+            formula: "A→B: vložíme 2\nB→C: vložíme 1\nC→A: vložíme 1\n\nToto je jen povinná část toku.",
+            stage: "mandatory"
+          },
+          {
+            title: "3. Zbytek hrany má kapacitu u(e)-l(e)",
+            text: "Po odečtení minima řešíme novou proměnnou f'(e). Ta už začíná od nuly a může využít jen zbylou kapacitu.",
+            formula: "A→B: 5-2=3\nB→C: 4-1=3\nC→A: 4-1=3\n\n0 ≤ f'(e) ≤ u(e)-l(e)",
             stage: "shift"
           },
           {
-            title: "3. Povinný tok vytvoří bilance",
-            text: "Po odečtení dolních mezí už uzly nemusí mít zachování toku. To přesně zapíšeme bilancí b(v).",
-            formula: "b(v)=Σ l_in - Σ l_out\nb(A)=-3\nb(B)=+1\nb(C)=+2",
+            title: "4. Povinné minimum rozhodí uzly",
+            text: "V každém uzlu porovnáme povinný přítok a povinný odtok. Tím vznikne nová bilance b'(v) pro zbytkový tok f'.",
+            formula: "při konvenci: odtok - přítok = b\n\nb'(v)=Σ l_in - Σ l_out\n\nA: 1-2 = -1\nB: 2-1 = +1\nC: 1-1 = 0",
             stage: "balances"
           },
           {
-            title: "4. Bilance vyřešíme přes super-zdroj a super-odpad",
-            text: "Kladné bilance napojíme ze S. Záporné bilance napojíme do T. Přípustný tok existuje, když se tyto nové hrany nasytí.",
-            formula: "S→B cap 1\nS→C cap 2\nA→T cap 3",
+            title: "5. Bilance převedeme na max-flow",
+            text: "Kladné bilance napojíme ze super-zdroje S. Záporné bilance napojíme do super-odpadu T. Pak hledáme tok, který tyto super-hrany nasytí.",
+            formula: "B má b=+1  ⇒  S→B cap 1\nA má b=-1  ⇒  A→T cap 1\nC má b=0   ⇒  nic nepřidáme",
             stage: "super"
           },
           {
-            title: "5. Po max-flow vrátíme f(e)=l(e)+f'(e)",
-            text: "Max-flow najde zbytkový tok f'. Původní tok dostaneme tak, že ke každé hraně přičteme zpět její dolní mez.",
-            formula: "původní tok:\nf(e)=l(e)+f'(e)\n\nkontrola: super-hrany musí být saturované",
+            title: "6. Vrátíme se k původnímu toku f=l+f'",
+            text: "Max-flow pošle jednu jednotku po cestě S→B→C→A→T. To znamená f'(B,C)=1 a f'(C,A)=1.",
+            formula: "f(A,B)=2+0=2\nf(B,C)=1+1=2\nf(C,A)=1+1=2\n\nV uzlech už sedí přítok = odtok.",
             stage: "done"
           }
         ]
       },
       balances: {
         title: "Přípustný tok s bilancemi",
-        subtitle: "Vrchol s b(v)>0 dodává tok, vrchol s b(v)<0 tok spotřebovává.",
+        subtitle: "Hledáme přímo tok f(e), který splní kapacity hran a bilance vrcholů.",
         nodes: {
-          "1": [175, 220],
-          "2": [430, 105],
-          "3": [430, 335]
+          A: [190, 220],
+          B: [430, 105],
+          C: [430, 335]
         },
         edges: [
-          { from: "1", to: "2", cap: 7, flow: 3, label: [295, 130], curve: [275, 145, 355, 112] },
-          { from: "1", to: "3", cap: 5, flow: 5, label: [285, 238] },
-          { from: "2", to: "3", cap: 3, flow: 3, label: [485, 220] }
+          { from: "A", to: "B", cap: 2, flow: 2, label: [305, 130], curve: [280, 145, 345, 112] },
+          { from: "A", to: "C", cap: 2, flow: 1, label: [305, 310], curve: [280, 295, 345, 328] },
+          { from: "B", to: "C", cap: 2, flow: 2, label: [485, 220] }
         ],
-        balances: { "1": 8, "2": 0, "3": -8 },
+        balances: { A: 3, B: 0, C: -3 },
         steps: [
           {
-            title: "1. Bilance říká, kolik má uzel dodat nebo odebrat",
-            text: "Tady uzel 1 dodává 8 jednotek, uzel 3 spotřebuje 8 jednotek a uzel 2 je jen průchozí.",
-            formula: "b(1)=+8\nb(2)=0\nb(3)=-8\nΣ b(v)=0",
-            stage: "balances"
+            title: "1. Zadání: kapacity a bilance",
+            text: "Vrchol A má dodat 3 jednotky, C má 3 jednotky přijmout a B je pouze průchozí. Součet bilancí musí být nula.",
+            formula: "b(A)=+3  dodává\nb(B)=0   průchozí\nb(C)=-3  spotřebuje\n\nΣ b(v)=+3+0-3=0",
+            stage: "setup"
           },
           {
-            title: "2. Podmínka v každém vrcholu",
-            text: "Přípustný tok musí splnit kapacity hran i rovnici odtok minus přítok rovná se bilance.",
-            formula: "Σ f_out(v) - Σ f_in(v) = b(v)\n\n1: 8-0 = 8\n2: 3-3 = 0\n3: 0-8 = -8",
-            stage: "flow"
+            title: "2. Zkusíme konkrétní tok f(e)",
+            text: "Po hranách pošleme tok tak, aby žádná hrana nepřekročila kapacitu. Popisek 2/2 znamená tok 2 z kapacity 2.",
+            formula: "f(A,B)=2  z kapacity 2\nf(A,C)=1  z kapacity 2\nf(B,C)=2  z kapacity 2",
+            stage: "candidate"
           },
           {
-            title: "3. Redukce na max-flow",
-            text: "Super-zdroj S napojíme na kladné bilance. Záporné bilance napojíme do super-odpadu T.",
-            formula: "S→1 cap 8\n3→T cap 8\n\nostatní hrany zůstanou s původními kapacitami",
+            title: "3. Ověříme rovnici v každém uzlu",
+            text: "Používáme rovnici odtok minus přítok rovná se bilance. Když sedí všechny uzly, tok je vzhledem k bilancím přípustný.",
+            formula: "Σ f_out(v) - Σ f_in(v) = b(v)\n\nA: (2+1)-0 = +3 ✓\nB: 2-2 = 0 ✓\nC: 0-(1+2) = -3 ✓",
+            stage: "check"
+          },
+          {
+            title: "4. Redukce na max-flow",
+            text: "Kladné bilance napojíme ze super-zdroje S. Záporné bilance napojíme do super-odpadu T. Původní hrany zůstanou mezi A, B, C.",
+            formula: "S→A cap 3\nC→T cap 3\n\nA dodá 3 jednotky, C musí 3 jednotky odebrat.",
             stage: "super"
           },
           {
-            title: "4. Kontrola saturace super-hran",
-            text: "Když max-flow nasytí všechny hrany ze S a do T, původní síť má přípustný tok s bilancemi.",
-            formula: "S→1: 8/8 saturováno\n3→T: 8/8 saturováno\n\n⇒ feasible flow existuje",
+            title: "5. Kontrola saturace super-hran",
+            text: "Pokud max-flow pošle přes S→A celé 3 a přes C→T celé 3, všechny požadavky bilancí jsou splněné.",
+            formula: "S→A: 3/3 saturováno\nC→T: 3/3 saturováno\n\n⇒ přípustný tok s bilancemi existuje",
             stage: "saturated"
           }
         ]
@@ -468,35 +481,57 @@
         let label = `[${edge.l},${edge.u}]`;
         let cls = "edge";
         if (stage === "original") cls = "edge hot";
-        if (stage === "shift" || stage === "balances" || stage === "super" || stage === "done") label = `u'=${edge.u - edge.l}`;
-        if (stage === "done") label = `l+f'`;
+        if (stage === "mandatory" || stage === "balances") {
+          label = `l=${edge.l}`;
+          cls = "edge used";
+        }
+        if (stage === "shift" || stage === "super") label = `cap ${edge.u - edge.l}`;
+        if (stage === "done") {
+          const residual = edge.from === "A" && edge.to === "B" ? 0 : 1;
+          label = `${edge.l}+${residual}=${edge.l + residual}`;
+          cls = residual > 0 ? "edge used" : "edge";
+        }
         drawEdge(edge, cls, label);
       });
 
       if (stage === "original") {
-        drawNote(636, 86, "l(e) = povinné minimum");
+        drawNote(636, 86, "interval [l,u]: minimum a maximum", 250);
+      }
+
+      if (stage === "mandatory") {
+        drawNote(636, 86, "nejdřív vložíme jen povinné l(e)", 260);
+        drawLabel(190, 150, "in 1, out 2", 112);
+        drawLabel(430, 160, "in 2, out 1", 112);
+        drawLabel(430, 390, "in 1, out 1", 112);
       }
 
       if (stage === "shift") {
-        drawNote(635, 86, "dolní mez je po posunu 0");
+        drawNote(635, 86, "po odečtení l(e) zůstane volná kapacita", 300);
       }
 
       if (stage === "balances" || stage === "super" || stage === "done") {
-        drawNote(660, 86, "bilance vzniknou z povinných l(e)", 220);
+        drawNote(660, 86, "bilance vzniknou jen z povinných l(e)", 250);
+      }
+
+      if (stage === "balances") {
+        drawLabel(190, 150, "1-2=-1", 86);
+        drawLabel(430, 160, "2-1=+1", 86);
+        drawLabel(430, 390, "1-1=0", 80);
       }
 
       if (stage === "super" || stage === "done") {
         const S = [70, 220];
         const T = [720, 220];
-        drawLine(S, [402, 105], "edge super", [244, 92], "cap 1");
-        drawLine(S, [402, 335], "edge super", [244, 365], "cap 2");
-        drawLine([220, 220], [690, 220], "edge super", [570, 196], "cap 3");
+        const superCls = stage === "done" ? "edge used" : "edge super";
+        drawLine(S, [402, 105], superCls, [244, 92], stage === "done" ? "1/1" : "cap 1");
+        drawLine([220, 220], [690, 220], superCls, [570, 196], stage === "done" ? "1/1" : "cap 1");
         drawNode("S", S[0], S[1], "super");
         drawNode("T", T[0], T[1], "super");
+        drawNote(640, 322, stage === "done" ? "cesta S→B→C→A→T je saturovaná" : "stačí nasytit S→B a A→T", 270);
       }
 
       Object.entries(cfg.nodes).forEach(([id, [x, y]]) => {
-        const b = { A: -3, B: 1, C: 2 }[id];
+        const b = cfg.balances[id];
         const cls = stage === "balances" || stage === "super" || stage === "done" ? balanceClass(b) : "";
         drawNode(id, x, y, cls);
         if (stage === "balances" || stage === "super" || stage === "done") drawBalance(id, b, x, y);
@@ -504,26 +539,33 @@
     }
 
     function renderBalances(stage) {
-      const showFlow = stage === "flow" || stage === "super" || stage === "saturated";
+      const showFlow = stage === "candidate" || stage === "check" || stage === "saturated";
       cfg.edges.forEach(edge => {
         const cls = showFlow ? "edge used" : "edge";
         const label = showFlow ? `${edge.flow}/${edge.cap}` : `cap ${edge.cap}`;
         drawEdge(edge, cls, label);
       });
 
-      if (stage === "balances") {
-        drawNote(655, 88, "feasible flow musí splnit kapacity i bilance", 260);
+      if (stage === "setup") {
+        drawNote(655, 88, "zadání: kapacity u(e) + bilance b(v)", 270);
       }
 
-      if (stage === "flow") {
-        drawNote(650, 88, "odtok - přítok = b(v)", 210);
+      if (stage === "candidate") {
+        drawNote(650, 88, "popisek je f(e)/u(e)", 190);
+      }
+
+      if (stage === "check") {
+        drawNote(650, 88, "v každém uzlu: odtok - přítok = b(v)", 270);
+        drawLabel(190, 150, "(2+1)-0=3", 112);
+        drawLabel(430, 160, "2-2=0", 82);
+        drawLabel(430, 390, "0-(1+2)=-3", 118);
       }
 
       if (stage === "super" || stage === "saturated") {
         const S = [70, 220];
         const T = [720, 335];
-        drawLine(S, [145, 220], stage === "saturated" ? "edge used" : "edge super", [105, 185], stage === "saturated" ? "8/8" : "cap 8");
-        drawLine([460, 335], [690, 335], stage === "saturated" ? "edge used" : "edge super", [600, 360], stage === "saturated" ? "8/8" : "cap 8");
+        drawLine(S, [160, 220], stage === "saturated" ? "edge used" : "edge super", [106, 185], stage === "saturated" ? "3/3" : "cap 3");
+        drawLine([460, 335], [690, 335], stage === "saturated" ? "edge used" : "edge super", [600, 360], stage === "saturated" ? "3/3" : "cap 3");
         drawNode("S", S[0], S[1], "super");
         drawNode("T", T[0], T[1], "super");
         drawNote(650, 88, "kontrolujeme saturaci super-hran", 240);
@@ -549,7 +591,7 @@
       text.textContent = active.text;
       formula.textContent = active.formula;
       hint.textContent = mode === "balances"
-        ? "Kladná bilance znamená zdroj toku v původní síti; záporná bilance znamená požadavek."
+        ? "Dolní meze jsou až další téma; tady se řeší přímo tok f(e) a kapacity u(e)."
         : "Po vyřešení transformované úlohy nezapomeň přičíst dolní meze zpět: f=l+f'.";
     }
 
