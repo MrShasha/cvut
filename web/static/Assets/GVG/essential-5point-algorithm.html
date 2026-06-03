@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GVG - 5-point essential matrix algorithm</title>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#121820;color:#e5edf7;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{height:100%;display:grid;grid-template-columns:minmax(0,1fr)360px;gap:12px}.scene,.panel{border:1px solid #334155;border-radius:8px;background:#18202b}.scene{overflow:hidden}svg{display:block;width:100%;height:100%}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow:auto}h1{font-size:18px;margin:0}.muted{margin:0;color:#aebccd;font-size:13px;line-height:1.45}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{border:1px solid #3d4b5f;border-radius:7px;background:#17202b;color:#e5edf7;padding:8px 9px;font-weight:700;cursor:pointer}.tabs button.active{background:#1d4ed8;border-color:#60a5fa}.card{border:1px solid #2f3b4d;border-radius:7px;background:#111923;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:7px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.image{fill:#111923;stroke:#38bdf8;stroke-width:2}.norm{fill:#102236;stroke:#22c55e;stroke-width:2}.pt{fill:#f59e0b}.ray{stroke:#22c55e;stroke-width:2}.match{stroke:#64748b;stroke-width:1.8;stroke-dasharray:5 5}.matrix{fill:#17202b;stroke:#3d4b5f;stroke-width:2}.label{fill:#e5edf7;font-size:15px;font-weight:700;text-anchor:middle}.small{fill:#aebccd;font-size:12px;text-anchor:middle}.result{margin-top:auto;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.11);color:#bbf7d0;border-radius:7px;padding:10px;font-size:13px;line-height:1.45}@media(max-width:900px){body{overflow:auto}.widget{grid-template-columns:1fr}.scene{min-height:560px}}
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene"><svg id="svg" viewBox="0 0 900 620"></svg></section>
+  <aside class="panel">
+    <h1>5-point algoritmus pro E</h1>
+    <p class="muted">Essentialni matice pouziva kalibrovane souradnice, tedy smery paprsku po odstraneni K.</p>
+    <div class="tabs">
+      <button data-mode="normalize">Normalizace</button>
+      <button data-mode="five">5 rovnic</button>
+      <button data-mode="constraints">Podminky E</button>
+    </div>
+    <div id="info" class="card"></div>
+    <div class="result">Diky znamemu K se problem zmensi: E popisuje relativni rotaci a smer translace, ne obecnou nekalibrovanou geometrii obrazu.</div>
+  </aside>
+</main>
+<script>
+const svg=document.getElementById('svg'),info=document.getElementById('info');let mode='normalize';
+const beta1=[[150,140],[220,230],[260,160],[170,325],[285,365]],beta2=[[610,150],[700,245],[745,165],[610,335],[760,370]];
+function el(tag,a={},p=svg){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);p.appendChild(e);return e}
+function text(t,x,y,cls='label',p=svg){const e=el('text',{x,y,class:cls},p);e.textContent=t;return e}
+function draw(){el('rect',{x:70,y:80,width:300,height:380,rx:8,class:'image'});el('rect',{x:530,y:80,width:300,height:380,rx:8,class:'image'});text('image coords beta',220,55,'small');text('image coords beta',680,55,'small');beta1.forEach((p,i)=>{el('circle',{cx:p[0],cy:p[1],r:8,class:'pt'});text('x1b'+(i+1),p[0],p[1]-16,'small')});beta2.forEach((p,i)=>{el('circle',{cx:p[0],cy:p[1],r:8,class:'pt'});text('x2b'+(i+1),p[0],p[1]-16,'small')});for(let i=0;i<5;i++)el('line',{x1:beta1[i][0],y1:beta1[i][1],x2:beta2[i][0],y2:beta2[i][1],class:'match'})}
+function drawNorm(){el('rect',{x:110,y:500,width:210,height:60,rx:8,class:'norm'});el('rect',{x:570,y:500,width:210,height:60,rx:8,class:'norm'});text('x1g = K1^-1 x1b',215,525);text('x2g = K2^-1 x2b',675,525);for(const p of [[215,500],[675,500]]){el('line',{x1:p[0],y1:p[1]+60,x2:p[0],y2:p[1]+88,class:'ray'});text('unit ray direction',p[0],p[1]+104,'small')}}
+function rebuild(){svg.innerHTML='';draw();if(mode==='normalize')drawNorm();if(mode==='five'){el('rect',{x:310,y:500,width:280,height:72,rx:8,class:'matrix'});text('M e = 0',450,526);text('5 calibrated correspondences -> M is 5 x 9',450,550,'small')}if(mode==='constraints'){el('rect',{x:220,y:492,width:460,height:92,rx:8,class:'matrix'});text('E constraints',450,520);text('rank(E)=2 and two nonzero singular values are equal',450,545,'small');text('2 E E^T E = trace(E^T E) E',450,568,'small')}const msg={normalize:['Kalibrace pred vypoctem','Nejdrive se obrazove body prevedou pres zname kalibrace:<br><br>x1_gamma = K1^-1 x1_beta<br>x2_gamma = K2^-1 x2_beta<br><br>Tim se z bodu v pixelech stanou smery paprsku.'],five:['Proc pet bodu','Kazda kalibrovana korespondence dava jednu rovnici:<br><br>x2_gamma^T E x1_gamma = 0<br><br>Essentialni matice ma 5 stupnu volnosti: relativni rotace ma 3 a smer translace ma 2.'],constraints:['Proc nestaci linearni cast','Pet rovnic nevybere E samo. Reseni musi navic byt essentialni matice:<br><br>det(E)=0<br>2EE^T E = trace(E^T E)E<br><br>Tyto nelinearni podminky vyberou kandidaty E.']}[mode];info.innerHTML=`<strong>${msg[0]}</strong><span class="formula">${msg[1]}</span>`}
+document.querySelectorAll('button').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x.dataset.mode===mode));rebuild()});document.querySelector('[data-mode="normalize"]').classList.add('active');rebuild();
+</script>
+</body>
+</html>

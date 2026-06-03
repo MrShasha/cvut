@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GVG - 7-point fundamental matrix algorithm</title>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#121820;color:#e5edf7;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{height:100%;display:grid;grid-template-columns:minmax(0,1fr)350px;gap:12px}.scene,.panel{border:1px solid #334155;border-radius:8px;background:#18202b}.scene{overflow:hidden}svg{display:block;width:100%;height:100%}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow:auto}h1{font-size:18px;margin:0}.muted{margin:0;color:#aebccd;font-size:13px;line-height:1.45}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{border:1px solid #3d4b5f;border-radius:7px;background:#17202b;color:#e5edf7;padding:8px 9px;font-weight:700;cursor:pointer}.tabs button.active{background:#1d4ed8;border-color:#60a5fa}.card{border:1px solid #2f3b4d;border-radius:7px;background:#111923;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:7px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.image{fill:#111923;stroke:#38bdf8;stroke-width:2}.image2{fill:#111923;stroke:#a78bfa;stroke-width:2}.pt{fill:#22c55e}.pt2{fill:#f59e0b}.match{stroke:#64748b;stroke-width:1.8;stroke-dasharray:5 5}.epi{stroke:#60a5fa;stroke-width:3}.matrix{fill:#17202b;stroke:#3d4b5f;stroke-width:2}.label{fill:#e5edf7;font-size:15px;font-weight:700;text-anchor:middle}.small{fill:#aebccd;font-size:12px;text-anchor:middle}.result{margin-top:auto;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.11);color:#bae6fd;border-radius:7px;padding:10px;font-size:13px;line-height:1.45}@media(max-width:880px){body{overflow:auto}.widget{grid-template-columns:1fr}.scene{min-height:560px}}
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene"><svg id="svg" viewBox="0 0 900 620"></svg></section>
+  <aside class="panel">
+    <h1>7-point algoritmus pro F</h1>
+    <p class="muted">Fundamentalni matice pracuje s nekalibrovanymi obrazovymi souradnicemi.</p>
+    <div class="tabs">
+      <button data-mode="constraint">Constraint</button>
+      <button data-mode="seven">7 bodu</button>
+      <button data-mode="cubic">Determinant</button>
+    </div>
+    <div id="info" class="card"></div>
+    <div class="result">V RANSACu se sedm dvojic bere jako minimalni vzorek; kandidati F se pak testuji na vsech shodach.</div>
+  </aside>
+</main>
+<script>
+const svg=document.getElementById('svg'),info=document.getElementById('info');let mode='constraint';
+const p1=[[135,130],[185,240],[245,170],[280,315],[170,355],[315,115],[235,405]];
+const p2=[[605,170],[685,245],[735,155],[710,340],[585,365],[770,105],[660,420]];
+function el(tag,a={},p=svg){const e=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);p.appendChild(e);return e}
+function text(t,x,y,cls='label',p=svg){const e=el('text',{x,y,class:cls},p);e.textContent=t;return e}
+function drawImages(){el('rect',{x:70,y:70,width:300,height:390,rx:8,class:'image'});el('rect',{x:530,y:70,width:300,height:390,rx:8,class:'image2'});text('image 1',220,48,'small');text('image 2',680,48,'small')}
+function drawPoints(){p1.forEach((p,i)=>{el('circle',{cx:p[0],cy:p[1],r:8,class:'pt'});text('x1'+(i+1),p[0],p[1]-16,'small')});p2.forEach((p,i)=>{el('circle',{cx:p[0],cy:p[1],r:8,class:'pt2'});text('x2'+(i+1),p[0],p[1]-16,'small')})}
+function rebuild(){svg.innerHTML='';drawImages();drawPoints();for(let i=0;i<7;i++)el('line',{x1:p1[i][0],y1:p1[i][1],x2:p2[i][0],y2:p2[i][1],class:'match'});if(mode==='constraint'){const a=p2[0];el('line',{x1:555,y1:a[1]+70,x2:810,y2:a[1]-60,class:'epi'});text('l2 = F x1',690,a[1]+40,'small');text('x2 lies on l2',690,a[1]-78,'small')}if(mode==='seven'){el('rect',{x:325,y:500,width:250,height:70,rx:8,class:'matrix'});text('M g = 0',450,526);text('7 correspondences -> M is 7 x 9',450,550,'small')}if(mode==='cubic'){el('rect',{x:260,y:500,width:380,height:76,rx:8,class:'matrix'});text('G(alpha) = G1 + alpha G2',450,526);text('det(G(alpha)) = 0 -> cubic -> up to 3 real F',450,552,'small')}const msg={constraint:['Jedna korespondence','Bod x1 v prvnim obraze urci epipolarni primku ve druhem obraze:<br><br>l2 = F x1<br><br>Spravny odpovidajici bod x2 na ni musi lezet:<br>x2^T F x1 = 0'],seven:['Proc sedm','F ma 9 prvku, ale meritko je libovolne a det(F)=0. Tedy:<br><br>9 - 1 - 1 = 7<br><br>Kazda dvojice x1i <-> x2i doda jednu linearni rovnici.'],cubic:['Proc muze byt vice reseni','Sedm rovnic da dvourozmerne jadro: F je kombinace G1 a G2. Podminka rank(F)=2 se vynuti determinantem, coz da kubickou rovnici.']}[mode];info.innerHTML=`<strong>${msg[0]}</strong><span class="formula">${msg[1]}</span>`}
+document.querySelectorAll('button').forEach(b=>b.onclick=()=>{mode=b.dataset.mode;document.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x.dataset.mode===mode));rebuild()});document.querySelector('[data-mode="constraint"]').classList.add('active');rebuild();
+</script>
+</body>
+</html>
