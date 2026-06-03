@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>McNaughton scheduling</title>
+  <style>
+    :root { --bg:#111827; --panel:#172033; --ink:#e5e7eb; --muted:#9ca3af; --line:#334155; --blue:#38bdf8; --green:#34d399; --amber:#fbbf24; --violet:#a78bfa; --red:#fb7185; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.45 Inter, "Segoe UI", Arial, sans-serif; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 18px; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 16px; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+    h1 { margin: 0 0 4px; font-size: 22px; }
+    h2 { margin: 0 0 8px; font-size: 18px; }
+    .muted { color: var(--muted); margin: 0 0 12px; }
+    .formula { border: 1px solid var(--line); border-radius: 8px; background: #0b1220; padding: 10px; color: #dbeafe; font: 800 13px Consolas, monospace; white-space: pre-line; }
+    .gantt { display: grid; gap: 12px; margin-top: 12px; }
+    .row { display: grid; grid-template-columns: 42px 1fr; align-items: center; gap: 10px; }
+    .machine { color: #cbd5e1; font: 900 13px Consolas, monospace; }
+    .track { position: relative; height: 42px; border: 1px solid #475569; border-radius: 8px; background: #0b1220; overflow: hidden; }
+    .limit { position: absolute; inset: 0 auto 0 0; width: 100%; border-right: 3px solid var(--red); pointer-events: none; }
+    .bar { position: absolute; top: 5px; height: 30px; border-radius: 6px; display: grid; place-items: center; color: #0f172a; font: 900 12px Consolas, monospace; box-shadow: inset 0 0 0 1px rgba(255,255,255,.28); }
+    .badge { display: inline-block; margin: 0 6px 8px 0; border-radius: 999px; padding: 4px 8px; color: #dbeafe; background: #26364f; font: 800 12px Consolas, monospace; }
+    .note { color: var(--muted); font-size: 13px; margin: 10px 0 0; }
+    @media (max-width: 820px) { .wrap { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="panel">
+      <h1>McNaughton: wrap-around</h1>
+      <p class="muted">Preemptivní rozvrh na identických procesorech. Úlohu smíme jednou rozdělit mezi dva procesory.</p>
+      <div id="badges"></div>
+      <div class="gantt" id="gantt"></div>
+    </main>
+    <aside class="panel">
+      <h2>Výpočet optima</h2>
+      <div class="formula" id="formula"></div>
+      <p class="note">Dolní mez je zároveň dosažitelná: McNaughton nalévá úlohy za sebe do řádků délky C* a při přetečení pokračuje na dalším procesoru.</p>
+    </aside>
+  </div>
+  <script>
+    const tasks = [
+      { id: "A", p: 4, color: "#38bdf8" },
+      { id: "B", p: 3, color: "#34d399" },
+      { id: "C", p: 2, color: "#fbbf24" },
+      { id: "D", p: 2, color: "#a78bfa" },
+      { id: "E", p: 1, color: "#fb7185" }
+    ];
+    const R = 3;
+    const sum = tasks.reduce((s, t) => s + t.p, 0);
+    const longest = Math.max(...tasks.map(t => t.p));
+    const cstar = Math.max(longest, sum / R);
+    const rows = Array.from({ length: R }, () => []);
+    let machine = 0;
+    let t = 0;
+    tasks.forEach(task => {
+      let rest = task.p;
+      while (rest > 0 && machine < R) {
+        const room = cstar - t;
+        const part = Math.min(rest, room);
+        rows[machine].push({ ...task, start: t, end: t + part, part });
+        rest -= part;
+        t += part;
+        if (Math.abs(t - cstar) < 1e-9) {
+          machine += 1;
+          t = 0;
+        }
+      }
+    });
+    document.getElementById("badges").innerHTML = tasks.map(t => `<span class="badge">T${t.id}: p=${t.p}</span>`).join("");
+    document.getElementById("formula").textContent =
+      `R = ${R}\nΣpj = ${sum}\nmax pj = ${longest}\nΣpj/R = ${sum}/${R} = ${sum / R}\n\nC* = max(${longest}, ${sum / R}) = ${cstar}`;
+    const gantt = document.getElementById("gantt");
+    gantt.innerHTML = rows.map((row, index) => `
+      <div class="row">
+        <div class="machine">P${index + 1}</div>
+        <div class="track">
+          ${row.map(seg => `
+            <div class="bar" style="left:${seg.start / cstar * 100}%;width:${seg.part / cstar * 100}%;background:${seg.color}">
+              T${seg.id}${seg.part < seg.p ? "*" : ""}
+            </div>`).join("")}
+          <div class="limit"></div>
+        </div>
+      </div>`).join("");
+  </script>
+</body>
+</html>
