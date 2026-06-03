@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GVG 2 - example visualization</title>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#121820;color:#e5edf7;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{height:100%;display:grid;grid-template-columns:minmax(0,1fr)360px;gap:12px}.scene,.panel{border:1px solid #334155;border-radius:8px;background:#18202b}.scene{overflow:hidden}svg{display:block;width:100%;height:100%}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow:auto}h1{font-size:18px;margin:0}.muted{margin:0;color:#aebccd;font-size:13px;line-height:1.45}.card{border:1px solid #2f3b4d;border-radius:7px;background:#111923;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:7px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.result{margin-top:auto;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.11);color:#bae6fd;border-radius:7px;padding:10px;font-size:13px;line-height:1.45}.plane{fill:#143247;stroke:#38bdf8;stroke-width:2;opacity:.9}.obj{fill:#12351f;stroke:#22c55e;stroke-width:2}.warn{fill:#3a2412;stroke:#f59e0b;stroke-width:2}.pt{fill:#22c55e;stroke:#bbf7d0;stroke-width:2}.pt2{fill:#f59e0b;stroke:#fde68a;stroke-width:2}.bad{fill:#ef4444;stroke:#fecaca;stroke-width:2}.line{stroke:#94a3b8;stroke-width:2}.ray{stroke:#f59e0b;stroke-width:2.4}.dash{stroke-dasharray:7 6}.blue{stroke:#38bdf8}.green{stroke:#22c55e}.purple{stroke:#a78bfa}.red{stroke:#ef4444}.txt{fill:#e5edf7;font-size:15px;font-weight:700;text-anchor:middle}.small{fill:#aebccd;font-size:12px;text-anchor:middle}.axis{stroke:#334155;stroke-width:1}@media(max-width:900px){body{overflow:auto}.widget{grid-template-columns:1fr}.scene{min-height:560px}}
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene"><svg id="svg" viewBox="0 0 900 620"></svg></section>
+  <aside class="panel">
+    <h1 id="title"></h1>
+    <p id="desc" class="muted"></p>
+    <div id="math" class="card"></div>
+    <div id="note" class="result"></div>
+  </aside>
+</main>
+<script>
+const svg = document.getElementById('svg');
+const title = document.getElementById('title');
+const desc = document.getElementById('desc');
+const math = document.getElementById('math');
+const note = document.getElementById('note');
+const ex = new URLSearchParams(location.search).get('ex') || '3';
+
+function el(tag, attrs = {}, parent = svg) {
+  const n = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  parent.appendChild(n);
+  return n;
+}
+function text(t, x, y, cls = 'small') {
+  const n = el('text', { x, y, class: cls });
+  n.textContent = t;
+  return n;
+}
+function line(a, b, cls = 'line') { el('line', { x1:a[0], y1:a[1], x2:b[0], y2:b[1], class:cls }); }
+function circle(p, cls, label, dx = 0, dy = -16) {
+  el('circle', { cx:p[0], cy:p[1], r:8, class:cls });
+  if (label) text(label, p[0] + dx, p[1] + dy);
+}
+function poly(points, cls) { el('polygon', { points: points.map(p=>p.join(',')).join(' '), class: cls }); }
+function arrow(a,b,cls='ray') {
+  line(a,b,cls);
+  const ang=Math.atan2(b[1]-a[1],b[0]-a[0]),s=10;
+  el('path',{d:`M${b[0]},${b[1]} L${b[0]-s*Math.cos(ang-.45)},${b[1]-s*Math.sin(ang-.45)} L${b[0]-s*Math.cos(ang+.45)},${b[1]-s*Math.sin(ang+.45)} Z`,fill:getColor(cls)});
+}
+function getColor(cls){if(cls.includes('green'))return '#22c55e';if(cls.includes('blue'))return '#38bdf8';if(cls.includes('purple'))return '#a78bfa';if(cls.includes('red'))return '#ef4444';return '#f59e0b'}
+function axes(label='image plane') {
+  line([70,520],[850,520],'axis'); line([90,560],[90,60],'axis');
+  text(label, 160, 72); text('u', 842, 506); text('v', 105, 72);
+}
+function setInfo(t,d,m,n){title.textContent=t;desc.textContent=d;math.innerHTML=m;note.textContent=n}
+
+function ex3Ray(){
+  axes('back-projection ray');
+  const C=[210,390], x=[530,260], p1=[360,330], p2=[700,185];
+  arrow(C,p2,'ray'); circle(C,'pt2','C=(0,0,-2)'); circle(x,'pt','x=(2,1)');
+  line([410,120],[720,170],'blue'); line([720,170],[650,420],'blue'); line([650,420],[340,370],'blue'); line([340,370],[410,120],'blue');
+  text('image plane',575,116); circle(p1,'pt','eta=.5'); circle(p2,'pt','eta=1.5');
+  setInfo('Priklad 3: zpetny paprsek','Vsechny 3D body na jednom paprsku z centra C se promitnou do stejneho obrazoveho bodu x.',
+    '<strong>Vysledek</strong><span class="formula">C = (0,0,-2)^T<br>d = Q_1:3,1:3^-1 x = (2,-1,1)^T<br>X(eta)=C+eta d<br>eta != 0</span>',
+    'Paprsek je mnozina bodu C + eta(2,-1,1). Obrazovy bod neurcuje hloubku eta.');
+}
+function ex4Plane(){
+  axes('back-projection plane');
+  const C=[230,395];
+  poly([[340,150],[740,205],[660,470],[260,415]],'plane');
+  line([250,435],[665,170],'ray dash'); line([250,435],[650,435],'ray dash');
+  line([260,415],[740,205],'green'); line([340,150],[660,470],'green');
+  circle(C,'pt2','C'); text('sigma = C + a(1,-1,0)+b(0,0,1)',500,510,'txt');
+  line([240,415],[650,185],'red dash'); text('excluded L, b=0',350,250);
+  setInfo('Priklad 4: zpetna projekcni rovina','Obrazova primka v=0 se zpetne promita na rovinu prochazejici centrem kamery.',
+    '<strong>Vysledek</strong><span class="formula">x=(u,0,1)^T<br>X = eta(u,-u,1)^T + C<br>a=eta u, b=eta<br>sigma = C + a(1,-1,0)+b(0,0,1)</span>',
+    'Vsechny paprsky k bodum na obrazove primce vyplni jednu rovinu. Vynechana je primka v hlavni rovine kamery pro b=0.');
+}
+function ex6Angle(){
+  axes('normalized camera rays');
+  const C=[440,420], r1=[250,205], r2=[440,155];
+  arrow(C,r1,'ray green'); arrow(C,r2,'ray blue');
+  circle(C,'pt2','C'); circle(r1,'pt','x1g=(-1,-1,1)'); circle(r2,'pt','x2g=(0,0,1)');
+  el('path',{d:'M420,375 Q365,350 345,300',fill:'none',class:'purple'});
+  text('cos theta = 1/sqrt(3)',455,310,'txt');
+  setInfo('Priklad 6: uhel pres K','Nejdriv se pixelove body prepisou pres K^-1 na smery paprsku v ortogonalni kamerove bazi.',
+    '<strong>Vypocet</strong><span class="formula">K = [1 0 1; 0 1 1; 0 0 1]<br>x1b=(0,0,1), x2b=(1,1,1)<br>x1g=K^-1x1b=(-1,-1,1)<br>x2g=K^-1x2b=(0,0,1)<br>cos(theta)=1/sqrt(3)</span>',
+    'Uhel se nepocita v pixelech. Pocita se mezi normalizovanymi paprsky po odstraneni kalibrace K.');
+}
+function ex8Horizon(){
+  axes('rectangle horizon');
+  const x1=[610,210],x2=[610,430],x3=[500,370],x4=[500,260],v1=[390,320],v2=[390,80];
+  poly([x1,x2,x3,x4],'obj'); [x1,x2,x3,x4].forEach((p,i)=>circle(p,'pt','x'+(i+1)));
+  line(x1,x4,'green'); line(x2,x3,'green'); line(x1,v1,'green dash'); line(x2,v1,'green dash'); circle(v1,'pt2','v1=(0,0,1)');
+  line(x1,x2,'blue'); line(x3,x4,'blue'); line(x1,v2,'blue dash'); line(x4,v2,'blue dash'); circle(v2,'pt2','v2=(0,4,0)');
+  line([390,40],[390,560],'red'); text('h: u=0',420,62,'txt');
+  setInfo('Priklad 8: horizont roviny','Dva smery hran obdelniku daji dva ubeznaky. Primka pres ne je horizont roviny.',
+    '<strong>Vysledek</strong><span class="formula">v1 = (0,0,1)^T<br>v2 = (0,4,0)^T<br>h = v1 x v2 = (1,0,0)^T<br>rovnice: u = 0</span>',
+    'Jeden ubeznik muze byt konecny, druhy idealni. Horizont je projektivni primka prochazejici obema.');
+}
+function ex9P3P(){
+  axes('P3P rays and world triangle');
+  const C=[450,360], X1=[640,260], X2=[300,250], X3=[430,105];
+  [X1,X2,X3].forEach((p,i)=>circle(p,'pt','X'+(i+1))); circle(C,'pt2','C');
+  arrow(C,X1,'ray green'); arrow(C,X2,'ray blue'); arrow(C,X3,'ray purple');
+  line(X1,X2,'line'); line(X2,X3,'line'); line(X3,X1,'line');
+  text('d12=d23=d31=sqrt(2)',450,205,'txt'); text('eta1=eta2=eta3=1',450,505,'txt');
+  setInfo('Priklad 9: P3P','Kalibrace K prevede obrazove body na tri paprsky. Z uhlu paprsku a vzdalenosti svetovych bodu se urci hloubky eta_i.',
+    '<strong>Data</strong><span class="formula">x1g=(1,0,1), x2g=(-1,1,1), x3g=(-1,-2,1)<br>c12=c23=c31=0<br>d12=d23=d31=sqrt(2)<br>eta1=eta2=eta3=1</span>',
+    'V tomto prikladu jsou paprsky po dvojicich kolme a svetove body tvori rovnostranny trojuhelnik v uvedenych vzdalenostech.');
+}
+function ex10Homography(){
+  axes('homography H');
+  const A=[170,410],B=[300,410],C=[170,280],D=[300,280],a=[570,410],b=[760,410],c=[570,320],d=[760,230],q=[665,320],pre=[255,323];
+  poly([A,B,D,C],'plane'); poly([a,b,d,c],'warn'); [A,B,C,D].forEach((p,i)=>circle(p,'pt','X'+(i+1))); [a,b,c,d].forEach((p,i)=>circle(p,'pt2','u'+(i+1)));
+  line(A,a,'line dash'); line(B,b,'line dash'); line(C,c,'line dash'); line(D,d,'line dash');
+  circle(q,'bad','(1,1)'); circle(pre,'pt','(2/3,2/3)');
+  text('H maps square to quadrilateral',450,150,'txt');
+  setInfo('Priklad 10: homografie ze 4 bodu','Ctverice korespondenci urci H. Inverzni uloha hleda bod roviny pro obrazovy bod (1,1).',
+    '<strong>Vysledek</strong><span class="formula">H=[2 0 0; 0 2 0; -1 0 2]<br>lambda(1,1,1)^T = H(x,y,1)^T<br>2x=lambda, 2y=lambda, -x+2=lambda<br>x=y=2/3</span>',
+    'Bod (1,1) v obraze nelezi obecne na stredu puvodniho ctverce; homografie meni afinni pomery.');
+}
+function ex11RotationHomography(){
+  axes('pure rotation homography');
+  const C=[450,390], p1=[[230,160],[360,140],[360,330],[230,350]], p2=[[560,165],[700,230],[620,390],[480,325]];
+  poly(p1,'plane'); poly(p2,'warn'); circle(C,'pt2','same C'); p1.concat(p2).forEach(p=>line(C,p,'ray dash'));
+  text('R: 90 deg around c2',450,115,'txt'); text('H = K R K^-1',450,500,'txt');
+  setInfo('Priklad 11: homografie pri rotaci','Kdyz se kamera pouze otoci kolem stejneho centra, kazdy paprsek zustava ze stejneho C. Vztah mezi obrazy je homografie.',
+    '<strong>Vysledek</strong><span class="formula">K=[1 2 1; 0 1 1; 0 0 1]<br>R=[0 0 -1; 0 1 0; 1 0 0]<br>H=K R K^-1<br>H=[1 0 -2; 1 -1 0; 1 -2 1]</span>',
+    'Tady neni potreba rovina sceny. Homografie vznikne ciste z rotace kamery kolem stejneho projekcniho stredu.');
+}
+function ex12LineHomography(){
+  axes('line transform by H^-T');
+  line([120,430],[760,430],'green'); text('l: v+1=0',170,415,'txt');
+  for(let x=160;x<=720;x+=90) line([x,430],[x+45,285],'line dash');
+  line([100,120],[820,120],'red'); text("l' = line at infinity",450,100,'txt');
+  setInfo('Priklad 12: primka pres H^-T','Body se transformuji pomoci H, ale primky dualne pomoci H^-T.',
+    '<strong>Podminky</strong><span class="formula">H=[a 0 1; b 0 1; a b 1]<br>l=(0,1,1)^T<br>chceme H^-T l ~ l_inf=(0,0,1)^T<br>vychazi a=0, b=1</span>',
+    'Kdyz se konecna primka zobrazi na primku v nekonecnu, body na ni se po transformaci stanou idealnimi smery.');
+}
+function ex13Epipolar(){
+  axes('epipolar constraint');
+  el('rect',{x:80,y:100,width:300,height:310,rx:8,class:'plane'}); el('rect',{x:520,y:100,width:300,height:310,rx:8,class:'plane'});
+  const e1=[310,250],e2=[610,180]; circle(e1,'pt2','e1=(1,0)'); circle(e2,'pt2','e2=(0,1)');
+  const pairs=[[[1,1],[1,1],true],[[1,0],[0,1],true],[[1,0],[0,0],false],[[0,0],[1,0],false]];
+  pairs.forEach((p,i)=>{const y=455+i*25;text(`${i+1}: (${p[0]}) <-> (${p[1]})`,290,y);text(p[2]?'OK':'NO',560,y,p[2]?'small':'small')});
+  text('F=[-1 0 1; 0 -1 0; 0 1 0]',450,65,'txt');
+  setInfo('Priklad 13: constraint a epipoly','Dvojice bodu muze odpovidat jednomu 3D bodu jen kdyz splni x2^T F x1 = 0. Epipoly jsou nulove prostory F.',
+    '<strong>Vysledek</strong><span class="formula">e1=(1,0,1)^T, F e1=0<br>e2=(0,1,1)^T, F^T e2=0<br>validni dvojice: 1 a 2<br>nevalidni dvojice: 3 a 4</span>',
+    'Pozor na specialni pripad epipolu: pokud x1=e1, odpovidajici bod ve druhem obraze musi byt e2.');
+}
+function ex15Epiline(){
+  axes('epipolar line from x2');
+  el('rect',{x:90,y:110,width:300,height:350,rx:8,class:'plane'}); el('rect',{x:520,y:110,width:300,height:350,rx:8,class:'plane'});
+  circle([650,250],'pt2','x2=(1,1)'); line([260,110],[260,460],'red'); text('l1: u=1',300,135,'txt');
+  line([650,250],[260,260],'ray dash'); text('l1 = F^T x2 = (1,0,-1)',450,510,'txt');
+  setInfo('Priklad 15: epipolarni primka z bodu v druhem obraze','Bod ve druhem obraze neurcuje jeden bod v prvnim obraze, ale epipolarni primku v prvnim obraze.',
+    '<strong>Vypocet</strong><span class="formula">F=[1 0 -1; 0 1 0; 0 -1 0]<br>x2=(1,1,1)^T<br>l1=F^T x2=(1,0,-1)^T<br>rovnice: u-1=0</span>',
+    'Vsechny mozne odpovidajici body v prvnim obraze lezi na svisle primce u=1.');
+}
+const renderers={3:ex3Ray,4:ex4Plane,6:ex6Angle,8:ex8Horizon,9:ex9P3P,10:ex10Homography,11:ex11RotationHomography,12:ex12LineHomography,13:ex13Epipolar,15:ex15Epiline};
+(renderers[ex] || ex3Ray)();
+</script>
+</body>
+</html>
