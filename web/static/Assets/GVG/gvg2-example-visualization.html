@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GVG 2 - example visualization 3D</title>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js","three/addons/":"https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#121820;color:#e5edf7;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{height:100%;display:grid;grid-template-columns:minmax(0,1fr)360px;gap:12px}.scene,.panel{border:1px solid #334155;border-radius:8px;background:#18202b}.scene{position:relative;overflow:hidden}.scene canvas{display:block;width:100%!important;height:100%!important;cursor:grab}.hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;color:rgba(203,213,225,.58);font-size:12px;pointer-events:none}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow:auto}h1{font-size:18px;margin:0}.muted{margin:0;color:#aebccd;font-size:13px;line-height:1.45}.card{border:1px solid #2f3b4d;border-radius:7px;background:#111923;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:7px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.result{margin-top:auto;border:1px solid rgba(56,189,248,.35);background:rgba(56,189,248,.11);color:#bae6fd;border-radius:7px;padding:10px;font-size:13px;line-height:1.45}@media(max-width:900px){body{overflow:auto}.widget{grid-template-columns:1fr}.scene{min-height:560px}}
+</style>
+</head>
+<body>
+<main class="widget">
+  <section id="scene" class="scene"><div class="hint">Tahni = rotace | Scroll = zoom</div></section>
+  <aside class="panel">
+    <h1 id="title"></h1>
+    <p id="desc" class="muted"></p>
+    <div id="math" class="card"></div>
+    <div id="note" class="result"></div>
+  </aside>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const host = document.getElementById('scene');
+const title = document.getElementById('title');
+const desc = document.getElementById('desc');
+const math = document.getElementById('math');
+const note = document.getElementById('note');
+const ex = new URLSearchParams(location.search).get('ex') || '3';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x121820);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+camera.position.set(5.4, 4.2, 6.2);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+host.appendChild(renderer.domElement);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.target.set(0, 0.55, 1.1);
+scene.add(new THREE.AmbientLight(0xffffff, 0.82));
+const light = new THREE.DirectionalLight(0xffffff, 0.9);
+light.position.set(5, 7, 6);
+scene.add(light);
+
+let group = new THREE.Group();
+scene.add(group);
+const C = { blue:0x38bdf8, green:0x22c55e, orange:0xf59e0b, purple:0xa78bfa, red:0xef4444, white:0xf8fafc, gray:0x64748b, grid:0x334155 };
+
+function setInfo(t, d, m, n) {
+  title.textContent = t;
+  desc.textContent = d;
+  math.innerHTML = m;
+  note.textContent = n;
+}
+function reset(target = new THREE.Vector3(0, .45, 1.2), pos = new THREE.Vector3(5.4, 4.2, 6.2)) {
+  scene.remove(group);
+  group = new THREE.Group();
+  scene.add(group);
+  group.add(new THREE.GridHelper(7, 14, C.grid, 0x26303c));
+  controls.target.copy(target);
+  camera.position.copy(pos);
+  camera.updateProjectionMatrix();
+}
+function label(text, p, color = '#e5e7eb', scale = 1) {
+  const cv = document.createElement('canvas');
+  cv.width = 430; cv.height = 84;
+  const ctx = cv.getContext('2d');
+  ctx.font = '700 22px Segoe UI';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = 'rgba(17,24,34,.84)';
+  ctx.fillRect(10, 10, 410, 64);
+  ctx.fillStyle = color;
+  ctx.fillText(text, 215, 43);
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map:new THREE.CanvasTexture(cv), transparent:true, depthTest:false, depthWrite:false }));
+  spr.position.copy(p);
+  spr.scale.set(1.35 * scale, .26 * scale, 1);
+  spr.renderOrder = 20;
+  group.add(spr);
+  return spr;
+}
+function sphere(p, color, text, r = .075) {
+  const m = new THREE.Mesh(new THREE.SphereGeometry(r, 28, 16), new THREE.MeshStandardMaterial({ color, emissive:color, emissiveIntensity:.1 }));
+  m.position.copy(p);
+  group.add(m);
+  if (text) label(text, p.clone().add(new THREE.Vector3(.12, .16, .08)), '#f8fafc', .9);
+  return m;
+}
+function line(a, b, color = C.gray, dashed = false, width = 1) {
+  const geo = new THREE.BufferGeometry().setFromPoints([a, b]);
+  const mat = dashed ? new THREE.LineDashedMaterial({ color, dashSize:.13, gapSize:.08, transparent:true, opacity:.8 }) : new THREE.LineBasicMaterial({ color, linewidth:width });
+  const l = new THREE.Line(geo, mat);
+  if (dashed) l.computeLineDistances();
+  group.add(l);
+  return l;
+}
+function arrow(a, b, color = C.orange, dashed = false) {
+  line(a, b, color, dashed);
+  const dir = b.clone().sub(a).normalize();
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(.055, .18, 18), new THREE.MeshStandardMaterial({ color }));
+  cone.position.copy(b.clone().sub(dir.clone().multiplyScalar(.08)));
+  cone.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+  group.add(cone);
+}
+function planeQuad(pts, color = C.blue, opacity = .18, name = '') {
+  const geo = new THREE.BufferGeometry().setFromPoints(pts);
+  geo.setIndex([0,1,2,0,2,3]);
+  geo.computeVertexNormals();
+  const mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color, transparent:true, opacity, side:THREE.DoubleSide, depthWrite:false }));
+  group.add(mesh);
+  group.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color })));
+  if (name) label(name, pts[1].clone().add(new THREE.Vector3(.1,.18,.02)), '#bfdbfe');
+  return mesh;
+}
+function imagePlane(x = .85, name = 'image plane') {
+  const pts = [
+    new THREE.Vector3(x, -1.15, .25),
+    new THREE.Vector3(x, 1.45, .25),
+    new THREE.Vector3(x, 1.45, 2.85),
+    new THREE.Vector3(x, -1.15, 2.85)
+  ];
+  return planeQuad(pts, C.blue, .15, name);
+}
+function worldAxes(origin = new THREE.Vector3(0,0,0), s = .65) {
+  arrow(origin, origin.clone().add(new THREE.Vector3(s,0,0)), C.red);
+  arrow(origin, origin.clone().add(new THREE.Vector3(0,s,0)), C.green);
+  arrow(origin, origin.clone().add(new THREE.Vector3(0,0,s)), C.blue);
+  label('x', origin.clone().add(new THREE.Vector3(s+.12,0,0)), '#fecaca', .7);
+  label('y', origin.clone().add(new THREE.Vector3(0,s+.12,0)), '#bbf7d0', .7);
+  label('z', origin.clone().add(new THREE.Vector3(0,0,s+.12)), '#bfdbfe', .7);
+}
+function projectToPlane(cam, point, xPlane) {
+  const t = (xPlane - cam.x) / (point.x - cam.x);
+  return cam.clone().add(point.clone().sub(cam).multiplyScalar(t));
+}
+function planeLineOnX(x, a, b, color, name) {
+  const p1 = new THREE.Vector3(x, a[0], a[1]);
+  const p2 = new THREE.Vector3(x, b[0], b[1]);
+  line(p1, p2, color);
+  if (name) label(name, p1.clone().lerp(p2, .5).add(new THREE.Vector3(.05,.12,.05)), '#f8fafc', .8);
+}
+
+function ex3Ray() {
+  reset(new THREE.Vector3(.65,.35,1.25));
+  const cam = new THREE.Vector3(-1.45, 0, .05);
+  const xPlane = .75;
+  const d = new THREE.Vector3(2, -1, 1).normalize();
+  const x = projectToPlane(cam, cam.clone().add(d), xPlane);
+  const p1 = cam.clone().add(d.clone().multiplyScalar(1.25));
+  const p2 = cam.clone().add(d.clone().multiplyScalar(2.65));
+  imagePlane(xPlane, 'obrazova rovina');
+  sphere(cam, C.orange, 'C=(0,0,-2)');
+  sphere(x, C.green, 'x=(2,1)');
+  arrow(cam, p2, C.orange);
+  sphere(p1, C.white, 'eta=.5');
+  sphere(p2, C.white, 'eta=1.5');
+  line(cam, x, C.green, true);
+  setInfo('Priklad 3: zpetny paprsek', 'Obrazovy bod urcuje smer paprsku z centra kamery, ale neurcuje hloubku.', '<strong>Vysledek</strong><span class="formula">C = (0,0,-2)^T<br>d = Q_1:3,1:3^-1 x = (2,-1,1)^T<br>X(eta)=C+eta d<br>eta != 0</span>', 'Vsechny body na paprsku C + eta d maji stejny obrazovy bod x.');
+}
+function ex4Plane() {
+  reset(new THREE.Vector3(.45,.2,1.3));
+  const cam = new THREE.Vector3(-1.55, 0, .2);
+  const xPlane = .75;
+  imagePlane(xPlane, 'obrazova rovina');
+  const l1 = new THREE.Vector3(xPlane, -1.05, 1.2);
+  const l2 = new THREE.Vector3(xPlane, 1.35, 1.2);
+  planeLineOnX(xPlane, [-1.05, 1.2], [1.35, 1.2], C.green, 'obrazova primka v=0');
+  const q1 = cam.clone().add(l1.clone().sub(cam).multiplyScalar(2.15));
+  const q2 = cam.clone().add(l2.clone().sub(cam).multiplyScalar(2.15));
+  planeQuad([l1, l2, q2, q1], C.green, .15, 'zpetna projekcni rovina');
+  sphere(cam, C.orange, 'C');
+  line(cam, l1, C.orange, true);
+  line(cam, l2, C.orange, true);
+  line(cam, q1, C.orange, true);
+  line(cam, q2, C.orange, true);
+  label('sigma = C + a(1,-1,0)+b(0,0,1)', new THREE.Vector3(.15,-1.1,2.8), '#bbf7d0', .8);
+  setInfo('Priklad 4: zpetna projekcni rovina', 'Obrazova primka se zpetne promita na rovinu prochazejici centrem kamery.', '<strong>Vysledek</strong><span class="formula">x=(u,0,1)^T<br>X = eta(u,-u,1)^T + C<br>a=eta u, b=eta<br>sigma = C + a(1,-1,0)+b(0,0,1)</span>', 'Sjednoceni paprsku ke vsem bodum obrazove primky vytvori jednu 3D rovinu.');
+}
+function ex6Angle() {
+  reset(new THREE.Vector3(0,.35,1.05), new THREE.Vector3(4.8,3.6,5.2));
+  const cam = new THREE.Vector3(0,0,0);
+  const r1 = new THREE.Vector3(-1,-1,1).normalize().multiplyScalar(2.35);
+  const r2 = new THREE.Vector3(0,0,1).normalize().multiplyScalar(2.35);
+  sphere(cam, C.orange, 'C');
+  arrow(cam, r1, C.green);
+  arrow(cam, r2, C.blue);
+  sphere(r1, C.green, 'x1_gamma=(-1,-1,1)');
+  sphere(r2, C.blue, 'x2_gamma=(0,0,1)');
+  label('cos(theta)=1/sqrt(3)', new THREE.Vector3(-.35,.45,1.25), '#ddd6fe');
+  worldAxes(cam);
+  setInfo('Priklad 6: uhel pres K', 'Pixelove souradnice se nejdriv kalibruji pres K^-1. Uhel se pocita az mezi kamerovymi paprsky.', '<strong>Vypocet</strong><span class="formula">K = [1 0 1; 0 1 1; 0 0 1]<br>x1_beta=(0,0,1), x2_beta=(1,1,1)<br>x1_gamma=K^-1x1=(-1,-1,1)<br>x2_gamma=K^-1x2=(0,0,1)<br>cos(theta)=1/sqrt(3)</span>', 'V pixelech by uhel nedaval geometricky smysl; K odstrani posun principal pointu a meritko.');
+}
+function ex8Horizon() {
+  reset(new THREE.Vector3(.65,.25,1.35), new THREE.Vector3(5,3.8,5.7));
+  const xPlane = .8;
+  imagePlane(xPlane, 'obrazova rovina');
+  const x1 = new THREE.Vector3(xPlane, .85, 2.0);
+  const x2 = new THREE.Vector3(xPlane, .85, .75);
+  const x3 = new THREE.Vector3(xPlane, -.35, .95);
+  const x4 = new THREE.Vector3(xPlane, -.35, 1.75);
+  planeQuad([x1,x2,x3,x4], C.green, .18, 'obraz obdelniku');
+  [x1,x2,x3,x4].forEach((p,i)=>sphere(p, C.green, 'x'+(i+1), .055));
+  const v1 = new THREE.Vector3(xPlane, -1.25, 1.18);
+  const v2 = new THREE.Vector3(xPlane, .05, 3.05);
+  sphere(v1, C.orange, 'v1');
+  sphere(v2, C.orange, 'v2 idealni smer');
+  line(x1, v1, C.green, true); line(x2, v1, C.green, true);
+  line(x1, v2, C.blue, true); line(x4, v2, C.blue, true);
+  line(v1, v2, C.red);
+  label('h = v1 x v2, zde u=0', v1.clone().lerp(v2, .5).add(new THREE.Vector3(.05,.18,.05)), '#fecaca');
+  setInfo('Priklad 8: horizont roviny', 'Dva smery hran znameho obdelniku daji dva ubeznaky. Primka pres ne je horizont roviny.', '<strong>Vysledek</strong><span class="formula">v1 = (0,0,1)^T<br>v2 = (0,4,0)^T<br>h = v1 x v2 = (1,0,0)^T<br>rovnice: u = 0</span>', 'Horizont je idealni primka dane roviny v obraze: vsechny ubeznaky smeru v rovine na ni lezi.');
+}
+function ex9P3P() {
+  reset(new THREE.Vector3(0,.45,1.1), new THREE.Vector3(4.8,3.7,5.4));
+  const cam = new THREE.Vector3(0,0,0);
+  const rays = [
+    new THREE.Vector3(1,0,1).normalize(),
+    new THREE.Vector3(-1,1,1).normalize(),
+    new THREE.Vector3(-1,-2,1).normalize()
+  ];
+  const pts = rays.map(r => r.clone().multiplyScalar(1.65));
+  sphere(cam, C.orange, 'C');
+  pts.forEach((p,i)=>{ arrow(cam, p, [C.green,C.blue,C.purple][i]); sphere(p, C.white, 'X'+(i+1)); });
+  line(pts[0], pts[1], C.gray); line(pts[1], pts[2], C.gray); line(pts[2], pts[0], C.gray);
+  label('eta1 = eta2 = eta3 = 1', new THREE.Vector3(.1,-1.05,2.0), '#fde68a');
+  label('known world distances d_ij', pts[0].clone().lerp(pts[1], .5).add(new THREE.Vector3(0,.18,0)), '#cbd5e1', .8);
+  setInfo('Priklad 9: P3P', 'Kalibrace da tri kamerove paprsky. Z jejich uhlu a znamych vzdalenosti mezi svetovymi body se urci hloubky eta_i.', '<strong>Data</strong><span class="formula">x1_gamma=(1,0,1)<br>x2_gamma=(-1,1,1)<br>x3_gamma=(-1,-2,1)<br>c12=c23=c31=0<br>d12=d23=d31=sqrt(2)<br>eta1=eta2=eta3=1</span>', 'P3P hleda polohu kamery tak, aby tri paprsky sedely na trojuhelnik znamych 3D bodu.');
+}
+function ex10Homography() {
+  reset(new THREE.Vector3(.6,.3,1.15), new THREE.Vector3(5,3.8,5.5));
+  const leftX = -.9, rightX = 1.1;
+  const obj = (x,y) => new THREE.Vector3(leftX, -.8 + 1.6*x, .6 + 1.6*y);
+  const imgp = (u,v) => new THREE.Vector3(rightX, -.9 + .9*u, .6 + .85*v);
+  const X1 = obj(0,0), X2 = obj(1,0), X3 = obj(0,1), X4 = obj(1,1);
+  const u1 = imgp(0,0), u2 = imgp(2,0), u3 = imgp(0,1), u4 = imgp(2,2);
+  planeQuad([X1,X2,X4,X3], C.green, .18, 'zadani: rovina z=0');
+  planeQuad([u1,u2,u4,u3], C.orange, .18, 'zadani: obrazove body');
+  [
+    [X1, 'X1 (0,0)', u1, 'u1 (0,0)'],
+    [X2, 'X2 (1,0)', u2, 'u2 (2,0)'],
+    [X3, 'X3 (0,1)', u3, 'u3 (0,1)'],
+    [X4, 'X4 (1,1)', u4, 'u4 (2,2)']
+  ].forEach(([X, xl, u, ul]) => {
+    sphere(X, C.green, xl, .055);
+    sphere(u, C.orange, ul, .055);
+    line(X, u, C.gray, true);
+  });
+  const pre = obj(2/3, 2/3);
+  const target = imgp(1, 1);
+  sphere(pre, C.blue, 'hledany X=(2/3,2/3)', .075);
+  sphere(target, C.red, 'cil u=(1,1)', .075);
+  line(pre, target, C.red, true);
+  label('nejdriv 4 korespondence, potom inverzni uloha', new THREE.Vector3(.05,-1.28,2.55), '#fde68a', .8);
+  setInfo('Priklad 10: homografie ze 4 bodu', 'Vlevo jsou ctyri body ze zadani v rovine objektu, vpravo jejich obrazove body. Tyto korespondence urci H.', '<strong>Zadani a vysledek</strong><span class="formula">X1=(0,0) -> u1=(0,0)<br>X2=(1,0) -> u2=(2,0)<br>X3=(0,1) -> u3=(0,1)<br>X4=(1,1) -> u4=(2,2)<br><br>H=[2 0 0; 0 2 0; -1 0 2]<br>cil u=(1,1) ma preimage X=(2/3,2/3)</span>', 'Sede carkovane spojnice jsou zadane korespondence. Cervena spojnice zvyraznuje az nasledny vypocet pro obrazovy bod (1,1).');
+}
+function ex11RotationHomography() {
+  reset(new THREE.Vector3(.45,.25,1.35), new THREE.Vector3(5.2,3.8,5.8));
+  const cam = new THREE.Vector3(-1.25, 0, .3);
+  const p1 = [new THREE.Vector3(.7,-.95,.55), new THREE.Vector3(.7,.95,.55), new THREE.Vector3(.7,.95,2.25), new THREE.Vector3(.7,-.95,2.25)];
+  const p2 = [new THREE.Vector3(.95,-.75,.55), new THREE.Vector3(1.35,.85,.95), new THREE.Vector3(1.0,.72,2.55), new THREE.Vector3(.62,-.72,2.15)];
+  planeQuad(p1, C.blue, .13, 'obraz 1');
+  planeQuad(p2, C.purple, .13, 'obraz 2');
+  sphere(cam, C.orange, 'stejne C');
+  p1.concat(p2).forEach(p => line(cam, p, C.gray, true));
+  label('H = K R K^-1', new THREE.Vector3(.55,-1.25,2.8), '#ddd6fe');
+  setInfo('Priklad 11: homografie pri rotaci', 'Pri ciste rotaci kamery zustava projekcni stred stejny. Vztah obrazu je homografie bez roviny sceny.', '<strong>Vysledek</strong><span class="formula">K=[1 2 1; 0 1 1; 0 0 1]<br>R=[0 0 -1; 0 1 0; 1 0 0]<br>H=K R K^-1<br>H=[1 0 -2; 1 -1 0; 1 -2 1]</span>', 'Kazdy obrazovy bod odpovida stejnemu 3D paprsku pred a po rotaci, jen s jinymi obrazovymi souradnicemi.');
+}
+function ex12LineHomography() {
+  reset(new THREE.Vector3(.4,.25,1.15), new THREE.Vector3(5,3.6,5.3));
+  const xPlane = .8;
+  imagePlane(xPlane, 'projektivni rovina');
+  const lA = new THREE.Vector3(xPlane,-1.05,1.05), lB = new THREE.Vector3(xPlane,1.25,1.05);
+  line(lA, lB, C.green);
+  label('l: v+1=0', lA.clone().lerp(lB,.5).add(new THREE.Vector3(.05,.16,0)), '#bbf7d0');
+  for (let y=-.9; y<=1.1; y+=.45) {
+    line(new THREE.Vector3(xPlane,y,1.05), new THREE.Vector3(xPlane,y+.28,2.35), C.gray, true);
+  }
+  const infA = new THREE.Vector3(xPlane,-1.15,2.75), infB = new THREE.Vector3(xPlane,1.45,2.75);
+  line(infA, infB, C.red);
+  label("l' = l_inf", infA.clone().lerp(infB,.5).add(new THREE.Vector3(.05,.16,0)), '#fecaca');
+  setInfo('Priklad 12: primka pres H^-T', 'Body se zobrazuji matici H, primky dualne matici H^-T.', '<strong>Podminky</strong><span class="formula">H=[a 0 1; b 0 1; a b 1]<br>l=(0,1,1)^T<br>chceme H^-T l ~ l_inf=(0,0,1)^T<br>vychazi a=0, b=1</span>', 'Konecna primka se muze homografii zobrazit na idealni primku; body na ni se stanou smery.');
+}
+function ex13Epipolar() {
+  reset(new THREE.Vector3(.25,.25,1.25), new THREE.Vector3(5.5,4.0,6.0));
+  const x1 = -.9, x2 = 1.15;
+  const p1 = [new THREE.Vector3(x1,-1.1,.45), new THREE.Vector3(x1,1.1,.45), new THREE.Vector3(x1,1.1,2.55), new THREE.Vector3(x1,-1.1,2.55)];
+  const p2 = [new THREE.Vector3(x2,-1.1,.45), new THREE.Vector3(x2,1.1,.45), new THREE.Vector3(x2,1.1,2.55), new THREE.Vector3(x2,-1.1,2.55)];
+  planeQuad(p1, C.blue, .13, 'image 1');
+  planeQuad(p2, C.purple, .13, 'image 2');
+  const e1 = new THREE.Vector3(x1,.75,1.45), e2 = new THREE.Vector3(x2,-.45,1.85);
+  sphere(e1, C.orange, 'e1');
+  sphere(e2, C.orange, 'e2');
+  const pairs = [
+    [new THREE.Vector3(x1,-.5,1.0), new THREE.Vector3(x2,-.35,1.0), true],
+    [new THREE.Vector3(x1,.1,1.65), new THREE.Vector3(x2,.05,1.65), true],
+    [new THREE.Vector3(x1,-.2,2.15), new THREE.Vector3(x2,.55,2.0), false],
+    [new THREE.Vector3(x1,.65,2.25), new THREE.Vector3(x2,-.75,2.25), false]
+  ];
+  pairs.forEach(([a,b,ok],i)=>{ sphere(a, ok?C.green:C.red, 'x1'+(i+1), .055); sphere(b, ok?C.green:C.red, 'x2'+(i+1), .055); line(a,b, ok?C.green:C.red, true); });
+  label('x2^T F x1 = 0', new THREE.Vector3(.15,-1.25,2.8), '#fde68a');
+  setInfo('Priklad 13: constraint a epipoly', 'Fundamentalni matice rika, ktere dvojice obrazovych bodu mohou byt korespondence.', '<strong>Vysledek</strong><span class="formula">e1=(1,0,1)^T, F e1=0<br>e2=(0,1,1)^T, F^T e2=0<br>validni dvojice: 1 a 2<br>nevalidni dvojice: 3 a 4</span>', 'Korespondence musi lezet na odpovidajicich epipolarnich primkach; epipoly jsou obrazy stredu druhe kamery.');
+}
+function ex15Epiline() {
+  reset(new THREE.Vector3(.25,.25,1.25), new THREE.Vector3(5.5,4.0,6.0));
+  const x1 = -.9, x2 = 1.15;
+  const p1 = [new THREE.Vector3(x1,-1.1,.45), new THREE.Vector3(x1,1.1,.45), new THREE.Vector3(x1,1.1,2.55), new THREE.Vector3(x1,-1.1,2.55)];
+  const p2 = [new THREE.Vector3(x2,-1.1,.45), new THREE.Vector3(x2,1.1,.45), new THREE.Vector3(x2,1.1,2.55), new THREE.Vector3(x2,-1.1,2.55)];
+  planeQuad(p1, C.blue, .13, 'image 1');
+  planeQuad(p2, C.purple, .13, 'image 2');
+  const x2p = new THREE.Vector3(x2, .35, 1.55);
+  sphere(x2p, C.orange, 'x2=(1,1)');
+  const lA = new THREE.Vector3(x1, .45, .55), lB = new THREE.Vector3(x1, .45, 2.45);
+  line(lA, lB, C.red);
+  label('l1: u-1=0', lA.clone().lerp(lB,.5).add(new THREE.Vector3(.05,.18,0)), '#fecaca');
+  line(x2p, lA.clone().lerp(lB,.5), C.gray, true);
+  setInfo('Priklad 15: epipolarni primka z bodu v druhem obraze', 'Bod ve druhem obraze neurcuje jeden bod v prvnim obraze, ale epipolarni primku.', '<strong>Vypocet</strong><span class="formula">F=[1 0 -1; 0 1 0; 0 -1 0]<br>x2=(1,1,1)^T<br>l1=F^T x2=(1,0,-1)^T<br>rovnice: u-1=0</span>', 'Vsechny mozne odpovidajici body v prvnim obraze lezi na svisle primce u=1.');
+}
+
+const renderers = { 3:ex3Ray, 4:ex4Plane, 6:ex6Angle, 8:ex8Horizon, 9:ex9P3P, 10:ex10Homography, 11:ex11RotationHomography, 12:ex12LineHomography, 13:ex13Epipolar, 15:ex15Epiline };
+(renderers[ex] || ex3Ray)();
+
+function resize() {
+  const r = host.getBoundingClientRect();
+  renderer.setSize(Math.max(1, r.width), Math.max(1, r.height), false);
+  camera.aspect = Math.max(1, r.width) / Math.max(1, r.height);
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize();
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

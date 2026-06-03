@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GVG - 4-point homography algorithm</title>
+<style>
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{background:#121820;color:#e5edf7;font-family:"Segoe UI",system-ui,sans-serif;padding:14px;overflow:hidden}.widget{height:100%;display:grid;grid-template-columns:minmax(0,1fr)340px;gap:12px}.scene,.panel{border:1px solid #334155;border-radius:8px;background:#18202b}.scene{overflow:hidden}svg{display:block;width:100%;height:100%}.panel{padding:14px;display:flex;flex-direction:column;gap:12px;overflow:auto}h1{font-size:18px;margin:0}.muted{margin:0;color:#aebccd;font-size:13px;line-height:1.45}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button{border:1px solid #3d4b5f;border-radius:7px;background:#17202b;color:#e5edf7;padding:8px 9px;font-weight:700;cursor:pointer}.tabs button.active{background:#1d4ed8;border-color:#60a5fa}.card{border:1px solid #2f3b4d;border-radius:7px;background:#111923;padding:10px;color:#cbd5e1;font-size:13px;line-height:1.5}.formula{display:block;margin-top:7px;color:#f8fafc;font-family:Consolas,monospace;font-size:12px;line-height:1.55}.plane{fill:#111923;stroke:#38bdf8;stroke-width:2}.plane2{fill:#111923;stroke:#a78bfa;stroke-width:2}.pt{fill:#22c55e;stroke:#bbf7d0;stroke-width:2}.pt2{fill:#f59e0b;stroke:#fde68a;stroke-width:2}.match{stroke:#64748b;stroke-width:2;stroke-dasharray:6 5}.activeLine{stroke:#f59e0b;stroke-width:3}.label{fill:#e5edf7;font-size:15px;font-weight:700;text-anchor:middle}.small{fill:#aebccd;font-size:12px;text-anchor:middle}.matrix{fill:#17202b;stroke:#3d4b5f;stroke-width:2}.result{margin-top:auto;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.11);color:#bbf7d0;border-radius:7px;padding:10px;font-size:13px;line-height:1.45}@media(max-width:860px){body{overflow:auto}.widget{grid-template-columns:1fr}.scene{min-height:560px}}
+</style>
+</head>
+<body>
+<main class="widget">
+  <section class="scene"><svg id="svg" viewBox="0 0 900 620"></svg></section>
+  <aside class="panel">
+    <h1>4-point algoritmus</h1>
+    <p class="muted">Ctverice znamena ctyri bodove dvojice, ne ctyri body mapovane do jednoho bodu.</p>
+    <div class="tabs">
+      <button data-mode="pairs">Dvojice bodu</button>
+      <button data-mode="rows">Rovnice</button>
+      <button data-mode="solve">Reseni H</button>
+    </div>
+    <div id="info" class="card"></div>
+    <div class="result">Homografie je urcena az na meritko: 9 prvku matice H znamena 8 stupnu volnosti.</div>
+  </aside>
+</main>
+<script>
+const svg = document.getElementById('svg');
+const info = document.getElementById('info');
+let mode = 'pairs';
+const left = [[170,160],[300,130],[315,330],[140,300]];
+const right = [[610,145],[770,190],[720,365],[570,315]];
+
+function el(tag, attrs = {}, parent = svg) {
+  const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
+  parent.appendChild(node);
+  return node;
+}
+function text(value, x, y, cls = 'label') {
+  const node = el('text', { x, y, class: cls });
+  node.textContent = value;
+  return node;
+}
+function poly(points, cls) {
+  el('polygon', { points: points.map(p => p.join(',')).join(' '), class: cls });
+}
+function drawPoint(p, i, cls, prefix) {
+  el('circle', { cx: p[0], cy: p[1], r: 11, class: cls });
+  text(prefix + (i + 1), p[0], p[1] - 22, 'small');
+}
+function drawMatrix() {
+  el('rect', { x: 315, y: 430, width: 270, height: 86, rx: 8, class: 'matrix' });
+  text('M h = 0', 450, 455);
+  text('4 correspondences x 2 rows = 8 rows', 450, 482, 'small');
+  text('M is 8 x 9, rank 8 -> dim ker(M)=1', 450, 504, 'small');
+}
+function rebuild() {
+  svg.innerHTML = '';
+  poly(left, 'plane');
+  poly(right, 'plane2');
+  text('source plane / image', 225, 92, 'small');
+  text('target plane / image', 680, 92, 'small');
+  left.forEach((p, i) => drawPoint(p, i, 'pt', 'x'));
+  right.forEach((p, i) => drawPoint(p, i, 'pt2', "x'"));
+  for (let i = 0; i < 4; i++) {
+    el('line', {
+      x1: left[i][0], y1: left[i][1],
+      x2: right[i][0], y2: right[i][1],
+      class: i === 1 ? 'activeLine' : 'match'
+    });
+  }
+  text('H', 450, 245);
+  text("x'i ~ H xi", 450, 272, 'small');
+  if (mode === 'rows') {
+    drawMatrix();
+    text('one pair gives two independent linear equations', 450, 385, 'small');
+    for (let i = 0; i < 4; i++) text('2 rows', 450, 155 + i * 42, 'small');
+  }
+  if (mode === 'solve') {
+    drawMatrix();
+    el('rect', { x: 624, y: 430, width: 150, height: 86, rx: 8, class: 'matrix' });
+    text('reshape h', 699, 455);
+    text('to 3 x 3 H', 699, 482, 'small');
+    text('normalize scale', 699, 504, 'small');
+    el('path', { d: 'M586,473 L623,473', stroke: '#94a3b8', 'stroke-width': 3 });
+  }
+  const msg = {
+    pairs: [
+      'Ctyri korespondence',
+      'Data jsou ctyri dvojice:<br><br>x1 <-> x1&prime;<br>x2 <-> x2&prime;<br>x3 <-> x3&prime;<br>x4 <-> x4&prime;<br><br>Kazdy bod ma vlastni odpovidajici bod.'
+    ],
+    rows: [
+      'Dve rovnice z jedne dvojice',
+      'Z lambda_i x_i&prime; = H x_i po eliminaci lambda_i vzniknou dve nezavisle linearni rovnice pro prvky H.'
+    ],
+    solve: [
+      'Proc to staci',
+      'H ma 9 prvku, ale meritko neni urcene. Proto ma 8 stupnu volnosti. Ctyri dvojice daji 8 rovnic, jadro systemu urci H.'
+    ]
+  }[mode];
+  info.innerHTML = `<strong>${msg[0]}</strong><span class="formula">${msg[1]}</span>`;
+}
+document.querySelectorAll('button').forEach(button => {
+  button.onclick = () => {
+    mode = button.dataset.mode;
+    document.querySelectorAll('button').forEach(x => x.classList.toggle('active', x.dataset.mode === mode));
+    rebuild();
+  };
+});
+document.querySelector('[data-mode="pairs"]').classList.add('active');
+rebuild();
+</script>
+</body>
+</html>

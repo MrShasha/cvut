@@ -1,0 +1,205 @@
+<div id="shadow-map-widget" style="font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; max-width: 800px; margin: 20px auto; border: 1px solid #333; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+    <h3 style="margin: 0 0 15px 0; color: #ce9178; font-size: 16px; text-transform: uppercase; letter-spacing: 1px;">Shadow Map Inspector (Acne, Bias & PCF)</h3>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+        <div>
+            <div style="font-size: 11px; color: #888; margin-bottom: 4px;">PRŮCHOD 1: 2D Geometrie (Pohled Světla/Kamery)</div>
+            <canvas id="canvas-sm-geom" width="380" height="200" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block;"></canvas>
+        </div>
+        <div>
+            <div style="font-size: 11px; color: #888; margin-bottom: 4px;">PRŮCHOD 2: Výsledný stín na fragmentu z Kamery</div>
+            <canvas id="canvas-sm-render" width="380" height="200" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block;"></canvas>
+        </div>
+    </div>
+
+    <div style="background: #252526; padding: 15px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #3c3c3c; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 12px; margin-bottom: 4px; color: #569cd6;">Shadow Bias (&epsilon;): <span id="lbl-bias">0.000</span></label>
+                <input type="range" id="sld-bias" min="0" max="30" value="0" style="width: 100%;">
+            </div>
+            <div>
+                <label style="display: block; font-size: 12px; margin-bottom: 4px; color: #569cd6;">Sklon povrchu (Úhel): <span id="lbl-slope">0°</span></label>
+                <input type="range" id="sld-slope" min="-30" max="60" value="20" style="width: 100%;">
+            </div>
+        </div>
+        <div>
+            <div style="margin-bottom: 10px;">
+                <label style="display: block; font-size: 12px; margin-bottom: 4px; color: #4fc1ff;">Rozlišení Shadow Mapy:</label>
+                <select id="sel-res" style="width: 100%; background: #333; color: #fff; border: 1px solid #555; padding: 3px; font-family: inherit;">
+                    <option value="16">16 texelů (Nízké - Aliasing)</option>
+                    <option value="45" selected>45 texelů (Střední)</option>
+                    <option value="120">120 texelů (Vysoké)</option>
+                </select>
+            </div>
+            <div style="margin-top: 15px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+                    <input type="checkbox" id="chk-pcf"> Aktivovat PCF (Percentage Closer Filtering)
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div style="background: #000; padding: 15px; border-radius: 4px; font-size: 12px; line-height: 1.5; border: 1px solid #222;">
+        <div style="color: #6a9955; margin-bottom: 5px;">// Z-Buffer porovnání na vybraném vzorku:</div>
+        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
+            <div>
+                <div id="math-sm-test" style="color: #ce9178; font-weight: bold;">Hloubka H[x] (V mapě) vs z - &epsilon; (Fragment)</div>
+                <div id="math-sm-pcf-info" style="color: #9cdcfe; margin-top: 4px;">Filtrování: Standardní HW hloubkový test (Hard Shadows)</div>
+            </div>
+            <div id="status-sm-defect" style="text-align: right; font-weight: bold; color: #b5cea8; padding-top: 5px;">Stav: OK</div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const canvasGeom = document.getElementById('canvas-sm-geom');
+    const canvasRender = document.getElementById('canvas-sm-render');
+    const ctxG = canvasGeom.getContext('2d');
+    const ctxR = canvasRender.getContext('2d');
+
+    const sldBias = document.getElementById('sld-bias');
+    const sldSlope = document.getElementById('sld-slope');
+    const selRes = document.getElementById('sel-res');
+    const chkPCF = document.getElementById('chk-pcf');
+
+    const lblBias = document.getElementById('lbl-bias');
+    const lblSlope = document.getElementById('lbl-slope');
+    const mathSMTest = document.getElementById('math-sm-test');
+    const mathSMPcfInfo = document.getElementById('math-sm-pcf-info');
+    const statusSMDefect = document.getElementById('status-sm-defect');
+
+    function draw() {
+        const bias = parseFloat(sldBias.value) * 0.5;
+        const slopeDeg = parseInt(sldSlope.value);
+        const slopeRad = (slopeDeg * Math.PI) / 180;
+        const res = parseInt(selRes.value);
+        const pcf = chkPCF.checked;
+
+        lblBias.innerText = (bias / 10).toFixed(3);
+        lblSlope.innerText = `${slopeDeg}°`;
+
+        ctxG.clearRect(0, 0, 380, 200);
+        ctxR.clearRect(0, 0, 380, 200);
+
+        ctxG.fillStyle = '#ffdf6d';
+        ctxG.beginPath(); ctxG.arc(190, 30, 6, 0, Math.PI*2); ctxG.fill();
+        ctxG.font = '10px monospace';
+        ctxG.fillText('Světlo (L)', 175, 20);
+
+        ctxG.fillStyle = '#4fc1ff';
+        ctxG.beginPath(); ctxG.arc(40, 50, 6, 0, Math.PI*2); ctxG.fill();
+        ctxG.fillText('Kamera', 25, 40);
+
+        const surfaceY = 140;
+        const startX = 40;
+        const endX = 340;
+        const midX = 190;
+
+        const leftY = surfaceY - (midX - startX) * Math.sin(slopeRad);
+        const rightY = surfaceY + (endX - midX) * Math.sin(slopeRad);
+
+        ctxG.strokeStyle = '#666';
+        ctxG.lineWidth = 3;
+        ctxG.beginPath();
+        ctxG.moveTo(startX, leftY);
+        ctxG.lineTo(endX, rightY);
+        ctxG.stroke();
+
+        const shadowMap = new Float32Array(res);
+        const texelWidth = (endX - startX) / res;
+
+        for (let i = 0; i < res; i++) {
+            const tX = startX + i * texelWidth + texelWidth / 2;
+            const interpFactor = (tX - startX) / (endX - startX);
+            const tY = leftY + interpFactor * (rightY - leftY);
+
+            const distToLight = Math.sqrt((tX - 190)*(tX - 190) + (tY - 30)*(tY - 30));
+            shadowMap[i] = distToLight;
+
+            ctxG.fillStyle = 'rgba(255, 223, 109, 0.15)';
+            ctxG.fillRect(startX + i * texelWidth, 30, texelWidth - 1, 150);
+        }
+
+        let totalPixels = 240;
+        let pWidth = (endX - startX) / totalPixels;
+        let acneDetected = false;
+        let peterPanning = false;
+
+        for (let i = 0; i < totalPixels; i++) {
+            const pX = startX + i * pWidth;
+            const interpFactor = (pX - startX) / (endX - startX);
+            const pY = leftY + interpFactor * (rightY - leftY);
+
+            const zDepth = Math.sqrt((pX - 190)*(pX - 190) + (pY - 30)*(pY - 30));
+
+            const smTexelIdx = Math.floor((pX - startX) / texelWidth);
+            
+            if (smTexelIdx >= 0 && smTexelIdx < res) {
+                let shadowFactor = 0.0;
+
+                if (pcf) {
+                    let hits = 0;
+                    let samples = 0;
+                    for (let offset = -1; offset <= 1; offset++) {
+                        const idx = smTexelIdx + offset;
+                        if (idx >= 0 && idx < res) {
+                            const mapDepth = shadowMap[idx];
+                            if (mapDepth < (zDepth - bias)) {
+                                hits++;
+                            }
+                            samples++;
+                        }
+                    }
+                    shadowFactor = hits / samples;
+                } else {
+                    const mapDepth = shadowMap[smTexelIdx];
+                    if (mapDepth < (zDepth - bias)) {
+                        shadowFactor = 1.0;
+                    }
+                }
+
+                ctxR.fillStyle = `rgb(${Math.floor(200 * (1 - shadowFactor * 0.6))}, ${Math.floor(200 * (1 - shadowFactor * 0.6))}, ${Math.floor(200 * (1 - shadowFactor * 0.6))})`;
+                ctxR.fillRect(pX, 40, pWidth + 0.5, 110);
+
+                if (!pcf && shadowFactor > 0.9 && Math.abs(zDepth - shadowMap[smTexelIdx]) < 4) {
+                    acneDetected = true;
+                }
+            }
+        }
+
+        if (bias > 8) {
+            peterPanning = true;
+        }
+
+        const sampleIdx = Math.floor(res / 2);
+        const sampleX = startX + sampleIdx * texelWidth;
+        const sampleY = leftY + 0.5 * (rightY - leftY);
+        const sampleZ = Math.sqrt((sampleX - 190)*(sampleX - 190) + (sampleY - 30)*(sampleY - 30));
+        const sampleMap = shadowMap[sampleIdx];
+
+        mathSMTest.innerHTML = `H[x] = <span style="color:#ffdf6d;">${sampleMap.toFixed(1)}</span> vs (z - &epsilon;) = ${(sampleZ - bias).toFixed(1)} [z=${sampleZ.toFixed(1)}, &epsilon;=${(bias).toFixed(1)}]`;
+
+        if (pcf) {
+            mathSMPcfInfo.innerText = "Filtrování: 3-texel PCF kernel aktivní (Měkké hrany, potlačený aliasing)";
+        } else {
+            mathSMPcfInfo.innerText = "Filtrování: Žádné (Hard Shadows, náchylné k schodovým hranám)";
+        }
+
+        if (acneDetected) {
+            statusSMDefect.innerText = "SURFACE ACNE!";
+            statusSMDefect.style.color = "#f44747";
+        } else if (peterPanning) {
+            statusSMDefect.innerText = "PETER PANNING! (Light Leaking)";
+            statusSMDefect.style.color = "#ffaf00";
+        } else {
+            statusSMDefect.innerText = "Stav: STABILNÍ";
+            statusSMDefect.style.color = "#b5cea8";
+        }
+    }
+
+    [sldBias, sldSlope, selRes, chkPCF].forEach(el => el.addEventListener('input', draw));
+    draw();
+})();
+</script>
