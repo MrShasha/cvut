@@ -232,17 +232,29 @@ function ex9P3P() {
 function ex10Homography() {
   reset(new THREE.Vector3(.6,.3,1.15), new THREE.Vector3(5,3.8,5.5));
   const leftX = -.9, rightX = 1.1;
-  const A = new THREE.Vector3(leftX,-.7,.65), B = new THREE.Vector3(leftX,.7,.65), D = new THREE.Vector3(leftX,.7,1.95), E = new THREE.Vector3(leftX,-.7,1.95);
-  const a = new THREE.Vector3(rightX,-.95,.65), b = new THREE.Vector3(rightX,1.05,.65), d = new THREE.Vector3(rightX,.65,2.2), e = new THREE.Vector3(rightX,-.75,1.85);
-  planeQuad([A,B,D,E], C.green, .18, 'objektova rovina');
-  planeQuad([a,b,d,e], C.orange, .18, 'obraz po H');
-  [[A,a],[B,b],[D,d],[E,e]].forEach(pair=>line(pair[0], pair[1], C.gray, true));
-  const pre = new THREE.Vector3(leftX, .0, 1.38);
-  const img = new THREE.Vector3(rightX, .05, 1.42);
-  sphere(pre, C.green, '(2/3,2/3)');
-  sphere(img, C.red, '(1,1)');
-  label('H maps plane points', new THREE.Vector3(.05,-1.15,2.35), '#fde68a');
-  setInfo('Priklad 10: homografie ze 4 bodu', 'Ctverice korespondenci urci homografii mezi rovinou objektu a obrazem.', '<strong>Vysledek</strong><span class="formula">H=[2 0 0; 0 2 0; -1 0 2]<br>lambda(1,1,1)^T = H(x,y,1)^T<br>2x=lambda, 2y=lambda, -x+2=lambda<br>x=y=2/3</span>', 'Homografie zachova incidence, ale obecne nezachova delky ani stredy v afinnim smyslu.');
+  const obj = (x,y) => new THREE.Vector3(leftX, -.8 + 1.6*x, .6 + 1.6*y);
+  const imgp = (u,v) => new THREE.Vector3(rightX, -.9 + .9*u, .6 + .85*v);
+  const X1 = obj(0,0), X2 = obj(1,0), X3 = obj(0,1), X4 = obj(1,1);
+  const u1 = imgp(0,0), u2 = imgp(2,0), u3 = imgp(0,1), u4 = imgp(2,2);
+  planeQuad([X1,X2,X4,X3], C.green, .18, 'zadani: rovina z=0');
+  planeQuad([u1,u2,u4,u3], C.orange, .18, 'zadani: obrazove body');
+  [
+    [X1, 'X1 (0,0)', u1, 'u1 (0,0)'],
+    [X2, 'X2 (1,0)', u2, 'u2 (2,0)'],
+    [X3, 'X3 (0,1)', u3, 'u3 (0,1)'],
+    [X4, 'X4 (1,1)', u4, 'u4 (2,2)']
+  ].forEach(([X, xl, u, ul]) => {
+    sphere(X, C.green, xl, .055);
+    sphere(u, C.orange, ul, .055);
+    line(X, u, C.gray, true);
+  });
+  const pre = obj(2/3, 2/3);
+  const target = imgp(1, 1);
+  sphere(pre, C.blue, 'hledany X=(2/3,2/3)', .075);
+  sphere(target, C.red, 'cil u=(1,1)', .075);
+  line(pre, target, C.red, true);
+  label('nejdriv 4 korespondence, potom inverzni uloha', new THREE.Vector3(.05,-1.28,2.55), '#fde68a', .8);
+  setInfo('Priklad 10: homografie ze 4 bodu', 'Vlevo jsou ctyri body ze zadani v rovine objektu, vpravo jejich obrazove body. Tyto korespondence urci H.', '<strong>Zadani a vysledek</strong><span class="formula">X1=(0,0) -> u1=(0,0)<br>X2=(1,0) -> u2=(2,0)<br>X3=(0,1) -> u3=(0,1)<br>X4=(1,1) -> u4=(2,2)<br><br>H=[2 0 0; 0 2 0; -1 0 2]<br>cil u=(1,1) ma preimage X=(2/3,2/3)</span>', 'Sede carkovane spojnice jsou zadane korespondence. Cervena spojnice zvyraznuje az nasledny vypocet pro obrazovy bod (1,1).');
 }
 function ex11RotationHomography() {
   reset(new THREE.Vector3(.45,.25,1.35), new THREE.Vector3(5.2,3.8,5.8));
