@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>List Scheduling and LPT</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fff;
+      --panel: #f8fafc;
+      --line: #cbd5e1;
+      --text: #111827;
+      --muted: #64748b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+    .wrap { height: 760px; padding: 18px; display: grid; grid-template-rows: auto 1fr auto; gap: 14px; }
+    .top { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; border-bottom: 1px solid var(--line); padding-bottom: 12px; }
+    h1 { margin: 0 0 4px; font-size: 22px; line-height: 1.2; letter-spacing: 0; }
+    .subtitle { margin: 0; color: var(--muted); font-size: 14px; }
+    .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    button { border: 1px solid var(--line); background: #fff; color: var(--text); border-radius: 8px; padding: 8px 11px; font-size: 14px; cursor: pointer; }
+    button:hover { border-color: #94a3b8; background: #f8fafc; }
+    .counter { min-width: 86px; text-align: center; color: var(--muted); font-size: 13px; }
+    .main { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; min-height: 0; }
+    .panel { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); overflow: hidden; min-height: 0; }
+    .chart { background: #fff; padding: 12px; }
+    svg { width: 100%; height: 100%; display: block; }
+    .side { display: grid; grid-template-rows: auto auto 1fr; gap: 12px; padding: 14px; }
+    .step-title { margin: 0; font-size: 18px; line-height: 1.25; }
+    .step-text { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+    .formula { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 12px; font: 700 14px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: pre-line; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; background: #fff; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    th, td { padding: 7px 8px; border-bottom: 1px solid #e5e7eb; text-align: center; }
+    th { color: var(--muted); font-size: 12px; background: #f8fafc; }
+    tr:last-child td { border-bottom: 0; }
+    .legend { display: flex; gap: 12px; flex-wrap: wrap; color: var(--muted); font-size: 13px; align-items: center; }
+    .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; margin-right: 5px; vertical-align: -1px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>List Scheduling a LPT</h1>
+        <p class="subtitle">List Scheduling bere první dostupnou úlohu ze seznamu. LPT je speciální seznam: nejdelší úlohy první.</p>
+      </div>
+      <div class="controls">
+        <button id="prev" type="button">←</button>
+        <button id="play" type="button">Play</button>
+        <button id="next" type="button">→</button>
+        <span id="counter" class="counter"></span>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="panel chart">
+        <svg id="viz" viewBox="0 0 800 540" aria-label="List Scheduling"></svg>
+      </section>
+      <aside class="panel side">
+        <div>
+          <h2 class="step-title" id="stepTitle"></h2>
+          <p class="step-text" id="stepText"></p>
+        </div>
+        <div class="formula" id="formula"></div>
+        <table>
+          <thead><tr><th>úloha</th><th>p</th><th>prec</th><th>a_i</th><th>stav</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </aside>
+    </main>
+
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <script>
+    const jobs = [
+      { id: "A", p: 3, prec: [], color: "#2563eb" },
+      { id: "B", p: 2, prec: [], color: "#0891b2" },
+      { id: "C", p: 4, prec: ["A"], color: "#ca8a04" },
+      { id: "D", p: 2, prec: ["A", "B"], color: "#7c3aed" },
+      { id: "E", p: 3, prec: ["C"], color: "#dc2626" }
+    ];
+
+    const lsSegments = [
+      { job: "A", machine: 1, start: 0, end: 3 },
+      { job: "B", machine: 2, start: 0, end: 2 },
+      { job: "C", machine: 2, start: 3, end: 7 },
+      { job: "D", machine: 1, start: 3, end: 5 },
+      { job: "E", machine: 1, start: 7, end: 10 }
+    ];
+
+    const badList = [
+      { job: "a1", p: 1, machine: 1, start: 0, end: 1, color: "#93c5fd" },
+      { job: "a2", p: 1, machine: 2, start: 0, end: 1, color: "#93c5fd" },
+      { job: "a3", p: 1, machine: 3, start: 0, end: 1, color: "#93c5fd" },
+      { job: "a4", p: 1, machine: 1, start: 1, end: 2, color: "#93c5fd" },
+      { job: "a5", p: 1, machine: 2, start: 1, end: 2, color: "#93c5fd" },
+      { job: "a6", p: 1, machine: 3, start: 1, end: 2, color: "#93c5fd" },
+      { job: "L", p: 3, machine: 1, start: 2, end: 5, color: "#dc2626" }
+    ];
+
+    const lpt = [
+      { job: "L", p: 3, machine: 1, start: 0, end: 3, color: "#dc2626" },
+      { job: "a1", p: 1, machine: 2, start: 0, end: 1, color: "#93c5fd" },
+      { job: "a2", p: 1, machine: 3, start: 0, end: 1, color: "#93c5fd" },
+      { job: "a3", p: 1, machine: 2, start: 1, end: 2, color: "#93c5fd" },
+      { job: "a4", p: 1, machine: 3, start: 1, end: 2, color: "#93c5fd" },
+      { job: "a5", p: 1, machine: 2, start: 2, end: 3, color: "#93c5fd" },
+      { job: "a6", p: 1, machine: 3, start: 2, end: 3, color: "#93c5fd" }
+    ];
+
+    const steps = [
+      {
+        title: "1. List Scheduling s precedencemi",
+        text: "Máme R=2 procesory a seznam L=(A,B,C,D,E). V každém kroku vezmeme první úlohu v seznamu, která už má hotové předchůdce.",
+        formula: "a_i = nejdřívější čas dostupnosti\npokud předchůdce není hotový: a_i = ∞",
+        mode: "ls",
+        visible: 0
+      },
+      {
+        title: "2. Start: A a B jsou dostupné",
+        text: "Procesory jsou volné, A i B nemají předchůdce. Naplánujeme je paralelně.",
+        formula: "A: P1[0,3]\nB: P2[0,2]",
+        mode: "ls",
+        visible: 2
+      },
+      {
+        title: "3. C čeká na A",
+        text: "P2 je volný už v čase 2, ale C i D čekají na dokončení A. Proto vznikne idle interval [2,3].",
+        formula: "a_C = C_A = 3\na_D = max(C_A,C_B)=3",
+        mode: "ls",
+        visible: 2,
+        idle: true
+      },
+      {
+        title: "4. Po A spustíme C a D",
+        text: "C je první dostupná úloha v seznamu, D je další dostupná úloha. Obě startují v čase 3.",
+        formula: "C: P2[3,7]\nD: P1[3,5]",
+        mode: "ls",
+        visible: 4
+      },
+      {
+        title: "5. E čeká na C",
+        text: "E je následník C, proto může začít až v čase 7. Výsledný makespan je 10.",
+        formula: "E: P1[7,10]\nCmax^LS = 10",
+        mode: "ls",
+        visible: 5
+      },
+      {
+        title: "6. Proč pořadí seznamu bolí",
+        text: "Když seznam nejdřív obsahuje malé úlohy, dlouhá úloha může zůstat na konec a prodloužit makespan.",
+        formula: "R=3\nšpatný seznam: malé úlohy, potom L\nCmax = 5",
+        mode: "compare",
+        compare: "bad"
+      },
+      {
+        title: "7. LPT: nejdelší úlohy první",
+        text: "LPT je List Scheduling se seznamem seřazeným sestupně podle p_j. Dlouhé úlohy obsadí procesory hned a malé vyplní mezery.",
+        formula: "LPT seznam: L, malé úlohy\nCmax = 3\nfaktor: 4/3 - 1/(3R)",
+        mode: "compare",
+        compare: "lpt"
+      }
+    ];
+
+    let index = 0;
+    let timer = null;
+    const svg = document.getElementById("viz");
+
+    function job(id) { return jobs.find(j => j.id === id); }
+    function svgEl(tag, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
+      for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+      return el;
+    }
+    function text(parent, value, x, y, opts = {}) {
+      const el = svgEl("text", { x, y, "font-size": opts.size || 13, "font-weight": opts.weight || 600, fill: opts.fill || "#111827", "text-anchor": opts.anchor || "start" });
+      el.textContent = value;
+      parent.appendChild(el);
+      return el;
+    }
+
+    function drawMachineRows(x0, y0, machines, horizon, scale) {
+      for (let m = 1; m <= machines; m++) {
+        const y = y0 + (m - 1) * 70;
+        text(svg, "P" + m, x0 - 42, y + 31, { size: 15, weight: 800 });
+        svg.appendChild(svgEl("line", { x1: x0, x2: x0 + horizon * scale, y1: y + 35, y2: y + 35, stroke: "#cbd5e1", "stroke-width": 2 }));
+      }
+      for (let t = 0; t <= horizon; t++) {
+        const x = x0 + t * scale;
+        svg.appendChild(svgEl("line", { x1: x, x2: x, y1: y0 - 14, y2: y0 + machines * 70 - 24, stroke: "#e5e7eb", "stroke-width": 1 }));
+        text(svg, String(t), x, y0 + machines * 70 - 2, { anchor: "middle", size: 11, fill: "#64748b" });
+      }
+    }
+
+    function drawSegments(segments, x0, y0, scale, visible = segments.length) {
+      segments.slice(0, visible).forEach(seg => {
+        const j = job(seg.job);
+        const color = seg.color || (j && j.color) || "#64748b";
+        const y = y0 + (seg.machine - 1) * 70 + 9;
+        svg.appendChild(svgEl("rect", { x: x0 + seg.start * scale, y, width: (seg.end - seg.start) * scale, height: 44, rx: 6, fill: color, opacity: 0.88 }));
+        text(svg, seg.job, x0 + (seg.start + seg.end) * scale / 2, y + 28, { anchor: "middle", fill: "#fff", weight: 800 });
+      });
+    }
+
+    function drawLS(step) {
+      const x0 = 92, y0 = 82, scale = 58;
+      text(svg, "List Scheduling pro P|prec|Cmax", 24, 28, { size: 17, weight: 800 });
+      text(svg, "Seznam L=(A,B,C,D,E). První dostupná úloha jde na nejdříve volný procesor.", 24, 52, { size: 13, fill: "#64748b" });
+      drawMachineRows(x0, y0, 2, 10, scale);
+      if (step.idle) {
+        svg.appendChild(svgEl("rect", { x: x0 + 2 * scale, y: y0 + 70 + 9, width: scale, height: 44, rx: 6, fill: "#f1f5f9", stroke: "#94a3b8", "stroke-dasharray": "5 4" }));
+        text(svg, "idle", x0 + 2.5 * scale, y0 + 70 + 37, { anchor: "middle", fill: "#64748b" });
+      }
+      drawSegments(lsSegments, x0, y0, scale, step.visible);
+
+      const positions = { A: [160, 330], B: [260, 330], C: [210, 430], D: [355, 430], E: [210, 510] };
+      Object.entries(positions).forEach(([id, p]) => {
+        const j = job(id);
+        svg.appendChild(svgEl("circle", { cx: p[0], cy: p[1], r: 25, fill: "#fff", stroke: j.color, "stroke-width": 3 }));
+        text(svg, id, p[0], p[1] + 5, { anchor: "middle", weight: 800 });
+      });
+      [["A","C"],["A","D"],["B","D"],["C","E"]].forEach(([a,b]) => {
+        const p = positions[a], q = positions[b];
+        svg.appendChild(svgEl("line", { x1: p[0], y1: p[1] + 25, x2: q[0], y2: q[1] - 25, stroke: "#94a3b8", "stroke-width": 2 }));
+      });
+    }
+
+    function drawCompare(step) {
+      text(svg, "Pořadí seznamu rozhoduje", 24, 28, { size: 17, weight: 800 });
+      text(svg, "Bez precedencí je LPT silnější volba seznamu: nejdelší úlohy první.", 24, 52, { size: 13, fill: "#64748b" });
+      const x0 = 92, y0 = 96, scale = 82;
+      text(svg, "Špatný seznam", 32, 82, { weight: 800 });
+      drawMachineRows(x0, y0, 3, 5, scale);
+      drawSegments(badList, x0, y0, scale, step.compare === "bad" || step.compare === "lpt" ? badList.length : 0);
+      text(svg, "Cmax = 5", x0 + 5 * scale + 18, y0 + 105, { fill: "#dc2626", weight: 800 });
+
+      const x2 = 92, y2 = 350;
+      text(svg, "LPT", 32, 336, { weight: 800 });
+      drawMachineRows(x2, y2, 3, 5, scale);
+      drawSegments(lpt, x2, y2, scale, step.compare === "lpt" ? lpt.length : 0);
+      text(svg, "Cmax = 3", x2 + 5 * scale + 18, y2 + 105, { fill: "#16a34a", weight: 800 });
+    }
+
+    function draw() {
+      const step = steps[index];
+      svg.innerHTML = "";
+      if (step.mode === "compare") drawCompare(step);
+      else drawLS(step);
+    }
+
+    function availability(step) {
+      const scheduled = lsSegments.slice(0, step.visible);
+      const completion = Object.fromEntries(scheduled.map(s => [s.job, s.end]));
+      return jobs.map(j => {
+        const allPred = j.prec.every(p => completion[p] !== undefined);
+        const ai = j.prec.length === 0 ? 0 : allPred ? Math.max(...j.prec.map(p => completion[p])) : "∞";
+        const done = completion[j.id] !== undefined;
+        return { ...j, ai, status: done ? "hotovo" : allPred ? "dostupná" : "čeká" };
+      });
+    }
+
+    function renderRows(step) {
+      document.getElementById("rows").innerHTML = availability(step).map(j => `
+        <tr>
+          <td style="font-weight:800;color:${j.color}">${j.id}</td>
+          <td>${j.p}</td>
+          <td>${j.prec.join(", ") || "—"}</td>
+          <td>${j.ai}</td>
+          <td>${j.status}</td>
+        </tr>
+      `).join("");
+    }
+
+    function render() {
+      const step = steps[index];
+      draw();
+      document.getElementById("stepTitle").textContent = step.title;
+      document.getElementById("stepText").textContent = step.text;
+      document.getElementById("formula").textContent = step.formula;
+      document.getElementById("counter").textContent = `${index + 1} / ${steps.length}`;
+      renderRows(step);
+    }
+    function go(delta) {
+      index = Math.max(0, Math.min(steps.length - 1, index + delta));
+      render();
+    }
+
+    document.getElementById("legend").innerHTML = jobs.map(j => `<span><span class="dot" style="background:${j.color}"></span>${j.id}</span>`).join("") + "<span>LS faktor: 2 - 1/R, LPT faktor: 4/3 - 1/(3R)</span>";
+    document.getElementById("prev").addEventListener("click", () => go(-1));
+    document.getElementById("next").addEventListener("click", () => go(1));
+    document.getElementById("play").addEventListener("click", () => {
+      if (timer) { clearInterval(timer); timer = null; document.getElementById("play").textContent = "Play"; return; }
+      document.getElementById("play").textContent = "Pause";
+      timer = setInterval(() => {
+        if (index === steps.length - 1) { clearInterval(timer); timer = null; document.getElementById("play").textContent = "Play"; return; }
+        go(1);
+      }, 1300);
+    });
+    render();
+  </script>
+</body>
+</html>

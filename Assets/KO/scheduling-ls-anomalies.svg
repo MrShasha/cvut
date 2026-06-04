@@ -1,0 +1,162 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="840" viewBox="0 0 1200 840" role="img" aria-labelledby="title desc">
+  <title id="title">Anomalie List Scheduling</title>
+  <desc id="desc">Three Graham list scheduling anomalies: relaxed precedence, shorter processing times, and more processors can increase makespan.</desc>
+  <defs>
+    <style>
+      .title, .subtitle, .h, .label, .small, .num, .warn {
+        paint-order: stroke;
+        stroke: #fff;
+        stroke-width: 5px;
+        stroke-linejoin: round;
+      }
+      .title { font: 700 34px Arial, sans-serif; fill: #111827; }
+      .subtitle { font: 500 17px Arial, sans-serif; fill: #475569; }
+      .h { font: 700 21px Arial, sans-serif; fill: #111827; }
+      .label { font: 700 15px Arial, sans-serif; fill: #111827; }
+      .small { font: 500 13px Arial, sans-serif; fill: #475569; }
+      .num { font: 700 14px Arial, sans-serif; fill: #111827; }
+      .warn { font: 700 22px Arial, sans-serif; fill: #dc2626; }
+      .card { fill: #fff; stroke: #d7dee8; stroke-width: 2; }
+      .axis { stroke: #111827; stroke-width: 2; }
+      .lane { stroke: #94a3b8; stroke-width: 1.5; }
+      .barA { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 2; }
+      .barB { fill: #dcfce7; stroke: #16a34a; stroke-width: 2; }
+      .barC { fill: #fef3c7; stroke: #d97706; stroke-width: 2; }
+      .barD { fill: #fae8ff; stroke: #a21caf; stroke-width: 2; }
+      .idle { fill: #f8fafc; stroke: #94a3b8; stroke-width: 2; stroke-dasharray: 5 4; }
+      .arrow { stroke: #ef4444; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .chip { fill: #fff7ed; stroke: #fb923c; stroke-width: 2; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#ef4444"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="840" fill="#fff"/>
+  <text x="46" y="54" class="title">Anom&#225;lie List Scheduling</text>
+  <text x="48" y="84" class="subtitle">LS nen&#237; monotonn&#237;: &quot;leh&#269;&#237;&quot; vstup m&#367;&#382;e zm&#283;nit po&#345;ad&#237; p&#345;id&#283;lov&#225;n&#237; a zv&#283;t&#353;it makespan.</text>
+  <rect x="875" y="34" width="260" height="58" rx="10" class="chip"/>
+  <text x="895" y="58" class="small">&#268;&#237;slo v bloku = processing time</text>
+  <text x="895" y="80" class="small">stejn&#253; priority list, greedy LS</text>
+
+  <!-- Common base schedule: Cmax 12 -->
+  <g id="base-legend">
+    <text x="62" y="123" class="small">P&#367;vodn&#237; instance ve v&#353;ech t&#345;ech &#345;&#225;dc&#237;ch: R = 3, list = (3,2,2,2,4,4,4,4,9), &#269;ty&#345;ky jsou a&#382; po posledn&#237; dvojce.</text>
+  </g>
+
+  <!-- Row 1 -->
+  <rect x="45" y="140" width="1110" height="190" rx="14" class="card"/>
+  <text x="70" y="174" class="h">1. Uvoln&#283;n&#237; precedence</text>
+  <text x="70" y="201" class="small">Odebereme hrany T4 -> T5,T6,T7,T8. &#268;ty&#345;ky jsou dostupn&#233; d&#345;&#237;v, ale LS t&#237;m odsune dlouhou &#250;lohu 9.</text>
+  <text x="430" y="176" class="label">p&#367;vodn&#283;: Cmax = 12</text>
+  <text x="742" y="176" class="label">po zm&#283;n&#283;: Cmax = 16</text>
+  <path d="M610 235 C655 222 677 222 716 235" class="arrow"/>
+  <text x="596" y="274" class="warn">12 &#8594; 16</text>
+  <g transform="translate(230 216)">
+    <text x="-28" y="18" class="small">P1</text><line x1="0" y1="22" x2="210" y2="22" class="lane"/>
+    <rect x="0" y="2" width="45" height="28" class="barA"/><text x="18" y="22" class="num">3</text>
+    <rect x="45" y="2" width="135" height="28" class="barB"/><text x="103" y="22" class="num">9</text>
+    <text x="-28" y="58" class="small">P2</text><line x1="0" y1="62" x2="210" y2="62" class="lane"/>
+    <rect x="0" y="42" width="30" height="28" class="barA"/><text x="11" y="62" class="num">2</text>
+    <rect x="30" y="42" width="30" height="28" class="barA"/><text x="41" y="62" class="num">2</text>
+    <rect x="60" y="42" width="60" height="28" class="barC"/><text x="83" y="62" class="num">4</text>
+    <rect x="120" y="42" width="60" height="28" class="barC"/><text x="143" y="62" class="num">4</text>
+    <text x="-28" y="98" class="small">P3</text><line x1="0" y1="102" x2="210" y2="102" class="lane"/>
+    <rect x="0" y="82" width="30" height="28" class="barA"/><text x="11" y="102" class="num">2</text>
+    <rect x="30" y="82" width="30" height="28" class="idle"/><text x="36" y="102" class="small">idle</text>
+    <rect x="60" y="82" width="60" height="28" class="barC"/><text x="83" y="102" class="num">4</text>
+    <rect x="120" y="82" width="60" height="28" class="barC"/><text x="143" y="102" class="num">4</text>
+  </g>
+  <g transform="translate(740 216)">
+    <text x="-28" y="18" class="small">P1</text><line x1="0" y1="22" x2="255" y2="22" class="lane"/>
+    <rect x="0" y="2" width="45" height="28" class="barA"/><text x="18" y="22" class="num">3</text>
+    <rect x="45" y="2" width="60" height="28" class="barC"/><text x="68" y="22" class="num">4</text>
+    <rect x="105" y="2" width="135" height="28" class="barB"/><text x="163" y="22" class="num">9</text>
+    <text x="-28" y="58" class="small">P2</text><line x1="0" y1="62" x2="255" y2="62" class="lane"/>
+    <rect x="0" y="42" width="30" height="28" class="barA"/><text x="11" y="62" class="num">2</text>
+    <rect x="30" y="42" width="30" height="28" class="barA"/><text x="41" y="62" class="num">2</text>
+    <rect x="60" y="42" width="60" height="28" class="barC"/><text x="83" y="62" class="num">4</text>
+    <text x="-28" y="98" class="small">P3</text><line x1="0" y1="102" x2="255" y2="102" class="lane"/>
+    <rect x="0" y="82" width="30" height="28" class="barA"/><text x="11" y="102" class="num">2</text>
+    <rect x="30" y="82" width="60" height="28" class="barC"/><text x="53" y="102" class="num">4</text>
+    <rect x="90" y="82" width="60" height="28" class="barC"/><text x="113" y="102" class="num">4</text>
+  </g>
+
+  <!-- Row 2 -->
+  <rect x="45" y="355" width="1110" height="190" rx="14" class="card"/>
+  <text x="70" y="389" class="h">2. Sn&#237;&#382;en&#237; processing times</text>
+  <text x="70" y="416" class="small">Zkr&#225;t&#237;me v&#353;echny &#250;lohy o 1. Zd&#225; se to lep&#353;&#237;, ale greedy rozlo&#382;&#237; posledn&#237; dlouhou &#250;lohu h&#367;&#345;.</text>
+  <text x="430" y="391" class="label">p&#367;vodn&#283;: Cmax = 12</text>
+  <text x="742" y="391" class="label">po zkr&#225;cen&#237;: Cmax = 13</text>
+  <path d="M610 450 C655 437 677 437 716 450" class="arrow"/>
+  <text x="596" y="489" class="warn">12 &#8594; 13</text>
+  <g transform="translate(230 431)">
+    <text x="-28" y="18" class="small">P1</text><line x1="0" y1="22" x2="210" y2="22" class="lane"/>
+    <rect x="0" y="2" width="45" height="28" class="barA"/><text x="18" y="22" class="num">3</text>
+    <rect x="45" y="2" width="135" height="28" class="barB"/><text x="103" y="22" class="num">9</text>
+    <text x="-28" y="58" class="small">P2</text><line x1="0" y1="62" x2="210" y2="62" class="lane"/>
+    <rect x="0" y="42" width="30" height="28" class="barA"/><text x="11" y="62" class="num">2</text>
+    <rect x="30" y="42" width="30" height="28" class="barA"/><text x="41" y="62" class="num">2</text>
+    <rect x="60" y="42" width="60" height="28" class="barC"/><text x="83" y="62" class="num">4</text>
+    <rect x="120" y="42" width="60" height="28" class="barC"/><text x="143" y="62" class="num">4</text>
+    <text x="-28" y="98" class="small">P3</text><line x1="0" y1="102" x2="210" y2="102" class="lane"/>
+    <rect x="0" y="82" width="30" height="28" class="barA"/><text x="11" y="102" class="num">2</text>
+    <rect x="30" y="82" width="30" height="28" class="idle"/>
+    <rect x="60" y="82" width="60" height="28" class="barC"/><text x="83" y="102" class="num">4</text>
+    <rect x="120" y="82" width="60" height="28" class="barC"/><text x="143" y="102" class="num">4</text>
+  </g>
+  <g transform="translate(740 431)">
+    <text x="-28" y="18" class="small">P1</text><line x1="0" y1="22" x2="210" y2="22" class="lane"/>
+    <rect x="0" y="2" width="30" height="28" class="barA"/><text x="11" y="22" class="num">2</text>
+    <rect x="30" y="2" width="45" height="28" class="barC"/><text x="48" y="22" class="num">3</text>
+    <rect x="75" y="2" width="45" height="28" class="barC"/><text x="93" y="22" class="num">3</text>
+    <text x="-28" y="58" class="small">P2</text><line x1="0" y1="62" x2="210" y2="62" class="lane"/>
+    <rect x="0" y="42" width="15" height="28" class="barA"/><text x="4" y="62" class="num">1</text>
+    <rect x="15" y="42" width="15" height="28" class="barA"/><text x="19" y="62" class="num">1</text>
+    <rect x="30" y="42" width="45" height="28" class="barC"/><text x="48" y="62" class="num">3</text>
+    <rect x="75" y="42" width="120" height="28" class="barB"/><text x="128" y="62" class="num">8</text>
+    <text x="-28" y="98" class="small">P3</text><line x1="0" y1="102" x2="210" y2="102" class="lane"/>
+    <rect x="0" y="82" width="15" height="28" class="barA"/><text x="4" y="102" class="num">1</text>
+    <rect x="15" y="82" width="15" height="28" class="idle"/>
+    <rect x="30" y="82" width="45" height="28" class="barC"/><text x="48" y="102" class="num">3</text>
+  </g>
+
+  <!-- Row 3 -->
+  <rect x="45" y="570" width="1110" height="220" rx="14" class="card"/>
+  <text x="70" y="604" class="h">3. Zv&#253;&#353;en&#237; po&#269;tu procesor&#367;</text>
+  <text x="70" y="631" class="small">P&#345;id&#225;me procesor. V&#237;ce paralelismu zm&#283;n&#237; za&#269;&#225;tky &#250;loh a dlouh&#225; &#250;loha 9 skon&#269;&#237; pozd&#283;ji.</text>
+  <text x="430" y="606" class="label">R = 3: Cmax = 12</text>
+  <text x="742" y="606" class="label">R = 4: Cmax = 15</text>
+  <path d="M610 665 C655 652 677 652 716 665" class="arrow"/>
+  <text x="596" y="704" class="warn">12 &#8594; 15</text>
+  <g transform="translate(230 646)">
+    <text x="-28" y="18" class="small">P1</text><line x1="0" y1="22" x2="210" y2="22" class="lane"/>
+    <rect x="0" y="2" width="45" height="28" class="barA"/><text x="18" y="22" class="num">3</text>
+    <rect x="45" y="2" width="135" height="28" class="barB"/><text x="103" y="22" class="num">9</text>
+    <text x="-28" y="58" class="small">P2</text><line x1="0" y1="62" x2="210" y2="62" class="lane"/>
+    <rect x="0" y="42" width="30" height="28" class="barA"/><text x="11" y="62" class="num">2</text>
+    <rect x="30" y="42" width="30" height="28" class="barA"/><text x="41" y="62" class="num">2</text>
+    <rect x="60" y="42" width="60" height="28" class="barC"/><text x="83" y="62" class="num">4</text>
+    <rect x="120" y="42" width="60" height="28" class="barC"/><text x="143" y="62" class="num">4</text>
+    <text x="-28" y="98" class="small">P3</text><line x1="0" y1="102" x2="210" y2="102" class="lane"/>
+    <rect x="0" y="82" width="30" height="28" class="barA"/><text x="11" y="102" class="num">2</text>
+    <rect x="30" y="82" width="30" height="28" class="idle"/>
+    <rect x="60" y="82" width="60" height="28" class="barC"/><text x="83" y="102" class="num">4</text>
+    <rect x="120" y="82" width="60" height="28" class="barC"/><text x="143" y="102" class="num">4</text>
+  </g>
+  <g transform="translate(740 646)">
+    <text x="-28" y="18" class="small">P1</text><line x1="0" y1="22" x2="240" y2="22" class="lane"/>
+    <rect x="0" y="2" width="45" height="28" class="barA"/><text x="18" y="22" class="num">3</text>
+    <rect x="45" y="2" width="60" height="28" class="barC"/><text x="68" y="22" class="num">4</text>
+    <text x="-28" y="58" class="small">P2</text><line x1="0" y1="62" x2="240" y2="62" class="lane"/>
+    <rect x="0" y="42" width="30" height="28" class="barA"/><text x="11" y="62" class="num">2</text>
+    <rect x="30" y="42" width="60" height="28" class="barC"/><text x="53" y="62" class="num">4</text>
+    <rect x="90" y="42" width="135" height="28" class="barB"/><text x="148" y="62" class="num">9</text>
+    <text x="-28" y="98" class="small">P3</text><line x1="0" y1="102" x2="240" y2="102" class="lane"/>
+    <rect x="0" y="82" width="30" height="28" class="barA"/><text x="11" y="102" class="num">2</text>
+    <rect x="30" y="82" width="60" height="28" class="barC"/><text x="53" y="102" class="num">4</text>
+    <text x="-28" y="138" class="small">P4</text><line x1="0" y1="142" x2="240" y2="142" class="lane"/>
+    <rect x="0" y="122" width="30" height="28" class="barA"/><text x="11" y="142" class="num">2</text>
+    <rect x="30" y="122" width="60" height="28" class="barC"/><text x="53" y="142" class="num">4</text>
+  </g>
+</svg>
