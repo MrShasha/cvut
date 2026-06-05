@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import Layout from '@theme/Layout';
 import commissionData from '@site/src/data/commission-data.json';
 import styles from './komise.module.css';
@@ -28,6 +28,23 @@ const yearWeight = (year) => {
 
 const subjectById = new Map(commissionData.subjects.map((subject) => [subject.id, subject]));
 const professorByName = new Map(commissionData.professors.map((professor) => [professor.name, professor]));
+const optionalSubjectIds = commissionData.subjects
+  .map((subject) => subject.id)
+  .filter((subjectId) => !REQUIRED_SUBJECTS.has(subjectId));
+const optionalSubjectSet = new Set(optionalSubjectIds);
+const professorNames = commissionData.professors.map((professor) => professor.name);
+const professorNameSet = new Set(professorNames);
+
+const pickKnownValues = (values, validSet, orderedValues) => {
+  const selected = new Set(values.filter((value) => validSet.has(value)));
+  return orderedValues.filter((value) => selected.has(value));
+};
+
+const getRepeatedParams = (params, key) =>
+  params
+    .getAll(key)
+    .map((value) => value.trim())
+    .filter(Boolean);
 
 function FilterInput({id, label, value, onChange, placeholder}) {
   return (
@@ -56,9 +73,8 @@ function OptionList({items, selected, onToggle, emptyText, renderItem}) {
   );
 }
 
-function useAnalysis(selectedSubjects, selectedProfessors) {
+function useAnalysis(fieldSubjects, selectedProfessors) {
   return useMemo(() => {
-    const subjectSet = new Set(selectedSubjects);
     const professorSet = new Set(selectedProfessors);
     const selectedProfessorSubjects = new Map();
 
@@ -69,72 +85,86 @@ function useAnalysis(selectedSubjects, selectedProfessors) {
       }
     }
 
-    const scoredQuestions = commissionData.questions
-      .filter((question) => subjectSet.has(question.subject))
-      .map((question) => {
-        const examinerHit = question.examiner && professorSet.has(question.examiner);
-        const committeeHits = question.committee.filter((name) => professorSet.has(name));
-        const professorSubjectSupport = selectedProfessorSubjects.get(question.subject) ?? 0;
-        let score = 1;
+    const scoreQuestion = (question) => {
+      const examinerHit = question.examiner && professorSet.has(question.examiner);
+      const committeeHits = question.committee.filter((name) => professorSet.has(name));
+      const professorSubjectSupport = selectedProfessorSubjects.get(question.subject) ?? 0;
+      let score = 1;
 
-        if (professorSet.size > 0) {
-          score = 0.65;
-          if (examinerHit) score += 8;
-          if (committeeHits.length > 0) score += Math.min(4, committeeHits.length * 1.35);
-          score += Math.min(3, professorSubjectSupport * 0.12);
-        }
+      if (professorSet.size > 0) {
+        score = 0.65;
+        if (examinerHit) score += 8;
+        if (committeeHits.length > 0) score += Math.min(4, committeeHits.length * 1.35);
+        score += Math.min(3, professorSubjectSupport * 0.12);
+      }
 
-        score *= yearWeight(question.year);
+      score *= yearWeight(question.year);
 
-        return {
-          ...question,
-          score,
-          examinerHit,
-          committeeHits,
-        };
-      });
-
-    const totalScore = scoredQuestions.reduce((sum, question) => sum + question.score, 0);
-    const bySubject = new Map();
-
-    for (const question of scoredQuestions) {
-      const current = bySubject.get(question.subject) ?? {
-        subject: question.subject,
-        score: 0,
-        evidence: 0,
-        examinerHits: 0,
-        committeeHits: 0,
-      };
-
-      current.score += question.score;
-      current.evidence += 1;
-      if (question.examinerHit) current.examinerHits += 1;
-      if (question.committeeHits.length > 0) current.committeeHits += 1;
-      bySubject.set(question.subject, current);
-    }
-
-    const subjectResults = Array.from(bySubject.values())
-      .map((item) => ({
-        ...item,
-        probability: totalScore > 0 ? (item.score / totalScore) * 100 : 0,
-      }))
-      .sort((a, b) => b.probability - a.probability || b.evidence - a.evidence);
-
-    const questionResults = scoredQuestions
-      .map((question) => ({
+      return {
         ...question,
-        probability: totalScore > 0 ? (question.score / totalScore) * 100 : 0,
-      }))
-      .sort((a, b) => b.score - a.score || b.year - a.year)
-      .slice(0, 18);
+        score,
+        examinerHit,
+        committeeHits,
+      };
+    };
+
+    const buildGroup = (subjects, questionLimit) => {
+      const subjectSet = new Set(subjects);
+      const scoredQuestions = commissionData.questions
+        .filter((question) => subjectSet.has(question.subject))
+        .map(scoreQuestion);
+      const totalScore = scoredQuestions.reduce((sum, question) => sum + question.score, 0);
+      const bySubject = new Map();
+
+      for (const question of scoredQuestions) {
+        const current = bySubject.get(question.subject) ?? {
+          subject: question.subject,
+          score: 0,
+          evidence: 0,
+          examinerHits: 0,
+          committeeHits: 0,
+        };
+
+        current.score += question.score;
+        current.evidence += 1;
+        if (question.examinerHit) current.examinerHits += 1;
+        if (question.committeeHits.length > 0) current.committeeHits += 1;
+        bySubject.set(question.subject, current);
+      }
+
+      const subjectResults = Array.from(bySubject.values())
+        .map((item) => ({
+          ...item,
+          probability: totalScore > 0 ? (item.score / totalScore) * 100 : 0,
+        }))
+        .sort((a, b) => b.probability - a.probability || b.evidence - a.evidence);
+
+      const questionResults = scoredQuestions
+        .map((question) => ({
+          ...question,
+          probability: totalScore > 0 ? (question.score / totalScore) * 100 : 0,
+        }))
+        .sort((a, b) => b.score - a.score || b.year - a.year)
+        .slice(0, questionLimit);
+
+      return {
+        subjects,
+        subjectResults,
+        questionResults,
+        totalEvidence: scoredQuestions.length,
+      };
+    };
+
+    const common = buildGroup(commissionData.requiredSubjects, 12);
+    const field = buildGroup(fieldSubjects, 12);
 
     return {
-      subjectResults,
-      questionResults,
-      totalEvidence: scoredQuestions.length,
+      common,
+      field,
+      totalEvidence: common.totalEvidence + field.totalEvidence,
       professorSet,
     };
-  }, [selectedProfessors, selectedSubjects]);
+  }, [fieldSubjects, selectedProfessors]);
 }
 
 function SubjectOption(subject, checked, onToggle) {
@@ -227,11 +257,57 @@ function QuestionResult({question}) {
   );
 }
 
+function SubjectGroup({title, description, emptyText, results}) {
+  return (
+    <section className={styles.resultSection}>
+      <div className={styles.sectionHeader}>
+        <div>
+          <h2>{title}</h2>
+          <p>{description}</p>
+        </div>
+      </div>
+      {results.length > 0 ? (
+        <div className={styles.subjectResults}>
+          {results.map((result) => (
+            <SubjectResult key={result.subject} result={result} />
+          ))}
+        </div>
+      ) : (
+        <p className={styles.emptyResult}>{emptyText}</p>
+      )}
+    </section>
+  );
+}
+
+function QuestionGroup({title, description, emptyText, questions}) {
+  return (
+    <section className={styles.resultSection}>
+      <div className={styles.sectionHeader}>
+        <div>
+          <h2>{title}</h2>
+          <p>{description}</p>
+        </div>
+      </div>
+      {questions.length > 0 ? (
+        <div className={styles.questionResults}>
+          {questions.map((question) => (
+            <QuestionResult key={question.id} question={question} />
+          ))}
+        </div>
+      ) : (
+        <p className={styles.emptyResult}>{emptyText}</p>
+      )}
+    </section>
+  );
+}
+
 function CommissionAnalyzer() {
   const [subjectFilter, setSubjectFilter] = useState('');
   const [professorFilter, setProfessorFilter] = useState('');
   const [selectedOptionalSubjects, setSelectedOptionalSubjects] = useState([]);
   const [selectedProfessors, setSelectedProfessors] = useState([]);
+  const [urlReady, setUrlReady] = useState(false);
+  const [shareStatus, setShareStatus] = useState('');
 
   const selectedSubjects = useMemo(
     () => Array.from(new Set([...commissionData.requiredSubjects, ...selectedOptionalSubjects])),
@@ -256,7 +332,37 @@ function CommissionAnalyzer() {
     });
   }, [professorFilter]);
 
-  const analysis = useAnalysis(selectedSubjects, selectedProfessors);
+  const analysis = useAnalysis(selectedOptionalSubjects, selectedProfessors);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const params = new URLSearchParams(window.location.search);
+    const urlProfessors = [...getRepeatedParams(params, 'komise'), ...getRepeatedParams(params, 'clen')];
+
+    setSelectedOptionalSubjects(pickKnownValues(getRepeatedParams(params, 'predmet'), optionalSubjectSet, optionalSubjectIds));
+    setSelectedProfessors(pickKnownValues(urlProfessors, professorNameSet, professorNames));
+    setUrlReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!urlReady || typeof window === 'undefined') return;
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('predmet');
+    url.searchParams.delete('komise');
+    url.searchParams.delete('clen');
+
+    for (const subjectId of selectedOptionalSubjects) {
+      url.searchParams.append('predmet', subjectId);
+    }
+
+    for (const professorName of selectedProfessors) {
+      url.searchParams.append('komise', professorName);
+    }
+
+    window.history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+  }, [selectedOptionalSubjects, selectedProfessors, urlReady]);
 
   const toggleSubject = (subjectId) => {
     if (REQUIRED_SUBJECTS.has(subjectId)) return;
@@ -278,6 +384,17 @@ function CommissionAnalyzer() {
   const clearOptionalSubjects = () => setSelectedOptionalSubjects([]);
   const clearProfessors = () => setSelectedProfessors([]);
 
+  const copyShareLink = async () => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareStatus('Odkaz zkopírován');
+    } catch {
+      setShareStatus('Konfigurace je v URL');
+    }
+  };
+
   return (
     <main className={styles.page}>
       <section className={styles.header}>
@@ -298,6 +415,9 @@ function CommissionAnalyzer() {
           Odhad vychází jen z materiálu <code>{commissionData.source}</code>. Pokud v seznamu není předmět
           nebo profesor, znamená to, že není v materiálech, ze kterých se čerpá.
         </span>
+        <button type="button" onClick={copyShareLink}>
+          {shareStatus || 'Kopírovat odkaz'}
+        </button>
       </section>
 
       <section className={styles.workspace}>
@@ -362,46 +482,46 @@ function CommissionAnalyzer() {
               <strong>{selectedProfessors.length}</strong>
             </div>
             <div>
-              <span>Vybrané předměty</span>
-              <strong>{selectedSubjects.length}</strong>
+              <span>Společná otázka</span>
+              <strong>{commissionData.requiredSubjects.length}</strong>
             </div>
             <div>
-              <span>Relevantní otázky</span>
+              <span>Oborové předměty</span>
+              <strong>{selectedOptionalSubjects.length}</strong>
+            </div>
+            <div>
+              <span>Stopy v datech</span>
               <strong>{analysis.totalEvidence}</strong>
             </div>
           </div>
 
-          <section className={styles.resultSection}>
-            <div className={styles.sectionHeader}>
-              <div>
-                <h2>Pravděpodobnost předmětů</h2>
-                <p>
-                  Skóre posilují přímé shody se zkoušejícím, výskyt člena v komisi a novější záznamy.
-                </p>
-              </div>
-            </div>
-            <div className={styles.subjectResults}>
-              {analysis.subjectResults.map((result) => (
-                <SubjectResult key={result.subject} result={result} />
-              ))}
-            </div>
-          </section>
+          <SubjectGroup
+            title="Společná otázka: TAL / PAL / KO"
+            description="V této části je součet pravděpodobností vždy 100 %, protože si vytáhneš právě jednu otázku z TAL, PAL nebo KO."
+            emptyText="Pro povinné předměty nejsou v podkladech žádné otázky."
+            results={analysis.common.subjectResults}
+          />
 
-          <section className={styles.resultSection}>
-            <div className={styles.sectionHeader}>
-              <div>
-                <h2>Nejpravděpodobnější otázky</h2>
-                <p>
-                  Procenta jsou relativní podíl v rámci vybraných předmětů a komise, ne skutečná četnost losování.
-                </p>
-              </div>
-            </div>
-            <div className={styles.questionResults}>
-              {analysis.questionResults.map((question) => (
-                <QuestionResult key={question.id} question={question} />
-              ))}
-            </div>
-          </section>
+          <SubjectGroup
+            title="Oborová otázka: vybrané předměty"
+            description="Druhá otázka se normalizuje jen mezi oborovými předměty, které si zaškrtneš."
+            emptyText="Zaškrtni aspoň jeden oborový předmět, aby šlo odhadnout druhou otázku."
+            results={analysis.field.subjectResults}
+          />
+
+          <QuestionGroup
+            title="Nejpravděpodobnější společné otázky"
+            description="Procenta jsou relativní podíl pouze v rámci společné skupiny TAL/PAL/KO."
+            emptyText="Pro společnou skupinu nejsou v podkladech žádné otázky."
+            questions={analysis.common.questionResults}
+          />
+
+          <QuestionGroup
+            title="Nejpravděpodobnější oborové otázky"
+            description="Procenta jsou relativní podíl pouze v rámci vybraných oborových předmětů."
+            emptyText="Vyber oborové předměty, potom se tady ukážou kandidátní otázky."
+            questions={analysis.field.questionResults}
+          />
         </section>
       </section>
     </main>
