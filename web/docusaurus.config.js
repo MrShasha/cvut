@@ -74,6 +74,11 @@ module.exports = async function createConfig() {
             position: 'right',
           },
           {
+            to: '/komise',
+            label: 'Komise',
+            position: 'right',
+          },
+          {
             to: '/graph',
             label: 'Graf',
             position: 'right',

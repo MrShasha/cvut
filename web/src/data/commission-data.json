@@ -1,0 +1,5642 @@
+{
+  "source": "statnice_komise.md",
+  "requiredSubjects": [
+    "TAL",
+    "PAL",
+    "KO"
+  ],
+  "subjects": [
+    {
+      "id": "AVS",
+      "label": "Architektury výpočetních systémů",
+      "required": false,
+      "questionCount": 2
+    },
+    {
+      "id": "BUK",
+      "label": "Business a uživatelská komunikace",
+      "required": false,
+      "questionCount": 1
+    },
+    {
+      "id": "DS2",
+      "label": "Databáze 2",
+      "required": false,
+      "questionCount": 3
+    },
+    {
+      "id": "ESW",
+      "label": "Efektivní software",
+      "required": false,
+      "questionCount": 4
+    },
+    {
+      "id": "GVG",
+      "label": "Geometrie ve virtuálním prostoru",
+      "required": false,
+      "questionCount": 2
+    },
+    {
+      "id": "HCI",
+      "label": "Human-Computer Interaction",
+      "required": false,
+      "questionCount": 3
+    },
+    {
+      "id": "ISC",
+      "label": "Informační systémy a cloud",
+      "required": false,
+      "questionCount": 1
+    },
+    {
+      "id": "KO",
+      "label": "Kombinatorická optimalizace",
+      "required": true,
+      "questionCount": 28
+    },
+    {
+      "id": "KRP",
+      "label": "Kryptografie",
+      "required": false,
+      "questionCount": 1
+    },
+    {
+      "id": "MMA",
+      "label": "Multimédia a animace",
+      "required": false,
+      "questionCount": 2
+    },
+    {
+      "id": "NUR",
+      "label": "Návrh uživatelských rozhraní",
+      "required": false,
+      "questionCount": 8
+    },
+    {
+      "id": "OSP",
+      "label": "Operační systémy a programování",
+      "required": false,
+      "questionCount": 5
+    },
+    {
+      "id": "OSW",
+      "label": "Ontologie a sémantický web",
+      "required": false,
+      "questionCount": 1
+    },
+    {
+      "id": "PAG",
+      "label": "Paralelní algoritmy",
+      "required": false,
+      "questionCount": 4
+    },
+    {
+      "id": "PAL",
+      "label": "Pokročilá algoritmizace",
+      "required": true,
+      "questionCount": 36
+    },
+    {
+      "id": "PAP",
+      "label": "Pokročilé architektury počítačů",
+      "required": false,
+      "questionCount": 1
+    },
+    {
+      "id": "PI",
+      "label": "Projektové inženýrství",
+      "required": false,
+      "questionCount": 5
+    },
+    {
+      "id": "PII",
+      "label": "Pokročilé informační infrastruktury",
+      "required": false,
+      "questionCount": 1
+    },
+    {
+      "id": "PUR",
+      "label": "Psychologie uživatele a research",
+      "required": false,
+      "questionCount": 1
+    },
+    {
+      "id": "SAN",
+      "label": "Statistická analýza",
+      "required": false,
+      "questionCount": 5
+    },
+    {
+      "id": "SI",
+      "label": "Softwarové inženýrství",
+      "required": false,
+      "questionCount": 4
+    },
+    {
+      "id": "SWA",
+      "label": "Softwarové architektury",
+      "required": false,
+      "questionCount": 1
+    },
+    {
+      "id": "TAL",
+      "label": "Teorie algoritmů",
+      "required": true,
+      "questionCount": 38
+    },
+    {
+      "id": "TPJ",
+      "label": "Techniky programovacích jazyků",
+      "required": false,
+      "questionCount": 4
+    },
+    {
+      "id": "TVS",
+      "label": "Tvorba vestavných systémů",
+      "required": false,
+      "questionCount": 6
+    },
+    {
+      "id": "UI",
+      "label": "Umělá inteligence",
+      "required": false,
+      "questionCount": 2
+    },
+    {
+      "id": "UIR",
+      "label": "Umělá inteligence a robotika",
+      "required": false,
+      "questionCount": 2
+    },
+    {
+      "id": "VIZ",
+      "label": "Vizualizace",
+      "required": false,
+      "questionCount": 3
+    },
+    {
+      "id": "ZKS",
+      "label": "Zajištění kvality softwaru",
+      "required": false,
+      "questionCount": 1
+    }
+  ],
+  "professors": [
+    {
+      "name": "Berezovskyj",
+      "questionCount": 16,
+      "examinerCount": 5,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 4
+        },
+        {
+          "subject": "HCI",
+          "count": 3
+        },
+        {
+          "subject": "PAL",
+          "count": 3
+        },
+        {
+          "subject": "SAN",
+          "count": 3
+        },
+        {
+          "subject": "NUR",
+          "count": 2
+        },
+        {
+          "subject": "PUR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Berka",
+      "questionCount": 12,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 3
+        },
+        {
+          "subject": "MMA",
+          "count": 2
+        },
+        {
+          "subject": "PAL",
+          "count": 2
+        },
+        {
+          "subject": "SAN",
+          "count": 2
+        },
+        {
+          "subject": "BUK",
+          "count": 1
+        },
+        {
+          "subject": "GVG",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Bittner",
+      "questionCount": 1,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Blaško",
+      "questionCount": 8,
+      "examinerCount": 2,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 3
+        },
+        {
+          "subject": "DS2",
+          "count": 2
+        },
+        {
+          "subject": "OSW",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "SAN",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Bošanský",
+      "questionCount": 1,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Bouchner",
+      "questionCount": 3,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "HCI",
+          "count": 1
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "NUR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Buk",
+      "questionCount": 6,
+      "examinerCount": 2,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "TPJ",
+          "count": 2
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Bureš",
+      "questionCount": 36,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 9
+        },
+        {
+          "subject": "TAL",
+          "count": 5
+        },
+        {
+          "subject": "NUR",
+          "count": 4
+        },
+        {
+          "subject": "TVS",
+          "count": 4
+        },
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "SI",
+          "count": 2
+        },
+        {
+          "subject": "TPJ",
+          "count": 2
+        },
+        {
+          "subject": "AVS",
+          "count": 1
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "ISC",
+          "count": 1
+        },
+        {
+          "subject": "PAG",
+          "count": 1
+        },
+        {
+          "subject": "PI",
+          "count": 1
+        },
+        {
+          "subject": "SAN",
+          "count": 1
+        },
+        {
+          "subject": "UI",
+          "count": 1
+        },
+        {
+          "subject": "ZKS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Čmolík",
+      "questionCount": 6,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 3
+        },
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Demlová",
+      "questionCount": 37,
+      "examinerCount": 8,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 12
+        },
+        {
+          "subject": "PAL",
+          "count": 6
+        },
+        {
+          "subject": "KO",
+          "count": 4
+        },
+        {
+          "subject": "NUR",
+          "count": 3
+        },
+        {
+          "subject": "TPJ",
+          "count": 2
+        },
+        {
+          "subject": "VIZ",
+          "count": 2
+        },
+        {
+          "subject": "DS2",
+          "count": 1
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "HCI",
+          "count": 1
+        },
+        {
+          "subject": "MMA",
+          "count": 1
+        },
+        {
+          "subject": "PAG",
+          "count": 1
+        },
+        {
+          "subject": "SI",
+          "count": 1
+        },
+        {
+          "subject": "UI",
+          "count": 1
+        },
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Dostál",
+      "questionCount": 2,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "SAN",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Drchal",
+      "questionCount": 2,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "UI",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Faigl",
+      "questionCount": 3,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Felkel",
+      "questionCount": 2,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Filip",
+      "questionCount": 24,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 7
+        },
+        {
+          "subject": "TAL",
+          "count": 4
+        },
+        {
+          "subject": "NUR",
+          "count": 3
+        },
+        {
+          "subject": "TVS",
+          "count": 3
+        },
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "PAG",
+          "count": 2
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "ISC",
+          "count": 1
+        },
+        {
+          "subject": "SWA",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Franc",
+      "questionCount": 2,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Gollová",
+      "questionCount": 2,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "OSW",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Habala",
+      "questionCount": 11,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 3
+        },
+        {
+          "subject": "PAL",
+          "count": 2
+        },
+        {
+          "subject": "BUK",
+          "count": 1
+        },
+        {
+          "subject": "GVG",
+          "count": 1
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "MMA",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        },
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Hanzálek",
+      "questionCount": 15,
+      "examinerCount": 10,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 9
+        },
+        {
+          "subject": "PI",
+          "count": 2
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "OSP",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Havran",
+      "questionCount": 3,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Hekrdla",
+      "questionCount": 15,
+      "examinerCount": 5,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 6
+        },
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "PAL",
+          "count": 2
+        },
+        {
+          "subject": "SI",
+          "count": 2
+        },
+        {
+          "subject": "NUR",
+          "count": 1
+        },
+        {
+          "subject": "OSP",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Herout",
+      "questionCount": 4,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "OSP",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "SI",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Hnětynka",
+      "questionCount": 2,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Horčík",
+      "questionCount": 9,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 3
+        },
+        {
+          "subject": "DS2",
+          "count": 1
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "PAG",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Hrnčíř",
+      "questionCount": 5,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Hrušák",
+      "questionCount": 1,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Hudec",
+      "questionCount": 1,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Hušek",
+      "questionCount": 1,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Chrpa",
+      "questionCount": 2,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "UI",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Jakob",
+      "questionCount": 23,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 7
+        },
+        {
+          "subject": "NUR",
+          "count": 4
+        },
+        {
+          "subject": "TAL",
+          "count": 4
+        },
+        {
+          "subject": "TVS",
+          "count": 3
+        },
+        {
+          "subject": "SI",
+          "count": 2
+        },
+        {
+          "subject": "ISC",
+          "count": 1
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "OSP",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Jakovenko",
+      "questionCount": 4,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "PI",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "Jelínek",
+      "questionCount": 14,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 6
+        },
+        {
+          "subject": "NUR",
+          "count": 3
+        },
+        {
+          "subject": "TVS",
+          "count": 3
+        },
+        {
+          "subject": "ISC",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Kléma",
+      "questionCount": 8,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "SAN",
+          "count": 2
+        },
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "UI",
+          "count": 2
+        },
+        {
+          "subject": "OSW",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Klíma",
+      "questionCount": 4,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "PAL",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "Kohout",
+      "questionCount": 10,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 4
+        },
+        {
+          "subject": "PAL",
+          "count": 2
+        },
+        {
+          "subject": "BUK",
+          "count": 1
+        },
+        {
+          "subject": "GVG",
+          "count": 1
+        },
+        {
+          "subject": "MMA",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Kouba",
+      "questionCount": 10,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 3
+        },
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "TPJ",
+          "count": 2
+        },
+        {
+          "subject": "NUR",
+          "count": 1
+        },
+        {
+          "subject": "SI",
+          "count": 1
+        },
+        {
+          "subject": "UI",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Krajník",
+      "questionCount": 1,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Krátký",
+      "questionCount": 13,
+      "examinerCount": 2,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 5
+        },
+        {
+          "subject": "DS2",
+          "count": 3
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "PAG",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Kroha",
+      "questionCount": 8,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 2
+        },
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "MMA",
+          "count": 1
+        },
+        {
+          "subject": "NUR",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Křivánek",
+      "questionCount": 6,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "GVG",
+          "count": 1
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "PAP",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Kubalík",
+      "questionCount": 1,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Kubr",
+      "questionCount": 14,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 4
+        },
+        {
+          "subject": "PAL",
+          "count": 3
+        },
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "SI",
+          "count": 2
+        },
+        {
+          "subject": "NUR",
+          "count": 1
+        },
+        {
+          "subject": "OSP",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Lisý",
+      "questionCount": 5,
+      "examinerCount": 2,
+      "subjects": [
+        {
+          "subject": "DS2",
+          "count": 2
+        },
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Macek",
+      "questionCount": 35,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 6
+        },
+        {
+          "subject": "TAL",
+          "count": 6
+        },
+        {
+          "subject": "KO",
+          "count": 5
+        },
+        {
+          "subject": "SAN",
+          "count": 4
+        },
+        {
+          "subject": "NUR",
+          "count": 3
+        },
+        {
+          "subject": "HCI",
+          "count": 2
+        },
+        {
+          "subject": "AVS",
+          "count": 1
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "PAG",
+          "count": 1
+        },
+        {
+          "subject": "PI",
+          "count": 1
+        },
+        {
+          "subject": "PUR",
+          "count": 1
+        },
+        {
+          "subject": "SI",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        },
+        {
+          "subject": "ZKS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Macík",
+      "questionCount": 18,
+      "examinerCount": 6,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 4
+        },
+        {
+          "subject": "HCI",
+          "count": 3
+        },
+        {
+          "subject": "SAN",
+          "count": 3
+        },
+        {
+          "subject": "NUR",
+          "count": 2
+        },
+        {
+          "subject": "PAL",
+          "count": 2
+        },
+        {
+          "subject": "PUR",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Malý",
+      "questionCount": 20,
+      "examinerCount": 2,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 4
+        },
+        {
+          "subject": "KO",
+          "count": 3
+        },
+        {
+          "subject": "NUR",
+          "count": 3
+        },
+        {
+          "subject": "SAN",
+          "count": 3
+        },
+        {
+          "subject": "HCI",
+          "count": 2
+        },
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "MMA",
+          "count": 1
+        },
+        {
+          "subject": "PUR",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Mareček",
+      "questionCount": 11,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 3
+        },
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "PAG",
+          "count": 2
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "SWA",
+          "count": 1
+        },
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Mařík",
+      "questionCount": 51,
+      "examinerCount": 12,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 13
+        },
+        {
+          "subject": "TAL",
+          "count": 11
+        },
+        {
+          "subject": "KO",
+          "count": 3
+        },
+        {
+          "subject": "NUR",
+          "count": 3
+        },
+        {
+          "subject": "PAG",
+          "count": 3
+        },
+        {
+          "subject": "TVS",
+          "count": 3
+        },
+        {
+          "subject": "ESW",
+          "count": 2
+        },
+        {
+          "subject": "SAN",
+          "count": 2
+        },
+        {
+          "subject": "AVS",
+          "count": 1
+        },
+        {
+          "subject": "BUK",
+          "count": 1
+        },
+        {
+          "subject": "GVG",
+          "count": 1
+        },
+        {
+          "subject": "ISC",
+          "count": 1
+        },
+        {
+          "subject": "MMA",
+          "count": 1
+        },
+        {
+          "subject": "OSW",
+          "count": 1
+        },
+        {
+          "subject": "PI",
+          "count": 1
+        },
+        {
+          "subject": "SI",
+          "count": 1
+        },
+        {
+          "subject": "SWA",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        },
+        {
+          "subject": "ZKS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Matas",
+      "questionCount": 21,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 9
+        },
+        {
+          "subject": "PAL",
+          "count": 7
+        },
+        {
+          "subject": "TAL",
+          "count": 3
+        },
+        {
+          "subject": "PI",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "Matoušek",
+      "questionCount": 2,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "UI",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Míkovec",
+      "questionCount": 27,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 6
+        },
+        {
+          "subject": "KO",
+          "count": 4
+        },
+        {
+          "subject": "TAL",
+          "count": 4
+        },
+        {
+          "subject": "HCI",
+          "count": 3
+        },
+        {
+          "subject": "NUR",
+          "count": 3
+        },
+        {
+          "subject": "SAN",
+          "count": 3
+        },
+        {
+          "subject": "VIZ",
+          "count": 2
+        },
+        {
+          "subject": "MMA",
+          "count": 1
+        },
+        {
+          "subject": "PUR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Mrázová",
+      "questionCount": 2,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "SAN",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Müller",
+      "questionCount": 5,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "PI",
+          "count": 2
+        },
+        {
+          "subject": "OSP",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Náplava",
+      "questionCount": 1,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Navara",
+      "questionCount": 1,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Novák",
+      "questionCount": 6,
+      "examinerCount": 2,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "PI",
+          "count": 2
+        },
+        {
+          "subject": "KRP",
+          "count": 1
+        },
+        {
+          "subject": "PII",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Pačes",
+      "questionCount": 12,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "AVS",
+          "count": 1
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "PAG",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "PI",
+          "count": 1
+        },
+        {
+          "subject": "SAN",
+          "count": 1
+        },
+        {
+          "subject": "SI",
+          "count": 1
+        },
+        {
+          "subject": "ZKS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Patera",
+      "questionCount": 3,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Pěchouček",
+      "questionCount": 1,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Pevný",
+      "questionCount": 1,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "ESW",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Píša",
+      "questionCount": 18,
+      "examinerCount": 5,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 6
+        },
+        {
+          "subject": "PI",
+          "count": 4
+        },
+        {
+          "subject": "OSP",
+          "count": 2
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "ISC",
+          "count": 1
+        },
+        {
+          "subject": "KRP",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "PII",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Procházka",
+      "questionCount": 4,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "PI",
+          "count": 2
+        }
+      ]
+    },
+    {
+      "name": "Průša",
+      "questionCount": 3,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Rogalewicz",
+      "questionCount": 22,
+      "examinerCount": 4,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 5
+        },
+        {
+          "subject": "PAL",
+          "count": 3
+        },
+        {
+          "subject": "SI",
+          "count": 3
+        },
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "NUR",
+          "count": 2
+        },
+        {
+          "subject": "TPJ",
+          "count": 2
+        },
+        {
+          "subject": "TVS",
+          "count": 2
+        },
+        {
+          "subject": "OSP",
+          "count": 1
+        },
+        {
+          "subject": "UI",
+          "count": 1
+        },
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Rollo",
+      "questionCount": 9,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 3
+        },
+        {
+          "subject": "DS2",
+          "count": 1
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "PAG",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Sedláček",
+      "questionCount": 21,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 5
+        },
+        {
+          "subject": "TAL",
+          "count": 3
+        },
+        {
+          "subject": "NUR",
+          "count": 2
+        },
+        {
+          "subject": "PAL",
+          "count": 2
+        },
+        {
+          "subject": "PI",
+          "count": 2
+        },
+        {
+          "subject": "VIZ",
+          "count": 2
+        },
+        {
+          "subject": "AVS",
+          "count": 1
+        },
+        {
+          "subject": "HCI",
+          "count": 1
+        },
+        {
+          "subject": "MMA",
+          "count": 1
+        },
+        {
+          "subject": "OSP",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Slavík",
+      "questionCount": 10,
+      "examinerCount": 4,
+      "subjects": [
+        {
+          "subject": "NUR",
+          "count": 2
+        },
+        {
+          "subject": "PAL",
+          "count": 2
+        },
+        {
+          "subject": "SI",
+          "count": 2
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Sloup",
+      "questionCount": 6,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "GVG",
+          "count": 1
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "PAP",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Sochor",
+      "questionCount": 17,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 7
+        },
+        {
+          "subject": "PAL",
+          "count": 7
+        },
+        {
+          "subject": "TAL",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "name": "Sojka",
+      "questionCount": 7,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "DS2",
+          "count": 2
+        },
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "KRP",
+          "count": 1
+        },
+        {
+          "subject": "PII",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Sporka",
+      "questionCount": 14,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 3
+        },
+        {
+          "subject": "TAL",
+          "count": 3
+        },
+        {
+          "subject": "KO",
+          "count": 2
+        },
+        {
+          "subject": "GVG",
+          "count": 1
+        },
+        {
+          "subject": "MMA",
+          "count": 1
+        },
+        {
+          "subject": "NUR",
+          "count": 1
+        },
+        {
+          "subject": "PAP",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Strnad",
+      "questionCount": 9,
+      "examinerCount": 2,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 2
+        },
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "TPJ",
+          "count": 2
+        },
+        {
+          "subject": "NUR",
+          "count": 1
+        },
+        {
+          "subject": "SI",
+          "count": 1
+        },
+        {
+          "subject": "UI",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Svatoš",
+      "questionCount": 2,
+      "examinerCount": 2,
+      "subjects": [
+        {
+          "subject": "AVS",
+          "count": 1
+        },
+        {
+          "subject": "PI",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Sýkora",
+      "questionCount": 25,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 8
+        },
+        {
+          "subject": "PAL",
+          "count": 8
+        },
+        {
+          "subject": "TAL",
+          "count": 5
+        },
+        {
+          "subject": "GVG",
+          "count": 1
+        },
+        {
+          "subject": "PAP",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Šára",
+      "questionCount": 1,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Šišlák",
+      "questionCount": 5,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 2
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Šmejkal",
+      "questionCount": 2,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "KRP",
+          "count": 1
+        },
+        {
+          "subject": "PII",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Štepanovský",
+      "questionCount": 1,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "PAP",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Šůcha",
+      "questionCount": 18,
+      "examinerCount": 8,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 5
+        },
+        {
+          "subject": "TAL",
+          "count": 4
+        },
+        {
+          "subject": "PAL",
+          "count": 3
+        },
+        {
+          "subject": "PAG",
+          "count": 2
+        },
+        {
+          "subject": "DS2",
+          "count": 1
+        },
+        {
+          "subject": "ESW",
+          "count": 1
+        },
+        {
+          "subject": "SI",
+          "count": 1
+        },
+        {
+          "subject": "UIR",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Šusta",
+      "questionCount": 4,
+      "examinerCount": 2,
+      "subjects": [
+        {
+          "subject": "KRP",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "PII",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Tišer",
+      "questionCount": 18,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 6
+        },
+        {
+          "subject": "TAL",
+          "count": 4
+        },
+        {
+          "subject": "NUR",
+          "count": 3
+        },
+        {
+          "subject": "TVS",
+          "count": 3
+        },
+        {
+          "subject": "ISC",
+          "count": 1
+        },
+        {
+          "subject": "UI",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Velebil",
+      "questionCount": 24,
+      "examinerCount": 6,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 9
+        },
+        {
+          "subject": "KO",
+          "count": 7
+        },
+        {
+          "subject": "TAL",
+          "count": 7
+        },
+        {
+          "subject": "GVG",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Vojtáš",
+      "questionCount": 2,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "SAN",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Vokřínek",
+      "questionCount": 22,
+      "examinerCount": 4,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 7
+        },
+        {
+          "subject": "PAL",
+          "count": 5
+        },
+        {
+          "subject": "KO",
+          "count": 3
+        },
+        {
+          "subject": "ESW",
+          "count": 2
+        },
+        {
+          "subject": "PAG",
+          "count": 2
+        },
+        {
+          "subject": "OSP",
+          "count": 1
+        },
+        {
+          "subject": "SWA",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Vyskočil",
+      "questionCount": 11,
+      "examinerCount": 3,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 4
+        },
+        {
+          "subject": "PAL",
+          "count": 3
+        },
+        {
+          "subject": "PI",
+          "count": 2
+        },
+        {
+          "subject": "OSP",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Werner",
+      "questionCount": 5,
+      "examinerCount": 1,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Žára",
+      "questionCount": 35,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "PAL",
+          "count": 11
+        },
+        {
+          "subject": "TAL",
+          "count": 9
+        },
+        {
+          "subject": "KO",
+          "count": 8
+        },
+        {
+          "subject": "GVG",
+          "count": 2
+        },
+        {
+          "subject": "BUK",
+          "count": 1
+        },
+        {
+          "subject": "MMA",
+          "count": 1
+        },
+        {
+          "subject": "PAP",
+          "count": 1
+        },
+        {
+          "subject": "TPJ",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Železný",
+      "questionCount": 9,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 3
+        },
+        {
+          "subject": "SI",
+          "count": 2
+        },
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "NUR",
+          "count": 1
+        },
+        {
+          "subject": "OSP",
+          "count": 1
+        },
+        {
+          "subject": "PAL",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Žikovský",
+      "questionCount": 4,
+      "examinerCount": 0,
+      "subjects": [
+        {
+          "subject": "KO",
+          "count": 1
+        },
+        {
+          "subject": "TAL",
+          "count": 1
+        },
+        {
+          "subject": "TVS",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "name": "Žukovec",
+      "questionCount": 49,
+      "examinerCount": 8,
+      "subjects": [
+        {
+          "subject": "TAL",
+          "count": 11
+        },
+        {
+          "subject": "KO",
+          "count": 7
+        },
+        {
+          "subject": "PAL",
+          "count": 5
+        },
+        {
+          "subject": "SAN",
+          "count": 4
+        },
+        {
+          "subject": "ESW",
+          "count": 3
+        },
+        {
+          "subject": "PAG",
+          "count": 3
+        },
+        {
+          "subject": "DS2",
+          "count": 2
+        },
+        {
+          "subject": "HCI",
+          "count": 2
+        },
+        {
+          "subject": "TVS",
+          "count": 2
+        },
+        {
+          "subject": "AVS",
+          "count": 1
+        },
+        {
+          "subject": "GVG",
+          "count": 1
+        },
+        {
+          "subject": "NUR",
+          "count": 1
+        },
+        {
+          "subject": "PAP",
+          "count": 1
+        },
+        {
+          "subject": "PI",
+          "count": 1
+        },
+        {
+          "subject": "PUR",
+          "count": 1
+        },
+        {
+          "subject": "SI",
+          "count": 1
+        },
+        {
+          "subject": "SWA",
+          "count": 1
+        },
+        {
+          "subject": "VIZ",
+          "count": 1
+        },
+        {
+          "subject": "ZKS",
+          "count": 1
+        }
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "q1",
+      "line": 16,
+      "date": "[MSZZ] - OI Počítačová grafika, 18.6.2025",
+      "year": 2025,
+      "subject": "TAL",
+      "examiner": "Demlová",
+      "committee": [
+        "Míkovec",
+        "Sýkora",
+        "Čmolík",
+        "Demlová",
+        "Průša",
+        "Macek"
+      ],
+      "question": "TSP, heuristické a aproximační algoritmy (+ vztah mezi nimi), Příklad heuristického TSP alg. Co by znamenala existence 20-OPT TSP alg pro třídy P, NP, NPC a co-NP. Popsal jsem nějak TSP + relevatni definice. Měl jsem dojem že heuristicke a aprox. algoritmy jsou 2 odlišné kategorie, ale prý nejsou a aproximační jsou subset heuristických, což je právě ten vztah který jsem měl popsat. Tohle mi paní Demlová v podstatě řekla na místě a šlo se dál. Jako příklad heuristického jsem popsal a ukázal na příkladě elementární hladový alg, ukázal neoptimální protipřík",
+      "sourceType": "direct"
+    },
+    {
+      "id": "q2",
+      "line": 18,
+      "date": "[MSZZ] - OI Počítačová grafika, 18.6.2025",
+      "year": 2025,
+      "subject": "VIZ",
+      "examiner": "Čmolík",
+      "committee": [
+        "Míkovec",
+        "Sýkora",
+        "Čmolík",
+        "Demlová",
+        "Průša",
+        "Macek"
+      ],
+      "question": "Tabulková data, definovat, jak se vizualizují, co jednotlivé vizualizace dobře zachycují? (či tak nějak)",
+      "sourceType": "direct"
+    },
+    {
+      "id": "q3",
+      "line": 35,
+      "date": "[MSZZ] - OI Softwarové inženýrství, 19.06.25",
+      "year": null,
+      "subject": "TAL",
+      "examiner": "Žukovec",
+      "committee": [
+        "Vokřínek",
+        "Hanzálek",
+        "Píša",
+        "Hnětynka",
+        "Žukovec"
+      ],
+      "question": "R, RS, příklad R úloh. Diagonální jazyk, jeho doplněk. Do jakých tříd patří, oba jazyky definovat.",
+      "sourceType": "direct"
+    },
+    {
+      "id": "q4",
+      "line": 38,
+      "date": "[MSZZ] - OI Softwarové inženýrství, 19.06.25",
+      "year": null,
+      "subject": "ESW",
+      "examiner": "Hnětynka",
+      "committee": [
+        "Vokřínek",
+        "Hanzálek",
+        "Píša",
+        "Hnětynka",
+        "Žukovec"
+      ],
+      "question": "(Java) Virtual machine, jak funguje, výhody, nevýhody. JIT kompilátor.",
+      "sourceType": "direct"
+    },
+    {
+      "id": "q5",
+      "line": 52,
+      "date": "[MSZZ] OI - Data Science/Datové vědy, 19.06.25",
+      "year": null,
+      "subject": "TAL",
+      "examiner": "Gollová",
+      "committee": [
+        "Kléma",
+        "Blaško",
+        "Mařík",
+        "Gollová"
+      ],
+      "question": "Hledani silne souvislych komponent, Kosaraju-Shariruv algoritmus, Tarjanuv algoritmus, jejich korektnost a casova slozitost.",
+      "sourceType": "direct"
+    },
+    {
+      "id": "q6",
+      "line": 55,
+      "date": "[MSZZ] OI - Data Science/Datové vědy, 19.06.25",
+      "year": null,
+      "subject": "OSW",
+      "examiner": "Blaško",
+      "committee": [
+        "Kléma",
+        "Blaško",
+        "Mařík",
+        "Gollová"
+      ],
+      "question": "Popiste, co jsou to deskipcni logiky a vlastnosti OWA, UNA. Uved'te priklad deskripcni logiky a popiste jeji komplexity. Jaky je vztah mezi deskripcnimi logikami a jazykem OWL2?",
+      "sourceType": "direct"
+    },
+    {
+      "id": "q7",
+      "line": 68,
+      "date": "22.6.2023 - doc. Mgr. Viliam Lisý, MSc., Ph.D. (předseda); Ing. Michal Sojka, Ph.D. (místopředseda); Mgr. Miroslav Blaško, PhD.; Doc. RNDr. ",
+      "year": 2023,
+      "subject": "TAL",
+      "examiner": "Žukovec",
+      "committee": [
+        "Lisý",
+        "Sojka",
+        "Blaško",
+        "Žukovec",
+        "Krátký"
+      ],
+      "question": "Redukce a polynomiální redukce úloh / jazyků. Cookova věta. Naznačte redukci SAT na 3-CNF SAT. Oba problémy zformulujte. Popsal jsem všechny definice a na konkrétní klauzuli ukázal redukci SAT na 3-CNF SAT, tam chtěla paní Žukovec dovysvětlit, jaktože je ta redukce polynomiální.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q8",
+      "line": 68,
+      "date": "22.6.2023 - doc. Mgr. Viliam Lisý, MSc., Ph.D. (předseda); Ing. Michal Sojka, Ph.D. (místopředseda); Mgr. Miroslav Blaško, PhD.; Doc. RNDr. ",
+      "year": 2023,
+      "subject": "DS2",
+      "examiner": "Lisý",
+      "committee": [
+        "Lisý",
+        "Sojka",
+        "Blaško",
+        "Žukovec",
+        "Krátký"
+      ],
+      "question": "MapReduce (architektura, funkce, toky dat, exekuce, použití). Hadoop (MapReduce, HDFS).",
+      "sourceType": "template"
+    },
+    {
+      "id": "q9",
+      "line": 80,
+      "date": "22/6/2023, Komise - prof. Ing. Jan Faigl, PhD. Ing. Vojtěch Franc, PhD. Mgr. Jakub Mareček, Ph.D. doc. Mgr. Adam Rogalewicz, PhD. doc. Mgr. ",
+      "year": 2023,
+      "subject": "KO",
+      "examiner": "",
+      "committee": [
+        "Faigl",
+        "Franc",
+        "Mareček",
+        "Rogalewicz",
+        "Habala"
+      ],
+      "question": "Constraint satisfaction, AC3",
+      "sourceType": "template"
+    },
+    {
+      "id": "q10",
+      "line": 84,
+      "date": "22/6/2023, Komise - prof. Ing. Jan Faigl, PhD. Ing. Vojtěch Franc, PhD. Mgr. Jakub Mareček, Ph.D. doc. Mgr. Adam Rogalewicz, PhD. doc. Mgr. ",
+      "year": 2023,
+      "subject": "UIR",
+      "examiner": "Faigl",
+      "committee": [
+        "Faigl",
+        "Franc",
+        "Mareček",
+        "Rogalewicz",
+        "Habala"
+      ],
+      "question": "Velmi obecně motion planning v robotice",
+      "sourceType": "template"
+    },
+    {
+      "id": "q11",
+      "line": 94,
+      "date": "22.6.2023 - doc. Mgr. Viliam Lisý, MSc., Ph.D. (předseda); Ing. Michal Sojka, Ph.D. (místopředseda); Mgr. Miroslav Blaško, PhD.; Doc. RNDr. ",
+      "year": 2023,
+      "subject": "TAL",
+      "examiner": "Blaško",
+      "committee": [
+        "Lisý",
+        "Sojka",
+        "Blaško",
+        "Žukovec",
+        "Krátký"
+      ],
+      "question": "Popište DTM, NTM a popište k čemu se využívají. Uveďtě příklady alespoň tří dalších modelů Turingova stroje a diskutujte jejich ekvivalenci ve srovnání s DTM/NTM. Porovnejte časovou a paměťovou náročnost těchto modelů.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q12",
+      "line": 98,
+      "date": "22.6.2023 - doc. Mgr. Viliam Lisý, MSc., Ph.D. (předseda); Ing. Michal Sojka, Ph.D. (místopředseda); Mgr. Miroslav Blaško, PhD.; Doc. RNDr. ",
+      "year": 2023,
+      "subject": "DS2",
+      "examiner": "Krátký",
+      "committee": [
+        "Lisý",
+        "Sojka",
+        "Blaško",
+        "Žukovec",
+        "Krátký"
+      ],
+      "question": "XPath (výrazy cest, osy), XQuery (konstrukce, FLWOR)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q13",
+      "line": 110,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "PAL",
+      "examiner": "Berezovskyj",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "Popište nalezení maximálního toku v sítích. Jak nalezneme maximální párování v bipartitním grafu a jak spolu tyto úlohy souvisí? Uvažujte graf hranově ohodnocený i hranově neohodnocený.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q14",
+      "line": 118,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "HCI",
+      "examiner": "Macík",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "Typy prototypů uživatelského rozhraní. Co je User Centered Design, Co je Formativní evaluace.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q15",
+      "line": 118,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "NUR",
+      "examiner": "Macík",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "Typy prototypů uživatelského rozhraní. Co je User Centered Design, Co je Formativní evaluace.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q16",
+      "line": 130,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "PAL",
+      "examiner": "Berezovskyj",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "Automaty, popište různé úlohy vyhledávání slov v textu, vyhledávání poškozených/poupravených slov. Slovníkový automat. Jde najednou vyhledávat více slov?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q17",
+      "line": 134,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "HCI",
+      "examiner": "Macík",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "Metody výzkumu - kvantitativní a kvalitativní. Popsat jaké znáte, jak to probíhá, příklady. Porovnání, výhody a nevýhody těchto přístupů. Popište metody výběru participantů pro výzkum. Co je to bias?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q18",
+      "line": 134,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "PUR",
+      "examiner": "Macík",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "Metody výzkumu - kvantitativní a kvalitativní. Popsat jaké znáte, jak to probíhá, příklady. Porovnání, výhody a nevýhody těchto přístupů. Popište metody výběru participantů pro výzkum. Co je to bias?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q19",
+      "line": 150,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "SAN",
+      "examiner": "Berka",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "Vysvetlite princípy distance-based a density-based clustering a uveďte príklady algoritmov používajúcich tieto princípy.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q20",
+      "line": 158,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "KO",
+      "examiner": "Šůcha",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "formulace ILP a převod TSP na ILP úlohu. Celkově fajn obhajoba, jen u převodu TSP na ILP jsem nedal všechny omezující podmínky hned, ale postupně jsme se k nim dostali. Nakonec se mě zeptal, jak by šlo zadefinovat TSP ještě jinak a tato otázka směřovala k domácímu úkolu, kdy jsme si hráli s tzv. lazy podmínkami. To už jsem nedal a nakonec jsem za to dostal B.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q21",
+      "line": 160,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "SAN",
+      "examiner": "Berka",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "Distance-based a Density-based clustering - popsat, co to je a příklady algoritmů. Celkem docela základní a pohodová otázka. Vysvětlil jsem oba principy, jako příklad jsem zvolil K-means a DBSCAN, popsal jsem všechny parametry. Doptal mě na metodu určení optimálního k u k-means a na jiné metriky než sumu kvadrátů vzdáleností, u Hammingové vzdálenosti chtěl zobecnění na číslové vektory, kde jsem moc nerozuměl, co po mě chce, nakonec byl spokojen, když jsem řekl, že se jedná o součet rozdílů v odpovídajících složkách obou vektorů. Nakonec kvůli Hammingu (a",
+      "sourceType": "template"
+    },
+    {
+      "id": "q22",
+      "line": 166,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "KO",
+      "examiner": "Šůcha",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "Rozvrhovací úlohy P||Cmax a P|pmtn|Cmax. Určit do jaké třídy složitosti patří a popsat algoritmy pro řešení. Řekl jsem že P||Cmax je NP-hard, protože i 2||Cmax je NP-hard, a na to existuje redukce 2-partition. Pak že pmtn je relaxace, díky které to má polynomiální řešení, a naznačil jsem jak postupuje McNaughtnon. U P||Cmax chtěl slyšet jak se dá řešit optimálně. Řekl jsem, že se to určitě dá formulovat jako ILP a na to se zeptal na nějaké proměnné, které bych v tom použil. Úplně jsem zapomněl, že existuje i pseudopolynomiální algoritmus, který to řeší, ",
+      "sourceType": "template"
+    },
+    {
+      "id": "q23",
+      "line": 168,
+      "date": "21.6.2023 - Doc. Ing. Zdeněk Míkovec, Ph.D. (předseda); Ing. Ivo Malý, Ph.D. (místopředseda); Ing. Miroslav Macík, Ph.D.; Doc. RNDr. Natalie",
+      "year": 2023,
+      "subject": "SAN",
+      "examiner": "Kléma",
+      "committee": [
+        "Míkovec",
+        "Malý",
+        "Macík",
+        "Žukovec",
+        "Berezovskyj",
+        "Macek"
+      ],
+      "question": "Metody robustní regrese a konkrétně porovnat s lineární regresí. Jaké jsou rozdíly a na příkladech ukázat kdy je lepší použít robustní regresi a kdy ne. M-odhady a jak jsou v robustní regresi použité. U téhle otázky jsem trochu víc zmatkoval a Kléma se mě snažil nějak navést, ale nevím jestli mi to úplně pomáhalo. Začal jsem tím že jsem obecně řekl co jsou robustní metody a k čemu se používají, pak jsem začal mluvit o lineární regresi a jaké předpoklady má - chyba je z normálního rozdělení, data jsou homoscedastic. Kléma chtěl vidět jaké kritérium se opt",
+      "sourceType": "template"
+    },
+    {
+      "id": "q24",
+      "line": 178,
+      "date": "14.6.2022 - doc. Ing. Jiří Kléma, PhD. (předseda), Mgr. Miroslav Blaško, Ph.D. (místopředseda), Ing. Radek Mařík CSc., prof. RNDr. Peter Voj",
+      "year": 2022,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Kléma",
+        "Blaško",
+        "Mařík",
+        "Vojtáš",
+        "Dostál"
+      ],
+      "question": "B-strom definujte, na vhodném příkladě demonstrujte operaci find a insert při vícefázové strategii. Co je to B+ strom, jak se od B-stromu liší. Jaké další typy vyhledávacích stromů znáte?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q25",
+      "line": 180,
+      "date": "14.6.2022 - doc. Ing. Jiří Kléma, PhD. (předseda), Mgr. Miroslav Blaško, Ph.D. (místopředseda), Ing. Radek Mařík CSc., prof. RNDr. Peter Voj",
+      "year": 2022,
+      "subject": "SAN",
+      "examiner": "Kléma",
+      "committee": [
+        "Kléma",
+        "Blaško",
+        "Mařík",
+        "Vojtáš",
+        "Dostál"
+      ],
+      "question": "Lineární a kvadratická diskriminační analýza (LDA a QDA). Definujte, popište jejich parametry, vysvětlete jejich rozhodováni a učení. Kam se tyto metody řadí v souvislostmi s dalšími metodami učení s učitelem.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q26",
+      "line": 190,
+      "date": "26.1.2022 - doc. Ing. Jiří Vokřínek, PhD (předseda), Ing. Radek Mařík, CSc. (místopředseda), Mgr. Jakub Mareček, Ph.D., Ing. Jiří Filip, Ph.",
+      "year": 2022,
+      "subject": "TAL",
+      "examiner": "Žukovec",
+      "committee": [
+        "Vokřínek",
+        "Mařík",
+        "Mareček",
+        "Filip",
+        "Žukovec"
+      ],
+      "question": "Redukce a polynomialni redukce uloh/jazyku, Cookova veta. Naznacte redukci SAT na 3-CNF SAT. Oba problemy zformulujte.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q27",
+      "line": 192,
+      "date": "26.1.2022 - doc. Ing. Jiří Vokřínek, PhD (předseda), Ing. Radek Mařík, CSc. (místopředseda), Mgr. Jakub Mareček, Ph.D., Ing. Jiří Filip, Ph.",
+      "year": 2022,
+      "subject": "PAG",
+      "examiner": "Mareček",
+      "committee": [
+        "Vokřínek",
+        "Mařík",
+        "Mareček",
+        "Filip",
+        "Žukovec"
+      ],
+      "question": "Popiste metriky pouzivane pro hodnoceni vykonu paralelnich systemu. Definujte pojmy paralelni cas, zrychleni, efektivnost, rezie. Jaka je typicka zavislost zrychleni a efektivnosti na poctu procesoru?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q28",
+      "line": 196,
+      "date": "26.1.2022 - doc. Ing. Jiří Vokřínek, PhD (předseda), Ing. Radek Mařík, CSc. (místopředseda), Mgr. Jakub Mareček, Ph.D., Ing. Jiří Filip, Ph.",
+      "year": 2022,
+      "subject": "TAL",
+      "examiner": "",
+      "committee": [
+        "Vokřínek",
+        "Mařík",
+        "Mareček",
+        "Filip",
+        "Žukovec"
+      ],
+      "question": "Jake jsou nejlepsi zname algoritmy, ktere resi opt. verzi TSP s 0 chybou. Jak velke instance je mozne takovymi algoritmy resit? Jaka je jejich podstata? Vysvetlete jednotlive casti. Jaka je jejich slozitost. Jaka je slozitost jednotlivych casti?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q29",
+      "line": 196,
+      "date": "26.1.2022 - doc. Ing. Jiří Vokřínek, PhD (předseda), Ing. Radek Mařík, CSc. (místopředseda), Mgr. Jakub Mareček, Ph.D., Ing. Jiří Filip, Ph.",
+      "year": 2022,
+      "subject": "KO",
+      "examiner": "",
+      "committee": [
+        "Vokřínek",
+        "Mařík",
+        "Mareček",
+        "Filip",
+        "Žukovec"
+      ],
+      "question": "Jake jsou nejlepsi zname algoritmy, ktere resi opt. verzi TSP s 0 chybou. Jak velke instance je mozne takovymi algoritmy resit? Jaka je jejich podstata? Vysvetlete jednotlive casti. Jaka je jejich slozitost. Jaka je slozitost jednotlivych casti?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q30",
+      "line": 198,
+      "date": "26.1.2022 - doc. Ing. Jiří Vokřínek, PhD (předseda), Ing. Radek Mařík, CSc. (místopředseda), Mgr. Jakub Mareček, Ph.D., Ing. Jiří Filip, Ph.",
+      "year": 2022,
+      "subject": "ESW",
+      "examiner": "Vokřínek",
+      "committee": [
+        "Vokřínek",
+        "Mařík",
+        "Mareček",
+        "Filip",
+        "Žukovec"
+      ],
+      "question": "Efektivni servery - C10K problem. Vysvetlete o co se jedna, proc neni vhodny „klasicky“ pristup, vysvetlete rozdil pristupu. Jaky ma vliv pouziti procesu, vlaken, I/O operaci.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q31",
+      "line": 202,
+      "date": "26.1.2022 - doc. Ing. Přemysl Šůcha, Ph.D. (predseda), Ing. Rostislav Horčík, Ph.D., Ing. Milan Rollo, PhD., doc. Ing. Michal Krátký (VŠB ex",
+      "year": 2022,
+      "subject": "TAL",
+      "examiner": "Demlová",
+      "committee": [
+        "Šůcha",
+        "Horčík",
+        "Rollo",
+        "Krátký",
+        "Demlová"
+      ],
+      "question": "Vysvetlete vztah mezi rozhodovaci ulohou a jazykem. Definujte, co jsou to nerozhodnutelne problemy/jazyky a jejich vztah ke tride R a RE. Definujte pojem jazyk L1 se redukuje na jazyk L2.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q32",
+      "line": 204,
+      "date": "26.1.2022 - doc. Ing. Přemysl Šůcha, Ph.D. (predseda), Ing. Rostislav Horčík, Ph.D., Ing. Milan Rollo, PhD., doc. Ing. Michal Krátký (VŠB ex",
+      "year": 2022,
+      "subject": "PAG",
+      "examiner": "Šůcha",
+      "committee": [
+        "Šůcha",
+        "Horčík",
+        "Rollo",
+        "Krátký",
+        "Demlová"
+      ],
+      "question": "Popiste Bitonic sort. Odvodte jeho paralelni cas behu a diskutujte jeho skalovatelnost.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q33",
+      "line": 208,
+      "date": "26.1.2022 - doc. Ing. Jiří Vokřínek, PhD (předseda), Ing. Radek Mařík, CSc. (místopředseda), Mgr. Jakub Mareček, Ph.D., Ing. Jiří Filip, Ph.",
+      "year": 2022,
+      "subject": "TAL",
+      "examiner": "Žukovec",
+      "committee": [
+        "Vokřínek",
+        "Mařík",
+        "Mareček",
+        "Filip",
+        "Žukovec"
+      ],
+      "question": "Definujte rekurzivni a rekurzivne spocetne jazyky. Do ktere tridy patri jazyk Postova korespondencniho problemu? Problem zformulujte. Vysvetlete co to je jazyk problemu.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q34",
+      "line": 210,
+      "date": "26.1.2022 - doc. Ing. Jiří Vokřínek, PhD (předseda), Ing. Radek Mařík, CSc. (místopředseda), Mgr. Jakub Mareček, Ph.D., Ing. Jiří Filip, Ph.",
+      "year": 2022,
+      "subject": "PAG",
+      "examiner": "Mareček",
+      "committee": [
+        "Vokřínek",
+        "Mařík",
+        "Mareček",
+        "Filip",
+        "Žukovec"
+      ],
+      "question": "Definujte graf. Vysvetlete pojmy tah, sled a cesta v grafu. Kdy je graf souvisly? Vysvetlete pojmy kostra grafu a MST a jake paralelni algoritmy lze pouzit na jeji nalezeni?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q35",
+      "line": 216,
+      "date": "26.1.2022 - doc. Ing. Jiří Vokřínek, PhD (předseda), Ing. Radek Mařík, CSc. (místopředseda), Mgr. Jakub Mareček, Ph.D., Ing. Jiří Filip, Ph.",
+      "year": 2022,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Vokřínek",
+        "Mařík",
+        "Mareček",
+        "Filip",
+        "Žukovec"
+      ],
+      "question": "Doslova: „Zaveďte definici orientovaného grafu. Uveďte definici a vlastnosti silně souvislé komponenty v orientovaném grafu. Jaké vlastnosti má graf vzniklý kondenzací silně souvislých komponent? Co platí o silně souvislých komponentách orientovaného acyklického grafu? Na vhodně zvoleném případě demonstrujte jeden z algoritmů konstruce silně souvislých komponent v orientovaném grafu. Uveďte princip ještě jednoho dalšího takového algoritmu.“",
+      "sourceType": "template"
+    },
+    {
+      "id": "q36",
+      "line": 220,
+      "date": "26.1.2022 - doc. Ing. Jiří Vokřínek, PhD (předseda), Ing. Radek Mařík, CSc. (místopředseda), Mgr. Jakub Mareček, Ph.D., Ing. Jiří Filip, Ph.",
+      "year": 2022,
+      "subject": "SWA",
+      "examiner": "Mareček",
+      "committee": [
+        "Vokřínek",
+        "Mařík",
+        "Mareček",
+        "Filip",
+        "Žukovec"
+      ],
+      "question": "Vysvětlete výhody a nevýhody architektur založených na microservices. Jak se liší vývoj aplikací založených na microservices?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q37",
+      "line": 236,
+      "date": "26.1.2022 - doc. Ing. Přemysl Šůcha, Ph.D. (predseda), Ing. Rostislav Horčík, Ph.D., Ing. Milan Rollo, PhD., doc. Ing. Michal Krátký (VŠB ex",
+      "year": 2022,
+      "subject": "KO",
+      "examiner": "Šůcha",
+      "committee": [
+        "Šůcha",
+        "Horčík",
+        "Rollo",
+        "Krátký",
+        "Demlová"
+      ],
+      "question": "Definice 1|r,d|Cmax a jeho složitost. Popsat Bratleyho algo. - Velmi pohodová otázka. Popsal jsem 1|r,d|Cmax (1 zdroj, release, due date, minimalizace Cmax) a trochu naznačil notaci rozvrhovacích problémů. Šůcha se doptal na redukci, která dokazuje, že jde o NP-hard problém → 3-partition problem. Pak jsem na tabuli čmárnul Bratleyho, kde jsem naznačil, jak prořezává. Šůcha mě zarazil, že mu to stačí. Znamka: A?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q38",
+      "line": 238,
+      "date": "26.1.2022 - doc. Ing. Přemysl Šůcha, Ph.D. (predseda), Ing. Rostislav Horčík, Ph.D., Ing. Milan Rollo, PhD., doc. Ing. Michal Krátký (VŠB ex",
+      "year": 2022,
+      "subject": "DS2",
+      "examiner": "Krátký",
+      "committee": [
+        "Šůcha",
+        "Horčík",
+        "Rollo",
+        "Krátký",
+        "Demlová"
+      ],
+      "question": "managment BigData (CAP, distribuce, škálování, replikace) + wide column databáze - Tady jsem byl trošku vykoupán a naběhl jsem si. Krátký se chytil věcí, které jsem zmínil BTW a šel do hloubky. Na většinu přípravy ani nedošlo a točili jsme se na tom proč BigData nejsou vhodné pro relační databáze a jaký je rozdíl mezi relační a wide-column databází. Diskuze se zvhrla",
+      "sourceType": "template"
+    },
+    {
+      "id": "q39",
+      "line": 250,
+      "date": "26.1.2022 - doc. Ing. Přemysl Šůcha, Ph.D. (predseda), Ing. Rostislav Horčík, Ph.D., Ing. Milan Rollo, PhD., doc. Ing. Michal Krátký (VŠB ex",
+      "year": 2022,
+      "subject": "PAL",
+      "examiner": "Vyskočil",
+      "committee": [
+        "Šůcha",
+        "Horčík",
+        "Rollo",
+        "Krátký",
+        "Demlová"
+      ],
+      "question": "reprezentace grafu v pocitaci + co je minimalni kostra a popsat nejakej alg na jeji nalezeni - To jsem slusne vysral s hromadou prereku, ale vzdy jsem to dovysletlil obrazkem. Kdyz jsem rekl neco spatne, Vyskocil bud zakroutil hlavou nebo se zasmal, ale jinak docela v pohode. Kdyz jsem neco nevedel, tak se doptal a kdyz nestacilo, dovysvetlil jsem obrazkem. Musim rici, ze jsem z neho mel pomerne strach, ale kdyz tusite, tak pomuze. Odvozoval jsem slozitost kruskala, a i kdyz jsem udelal chyby, tak me vzdy nechal dovysvetlit, popr. se opravit. Nejdrive ch",
+      "sourceType": "template"
+    },
+    {
+      "id": "q40",
+      "line": 252,
+      "date": "26.1.2022 - doc. Ing. Přemysl Šůcha, Ph.D. (predseda), Ing. Rostislav Horčík, Ph.D., Ing. Milan Rollo, PhD., doc. Ing. Michal Krátký (VŠB ex",
+      "year": 2022,
+      "subject": "ESW",
+      "examiner": "Sojka",
+      "committee": [
+        "Šůcha",
+        "Horčík",
+        "Rollo",
+        "Krátký",
+        "Demlová"
+      ],
+      "question": "Synchronizace, synchronizacni media, synchronizacni primitiva, vysvletlit skalovatelnost - Uprimne, rekl jsem docela hovno, ale na E jsem si veril, nakonec jsem dostal B. Zacal jsem atomic primitivama, ze jsou udelane na principu CAS a uvedl nejake priklady z Javy AtomicInt a z cpp, ze ma neco podobneho. Vzdy jsem popsal high-lvl mutex a futex, ale napr. u mutexu se zacal ptat na instrukce a tam jsem spise poslouchal a obcas se snazil interagovat. U futexu jsem rikal, ze je na urovni OS a pomoci neho je implementovan mutex. Kdyz myslel instrukce, tak nem",
+      "sourceType": "template"
+    },
+    {
+      "id": "q41",
+      "line": 264,
+      "date": "26.1.2022 - doc. Ing. Přemysl Šůcha, Ph.D. (predseda), Ing. Rostislav Horčík, Ph.D., Ing. Milan Rollo, PhD., doc. Ing. Michal Krátký (VŠB ex",
+      "year": 2022,
+      "subject": "TAL",
+      "examiner": "Žukovec",
+      "committee": [
+        "Šůcha",
+        "Horčík",
+        "Rollo",
+        "Krátký",
+        "Demlová"
+      ],
+      "question": "Definujte třídy P, NP, NPC a co-NP. Do kterých tříd patří 4-barevnost grafu? Problém zformulujte a vše zdůvodněte. Chtěl jsem začít formulací Turingova Stroje, to mě zastavila a říkala ať přeskočím. Tak jsem definoval P a NP pomocí TM. Poté jsem zadefinoval redukci a polynomiální redukci. Díky ní jsem definoval třídu NPC. Poté jsem laicky zadefinoval co-NP. Nakonec jsem vysvětlil co je 4-barevnost grafu, ale pak jsem se začal dost dopit, když se mě zeptala jak bych to vyřešil, co je to nedeterministický algoritmus atd… Jediné co bylo třeba odpovědět je, ",
+      "sourceType": "template"
+    },
+    {
+      "id": "q42",
+      "line": 278,
+      "date": "26.1.2022 - doc. Ing. Přemysl Šůcha, Ph.D. (predseda), Ing. Rostislav Horčík, Ph.D., Ing. Milan Rollo, PhD., doc. Ing. Michal Krátký (VŠB ex",
+      "year": 2022,
+      "subject": "TAL",
+      "examiner": "Rogalewicz",
+      "committee": [
+        "Šůcha",
+        "Horčík",
+        "Rollo",
+        "Krátký",
+        "Demlová"
+      ],
+      "question": "Jazyky rekurzivní a rekurzivní spočetné. Popsat co to je (ve vztahu k Turingově stroji), uvést příklady úloh a to včetně úlohy co je mimo R i RS. Jak se zařadí R a RS v Chomského typech jazyků. Vztah R a RS, co když úloha i doplněk RS. Další věci, které si již nevybavuji. Zkoušející mi přišel velmi příjemný, nesnažil se mě v ničem vykoupat i když jsem se na pár věcech trochu zastavil či zamotal a něco jsem i řekl trochu špatně, ale většinou jsem to uvedl na pravou míru. Známka: B",
+      "sourceType": "template"
+    },
+    {
+      "id": "q43",
+      "line": 280,
+      "date": "26.1.2022 - doc. Ing. Přemysl Šůcha, Ph.D. (predseda), Ing. Rostislav Horčík, Ph.D., Ing. Milan Rollo, PhD., doc. Ing. Michal Krátký (VŠB ex",
+      "year": 2022,
+      "subject": "UIR",
+      "examiner": "Krajník",
+      "committee": [
+        "Šůcha",
+        "Horčík",
+        "Rollo",
+        "Krátký",
+        "Demlová"
+      ],
+      "question": "Mapování v robotice. Typy těchto map. Zmíněm byl SLAM. Bayesovský filtr (uváděl jsem u gridmapingu). Především grid mapping jsem hodně rozebral. Dál jsem zmínil jsem NavMeshe, dotaz padl i na OctoMapu. Některé věci jsem zas trochu zmotal a něco nevěděl. Známka: C",
+      "sourceType": "template"
+    },
+    {
+      "id": "q44",
+      "line": 292,
+      "date": "18.06.2019 - Zdeněk Míkovec (předseda), Marie Demlová – místopředseda, Miroslav Macík, David Sedláček, Marko Genyk-Berezovskyj, doc. Ing. Pe",
+      "year": 2019,
+      "subject": "KO",
+      "examiner": "Berezovskyj",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Macík",
+        "Sedláček",
+        "Berezovskyj",
+        "Bouchner"
+      ],
+      "question": "Popište úlohu hledání maximálního toku v síti a úlohu hledání maximálního párování v bipartitním grafu. Jak spolu souvisí tyto dvě úlohy? Uvažte případ, že bipartitní graf je hranově neohodnocený a také případ, že je hranově ohodnocený. Určete jak řádově velký musí být graf na vstupu těchto úloh, aby řešení každé z nich zabralo cca 1 hodinu na běžném osobním počítači. Předpokládejte implementaci v kompilovaném jazyce.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q45",
+      "line": 296,
+      "date": "18.06.2019 - Zdeněk Míkovec (předseda), Marie Demlová – místopředseda, Miroslav Macík, David Sedláček, Marko Genyk-Berezovskyj, doc. Ing. Pe",
+      "year": 2019,
+      "subject": "HCI",
+      "examiner": "Macík",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Macík",
+        "Sedláček",
+        "Berezovskyj",
+        "Bouchner"
+      ],
+      "question": "Základní typy prototypů používaných při vývoji uživatelských rozhraní. Uveďte příklady prototypů a jejich vzájemné rozdíly. Popište metodiku User Centered Design.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q46",
+      "line": 296,
+      "date": "18.06.2019 - Zdeněk Míkovec (předseda), Marie Demlová – místopředseda, Miroslav Macík, David Sedláček, Marko Genyk-Berezovskyj, doc. Ing. Pe",
+      "year": 2019,
+      "subject": "NUR",
+      "examiner": "Macík",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Macík",
+        "Sedláček",
+        "Berezovskyj",
+        "Bouchner"
+      ],
+      "question": "Základní typy prototypů používaných při vývoji uživatelských rozhraní. Uveďte příklady prototypů a jejich vzájemné rozdíly. Popište metodiku User Centered Design.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q47",
+      "line": 308,
+      "date": "26.06.2018 - Pavel Slavík (předseda), David Sedláček (místopředseda), Pavel Žikovský (externista), Miroslav Macík, Natalia Žukovec, Tomáš We",
+      "year": 2018,
+      "subject": "KO",
+      "examiner": "Werner",
+      "committee": [
+        "Slavík",
+        "Sedláček",
+        "Žikovský",
+        "Macík",
+        "Žukovec",
+        "Werner"
+      ],
+      "question": "Co je ILP? Třída složitosti? Relaxace pomocí LP. Co je totálně unimodulární matice a příklad úlohy? - U unimodulární matice jsem nevěděl definici, ale pán Werner naprosto super, snažil se pomáhat a když viděl, že se nechytám, tak řekl že mu to stačí a šli jsme dál.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q48",
+      "line": 310,
+      "date": "26.06.2018 - Pavel Slavík (předseda), David Sedláček (místopředseda), Pavel Žikovský (externista), Miroslav Macík, Natalia Žukovec, Tomáš We",
+      "year": 2018,
+      "subject": "VIZ",
+      "examiner": "Sedláček",
+      "committee": [
+        "Slavík",
+        "Sedláček",
+        "Žikovský",
+        "Macík",
+        "Žukovec",
+        "Werner"
+      ],
+      "question": "Vizualizace volumetrických dat. Popište dva přístupy pro vykreslování vol. dat (přímé a nepřímé vykreslování), uvedte příklady metod. Popište detailně dvě metody vykreslování a to metodu First Hit a Average Intensity Projection. - Popsal jsem princip paprsku a převodu 3D na 2D. Nevěděl jsem moc podrobnosti a věci do hloubky. Chtěli po mě i vzorec na výpočet AIP, to jsem dohromady nedal.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q49",
+      "line": 320,
+      "date": "26.06.2018 - Pavel Slavík (předseda), David Sedláček (místopředseda), Pavel Žikovský (externista), Miroslav Macík, Natalia Žukovec, Tomáš We",
+      "year": 2018,
+      "subject": "TAL",
+      "examiner": "Žukovec",
+      "committee": [
+        "Slavík",
+        "Sedláček",
+        "Žikovský",
+        "Macík",
+        "Žukovec",
+        "Werner"
+      ],
+      "question": "P, NP, NP-úplné a NP-těžké úlohy. Do jaké třídy složitosti patří hledání nejkratších cest v grafu. Jmenujte úlohu, která nepatří do NP. - Zadefinoval jsem všechny čtyři třídy plus polynomiální redukci, kterou jsem použil v definici NP-úplných a NP-těžkých úloh. Řekl jsem, že hledání nejkratší cesty v grafu patří do třídy P, pokud graf neobsahuje záporné cykly, v opačném případě patří do třídy NP-úplných problémů. Pak jsem zmínil Postův korespondenční problém jako příklad úlohy která nepatří do NP. Hned ze začátku se akorát doptala, jaké úlohy v definici ",
+      "sourceType": "template"
+    },
+    {
+      "id": "q50",
+      "line": 324,
+      "date": "26.06.2018 - Pavel Slavík (předseda), David Sedláček (místopředseda), Pavel Žikovský (externista), Miroslav Macík, Natalia Žukovec, Tomáš We",
+      "year": 2018,
+      "subject": "TVS",
+      "examiner": "Bureš",
+      "committee": [
+        "Slavík",
+        "Sedláček",
+        "Žikovský",
+        "Macík",
+        "Žukovec",
+        "Werner"
+      ],
+      "question": "Kategorizace softwarových chyb. Optimalizace testovacích sad, párové testování, ortogonální pole, latinské čtverce. - Nemohl jsem si vybavit dostatek kategorií chyb a proto jsem začal rovnou s optimalizací. Popsal jsem praktický testovací plán, jak vypadá testování OO systémů, co je to faktor a jeho úrovně. Popsal jsem ortogonální pole, jak bych jej použil, definoval latinský čtverec a párově ortogonální latinské čtverce i se vzorcem pro jejich sestavení. Bureš se průběžně doptával na věci, které jsem měl připravené na papíře nebo na praktické věci, žádn",
+      "sourceType": "template"
+    },
+    {
+      "id": "q51",
+      "line": 334,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Haldy, jejich vlastnosti, jejich reprezentace, popsat operace Insert, AccessMin, DeleteMin, Delete na binarni haldě a jejich složitosti. Popsat binomialni a fibonacciho haldu a říct, kde byccom je použili a proč. - Popsal jsem binarni, d narni haldu, reprezentaci v poli a ukazal jednotlive operace na jednoduchem příkladě. Pak se ještě Mařík doptával kde a prox se pouziva binom. nebo fib. halda místo binární - chtel slyšet, že insert je amortizovane rychlejší (u toho jsem ještě definoval amortizovanou slozitost)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q52",
+      "line": 338,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "ZKS",
+      "examiner": "Bureš",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Generování testu z modelu aplikace - kombinace vstupnich dat, urovne testovacího pokrytí, pairwise testing - Popsal jsem model jako graf - vrcholy stavy aplikace/rozhodovací body, hrany jako akce sloužící pro přechod mezi stavy. Pak jsem definoval MCC, MC/DC a Pairwise (CC a DC jsem mu nakonec rekl taky, ale nechtel to), popsal Pairwise a ukazal na prikladech. Celkove Bureš dost lpěl na formalnejsich definicích, ktere jsem mu vesmes nerekl ( porad chtel neco slysel, ale proste se toho nedockal :D), ale na nicem dlouho nepotahovalba sli jsme kdyžtak dal. ",
+      "sourceType": "template"
+    },
+    {
+      "id": "q53",
+      "line": 346,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "TAL",
+      "examiner": "Žukovec",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Definovat NP a NPC, polynomialni redukce, Cookova veta a jeji zneni. Bezny postup, ked im nebolo nieco jasne tak sa doptali a velmi docenili, ked to clovek rovno nakreslil na tabulu.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q54",
+      "line": 348,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "SAN",
+      "examiner": "Mrázová",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Clustering, rozne techniky a ich nevyhody, specialne popsat Kmeans,spectral clustering,hierachical clustering, t-SNE, SOM, PCA. Pri tejto otazke chcem pozdravit autora otazok, dat SOM na statnice fakt nie je cool :) (ked uz, tak tomu venovat trochu viac ako doslova 2 slidy). Pri k-means chceli vediet ako sa prepocitavaju centroidi, problem s inicializaciou, ake vzdialenostne funkce mozme pouzit, ako urcit k (nebolo treba vediet priamo techniky, len stacilo povedat,ze dajake existuju na zaklade ktorych mozme vyhodnotit homogennost/kvalitu clustrov), ze to",
+      "sourceType": "template"
+    },
+    {
+      "id": "q55",
+      "line": 358,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "KO",
+      "examiner": "Filip",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Definovat graf, rozdíl mezi orientovaným a neorientovaným grafem. Definovat tah, sled a cestu. (Tohle je v první přednášce KO, kde jsou motivační příklady) Krásná otázka. Protože jsme to stihli asi za 3 minuty, tak se ještě doptával na reprezentaci grafu v paměti a na definici stromu a lesu. (Známka A)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q56",
+      "line": 360,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "SI",
+      "examiner": "Šůcha",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Popsat one-to-all broadcast a all-to-one redukci. Demonstrovat jak by probíhala na ringu, meshi a hypercube. Odvodit časovou složitost pro zprávu velikosti M. Uvést příklad, kde se tato komunikace používá v praktickém algoritmu.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q57",
+      "line": 360,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "PAG",
+      "examiner": "Šůcha",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Popsat one-to-all broadcast a all-to-one redukci. Demonstrovat jak by probíhala na ringu, meshi a hypercube. Odvodit časovou složitost pro zprávu velikosti M. Uvést příklad, kde se tato komunikace používá v praktickém algoritmu.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q58",
+      "line": 372,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "KO",
+      "examiner": "Hanzálek",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Maximální toky, Ford-Fulkersonův algoritmus a jeho složitost. Minimum capacity cut. Jak nalézt initial feasible flow pro FF.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q59",
+      "line": 376,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "PI",
+      "examiner": "Svatoš",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Fotodioda a řízení osvětlení s použitím fotodiody a STM procesoru. Výhody fotodiody proti fototranzistoru. Analogový Watch-Dog.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q60",
+      "line": 376,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "AVS",
+      "examiner": "Svatoš",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Fotodioda a řízení osvětlení s použitím fotodiody a STM procesoru. Výhody fotodiody proti fototranzistoru. Analogový Watch-Dog.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q61",
+      "line": 382,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "TAL",
+      "examiner": "Žukovec",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Definujte rekurzivní a rekurzivně spočetné jazyky. Uveďte příklady. Platí tvrzení, že pokud je jazyk rozhodován nedeterministickým turingovým strojem, tak je rekurzivní? Nejdříve jsem zadefinoval TM, potom rekurzivní a pak rekurzivně spočetné jazyky. U rekurzivně spočetný jsem řekl, že jsou algoritmicky neřešitelné a jako příklad uvedl Halting problem (problém zastavení TS). U tvrzení jsem řekl, že platí, protože to vychází přímo z definice rekurzivního jazyka, kde není specifikován typ TS. Doptala se na rozdíl mezi DTM a NTM a pár dalších otázek.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q62",
+      "line": 384,
+      "date": "21.06.2018 - Pavel Pačes (předseda), Miroslav Bureš (místopředseda), Tomáš Macek (externista), Natalia Žukovec, Radek Mařík",
+      "year": 2018,
+      "subject": "ESW",
+      "examiner": "Pevný",
+      "committee": [
+        "Pačes",
+        "Bureš",
+        "Macek",
+        "Žukovec",
+        "Mařík"
+      ],
+      "question": "Vysvětlete rozdíl mezi simulací, úplnou nativní virtualizací a paravirtualizací. Dále řekněte, kdy je nutné pro virtualizaci, aby se host přizpůsobil hostiteli.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q63",
+      "line": 396,
+      "date": "12. 6.  2018 - Jiří Kléma, Jan Drchal, Lukáš Chrpa, Jaroslav Tišer, MATOUŠEK JINDŘICH",
+      "year": 2018,
+      "subject": "TAL",
+      "examiner": "Tišer",
+      "committee": [
+        "Kléma",
+        "Drchal",
+        "Chrpa",
+        "Tišer",
+        "Matoušek"
+      ],
+      "question": "Co je Cookova věta, důkaz že polynomiální redukce úloh je tranzitivní Stručně jsem popsal Cookovu větu, vysvětlil její důsledek a definoval NPC. Důkaz tranzitivity: máme li úlohy u, v, w tak že se u polynomiálně redukuje na v se složitostí p(n) (polynom) a v se polynommiálně redukuje na w se složitostí q(n) (taky polynom) pak redukce z u na w přes v má složitost q(p(n)), což je také polynom. Složitost je tedy polynomiální, tudíž se v polynomiálně redukuje na w.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q64",
+      "line": 398,
+      "date": "12. 6.  2018 - Jiří Kléma, Jan Drchal, Lukáš Chrpa, Jaroslav Tišer, MATOUŠEK JINDŘICH",
+      "year": 2018,
+      "subject": "UI",
+      "examiner": "Drchal",
+      "committee": [
+        "Kléma",
+        "Drchal",
+        "Chrpa",
+        "Tišer",
+        "Matoušek"
+      ],
+      "question": "Neuronové sítě typu multi-layer perceptron, architektury, učení, backpropagation Popsal jsem perceptron, pak síť z více perceptronů a různé aktivační funkce. Naznačil jsem myšlenku backpropagation, ale do hloubky jsem nešel. Trochu jsem v tom plaval.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q65",
+      "line": 404,
+      "date": "5.  9.  2017 - Zdeněk Míkovec (P), Marie Demlová (MP), Ivo Malý, David Sedláček, Adam Sporka, Petr Kroha (ext)",
+      "year": 2017,
+      "subject": "TAL",
+      "examiner": "Demlová",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Malý",
+        "Sedláček",
+        "Sporka",
+        "Kroha"
+      ],
+      "question": "Popsat TSP, Knapsack a toky. U každého uvézt do jaké třidy patří. Popsat rozdíl mezi aproximačním a heuristickým algoritmem, uvést od nich příklad. Rozhodnout, zda se tok může poly. redukovat na Knapsack.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q66",
+      "line": 412,
+      "date": "5.  9.  2017 - Zdeněk Míkovec (P), Marie Demlová (MP), Ivo Malý, David Sedláček, Adam Sporka, Petr Kroha (ext)",
+      "year": 2017,
+      "subject": "VIZ",
+      "examiner": "Malý",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Malý",
+        "Sedláček",
+        "Sporka",
+        "Kroha"
+      ],
+      "question": "Charakterizovat skalární data ve 2D uniformní mřížce (nebo tak nějak). Popsat 2 nejběžnější metody jak tato data vizualizovat. S jakými problémy se při vizualizaci potýkáme a jak je řešit.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q67",
+      "line": 422,
+      "date": "5.  9.  2017 - Zdeněk Míkovec (P), Marie Demlová (MP), Ivo Malý, David Sedláček, Adam Sporka, Petr Kroha (ext)",
+      "year": 2017,
+      "subject": "TAL",
+      "examiner": "Tišer",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Malý",
+        "Sedláček",
+        "Sporka",
+        "Kroha"
+      ],
+      "question": "Turingovy stroje, rekurzivní a rekurzivně spočetné jazyky, algoritmicky neřešitelné úlohy. Definujte Turingův stroj, dokažte, že polynomiální redukce je tranzitivní relace Definici TS úplně přeskočil. Chtěl def poly redukce, pak definice tříd R a RS (na vztahy mezi nimi se neptal).",
+      "sourceType": "template"
+    },
+    {
+      "id": "q68",
+      "line": 436,
+      "date": "5.  9.  2017 - Zdeněk Míkovec (P), Marie Demlová (MP), Ivo Malý, David Sedláček, Adam Sporka, Petr Kroha (ext)",
+      "year": 2017,
+      "subject": "PAL",
+      "examiner": "Lisý",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Malý",
+        "Sedláček",
+        "Sporka",
+        "Kroha"
+      ],
+      "question": "Definujte B, B+, R-B, 2-3-4, Splay stromy. Popište mechanizmus vkládání do B stromu. Stačily relativně obecné definice a vlastnosti ke všem stromům (neřešili jsme žádné rotace",
+      "sourceType": "template"
+    },
+    {
+      "id": "q69",
+      "line": 440,
+      "date": "5.  9.  2017 - Zdeněk Míkovec (P), Marie Demlová (MP), Ivo Malý, David Sedláček, Adam Sporka, Petr Kroha (ext)",
+      "year": 2017,
+      "subject": "NUR",
+      "examiner": "Macek",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Malý",
+        "Sedláček",
+        "Sporka",
+        "Kroha"
+      ],
+      "question": "Jaké znáte metody návrhu uživatelského rohraní, popište jaké modely a metody prototypování se používají. Jaké známe interakční styly. V postatě jsme se bavili pouze Lo-fi, Hi-fi protypem. Také ho zajímali uživatelksé průzkumy. Nakonec interakční styly, což se ukázalo pouze jako způsoby interakci uživatele s aplikací (voice, terminál, menu, atd.) Ze začátku jsem mluvil já. Hned ze začátku mě přerušil s tím co je potřeba ještě třeba řešit s uživateli před samotnými prototypy (např.:",
+      "sourceType": "template"
+    },
+    {
+      "id": "q70",
+      "line": 448,
+      "date": "5.  9.  2017 - Zdeněk Míkovec (P), Marie Demlová (MP), Ivo Malý, David Sedláček, Adam Sporka, Petr Kroha (ext)",
+      "year": 2017,
+      "subject": "PAL",
+      "examiner": "Berezovskyj",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Malý",
+        "Sedláček",
+        "Sporka",
+        "Kroha"
+      ],
+      "question": "Specifikujte, kdy je hledání nejkratších nebo nejdelších cest polynomiální. Existuje případ, kdy je to těžká úloha s exp. složitostí? Řešte: Úloha je najít min kostru v úplném grafu s N vrcholy, jehož váhy hran jsou floaty. Graf je buď typu A nebo B. V A leží všechny váhy hran v intervalu (100, 200). V B může váha hrany nabývat jen jedné z 21 hodnot -1.0, -0.9, … 0.9, 1.0. navrhněte a popište metodu řešení pro A a B. Jak velký graf dokáže navržený alg. zpracovat za 1 sec na normálním PC?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q71",
+      "line": 448,
+      "date": "5.  9.  2017 - Zdeněk Míkovec (P), Marie Demlová (MP), Ivo Malý, David Sedláček, Adam Sporka, Petr Kroha (ext)",
+      "year": 2017,
+      "subject": "KO",
+      "examiner": "Berezovskyj",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Malý",
+        "Sedláček",
+        "Sporka",
+        "Kroha"
+      ],
+      "question": "Specifikujte, kdy je hledání nejkratších nebo nejdelších cest polynomiální. Existuje případ, kdy je to těžká úloha s exp. složitostí? Řešte: Úloha je najít min kostru v úplném grafu s N vrcholy, jehož váhy hran jsou floaty. Graf je buď typu A nebo B. V A leží všechny váhy hran v intervalu (100, 200). V B může váha hrany nabývat jen jedné z 21 hodnot -1.0, -0.9, … 0.9, 1.0. navrhněte a popište metodu řešení pro A a B. Jak velký graf dokáže navržený alg. zpracovat za 1 sec na normálním PC?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q72",
+      "line": 450,
+      "date": "5.  9.  2017 - Zdeněk Míkovec (P), Marie Demlová (MP), Ivo Malý, David Sedláček, Adam Sporka, Petr Kroha (ext)",
+      "year": 2017,
+      "subject": "MMA",
+      "examiner": "Berka",
+      "committee": [
+        "Míkovec",
+        "Demlová",
+        "Malý",
+        "Sedláček",
+        "Sporka",
+        "Kroha"
+      ],
+      "question": "Stereoskopické zobrzování. Princip binokulárního vidění, popsat vodítka ovlivňujících vnímání hloubky scény. Jaký vliv má pozorovací vzdálenost a šířka projekce na vjem hloubky? Vysvětlete pojmy kladná, záporná a nulová paralaxa.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q73",
+      "line": 452,
+      "date": "7. 2. 2017 - Zara, Sykora, Sporka, Sloup, Zukovec, Krivanek Společná - [PAL] [Sloup] B a B+ stromy, jejich pouziti a slozitosti operaci Obor",
+      "year": 2017,
+      "subject": "PAL",
+      "examiner": "Sloup",
+      "committee": [
+        "Žára",
+        "Sýkora",
+        "Sporka",
+        "Sloup",
+        "Žukovec",
+        "Křivánek"
+      ],
+      "question": "B a B+ stromy, jejich pouziti a slozitosti operaci",
+      "sourceType": "template"
+    },
+    {
+      "id": "q74",
+      "line": 452,
+      "date": "7. 2. 2017 - Zara, Sykora, Sporka, Sloup, Zukovec, Krivanek Společná - [PAL] [Sloup] B a B+ stromy, jejich pouziti a slozitosti operaci Obor",
+      "year": 2017,
+      "subject": "GVG",
+      "examiner": "Sýkora",
+      "committee": [
+        "Žára",
+        "Sýkora",
+        "Sporka",
+        "Sloup",
+        "Žukovec",
+        "Křivánek"
+      ],
+      "question": "Navrhnete algoritmus pro tvorbu panoramatu z nekolika fotografii Komise byla hodna, kdyz jsem neco nevedel tak se v tom nestourali, asi protoze jsem mel peknou DP. Posudky A/A - výsledná A, Zkoušení - C, Celkově - B",
+      "sourceType": "template"
+    },
+    {
+      "id": "q75",
+      "line": 458,
+      "date": "7. 2. 2017 - Zara, Sykora, Sporka, Sloup, Zukovec, Krivanek Společná - [PAL] [Sloup] B a B+ stromy, jejich pouziti a slozitosti operaci Obor",
+      "year": 2017,
+      "subject": "TAL",
+      "examiner": "Bošanský",
+      "committee": [
+        "Žára",
+        "Sýkora",
+        "Sporka",
+        "Sloup",
+        "Žukovec",
+        "Křivánek"
+      ],
+      "question": "Rekurzivní a rekurzivně spočitatelné jazyky, příklady jazyků a vztahy mezi nimi. Popsat randomizovaný TM a jejich třídy. Naprosto v pohodě učitel.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q76",
+      "line": 460,
+      "date": "7. 2. 2017 - Zara, Sykora, Sporka, Sloup, Zukovec, Krivanek Společná - [PAL] [Sloup] B a B+ stromy, jejich pouziti a slozitosti operaci Obor",
+      "year": 2017,
+      "subject": "TVS",
+      "examiner": "Herout",
+      "committee": [
+        "Žára",
+        "Sýkora",
+        "Sporka",
+        "Sloup",
+        "Žukovec",
+        "Křivánek"
+      ],
+      "question": "Kategorizace chyb a optimalizace testování - Popsal jsem základní rozdělení a pak se Herout ptal co je to orákulum, testování hraničních podmínek, pozitivní a negativní testy. Pak byl asi upozorněn na čas takže se zeptal na optimalizaci testů, kde jsem stačil akorát zmínit latinské čtverce, že mají faktory, úrovně a zkouška byla ukončena. Po jedné z mích odpovědí Herout reagoval slovy, že mám sice pravdu, ale teď bych to měl formulovat slovy budoucího magistra. Vzhledem k reakcím Herouta jsem jsi byl jistý, že jsem neuspěl, takže výsledná známka mě velmi",
+      "sourceType": "template"
+    },
+    {
+      "id": "q77",
+      "line": 466,
+      "date": "7. 2. 2017 - Zara, Sykora, Sporka, Sloup, Zukovec, Krivanek Společná - [PAL] [Sloup] B a B+ stromy, jejich pouziti a slozitosti operaci Obor",
+      "year": 2017,
+      "subject": "KO",
+      "examiner": "Hanzálek",
+      "committee": [
+        "Žára",
+        "Sýkora",
+        "Sporka",
+        "Sloup",
+        "Žukovec",
+        "Křivánek"
+      ],
+      "question": "Popsat ILP, TSP pomocí ILP, implikace, OR a fixní náklady v ILP.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q78",
+      "line": 468,
+      "date": "7. 2. 2017 - Zara, Sykora, Sporka, Sloup, Zukovec, Krivanek Společná - [PAL] [Sloup] B a B+ stromy, jejich pouziti a slozitosti operaci Obor",
+      "year": 2017,
+      "subject": "PAP",
+      "examiner": "Štepanovský",
+      "committee": [
+        "Žára",
+        "Sýkora",
+        "Sporka",
+        "Sloup",
+        "Žukovec",
+        "Křivánek"
+      ],
+      "question": "Paměťový subsystém - téma na několik hodin. Stačilo popsat různé cache, paměťovou hierarchii, virtuální paměť (stránkování, TLB atd.), princip časové a prostorové lokality…",
+      "sourceType": "template"
+    },
+    {
+      "id": "q79",
+      "line": 476,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Haldy - binarni, binomialni, Fibonacci jen zaklad. Ptal se na uplne zakladni veci, uplne bez problemu.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q80",
+      "line": 478,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "TVS",
+      "examiner": "Bureš",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Kategorizace chyb a optimalizace testování - Popsal jsem ortogonalni pole a v zakladu Latinske ctverce. V nicem nekoupali. Bures se ptal, zda lze v lat. ctvercich zakodovat i predpokladany vysledek (nejde).",
+      "sourceType": "template"
+    },
+    {
+      "id": "q81",
+      "line": 488,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Grafy, reprezentace, DFS + BFS, MST (+ algoritmy) - široké téma, popsal jsem všechny algoritmy s pár přeřeky, které mě nechali po sobě opravit. Chtěli navíc co je řez a proč algoritmy zaručují správný výsledek. U Borůvky chtěli vědět kdy nebude fungovat (všechny hrany oceněné stejně). Tahali ze mě definice, ale věděl jsem tak půlku.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q82",
+      "line": 490,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "NUR",
+      "examiner": "",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Kognitivní aspekty návrhu UI + formalismy - popsal jsem paměť (LT/ST), power law of practice a nakreslil jsem graf jak to funguje. Potom chtěl GOMS, KLM a Hick's law. Opět jsem věděl detaily tak napůl, ale byl úplně v pohodě.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q83",
+      "line": 498,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "PAL",
+      "examiner": "Hanzálek",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Efektivní algoritmy pro standardní grafové úlohy: Tarjanův a Kosajaru-Sharirův algoritmus detekce silně souvislých komponent v orientovaném grafu. Konstrukce topologického uspořádání acyklického grafu. Algoritmy hledání minimální kostry grafu (Borůvkův, Primův, Kruskalův). Téma na povídání přes celý časový rozsah státnic, proto se vyzobávali jen základní definice SSK a Tarjan + Primův algoritmus.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q84",
+      "line": 500,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "ISC",
+      "examiner": "Píša",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Metodiky návrhu analogových, digitálních a smíšených integrovaných systémů. Aplikačně specifické integrované systémy - plně zákaznický návrh, hradlová pole, standardní buňky, programovatelné obvody FPGA. Jen má malá soukromá poznámka. Dle mě by vyučující měli primárně pokládat otázky z předmětů, které vyučují. Není to o znalostech problematiky, ale o znalosti, jak moc se dané téma probíralo do hloubky na přednáškách. U této otázky je sice FPGA, ale detailní vnitřní struktura FPGA se v ISC neprobírala, viz úvodní slajdy ISC. Ne všichni nutně prošli SPS a ",
+      "sourceType": "template"
+    },
+    {
+      "id": "q85",
+      "line": 508,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Souvislost, (silně) souvislé komponenty, Kosaraju-Sharir a Tarjan algoritmy. Definoval jsem základní pojmy a popsal a ukázal Tarjana. Na konci (málo času) ještě v jedné větě popsal Kosaraju-Sharir. Pan Mařík měl pár doplňujících dotazů (složitost, srovnání,…), jeden dotaz taky pan Velebil, všechno ok, prakticky bez zádrhelů, nálada po obhajobě bych řekl pookřála =).",
+      "sourceType": "template"
+    },
+    {
+      "id": "q86",
+      "line": 510,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "NUR",
+      "examiner": "Malý",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Modelování systémů, storyboard, HTA, CTN a STN + použití. Pan Malý byl jako zkoušející taktéž velmi příjemný. Doplňující dotazy byly věcné, zejména na použití v praxi (chtěl slyšet více různých situací), rozdíly, nějaké detaily. Snažil jsem se hodně mluvit o STN a jeho analýze pomocí teorie grafů.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q87",
+      "line": 520,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "TVS",
+      "examiner": "Rogalewicz",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Statická vs. dynamická analýza. Analýza datových cest. Něco málo jsem řekl k oběma analýzám ale to bylo více méně vše, snažil se mě furt doptávat navézt někam.. ovšem jeho pojmy jsem snad nikdy neslyšel (poté mu p. Mařík domluvil, že to jsme asi ani neprobírali). Celkově se snažil ze mě co nejvíc vypáčit… Po komentařích zde jsem se trochu p. Rogalewicze trochu obával, ale musím říct že byl naprosto v pohodě, spíše se snažil pomoci.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q88",
+      "line": 522,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Nejkratší cesty, definovat problém, třidy složitosti s ním spojené. Dijkstův alg. jeho varianty + složitost. Floydův alg. pro orientovaný graf s nezápornými cykly. Definoval jsem problém nejraktší cesty, zařadil jeho varianty do různých tříd složitosti. U dijkstrova alg. ze mě chvíli tahal na čem to stěžejně pracuje (nejspíš chtěl slyšet, belmanovu rovnici - nejratší cesty se skládájí z nejkratších „podcest“) + využití haldy. U floyda chtěl slyšet základní princip a složitost.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q89",
+      "line": 530,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "TVS",
+      "examiner": "Rogalewicz",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Formální specifikace programu. Verifikace pomocí metod automatického dokazování a metody model-checking. Tohle byla věc, kterou jsem neměl najetou tak, abych dokázal celou dobu mluvit, ale zkoušející se opravdu snažil to ze mě vytáhnout a i když jsem si na něco nemohl vzpomenout, přešel jinam a nerýpal do toho. Zajímala ho třeba CTL\\* logika a běhové formule. Pozor na to, verifikace je Rogalewiczova specializace, podle toho, co jsem tu četl, jsem od něj čekal spíš TALy.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q90",
+      "line": 532,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Definice haldy. Popsání operací INSERT, ACCESS a DELETE na binární haldě a jejich složitost. Kdy bychom použili binomiální haldu a kdy Fibonacciho? Tohle šlo celkem samo. Ještě se doptal, jak bych spojil 2 binární haldy a jakou to má složitost. U Fibonacciho haldy chtěl slyšet, že problematické je mazání, kdy může konsolidace trvat dlouho, což může být problém u systémů reálného času.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q91",
+      "line": 540,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "NUR",
+      "examiner": "Macek",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "Prototypy a jejich použití v uživatelském testování. Zkoušející si řídil co kdy budu říkat, ale řekli jsme si lo-fi a hi-fi a k čemu to je, na kom budu testovat a jak. B",
+      "sourceType": "template"
+    },
+    {
+      "id": "q92",
+      "line": 542,
+      "date": "14. 6. 2016 - prof. Ing. Ivan Jelínek, CSc. (P), doc. Ing. Michal Jakob, Ph.D. (MP), Ing. Miroslav Bureš, Ph.D., Ing. Radek Mařík, CSc. , In",
+      "year": 2016,
+      "subject": "TAL",
+      "examiner": "Velebil",
+      "committee": [
+        "Jelínek",
+        "Jakob",
+        "Bureš",
+        "Mařík",
+        "Filip",
+        "Tišer"
+      ],
+      "question": "NPC a NPH. Zamotal jsem se do definice reduce a od té doby jsem se v tom koupal, ale řekl jsem většinu co jsem měl připravené. U těchto témat je dobré nedodostat se do situace kdy se člověk splete, protože se díky tomů může odhalit víc neznalostí. C",
+      "sourceType": "template"
+    },
+    {
+      "id": "q93",
+      "line": 550,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "OSP",
+      "examiner": "Vokřínek",
+      "committee": [],
+      "question": "Nástroje pro správu rozsáhlých SW projektů. Správa verzí kódů, systémy pro správu chyb.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q94",
+      "line": 560,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "TAL",
+      "examiner": "Hekrdla",
+      "committee": [],
+      "question": "Definice polynomiální redukce problémů a jestli relace převoditelnosti je uspořádání – To bylo na papíře, ale při zkoušení se mě p. Hekrdla zeptal jen na to uspořádání. Začal jsem nejdřív definicí převoditelnosti, což pan Hekrdla možná nepochopil, nebo jsme si nějak nerozuměli, a začal mi něco vysvětlovat, což bylo podle mě trochu off topic, tak jsem chvíli nechápavě poslouchal, a pak jsem řekl, že to radši napíšu na tabuli, aby bylo jasno. Ukázal jsem reflexivitu a tranzitivitu. U antisymetrie jsem trochu spletl definici, takže jsem byl opraven že chci ",
+      "sourceType": "template"
+    },
+    {
+      "id": "q95",
+      "line": 570,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "KO",
+      "examiner": "Vokřínek",
+      "committee": [],
+      "question": "Algoritmy na nejkratší cesty, problem Obchodniho cestujiciho, heuristicke a aproximacni algoritmy",
+      "sourceType": "template"
+    },
+    {
+      "id": "q96",
+      "line": 572,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "OSP",
+      "examiner": "",
+      "committee": [],
+      "question": "White box, black box testy, strukturalni, staticka a dynamicka analyza. Datove toky. Testovani OO softwaru",
+      "sourceType": "template"
+    },
+    {
+      "id": "q97",
+      "line": 578,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "PAL",
+      "examiner": "Píša",
+      "committee": [],
+      "question": "Porovnání výšek AVL a BR stromu. Nakonec chtěl Píša obecně vědět, co jsou binární stromy, jaké jsou druhy a pro jaké datové manipulace se který hodí. Poslední otázka byla, jakou datovou strukturu bych použil při čtení dat z hard disku.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q98",
+      "line": 580,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "AVS",
+      "examiner": "Sedláček",
+      "committee": [],
+      "question": "Způsoby zpracování analogového signálu ve vestavěných systémech. Takže otázka na AD převodníky, jaké jsou druhy, znát jejich nákres a princip funkce bylo povinností. Sedláček se mě ptal na integrační převodník, poté na SAR, který je v MCU od ST.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q99",
+      "line": 586,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "KO",
+      "examiner": "Šůcha",
+      "committee": [],
+      "question": "Formulace ILP, metody řešení, logické vazby, big M, formulovat obhcodního cestujícího.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q100",
+      "line": 588,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "OSP",
+      "examiner": "Píša",
+      "committee": [],
+      "question": "Licence… Nejdůležitější otázka, co jsem nevěděl- LGPL, podstatné aby byli knihovny LGPL v propriet SW linkované dynamicky (dává to smysl, mě to nenapadlo).",
+      "sourceType": "template"
+    },
+    {
+      "id": "q101",
+      "line": 594,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "PAL",
+      "examiner": "Velebil",
+      "committee": [],
+      "question": "Algoritmy pro hledání minimální kostry",
+      "sourceType": "template"
+    },
+    {
+      "id": "q102",
+      "line": 594,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "TAL",
+      "examiner": "Velebil",
+      "committee": [],
+      "question": "Algoritmy pro hledání minimální kostry",
+      "sourceType": "template"
+    },
+    {
+      "id": "q103",
+      "line": 598,
+      "date": "2. 6. 2015 SI - Doc. Ing. Jiří Vokřínek, Ph.D. -13141 - předseda, Ing. Adam Sporka, Ph.D. – 13139 – místopředseda, Ing. Zdeněk Buk, Ph.D. – ",
+      "year": 2015,
+      "subject": "TVS",
+      "examiner": "Průša",
+      "committee": [],
+      "question": "SW chyba, definice, kategorizace, testování bílé a černé schránky",
+      "sourceType": "template"
+    },
+    {
+      "id": "q104",
+      "line": 608,
+      "date": "22. 1. 2015 - Šusta, Novák, Píša, Sojka, Šmejkal (ext.) Obhajoba DP - Klasika, odprezentoval jsem, přečetly se posudky, Novák měl pár dotazů",
+      "year": 2015,
+      "subject": "KRP",
+      "examiner": "Novák",
+      "committee": [
+        "Šusta",
+        "Novák",
+        "Píša",
+        "Sojka",
+        "Šmejkal"
+      ],
+      "question": "Rozdíl mezi PCI a PCIExpress. Proč jsou lepší sériové sběrnice. Popsal jsem docela detailně PCI, o něco míň do detailu pak PCIEx. Pak se docela ptal na různý drobnosti. → B",
+      "sourceType": "template"
+    },
+    {
+      "id": "q105",
+      "line": 610,
+      "date": "22. 1. 2015 - Šusta, Novák, Píša, Sojka, Šmejkal (ext.) Obhajoba DP - Klasika, odprezentoval jsem, přečetly se posudky, Novák měl pár dotazů",
+      "year": 2015,
+      "subject": "PII",
+      "examiner": "Šusta",
+      "committee": [
+        "Šusta",
+        "Novák",
+        "Píša",
+        "Sojka",
+        "Šmejkal"
+      ],
+      "question": "Klasické PLC a tagově orientované PLC, popis a jejich cyklus. Ano, tohle není chyba, měl jsem 2 oborové otázky a žádnou společnou (i někteří mí kolegové). Popsal jsem takovej ten strohej základ co je v materiálech od Šusty. to mu ale nestačilo. Chtěl vědět, výhody a nevýhody obou druhů, potom co konkrétně to znamená pro PLC program. Snažil se mi trochu pomoct, ale když viděl že to nikam nevede, nechal mě být… vypadal docela naštvaně. → D",
+      "sourceType": "template"
+    },
+    {
+      "id": "q106",
+      "line": 612,
+      "date": "21. 1. 2015 - Pěchouček (P), Faigl (MP), Demlová, Kubalík, Mrázová (MFF UK) Obhajoba DP - V pohodě, vzal jsem to hodně high level, Pěchouček",
+      "year": 2015,
+      "subject": "TAL",
+      "examiner": "Demlová",
+      "committee": [
+        "Pěchouček",
+        "Faigl",
+        "Demlová",
+        "Kubalík",
+        "Mrázová"
+      ],
+      "question": "NPC, NP hard, Cookova věta a heuristické algoritmy pro úlohy v NP. → S pár drobnýma zaškobrtnutíma jsem popsal vše + odpověděl na její otázky → B",
+      "sourceType": "template"
+    },
+    {
+      "id": "q107",
+      "line": 620,
+      "date": "20. 1. 2015 - Vokřínek (P), Navara (MP), Šůcha, Čmolík, Macek(IBM ČR) Obhajoba DP - OK, kromě Navary (kterýho chápu, že implementační práce ",
+      "year": 2015,
+      "subject": "PAL",
+      "examiner": "Čmolík",
+      "committee": [
+        "Vokřínek",
+        "Navara",
+        "Šůcha",
+        "Čmolík",
+        "Macek"
+      ],
+      "question": "Haldy, co to je, jaký jsou typy, popsat všechny možný operace a jejich složitosti. Stihnul jsem popsat komplet binární haldu a její operace a strukturu binomiální haldy a její operaci merge, pak se mě ptal jak bych reprezentoval binární haldu v programu a nelíbilo se mu, že uzly chci ukládat jako objekty s ukazatelema na rodiče a potomky :) Chtěl to jako pole kde se místo ukazatelů vypočítá index rodiče nebo potomka. To ze mě nakonec vymámil a ještě se zeptal jak a na kterých operacích se liší složitosti všech tří hald. Navara chtěl upřesnit složitost me",
+      "sourceType": "template"
+    },
+    {
+      "id": "q108",
+      "line": 628,
+      "date": "20. 1. 2015 - Žára (P), Berka (MP), Habala, Mařík, Kohout (ZČU) Společná [PAL] [Mařík] - Co je to minimální kostra grafu, uveďte základní al",
+      "year": 2015,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Žára",
+        "Berka",
+        "Habala",
+        "Mařík",
+        "Kohout"
+      ],
+      "question": "Částicové systémy, dynamika. Stručně popsat částicové systémy z implementačního hlediska, klasifikovat jaké síly na částice působí. Vysvětlit pojem Zero moment point.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q109",
+      "line": 628,
+      "date": "20. 1. 2015 - Žára (P), Berka (MP), Habala, Mařík, Kohout (ZČU) Společná [PAL] [Mařík] - Co je to minimální kostra grafu, uveďte základní al",
+      "year": 2015,
+      "subject": "MMA",
+      "examiner": "Mařík",
+      "committee": [
+        "Žára",
+        "Berka",
+        "Habala",
+        "Mařík",
+        "Kohout"
+      ],
+      "question": "Částicové systémy, dynamika. Stručně popsat částicové systémy z implementačního hlediska, klasifikovat jaké síly na částice působí. Vysvětlit pojem Zero moment point.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q110",
+      "line": 634,
+      "date": "20. 1. 2015 - Žára (P), Berka (MP), Habala, Mařík, Kohout (ZČU) Společná [PAL] [Mařík] - Co je to minimální kostra grafu, uveďte základní al",
+      "year": 2015,
+      "subject": "TAL",
+      "examiner": "Šusta",
+      "committee": [
+        "Žára",
+        "Berka",
+        "Habala",
+        "Mařík",
+        "Kohout"
+      ],
+      "question": "NPC a NP hard, pak cokova veta a priklady nad nimy",
+      "sourceType": "template"
+    },
+    {
+      "id": "q111",
+      "line": 652,
+      "date": "20. 1. 2015 - Žára (P), Berka (MP), Habala, Mařík, Kohout (ZČU) Společná [PAL] [Mařík] - Co je to minimální kostra grafu, uveďte základní al",
+      "year": 2015,
+      "subject": "PAL",
+      "examiner": "Kubr",
+      "committee": [
+        "Žára",
+        "Berka",
+        "Habala",
+        "Mařík",
+        "Kohout"
+      ],
+      "question": "Grafy, orientované a neorientované, minimální kostra. Toky v sítích.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q112",
+      "line": 656,
+      "date": "20. 1. 2015 - Žára (P), Berka (MP), Habala, Mařík, Kohout (ZČU) Společná [PAL] [Mařík] - Co je to minimální kostra grafu, uveďte základní al",
+      "year": 2015,
+      "subject": "TPJ",
+      "examiner": "Buk",
+      "committee": [
+        "Žára",
+        "Berka",
+        "Habala",
+        "Mařík",
+        "Kohout"
+      ],
+      "question": "Operační a denotační sémantiky, vlastnosti a příklady.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q113",
+      "line": 666,
+      "date": "20. 1. 2015 - Žára (P), Berka (MP), Habala, Mařík, Kohout (ZČU) Společná [PAL] [Mařík] - Co je to minimální kostra grafu, uveďte základní al",
+      "year": 2015,
+      "subject": "TAL",
+      "examiner": "Velebil",
+      "committee": [
+        "Žára",
+        "Berka",
+        "Habala",
+        "Mařík",
+        "Kohout"
+      ],
+      "question": "Matematický model perspektivní kamery a homografie. posudky A/B, obhajoba A, zkoušení A → A",
+      "sourceType": "template"
+    },
+    {
+      "id": "q114",
+      "line": 666,
+      "date": "20. 1. 2015 - Žára (P), Berka (MP), Habala, Mařík, Kohout (ZČU) Společná [PAL] [Mařík] - Co je to minimální kostra grafu, uveďte základní al",
+      "year": 2015,
+      "subject": "GVG",
+      "examiner": "Velebil",
+      "committee": [
+        "Žára",
+        "Berka",
+        "Habala",
+        "Mařík",
+        "Kohout"
+      ],
+      "question": "Matematický model perspektivní kamery a homografie. posudky A/B, obhajoba A, zkoušení A → A",
+      "sourceType": "template"
+    },
+    {
+      "id": "q115",
+      "line": 670,
+      "date": "20. 1. 2015 - Žára (P), Berka (MP), Habala, Mařík, Kohout (ZČU) Společná [PAL] [Mařík] - Co je to minimální kostra grafu, uveďte základní al",
+      "year": 2015,
+      "subject": "TAL",
+      "examiner": "Hekrdla",
+      "committee": [
+        "Žára",
+        "Berka",
+        "Habala",
+        "Mařík",
+        "Kohout"
+      ],
+      "question": "Co je to redukce a co je to polynomiální redukce. Je relace redukce tranzitivní, reflexivní, uspořádání? Řek sem nějakej základ, nevěděl sem co je uspořádání, ale ani to nějak neřešil… Pak se doptal na",
+      "sourceType": "template"
+    },
+    {
+      "id": "q116",
+      "line": 674,
+      "date": "20. 1. 2015 - Žára (P), Berka (MP), Habala, Mařík, Kohout (ZČU) Společná [PAL] [Mařík] - Co je to minimální kostra grafu, uveďte základní al",
+      "year": 2015,
+      "subject": "BUK",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Berka",
+        "Habala",
+        "Mařík",
+        "Kohout"
+      ],
+      "question": "BOS a SOS, zadefinovat, vysvětlit vlastnosti - progress, type preservation, konfluence, determinismus, terminace.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q117",
+      "line": 686,
+      "date": "5. 6. 2014 - Doc. Ing. David Šišlák, Ph.D. - K13136 - předseda, Ing. Jiří Vokřínek, Ph.D. - K13136 místopředseda, Ing. Zdeněk Buk, Ph.D. - K",
+      "year": 2014,
+      "subject": "KO",
+      "examiner": "Kubr",
+      "committee": [
+        "Šišlák",
+        "Vokřínek",
+        "Buk",
+        "Kubr",
+        "Hekrdla",
+        "Macek",
+        "Hrnčíř"
+      ],
+      "question": "Nejkratší cesty v grafu. Popsat algoritmy a rozdily mezi nimi",
+      "sourceType": "template"
+    },
+    {
+      "id": "q118",
+      "line": 700,
+      "date": "5. 6. 2014 - Doc. Ing. David Šišlák, Ph.D. - K13136 - předseda, Ing. Jiří Vokřínek, Ph.D. - K13136 místopředseda, Ing. Zdeněk Buk, Ph.D. - K",
+      "year": 2014,
+      "subject": "TAL",
+      "examiner": "Hekrdla",
+      "committee": [
+        "Šišlák",
+        "Vokřínek",
+        "Buk",
+        "Kubr",
+        "Hekrdla",
+        "Macek",
+        "Hrnčíř"
+      ],
+      "question": "Pravděpodobnostní algoritmy, randomizovaný turingův stroj, třída úloh TP. Navrhněte pravděpodobnostní algoritmus pro výpočet čísla Pí. Ke všemu jsem něco málo řekl, algoritmus jsem nenavrhl, tak se zeptal jestli znám nějaké jiné (testy prvočíselnosti), dál se neptal.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q119",
+      "line": 710,
+      "date": "5. 6. 2014 - Doc. Ing. David Šišlák, Ph.D. - K13136 - předseda, Ing. Jiří Vokřínek, Ph.D. - K13136 místopředseda, Ing. Zdeněk Buk, Ph.D. - K",
+      "year": 2014,
+      "subject": "TPJ",
+      "examiner": "Buk",
+      "committee": [
+        "Šišlák",
+        "Vokřínek",
+        "Buk",
+        "Kubr",
+        "Hekrdla",
+        "Macek",
+        "Hrnčíř"
+      ],
+      "question": "Denotacni semantika, co je to fixed-point operator.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q120",
+      "line": 714,
+      "date": "5. 6. 2014 - Doc. Ing. David Šišlák, Ph.D. - K13136 - předseda, Ing. Jiří Vokřínek, Ph.D. - K13136 místopředseda, Ing. Zdeněk Buk, Ph.D. - K",
+      "year": 2014,
+      "subject": "TAL",
+      "examiner": "Hekrdla",
+      "committee": [
+        "Šišlák",
+        "Vokřínek",
+        "Buk",
+        "Kubr",
+        "Hekrdla",
+        "Macek",
+        "Hrnčíř"
+      ],
+      "question": "Ulohy NP-uplne, NP-tezke. Co muzeme rict o uloze, o ktere vime, ze se na ni redukuje nektera NP-uplna uloha? (Hekrdla)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q121",
+      "line": 732,
+      "date": "5. 6. 2014 - Doc. Ing. David Šišlák, Ph.D. - K13136 - předseda, Ing. Jiří Vokřínek, Ph.D. - K13136 místopředseda, Ing. Zdeněk Buk, Ph.D. - K",
+      "year": 2014,
+      "subject": "PAL",
+      "examiner": "Kubr",
+      "committee": [
+        "Šišlák",
+        "Vokřínek",
+        "Buk",
+        "Kubr",
+        "Hekrdla",
+        "Macek",
+        "Hrnčíř"
+      ],
+      "question": "Grafy a jejich reprezentace. Porovnání",
+      "sourceType": "template"
+    },
+    {
+      "id": "q122",
+      "line": 742,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "TAL",
+      "examiner": "Rogalewicz",
+      "committee": [
+        "Kouba",
+        "Demlová",
+        "Bureš",
+        "Strnad",
+        "Rogalewicz"
+      ],
+      "question": "Třídy složitosti (nevím co přesně bylo v zadání).",
+      "sourceType": "template"
+    },
+    {
+      "id": "q123",
+      "line": 746,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "TPJ",
+      "examiner": "Strnad",
+      "committee": [
+        "Kouba",
+        "Demlová",
+        "Bureš",
+        "Strnad",
+        "Rogalewicz"
+      ],
+      "question": "Operační a denotační sémantika.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q124",
+      "line": 764,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "TPJ",
+      "examiner": "Strnad",
+      "committee": [
+        "Kouba",
+        "Demlová",
+        "Bureš",
+        "Strnad",
+        "Rogalewicz"
+      ],
+      "question": "Operační sémantika. Řekl bych, že podmnožina toho, co student před ním.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q125",
+      "line": 772,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Kouba",
+        "Demlová",
+        "Bureš",
+        "Strnad",
+        "Rogalewicz"
+      ],
+      "question": "definice neorientovaneho grafu, jak se reprezentuje v pocitaci, prochazeni grafu do sirky a do hloubky; definice kostry grafu, na vhodnem priklade ukazat jak funguji algoritmy na nalezeni kostry Ptali se me z toho jen na ty kostry, ukazal jsem Kruskala, Prima a Boruvku. Zkousel me Marik, ptal se na rozumny veci, byl v pohode. → za B",
+      "sourceType": "template"
+    },
+    {
+      "id": "q126",
+      "line": 780,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "TAL",
+      "examiner": "Tišer",
+      "committee": [
+        "Kouba",
+        "Demlová",
+        "Bureš",
+        "Strnad",
+        "Rogalewicz"
+      ],
+      "question": "Třídy složitosti P a NP. Polynomiální redukce. Redukce SAT na 3CNF SAT. Ptal se Tišer, přerušil můj popis postupu redukce a zadal mi převést jednoduchou instanci (a & b & c & d).",
+      "sourceType": "template"
+    },
+    {
+      "id": "q127",
+      "line": 782,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "UI",
+      "examiner": "Kléma",
+      "committee": [
+        "Kouba",
+        "Demlová",
+        "Bureš",
+        "Strnad",
+        "Rogalewicz"
+      ],
+      "question": "Hierarchické shlukování. Různé strategie a kritéria. Ptal se Kléma, chtěl slyšet o vzdálenostní funkci shluků (oproti vzdálenosti instancí), principu rozdělování při top-down strategii (klasické shlukování) a proč je to výhodné (malé k), bi-clustering",
+      "sourceType": "template"
+    },
+    {
+      "id": "q128",
+      "line": 786,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "PAL",
+      "examiner": "Vokřínek",
+      "committee": [
+        "Kouba",
+        "Demlová",
+        "Bureš",
+        "Strnad",
+        "Rogalewicz"
+      ],
+      "question": "Orientované grafy, reprezentace grafů, procházení grafů, kostra, souvislost",
+      "sourceType": "template"
+    },
+    {
+      "id": "q129",
+      "line": 790,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "SI",
+      "examiner": "Slavík",
+      "committee": [
+        "Kouba",
+        "Demlová",
+        "Bureš",
+        "Strnad",
+        "Rogalewicz"
+      ],
+      "question": "Testování s uživateli a bez uživatelů",
+      "sourceType": "template"
+    },
+    {
+      "id": "q130",
+      "line": 790,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "NUR",
+      "examiner": "Slavík",
+      "committee": [
+        "Kouba",
+        "Demlová",
+        "Bureš",
+        "Strnad",
+        "Rogalewicz"
+      ],
+      "question": "Testování s uživateli a bez uživatelů",
+      "sourceType": "template"
+    },
+    {
+      "id": "q131",
+      "line": 798,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "TAL",
+      "examiner": "Hekrdla",
+      "committee": [
+        "Železný",
+        "Jakob",
+        "Kubr",
+        "Hekrdla",
+        "Rogalewicz"
+      ],
+      "question": "Definujte co znamena, ze jedna rozhodovaci uloha se redukuji (polynomialne) na druhou. Je tto relace tranzitivni, reflexivni, usporadani? (výsl. A) Vsechno v pohode, pan Hekrdla se porad usmival a pomahal, ikdyz jsem zapomela definici usporadani (tranztivni, reflexivni, antisymetricka) dal mi A. Podle me hodne zalezi na dojmu od prezentace.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q132",
+      "line": 808,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "KO",
+      "examiner": "Demlová",
+      "committee": [
+        "Železný",
+        "Jakob",
+        "Kubr",
+        "Hekrdla",
+        "Rogalewicz"
+      ],
+      "question": "Hledání nejkratší cesty. Jak se změní složitost pokud jsou topologicky vrcholy uspořádány. Co by se stalo pokud existuje polynomiální algoritmus pro hledání cesty",
+      "sourceType": "template"
+    },
+    {
+      "id": "q133",
+      "line": 808,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "PAL",
+      "examiner": "Demlová",
+      "committee": [
+        "Železný",
+        "Jakob",
+        "Kubr",
+        "Hekrdla",
+        "Rogalewicz"
+      ],
+      "question": "Hledání nejkratší cesty. Jak se změní složitost pokud jsou topologicky vrcholy uspořádány. Co by se stalo pokud existuje polynomiální algoritmus pro hledání cesty",
+      "sourceType": "template"
+    },
+    {
+      "id": "q134",
+      "line": 814,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "SI",
+      "examiner": "Slavík",
+      "committee": [
+        "Železný",
+        "Jakob",
+        "Kubr",
+        "Hekrdla",
+        "Rogalewicz"
+      ],
+      "question": "Formální návrh UI",
+      "sourceType": "template"
+    },
+    {
+      "id": "q135",
+      "line": 814,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "NUR",
+      "examiner": "Slavík",
+      "committee": [
+        "Železný",
+        "Jakob",
+        "Kubr",
+        "Hekrdla",
+        "Rogalewicz"
+      ],
+      "question": "Formální návrh UI",
+      "sourceType": "template"
+    },
+    {
+      "id": "q136",
+      "line": 824,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "TAL",
+      "examiner": "Demlová",
+      "committee": [
+        "Železný",
+        "Jakob",
+        "Kubr",
+        "Hekrdla",
+        "Rogalewicz"
+      ],
+      "question": "Třída P a NP; Příklad dvou úloh ze třídy P, dvou ze třídy NP a dvou úloh, které nepatří do NP (Uveď všechny použité předpoklady). Kam patří následující úloha: je dán ohodnocený orientovaný graf G, jeho dva vrcholy u, v a číslo k. Existuje nejkratší cesta, alespoň k?",
+      "sourceType": "template"
+    },
+    {
+      "id": "q137",
+      "line": 826,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "SI",
+      "examiner": "Herout",
+      "committee": [
+        "Železný",
+        "Jakob",
+        "Kubr",
+        "Hekrdla",
+        "Rogalewicz"
+      ],
+      "question": "Systémy pro sledování a řešení chyb a uživatelskou podporu. Příklady konkrétních aplikací. Požadované funkce těchto systémů. Životní cyklus chyby. Obhajoba bez problémů. Slavík se zeptal vyloženě na drobnost aby se neřeklo a Herout to samé. Zkoušení oboje pohoda, Demlová mi po zkoušení přišla vysvětlit, v čem jsem se zamotal. Zkoušení B, obhajoba A → celkově: A",
+      "sourceType": "template"
+    },
+    {
+      "id": "q138",
+      "line": 826,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "OSP",
+      "examiner": "Herout",
+      "committee": [
+        "Železný",
+        "Jakob",
+        "Kubr",
+        "Hekrdla",
+        "Rogalewicz"
+      ],
+      "question": "Systémy pro sledování a řešení chyb a uživatelskou podporu. Příklady konkrétních aplikací. Požadované funkce těchto systémů. Životní cyklus chyby. Obhajoba bez problémů. Slavík se zeptal vyloženě na drobnost aby se neřeklo a Herout to samé. Zkoušení oboje pohoda, Demlová mi po zkoušení přišla vysvětlit, v čem jsem se zamotal. Zkoušení B, obhajoba A → celkově: A",
+      "sourceType": "template"
+    },
+    {
+      "id": "q139",
+      "line": 830,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "KO",
+      "examiner": "Hanzálek",
+      "committee": [
+        "Procházka",
+        "Matas",
+        "Novák",
+        "Jakovenko",
+        "Píša"
+      ],
+      "question": "TSP, definovat pomocí ILP, aproximační algoritmy pro TSP a jejich důkazy (Dvojitá kostra, Christofidesův alg.).",
+      "sourceType": "template"
+    },
+    {
+      "id": "q140",
+      "line": 832,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "PI",
+      "examiner": "Jakovenko",
+      "committee": [
+        "Procházka",
+        "Matas",
+        "Novák",
+        "Jakovenko",
+        "Píša"
+      ],
+      "question": "Ovládání výstupních akčních členů. (Překvapivě dal AVS)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q141",
+      "line": 836,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "KO",
+      "examiner": "Hanzálek",
+      "committee": [
+        "Procházka",
+        "Matas",
+        "Novák",
+        "Jakovenko",
+        "Píša"
+      ],
+      "question": "Toky, řezy, formulace LP, Ford-Fulkerson, nenulový počáteční Tok (za ten byl hodně štastný)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q142",
+      "line": 838,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "PI",
+      "examiner": "Novák",
+      "committee": [
+        "Procházka",
+        "Matas",
+        "Novák",
+        "Jakovenko",
+        "Píša"
+      ],
+      "question": "Wifi, Zigbee, Bluetooth (v pohodně, hlavně přístupové metody deterministické (Master/slave), nedeterministické (CSMA/CA) Všichni v poho, hodně se ptaj na DP. Celkem za B.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q143",
+      "line": 840,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "KO",
+      "examiner": "Hanzálek",
+      "committee": [
+        "Müller",
+        "Hanzálek",
+        "Vyskočil",
+        "Sedláček",
+        "Píša"
+      ],
+      "question": "rozvrhovani na jednom procesoru, nejaky algoritmus a rozvrhovani s podminkou suma Cj \\* Wj",
+      "sourceType": "template"
+    },
+    {
+      "id": "q144",
+      "line": 840,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "PI",
+      "examiner": "Píša",
+      "committee": [
+        "Müller",
+        "Hanzálek",
+        "Vyskočil",
+        "Sedláček",
+        "Píša"
+      ],
+      "question": "Nástroje pro správu verzí a vývojových větví zdrojových kódů, vetveni a system git (A4M35OSP)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q145",
+      "line": 840,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "OSP",
+      "examiner": "Píša",
+      "committee": [
+        "Müller",
+        "Hanzálek",
+        "Vyskočil",
+        "Sedláček",
+        "Píša"
+      ],
+      "question": "Nástroje pro správu verzí a vývojových větví zdrojových kódů, vetveni a system git (A4M35OSP)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q146",
+      "line": 846,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "KO",
+      "examiner": "Hanzálek",
+      "committee": [
+        "Müller",
+        "Hanzálek",
+        "Vyskočil",
+        "Sedláček",
+        "Píša"
+      ],
+      "question": "Definice TSP, operace OR a fixnich nakladu pomoci ILP",
+      "sourceType": "template"
+    },
+    {
+      "id": "q147",
+      "line": 846,
+      "date": "4. 6. 2014 - Doc. Ing. Zdeněk Kouba, CSc. - K13133 - předseda; prof.RNDr. Marie Demlová, CSc. K13101 - místopředseda; Ing. Miroslav Bureš, P",
+      "year": 2014,
+      "subject": "PI",
+      "examiner": "Sedláček",
+      "committee": [
+        "Müller",
+        "Hanzálek",
+        "Vyskočil",
+        "Sedláček",
+        "Píša"
+      ],
+      "question": "Vlastnosti, bloky, usporadani, periferie 8-bit mikroradicu",
+      "sourceType": "template"
+    },
+    {
+      "id": "q148",
+      "line": 852,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "TAL",
+      "examiner": "Velebil",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "definovat P a NP problemy a ke kazdemu uvest priklady GI: Barevny modely a komprese obrazku (Matas)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q149",
+      "line": 862,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "KO",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "LP, rozhodovani, optimalizace, logicky formule a TSP GI: WTF: metody redukce barvy v obrazu (dither, half tone, barevna tabulka)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q150",
+      "line": 868,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "KO",
+      "examiner": "Hanzálek",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Problém obchodního cestujícího. Ukázat složitost metrického TSP(převodem z HK). Existuje k-aprox. algoritmus pro řešení obecného (ne metrického) TSP? Dokažte. (opět převodem z HK, tentokrát ale ten druhý převod) - zkoušel Hanzálek a pak ještě chtěl ukázat TSP pomocí ILP. Papír kontrolovala i Demlová.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q151",
+      "line": 876,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "KO",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Podmnožina z otázky 9.: Rozvrhování na paralel. proc., Algoritmy pro P||Cmax a P|pmtn|Cmax a jejich čas. náročnost. Vysvětlit časovou náročnost P2 ||Cmax.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q152",
+      "line": 886,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "KO",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "ILP, definovat dva problemy pomoci ILP (na miste pak po me chtel jeste cestujciho), popsat postup jak definovat problemy, jak zadat podminky (nasobeni velkym cislem pro vypnuti jedne z nerovnic atd.), Ax = b - co ta cisla v A a b znamenaji",
+      "sourceType": "template"
+    },
+    {
+      "id": "q153",
+      "line": 894,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Datove struktury pro reprezentaci orientovanych grafu. Minimalni kostra + popsat jeden algoritmus ktery ji nalezne.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q154",
+      "line": 902,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "KO",
+      "examiner": "Šůcha",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Rozvrhování na jednom procesoru + popsat Bratleyův algoritmus. GI: (Slavík) Reprezentace 3D objektů, implementace množinových operací, případně převod mezi reprezentacemi. (spíš VIZ než DPG)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q155",
+      "line": 912,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Binarni a binomialni haldy, porovnat slozitosti. Amortizovana slozitost. GI: Testovani s a bez uzivateli. Kdy je vhodne pouzit co.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q156",
+      "line": 916,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Vyhledavani v textu z pohledu konecnych automatu. Nektere zakladni metriky priblizneho vyhledavani v textu. Co chteli slyset: Definici kon.automatu, vztah KA-regularni jazyk (ze ho rozpoznava), co je to regularni jazyk, levensteinova a hammingova vzdalenost (definice)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q157",
+      "line": 922,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "KO",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Metody reseni ILP slozitost pri optimalizacnich problemech a tech druhejch(co zi uz nevzpominam jake jsou a je mi to jedno)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q158",
+      "line": 930,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "2 základní algoritmy pro prohledávání grafů, popsat je + definice výrazů (strom, kostra, topologické uspořádání, úplný graf…….mraky výrazů) + sepsat k čemu je Topol. Uspoř., jak probíhá atd…",
+      "sourceType": "template"
+    },
+    {
+      "id": "q159",
+      "line": 944,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "KO",
+      "examiner": "Hušek",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Úloha obchodního cestujícího. Aproximační algoritmy na TSP, - chcel po mne nejaky alogritmus co pouziva penalizacie ci nieco take… (Husek)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q160",
+      "line": 950,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Binarni a fibonacciho halda - popsat. Srovnani z hlediska slozitosti operaci. Amortizovana slozitost (Vyskocil)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q161",
+      "line": 962,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "TAL",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "NP-úplné a NP-obtížné úlohy (definice, Cookova věta, polynomiální redukce)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q162",
+      "line": 972,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "TAL",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Slozitost ulohy, algoritmu, P, NP, Cookova veta.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q163",
+      "line": 988,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "Vyskočil",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "Binární a Binomiální halda, porovnání časových složitostí jejich operací. Vysvětlit pojem amortizovaná složitost",
+      "sourceType": "template"
+    },
+    {
+      "id": "q164",
+      "line": 994,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "Vyskočil",
+      "committee": [
+        "Žára",
+        "Matas",
+        "Velebil",
+        "Sýkora",
+        "Sochor"
+      ],
+      "question": "datové struktury pro reprezentaci orientovaných grafů, minimální kostra, příklad algoritmu pro její nalezení a jeho popis.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q165",
+      "line": 1004,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "KO",
+      "examiner": "Hanzálek",
+      "committee": [
+        "Klíma",
+        "Hanzálek",
+        "Vyskočil",
+        "Píša",
+        "Patera"
+      ],
+      "question": "Toky, rezy, ford=fulkerson a omezeni minimalniho toku: Skoro nic jsem nevedel, tim myslim, ze jsem tusil, ze ff je noce se zlepsujici cestou a minimalni pripustnej tok, jsem si rekl, ze nepotrebuju. Napred me hanzelek rekl, ze jsem dost umelecky neco napsal a pak ze to chtej znat presne, dusicka, hanzalek spis se snazil, abych neco rikal, vyskocil neustale do toho skakal a ptal se na vis nevis otazky (je to zavisle na poctu uzlu/hran/velikosti toku atp), osobne bych se vyhodil",
+      "sourceType": "template"
+    },
+    {
+      "id": "q166",
+      "line": 1012,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "KO",
+      "examiner": "Hanzálek",
+      "committee": [
+        "Klíma",
+        "Hanzálek",
+        "Vyskočil",
+        "Píša",
+        "Patera"
+      ],
+      "question": "Nejkratší cesty, Floydův algoritmus, záporné hrany - Ptal se Hanzálek Krásná otázka :)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q167",
+      "line": 1016,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Havran",
+        "Velebil",
+        "Felkel"
+      ],
+      "question": "Topologické uspořádání vrcholů a hran v grafu",
+      "sourceType": "template"
+    },
+    {
+      "id": "q168",
+      "line": 1024,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "TAL",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Havran",
+        "Velebil",
+        "Felkel"
+      ],
+      "question": "Pojem algoritmus (Turingův stroj a jeho varianty) GI Částicové systémy (princip, uplatňující se síly, aplikace, zobrazování)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q169",
+      "line": 1040,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "Náplava",
+      "committee": [
+        "Werner",
+        "Šusta",
+        "Čmolík",
+        "Náplava",
+        "Hudec"
+      ],
+      "question": "Grafy, jejich reprezentace, procházení + Doplňující otázky z grafů. SI Webové služby. Programování, popis, vyhledávání. (Šusta)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q170",
+      "line": 1044,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "Šára",
+      "committee": [
+        "Šára",
+        "Klíma",
+        "Míkovec",
+        "Čmolík",
+        "Patera"
+      ],
+      "question": "Minimální kostra grafu, definice, existence, algoritmy. Měl doplňující otázky k definicím (+ chtěl vědět, co je multigraf), ale je naprosto v pohodě. SI REST - co definuje, porovnání se SOAP, operace v RESTu. (Čmolík) Také doplňující otázky k tématu, nic zákeřného.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q171",
+      "line": 1050,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "TAL",
+      "examiner": "",
+      "committee": [
+        "Žára",
+        "Mařík",
+        "Míkovec",
+        "Vokřínek",
+        "Demlová",
+        "Macek"
+      ],
+      "question": "Cookeova věta, co je NP-těžký problém (plus příklad NP-těžkého, co není NP-úplný). SI: Webové služby. Co to je, jaké se používají technologie, … Komise byla veselá, všecko v pohodě. Diplomka A/A, celkem jsem dostal B. (leden 2013)",
+      "sourceType": "template"
+    },
+    {
+      "id": "q172",
+      "line": 1054,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "TAL",
+      "examiner": "Čmolík",
+      "committee": [
+        "Havran",
+        "Bittner",
+        "Čmolík",
+        "Šůcha",
+        "Kohout"
+      ],
+      "question": "Co je asymptotická a amortizovaná složitost, popište, vysvětlete na příkladu s dynam. polem, které se při naplnění natáhne na dvojnásobek.",
+      "sourceType": "template"
+    },
+    {
+      "id": "q173",
+      "line": 1068,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "Macek",
+      "committee": [
+        "Slavík",
+        "Míkovec",
+        "Šůcha",
+        "Kouba",
+        "Macek"
+      ],
+      "question": "Grafy - pojmy (souvislost, strom, apod) + jejich reprezentace, procházení grafů, minimální kostra",
+      "sourceType": "template"
+    },
+    {
+      "id": "q174",
+      "line": 1074,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "PAL",
+      "examiner": "Mařík",
+      "committee": [
+        "Slavík",
+        "Vokřínek",
+        "Mařík",
+        "Klíma",
+        "Herout"
+      ],
+      "question": "Neorientovaný graf, reprezentace, procházení, kostra",
+      "sourceType": "template"
+    },
+    {
+      "id": "q175",
+      "line": 1082,
+      "date": "25.1.2012, Komise - Zara(P), Matas(MP), Velebil, Sykora, Sochor (externista, u me jsem ho nevidel, kdo vi, jestli tam vubec byl..)",
+      "year": 2012,
+      "subject": "TAL",
+      "examiner": "Demlová",
+      "committee": [
+        "Železný",
+        "Demlová",
+        "Hrušák",
+        "Jakob",
+        "Vyskočil"
+      ],
+      "question": "Demlová: Nejkratší cesty, popis problému, algoritmy, popsat algoritmy, jak by ovlivnil třídy složitosti fakt, že existuje poly. algoritmus, který řeší hledání vest v topolologicky označkovaném grafu. (výsl. C)",
+      "sourceType": "template"
+    }
+  ]
+}
