@@ -3,9 +3,11 @@
 ![Spongebob|493](Assets/Spongebob.png)
 This repository contains study materials for the final exams at CTU FEE OI. If this doesn’t ring a bell, then this repo probably won’t be very helpful for you. Also, it is entirely in Czech ☺. 
 
-# If you are one of those fake CTU students who don’t have final exams anymore, consider yourself personally attacked. You are beneath us. 
-
 Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
+
+> Neručíme za korektnost zápisků, nad vším přemýšlej kriticky a kdybys našel/našla chybu, tak kontaktuj prosím někoho z autorů a my to fixneme asap.
+
+
 ## Obsah
 
 ### Společné předměty
@@ -63,3 +65,6 @@ Vložte je jako html soubor do web/static/Assets/předmět a do .md souboru je p
 
 ```
 V Obsidianu se začnou renderovat až poté, co se vygeneruje web, jelikož si to tahá z webu a ne lokálně. Lokálně by to nefungovalo kvůli CSP pravidlu a takhle to je syncnutý i s webem.
+
+
+# If you are one of those fake CTU students who don’t have final exams anymore, consider yourself personally attacked. You are beneath us. 
