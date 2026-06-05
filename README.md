@@ -17,14 +17,14 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 | ✅ Dokončené | Pokročilá algoritmizace 💀     | Matěj         |
 ### Softwarové inženýrství
 
-| Stav            | Předmět                       | Poznámka |
-| --------------- | ----------------------------- | -------- |
-| ✅ Dokončené     | Databáze 2 😊                 | Jirka    |
-| ✅ Dokončené     | Softwarové architektury 😊    | Artur    |
-| ✅ Dokončené     | Bezpečnost systémů 😊         | Jirka    |
-| ✅ Dokončené     | Efektivní software 🤨         | Jirka    |
-| 🟡 Rozpracované | Paralelní algoritmy 💀        | Jirka    |
-| ✅ Dokončené     | Zajištění kvality software 😊 | Artur    |
+| Stav        | Předmět                       | Poznámka |
+| ----------- | ----------------------------- | -------- |
+| ✅ Dokončené | Databáze 2 😊                 | Jirka    |
+| ✅ Dokončené | Softwarové architektury 😊    | Artur    |
+| ✅ Dokončené | Bezpečnost systémů 😊         | Jirka    |
+| ✅ Dokončené | Efektivní software 🤨         | Jirka    |
+| ✅ Dokončené | Paralelní algoritmy 💀        | Jirka    |
+| ✅ Dokončené | Zajištění kvality software 😊 | Artur    |
 ### Počítačová grafika
 
 | Stav             | Předmět                                 | Poznámka |
@@ -33,7 +33,7 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 | ❌ Nerozpracované | Datové struktury počítačové grafiky     |          |
 | ❌ Nerozpracované | Multimédia a počítačová animace         |          |
 | ❌ Nerozpracované | Výpočetní geometrie                     |          |
-| 🟡 Rozpracované  | Vizualizace                             | Matěj    |
+| ✅ Dokončené      | Vizualizace                             | Matěj    |
 | ✅ Dokončené      | Geometrie počítačového vidění a grafiky | Matěj    |
 ## Pravidla
  Pracujte kvalitně s odkazy. Kouzlo Obsidianu je ta provázanost a rychlost psaní a hledání informací. Vyhněte se LLM dumpům velkých textů, ve kterých se relevantní informace nalézá "někde uvnitř". Also obrázky vydají za tisíc slov. Pravidelně fetchujte a zálohujte na git.
