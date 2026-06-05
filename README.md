@@ -33,7 +33,7 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 | ❌ Nerozpracované | Datové struktury počítačové grafiky     |          |
 | ❌ Nerozpracované | Multimédia a počítačová animace         |          |
 | ❌ Nerozpracované | Výpočetní geometrie                     |          |
-| ⚠️ Revize        | Vizualizace                             | Matěj    |
+| ✅ Dokončené      | Vizualizace                             | Matěj    |
 | ✅ Dokončené      | Geometrie počítačového vidění a grafiky | Matěj    |
 ## Pravidla
  Pracujte kvalitně s odkazy. Kouzlo Obsidianu je ta provázanost a rychlost psaní a hledání informací. Vyhněte se LLM dumpům velkých textů, ve kterých se relevantní informace nalézá "někde uvnitř". Also obrázky vydají za tisíc slov. Pravidelně fetchujte a zálohujte na git.
