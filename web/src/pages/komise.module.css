@@ -1,0 +1,450 @@
+.page {
+  min-height: calc(100vh - var(--ifm-navbar-height));
+  background:
+    linear-gradient(180deg, rgba(37, 99, 235, 0.07), transparent 260px),
+    var(--ifm-background-color);
+}
+
+.header {
+  display: flex;
+  gap: 1rem;
+  align-items: end;
+  justify-content: space-between;
+  padding: 1.35rem clamp(1rem, 3vw, 2rem) 1rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  background: var(--ifm-background-surface-color);
+}
+
+.header h1 {
+  margin: 0;
+  color: var(--ifm-heading-color);
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
+  line-height: 1.08;
+}
+
+.kicker {
+  margin: 0 0 0.25rem;
+  color: var(--ifm-color-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.headerStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: flex-end;
+}
+
+.headerStats span,
+.notice,
+.summaryGrid div,
+.subjectResult,
+.questionCard,
+.controlBlock {
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 6px;
+  background: var(--ifm-background-surface-color);
+}
+
+.headerStats span {
+  padding: 0.42rem 0.6rem;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.6rem 0.85rem;
+  align-items: start;
+  margin: 1rem clamp(1rem, 3vw, 2rem);
+  padding: 0.85rem 1rem;
+  background:
+    linear-gradient(90deg, rgba(22, 163, 74, 0.1), transparent 42%),
+    var(--ifm-background-surface-color);
+  color: var(--ifm-color-emphasis-800);
+}
+
+.notice strong {
+  color: var(--ifm-color-emphasis-900);
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(300px, 390px) minmax(0, 1fr);
+  gap: 1rem;
+  padding: 0 clamp(1rem, 3vw, 2rem) 2rem;
+}
+
+.controls {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.controlBlock {
+  display: grid;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.blockHeader,
+.sectionHeader {
+  display: flex;
+  gap: 0.75rem;
+  align-items: start;
+  justify-content: space-between;
+  padding: 0.9rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.blockHeader h2,
+.sectionHeader h2 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.blockHeader p,
+.sectionHeader p {
+  margin: 0.2rem 0 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.blockHeader button {
+  min-height: 2.1rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 6px;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  padding: 0.4rem 0.55rem;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.blockHeader button:not(:disabled):hover {
+  border-color: var(--ifm-color-primary);
+}
+
+.blockHeader button:disabled {
+  cursor: not-allowed;
+  opacity: 0.52;
+}
+
+.filterInput {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+.filterInput span {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.filterInput input {
+  width: 100%;
+  min-height: 2.35rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 6px;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+}
+
+.optionList {
+  display: grid;
+  max-height: 330px;
+  overflow: auto;
+}
+
+.optionRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 3.1rem;
+  margin: 0;
+  padding: 0.55rem 0.9rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  cursor: pointer;
+}
+
+.optionRow:hover {
+  background: color-mix(in srgb, var(--ifm-color-primary) 7%, transparent);
+}
+
+.optionRow input {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+}
+
+.optionRow span {
+  display: grid;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.optionRow strong {
+  overflow: hidden;
+  color: var(--ifm-color-emphasis-900);
+  font-size: 0.92rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.optionRow small {
+  overflow: hidden;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.optionRow em {
+  min-width: 2rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ifm-color-primary) 11%, transparent);
+  color: var(--ifm-color-primary-dark);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.requiredOption {
+  background: color-mix(in srgb, #16a34a 9%, transparent);
+}
+
+.emptySearch {
+  margin: 0;
+  padding: 1rem;
+  color: var(--ifm-color-emphasis-700);
+  font-weight: 650;
+}
+
+.results {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.summaryGrid div {
+  padding: 0.85rem;
+}
+
+.summaryGrid span {
+  display: block;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.summaryGrid strong {
+  display: block;
+  margin-top: 0.18rem;
+  color: var(--ifm-heading-color);
+  font-size: 1.65rem;
+  line-height: 1;
+}
+
+.resultSection {
+  overflow: hidden;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 6px;
+  background: var(--ifm-background-surface-color);
+}
+
+.subjectResults {
+  display: grid;
+}
+
+.subjectResult {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.85fr) minmax(120px, 1fr) minmax(220px, 0.9fr);
+  gap: 0.8rem;
+  align-items: center;
+  border-width: 0 0 1px;
+  border-radius: 0;
+  padding: 0.75rem 0.9rem;
+}
+
+.subjectResult:last-child {
+  border-bottom: 0;
+}
+
+.subjectResult strong {
+  display: block;
+  color: var(--ifm-color-primary);
+  font-size: 1rem;
+}
+
+.subjectResult span {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.84rem;
+}
+
+.probabilityBar {
+  height: 0.65rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ifm-color-emphasis-300) 60%, transparent);
+}
+
+.probabilityBar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #16a34a);
+}
+
+.subjectResult dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin: 0;
+}
+
+.subjectResult dl div {
+  min-width: 0;
+}
+
+.subjectResult dt {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.subjectResult dd {
+  margin: 0.08rem 0 0;
+  color: var(--ifm-heading-color);
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.questionResults {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding: 0.9rem;
+}
+
+.questionCard {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.85rem;
+}
+
+.questionCard header,
+.questionCard footer {
+  display: flex;
+  gap: 0.45rem;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.questionCard header div {
+  display: grid;
+  min-width: 0;
+}
+
+.questionCard header strong {
+  color: var(--ifm-color-primary);
+  font-size: 0.95rem;
+}
+
+.questionCard header span {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.8rem;
+}
+
+.questionCard mark {
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.16);
+  color: #b45309;
+  padding: 0.24rem 0.45rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.questionCard p {
+  margin: 0;
+  color: var(--ifm-color-emphasis-850);
+  font-size: 0.92rem;
+  line-height: 1.48;
+}
+
+.questionCard footer {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.questionCard footer span,
+.questionCard footer b {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ifm-color-emphasis-200) 70%, transparent);
+  color: var(--ifm-color-emphasis-800);
+  padding: 0.22rem 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.questionCard footer b {
+  background: rgba(22, 163, 74, 0.13);
+  color: #15803d;
+}
+
+@media (max-width: 1180px) {
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .header,
+  .notice,
+  .blockHeader,
+  .sectionHeader {
+    display: grid;
+  }
+
+  .headerStats,
+  .blockHeader button {
+    justify-content: flex-start;
+  }
+
+  .controls,
+  .summaryGrid,
+  .questionResults {
+    grid-template-columns: 1fr;
+  }
+
+  .subjectResult {
+    grid-template-columns: 1fr;
+  }
+}
