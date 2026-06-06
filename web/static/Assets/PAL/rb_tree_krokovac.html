@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Red-Black Tree krokovač</title>
+<style>
+  :root {
+    --bg: #101318;
+    --panel: #171c24;
+    --panel2: #202734;
+    --text: #eef2f7;
+    --muted: #aab4c3;
+    --accent: #7aa2ff;
+    --red: #d84a4a;
+    --black: #111;
+    --edge: #8fa0b8;
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  }
+  .wrap {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: 100vh;
+  }
+  .side {
+    background: var(--panel);
+    padding: 18px;
+    border-right: 1px solid #2a3240;
+    overflow: auto;
+  }
+  .main {
+    padding: 18px;
+    overflow: hidden;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0 0 12px;
+  }
+  .small {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  button {
+    background: var(--panel2);
+    color: var(--text);
+    border: 1px solid #3a4557;
+    border-radius: 8px;
+    padding: 8px 11px;
+    cursor: pointer;
+  }
+  button:hover {
+    border-color: var(--accent);
+  }
+  input[type=range] {
+    width: 100%;
+  }
+  .card {
+    background: var(--panel2);
+    border: 1px solid #2a3240;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 14px;
+  }
+  .title {
+    font-weight: 700;
+    font-size: 17px;
+    margin-bottom: 8px;
+  }
+  .note {
+    color: #d7deea;
+    line-height: 1.45;
+  }
+  .legend {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .dot {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    vertical-align: middle;
+    margin-right: 5px;
+  }
+  .dot.red { background: var(--red); }
+  .dot.black { background: var(--black); }
+  svg {
+    width: 100%;
+    height: 70vh;
+    background: #0d1117;
+    border: 1px solid #2a3240;
+    border-radius: 14px;
+  }
+  .stepList {
+    margin-top: 10px;
+    max-height: 42vh;
+    overflow: auto;
+    border-top: 1px solid #2a3240;
+  }
+  .stepItem {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 6px 4px;
+    border-bottom: 1px solid #222a36;
+    cursor: pointer;
+  }
+  .stepItem.active {
+    color: white;
+    background: #263148;
+  }
+  .nodeText {
+    fill: white;
+    font-weight: 700;
+    font-size: 13px;
+    dominant-baseline: middle;
+    text-anchor: middle;
+  }
+  .nodeCircle {
+    stroke: white;
+    stroke-width: 2px;
+  }
+  .focus {
+    stroke: #ffd166;
+    stroke-width: 5px;
+  }
+  .edge {
+    stroke: var(--edge);
+    stroke-width: 2px;
+  }
+  @media (max-width: 900px) {
+    .wrap { grid-template-columns: 1fr; }
+    .side { border-right: 0; border-bottom: 1px solid #2a3240; }
+    svg { height: 58vh; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside class="side">
+    <h1>RB tree krokovač</h1>
+    <div class="small">
+      Sekvence: <code>10, 20, 30, 15, 25, 5, 1, 8, 12, 18</code><br>
+      Pak update <code>15 → 17</code> jako delete+insert a nakonec delete <code>10</code>.
+    </div>
+    <div class="controls">
+      <button id="prev">◀ Předchozí</button>
+      <button id="next">Další ▶</button>
+      <button id="play">Play</button>
+    </div>
+    <input id="range" type="range" min="0" max="0" value="0">
+    <div class="card">
+      <div id="counter" class="small"></div>
+      <div id="title" class="title"></div>
+      <div id="note" class="note"></div>
+      <div class="legend">
+        <span><span class="dot red"></span>červený</span>
+        <span><span class="dot black"></span>černý</span>
+        <span>Žlutý okraj = aktuální uzel</span>
+      </div>
+    </div>
+    <div id="stepList" class="stepList"></div>
+  </aside>
+  <main class="main">
+    <svg id="svg" viewBox="0 0 1200 720" preserveAspectRatio="xMidYMid meet"></svg>
+  </main>
+</div>
+
+<script>
+const steps = [{"title": "Prázdný strom", "note": "Začínáme. NIL listy existují implicitně a jsou černé, v grafu je kvůli přehlednosti nezobrazujeme.", "nodes": [], "edges": []}, {"title": "Insert 10", "note": "Začínáme vkládání klíče 10. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [], "edges": []}, {"title": "Insert 10: nový červený uzel", "note": "Uzel 10 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "10", "key": 10, "color": "R", "focus": true}], "edges": []}, {"title": "Kořen musí být černý", "note": "Kořen přebarvíme na černo. Tím končí insert fix-up.", "nodes": [{"id": "10", "key": 10, "color": "B", "focus": true}], "edges": []}, {"title": "Insert 20", "note": "Začínáme vkládání klíče 20. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [{"id": "10", "key": 10, "color": "B", "focus": false}], "edges": []}, {"title": "Insert 20: nový červený uzel", "note": "Uzel 20 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "20", "key": 20, "color": "R", "focus": true}], "edges": [{"from": "10", "to": "20", "side": "R"}]}, {"title": "Insert hotový", "note": "Rodič nového uzlu je černý, nebo byla oprava dokončena. RB invarianty platí.", "nodes": [{"id": "10", "key": 10, "color": "B", "focus": true}, {"id": "20", "key": 20, "color": "R", "focus": false}], "edges": [{"from": "10", "to": "20", "side": "R"}]}, {"title": "Insert 30", "note": "Začínáme vkládání klíče 30. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [{"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "20", "key": 20, "color": "R", "focus": false}], "edges": [{"from": "10", "to": "20", "side": "R"}]}, {"title": "Insert 30: nový červený uzel", "note": "Uzel 30 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "20", "key": 20, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "R", "focus": true}], "edges": [{"from": "10", "to": "20", "side": "R"}, {"from": "20", "to": "30", "side": "R"}]}, {"title": "Insert fix: pravý-pravý případ", "note": "Rodič 20 zčerná, děda 10 zčervená a udělá se levá rotace na dědovi.", "nodes": [{"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "20", "key": 20, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "R", "focus": true}], "edges": [{"from": "10", "to": "20", "side": "R"}, {"from": "20", "to": "30", "side": "R"}]}, {"title": "Po levé rotaci", "note": "Lokální porušení je opravené.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "R", "focus": true}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "20", "to": "30", "side": "R"}]}, {"title": "Insert hotový", "note": "Rodič nového uzlu je černý, nebo byla oprava dokončena. RB invarianty platí.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "20", "to": "30", "side": "R"}]}, {"title": "Insert 15", "note": "Začínáme vkládání klíče 15. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "20", "to": "30", "side": "R"}]}, {"title": "Insert 15: nový červený uzel", "note": "Uzel 15 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "R", "focus": true}, {"id": "30", "key": 30, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}]}, {"title": "Insert fix: červený strýc", "note": "Rodič 10 i strýc 30 jsou červení. Rotace není potřeba: rodič a strýc zčernají, děda 20 zčervená. Tím se problém posune nahoru.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "R", "focus": true}, {"id": "30", "key": 30, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}]}, {"title": "Po přebarvení", "note": "Black-height se zachoval, ale pokud je nový červený děda pod červeným rodičem, pokračujeme výš.", "nodes": [{"id": "20", "key": 20, "color": "R", "focus": true}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}]}, {"title": "Kořen musí být černý", "note": "Kořen přebarvíme na černo. Tím končí insert fix-up.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}]}, {"title": "Insert 25", "note": "Začínáme vkládání klíče 25. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}]}, {"title": "Insert 25: nový červený uzel", "note": "Uzel 25 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": true}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert hotový", "note": "Rodič nového uzlu je černý, nebo byla oprava dokončena. RB invarianty platí.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 5", "note": "Začínáme vkládání klíče 5. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 5: nový červený uzel", "note": "Uzel 5 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "5", "key": 5, "color": "R", "focus": true}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert hotový", "note": "Rodič nového uzlu je černý, nebo byla oprava dokončena. RB invarianty platí.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "5", "key": 5, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 1", "note": "Začínáme vkládání klíče 1. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "5", "key": 5, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 1: nový červený uzel", "note": "Uzel 1 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "5", "key": 5, "color": "R", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": true}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert fix: červený strýc", "note": "Rodič 5 i strýc 15 jsou červení. Rotace není potřeba: rodič a strýc zčernají, děda 10 zčervená. Tím se problém posune nahoru.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "B", "focus": false}, {"id": "5", "key": 5, "color": "R", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": true}, {"id": "15", "key": 15, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Po přebarvení", "note": "Black-height se zachoval, ale pokud je nový červený děda pod červeným rodičem, pokračujeme výš.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": true}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert hotový", "note": "Rodič nového uzlu je černý, nebo byla oprava dokončena. RB invarianty platí.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 8", "note": "Začínáme vkládání klíče 8. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 8: nový červený uzel", "note": "Uzel 8 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": true}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert hotový", "note": "Rodič nového uzlu je černý, nebo byla oprava dokončena. RB invarianty platí.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 12", "note": "Začínáme vkládání klíče 12. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 12: nový červený uzel", "note": "Uzel 12 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": true}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "15", "to": "12", "side": "L"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert hotový", "note": "Rodič nového uzlu je černý, nebo byla oprava dokončena. RB invarianty platí.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "15", "to": "12", "side": "L"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 18", "note": "Začínáme vkládání klíče 18. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "15", "to": "12", "side": "L"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 18: nový červený uzel", "note": "Uzel 18 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "R", "focus": true}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "15", "to": "12", "side": "L"}, {"from": "15", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert hotový", "note": "Rodič nového uzlu je černý, nebo byla oprava dokončena. RB invarianty platí.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "15", "to": "12", "side": "L"}, {"from": "15", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Update 15 → 17", "note": "Update klíče v RB stromě se prakticky dělá jako delete(15) + insert(17), protože změna klíče může porušit BST uspořádání.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": true}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "15", "to": "12", "side": "L"}, {"from": "15", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Delete 15", "note": "Mažeme 15. Nejdřív klasické BST delete, potom RB oprava jen pokud jsme fyzicky odstranili černý uzel.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": true}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "15", "to": "12", "side": "L"}, {"from": "15", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Delete 15: náhradník", "note": "Uzel 15 má dva potomky. Vezmeme successor 18, tj. nejmenší uzel v pravém podstromu.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "15", "key": 15, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "R", "focus": true}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "15", "side": "R"}, {"from": "15", "to": "12", "side": "L"}, {"from": "15", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Delete 15: successor přesunut", "note": "Successor 18 převzal místo mazaného uzlu. Pokud byl fyzicky odebraný successor černý, musíme opravit black-height.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "B", "focus": true}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "18", "side": "R"}, {"from": "18", "to": "12", "side": "L"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Delete hotový", "note": "Fyzicky odstraněný uzel byl červený, takže black-height se nezměnil. Není potřeba žádná RB oprava.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "18", "side": "R"}, {"from": "18", "to": "12", "side": "L"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 17", "note": "Začínáme vkládání klíče 17. Nový uzel se v RB stromě vkládá jako v BST, ale nejdřív jako ČERVENÝ.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "18", "side": "R"}, {"from": "18", "to": "12", "side": "L"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert 17: nový červený uzel", "note": "Uzel 17 je vložen jako červený. Červená barva nezvýší black-height žádné cesty. Teď jen nesmí vzniknout dvojice červený rodič + červené dítě.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "17", "key": 17, "color": "R", "focus": true}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "18", "side": "R"}, {"from": "18", "to": "12", "side": "L"}, {"from": "12", "to": "17", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert fix: levý-pravý případ", "note": "Rodič 12 je levé dítě a nový uzel 17 je jeho pravé dítě. Nejdřív levá rotace na rodiči, aby vznikl levý-levý případ.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "17", "key": 17, "color": "R", "focus": true}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "18", "side": "R"}, {"from": "18", "to": "12", "side": "L"}, {"from": "12", "to": "17", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Po levé rotaci", "note": "Tvar je převeden na levý-levý případ.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "B", "focus": false}, {"id": "17", "key": 17, "color": "R", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": true}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "18", "side": "R"}, {"from": "18", "to": "17", "side": "L"}, {"from": "17", "to": "12", "side": "L"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert fix: levý-levý případ", "note": "Rodič 17 zčerná, děda 18 zčervená a udělá se pravá rotace na dědovi.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "B", "focus": false}, {"id": "17", "key": 17, "color": "R", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": true}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "18", "side": "R"}, {"from": "18", "to": "17", "side": "L"}, {"from": "17", "to": "12", "side": "L"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Po pravé rotaci", "note": "Lokální porušení je opravené.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "17", "key": 17, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": true}, {"id": "18", "key": 18, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "17", "side": "R"}, {"from": "17", "to": "12", "side": "L"}, {"from": "17", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Insert hotový", "note": "Rodič nového uzlu je černý, nebo byla oprava dokončena. RB invarianty platí.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "17", "key": 17, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "17", "side": "R"}, {"from": "17", "to": "12", "side": "L"}, {"from": "17", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Delete 10", "note": "Mažeme 10. Nejdřív klasické BST delete, potom RB oprava jen pokud jsme fyzicky odstranili černý uzel.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": true}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "17", "key": 17, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "18", "key": 18, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "17", "side": "R"}, {"from": "17", "to": "12", "side": "L"}, {"from": "17", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Delete 10: náhradník", "note": "Uzel 10 má dva potomky. Vezmeme successor 12, tj. nejmenší uzel v pravém podstromu.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "10", "key": 10, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "17", "key": 17, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": true}, {"id": "18", "key": 18, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "10", "side": "L"}, {"from": "10", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "10", "to": "17", "side": "R"}, {"from": "17", "to": "12", "side": "L"}, {"from": "17", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Delete 10: successor přesunut", "note": "Successor 12 převzal místo mazaného uzlu. Pokud byl fyzicky odebraný successor černý, musíme opravit black-height.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": false}, {"id": "12", "key": 12, "color": "R", "focus": true}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "17", "key": 17, "color": "B", "focus": false}, {"id": "18", "key": 18, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "12", "side": "L"}, {"from": "12", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "12", "to": "17", "side": "R"}, {"from": "17", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}, {"title": "Delete hotový", "note": "Fyzicky odstraněný uzel byl červený, takže black-height se nezměnil. Není potřeba žádná RB oprava.", "nodes": [{"id": "20", "key": 20, "color": "B", "focus": true}, {"id": "12", "key": 12, "color": "R", "focus": false}, {"id": "5", "key": 5, "color": "B", "focus": false}, {"id": "1", "key": 1, "color": "R", "focus": false}, {"id": "8", "key": 8, "color": "R", "focus": false}, {"id": "17", "key": 17, "color": "B", "focus": false}, {"id": "18", "key": 18, "color": "R", "focus": false}, {"id": "30", "key": 30, "color": "B", "focus": false}, {"id": "25", "key": 25, "color": "R", "focus": false}], "edges": [{"from": "20", "to": "12", "side": "L"}, {"from": "12", "to": "5", "side": "L"}, {"from": "5", "to": "1", "side": "L"}, {"from": "5", "to": "8", "side": "R"}, {"from": "12", "to": "17", "side": "R"}, {"from": "17", "to": "18", "side": "R"}, {"from": "20", "to": "30", "side": "R"}, {"from": "30", "to": "25", "side": "L"}]}];
+let i = 0;
+let timer = null;
+
+const svg = document.getElementById("svg");
+const title = document.getElementById("title");
+const note = document.getElementById("note");
+const counter = document.getElementById("counter");
+const range = document.getElementById("range");
+const stepList = document.getElementById("stepList");
+range.max = steps.length - 1;
+
+function buildChildren(step) {
+  const map = new Map();
+  const roots = new Set(step.nodes.map(n => n.id));
+  for (const n of step.nodes) map.set(n.id, {...n, left:null, right:null});
+  for (const e of step.edges) {
+    const p = map.get(e.from);
+    if (e.side === "L") p.left = e.to;
+    else p.right = e.to;
+    roots.delete(e.to);
+  }
+  const rootId = roots.values().next().value;
+  return {map, rootId};
+}
+
+function layout(step) {
+  const {map, rootId} = buildChildren(step);
+  if (!rootId) return new Map();
+
+  const pos = new Map();
+  let order = 0;
+
+  function inorder(id, depth) {
+    if (!id) return;
+    const n = map.get(id);
+    inorder(n.left, depth + 1);
+    pos.set(id, {x: 0, y: depth});
+    order++;
+    pos.get(id).x = order;
+    inorder(n.right, depth + 1);
+  }
+
+  inorder(rootId, 0);
+
+  const xs = [...pos.values()].map(p => p.x);
+  const maxDepth = Math.max(...[...pos.values()].map(p => p.y), 0);
+  const minX = Math.min(...xs), maxX = Math.max(...xs);
+  const width = Math.max(1, maxX - minX + 1);
+
+  for (const [id,p] of pos) {
+    p.x = 80 + ((p.x - minX + 0.5) / width) * 1040;
+    p.y = 70 + (p.y / Math.max(1, maxDepth)) * 570;
+  }
+  return pos;
+}
+
+function draw() {
+  const step = steps[i];
+  title.textContent = step.title;
+  note.textContent = step.note;
+  counter.textContent = `Krok ${i+1} / ${steps.length}`;
+  range.value = i;
+
+  svg.innerHTML = "";
+  const pos = layout(step);
+  const nodeById = new Map(step.nodes.map(n => [n.id, n]));
+
+  for (const e of step.edges) {
+    const a = pos.get(e.from);
+    const b = pos.get(e.to);
+    if (!a || !b) continue;
+    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.setAttribute("x1", a.x);
+    line.setAttribute("y1", a.y);
+    line.setAttribute("x2", b.x);
+    line.setAttribute("y2", b.y);
+    line.setAttribute("class", "edge");
+    svg.appendChild(line);
+  }
+
+  for (const n of step.nodes) {
+    const p = pos.get(n.id);
+    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", p.x);
+    c.setAttribute("cy", p.y);
+    c.setAttribute("r", 24);
+    c.setAttribute("fill", n.color === "R" ? "#d84a4a" : "#111");
+    c.setAttribute("class", "nodeCircle" + (n.focus ? " focus" : ""));
+    const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    txt.setAttribute("x", p.x);
+    txt.setAttribute("y", p.y + 1);
+    txt.setAttribute("class", "nodeText");
+    txt.textContent = n.key;
+    g.appendChild(c);
+    g.appendChild(txt);
+    svg.appendChild(g);
+  }
+
+  [...stepList.children].forEach((el, idx) => el.classList.toggle("active", idx === i));
+}
+
+function fillSteps() {
+  stepList.innerHTML = "";
+  steps.forEach((s, idx) => {
+    const div = document.createElement("div");
+    div.className = "stepItem";
+    div.textContent = `${idx+1}. ${s.title}`;
+    div.onclick = () => { i = idx; draw(); };
+    stepList.appendChild(div);
+  });
+}
+
+document.getElementById("next").onclick = () => { i = Math.min(steps.length - 1, i + 1); draw(); };
+document.getElementById("prev").onclick = () => { i = Math.max(0, i - 1); draw(); };
+document.getElementById("play").onclick = () => {
+  if (timer) {
+    clearInterval(timer); timer = null;
+    document.getElementById("play").textContent = "Play";
+  } else {
+    document.getElementById("play").textContent = "Stop";
+    timer = setInterval(() => {
+      if (i >= steps.length - 1) {
+        clearInterval(timer); timer = null;
+        document.getElementById("play").textContent = "Play";
+      } else {
+        i++; draw();
+      }
+    }, 1100);
+  }
+};
+range.oninput = (e) => { i = Number(e.target.value); draw(); };
+
+fillSteps();
+draw();
+</script>
+</body>
+</html>
