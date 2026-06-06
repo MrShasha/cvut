@@ -1424,9 +1424,9 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/3. Nejkratší cesty.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
       "summary": "- Definice úlohy nejkratší cesty3. Nejkratší cesty: formální definice, varianty problému (s–t, SPT, APSP), délka cesty vs. délka sledu. - Záporné hrany a záporné cykly3. Nejkratší cesty: proč záporné váhy nevadí, proč zá",
-      "incoming": 5,
+      "incoming": 6,
       "outgoing": 23,
-      "degree": 28
+      "degree": 29
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
@@ -1438,9 +1438,9 @@
       "sourceRel": "Společné/Kombinatorická Optimalizace/4. Toky v sítích a párování.md",
       "generatedRel": "spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
       "summary": "Toky v sítích jsou způsob, jak převést mnoho kombinatorických úloh na graf s kapacitami. Typické použití: přeprava, propustnost sítě, rozvrhování, disjunktní cesty, bipartitní párování a přiřazovací problém. Základní int",
-      "incoming": 7,
+      "incoming": 8,
       "outgoing": 11,
-      "degree": 18
+      "degree": 19
     },
     {
       "id": "doc:spolecne/kombinatoricka-optimalizace/5-problem-batohu.md",
@@ -1523,8 +1523,8 @@
       "generatedRel": "spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
       "summary": "1. Standardní grafové úlohy s polynomiální složitostí řešení1. Standardní grafové úlohy s polynomiální složitostí řešení - Zápis asymptotické složitosti algoritmů1. Standardní grafové úlohy s polynomiální složitostí řeše",
       "incoming": 0,
-      "outgoing": 50,
-      "degree": 50
+      "outgoing": 54,
+      "degree": 54
     },
     {
       "id": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
@@ -1536,9 +1536,9 @@
       "sourceRel": "Společné/Pokročilá algoritmizace/1. Standardní grafové úlohy s polynomiální složitostí řešení.md",
       "generatedRel": "spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "summary": "Zápis asymptotické složitosti algoritmů Asymptotická složitost algoritmů slouží k porovnání rychlosti růstu funkcí a zanedbává konstantní faktory. - Asymptotická horní mez $$ f(n) \\in O(g(n)) $$ - Hodnota funkce f se nac",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 21,
-      "degree": 22
+      "degree": 23
     },
     {
       "id": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
@@ -1550,9 +1550,9 @@
       "sourceRel": "Společné/Pokročilá algoritmizace/2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost.md",
       "generatedRel": "spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
       "summary": "Izomorfizmus grafů Mějme grafy G₁ a G₂: $$ G1 = (V1, E1), \\qquad G2 = (V2, E2) $$ Grafy G₁ a G₂ jsou izomorfní, pokud existuje bijekce: - Každý prvek první množiny se spáruje s právě jedním prvkem druhé množiny. - Žádný ",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 10,
-      "degree": 11
+      "degree": 12
     },
     {
       "id": "doc:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
@@ -1564,9 +1564,9 @@
       "sourceRel": "Společné/Pokročilá algoritmizace/3. Vyhledávací stromy a jejich využití.md",
       "generatedRel": "spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
       "summary": "Vyhledávání řeší úlohu: máme množinu n klíčů a dotazovací klíč k. Chceme zjistit, zda se k v množině nachází. Search space Search space S je množina klíčů, ve které vyhledáváme. Přesněji je to množina záznamů s klíči, po",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 7,
-      "degree": 8
+      "degree": 9
     },
     {
       "id": "doc:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md",
@@ -1578,9 +1578,23 @@
       "sourceRel": "Společné/Pokročilá algoritmizace/4. Vyhledávání v textu pomocí konečných automatů.md",
       "generatedRel": "spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md",
       "summary": "Konečné automaty > [!seealso] Související poznámky z TAL >- K asymptotické časové složitosti viz časová složitost algoritmu1. Asymptotický růst, časová a paměťová složitost, správnost algoritmů (variant a invariant) >- K",
-      "incoming": 1,
+      "incoming": 2,
       "outgoing": 13,
-      "degree": 14
+      "degree": 15
+    },
+    {
+      "id": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "title": "5. Shrnutí pro státnice",
+      "type": "document",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/shrnuti-pro-statnice",
+      "sourceRel": "Společné/Pokročilá algoritmizace/5. Shrnutí pro státnice.md",
+      "generatedRel": "spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "summary": "Tento dokument je rychlý záchytný bod před státnicí z PAL. Neobsahuje celý výklad, ale spojuje nejčastější otázky ze statnicekomise.md s konkrétními kapitolami zápisků. 1. Jádro PAL na jednu stránku → Detaily: 1. Standar",
+      "incoming": 1,
+      "outgoing": 29,
+      "degree": 30
     },
     {
       "id": "doc:spolecne/teorie-algoritmu/0-obsah-predmetu-tal.md",
@@ -1606,9 +1620,9 @@
       "sourceRel": "Společné/Teorie Algoritmů/1. Asymptotický růst, časová a paměťová složitost, správnost algoritmů.md",
       "generatedRel": "spolecne/teorie-algoritmu/1-asymptoticky-rust-casova-a-pametova-slozitost-spravnost-algoritmu.md",
       "summary": "1. Základní pojmy 1.1 Algoritmus Algoritmus je přesně (dobře) definovaný výpočetní postup, tedy posloupnost výpočetních kroků, která: - přijímá vstup, - provádí nad ním výpočet, - vydává výstup. Algoritmus musí být jedno",
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 1,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "doc:spolecne/teorie-algoritmu/2-deterministicke-vicepaskove-a-nedeterministicke-turingovy-stroje.md",
@@ -6384,9 +6398,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#stupeň-vrcholu",
@@ -6444,9 +6458,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#matice-sousednosti",
@@ -6534,9 +6548,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#prim-jarníkův-algoritmus",
@@ -6549,9 +6563,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 3,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#kruskalův-greedy-algoritmus",
@@ -6564,9 +6578,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 3,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#union-find",
@@ -6579,9 +6593,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 4,
-      "incoming": 3,
+      "incoming": 4,
       "outgoing": 0,
-      "degree": 3
+      "degree": 4
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#borůvkův-algoritmus",
@@ -6594,9 +6608,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 3,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-silně-souvislé-komponenty",
@@ -6609,9 +6623,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#kosaraju-sharirův-algoritmus",
@@ -6624,9 +6638,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 3,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#tarjanův-algoritmus",
@@ -6639,9 +6653,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "parentTitle": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
       "level": 3,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-eulerův-tah",
@@ -6819,9 +6833,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
       "parentTitle": "3. Vyhledávací stromy a jejich využití",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#red-black-tree-rb-tree",
@@ -6834,9 +6848,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
       "parentTitle": "3. Vyhledávací stromy a jejich využití",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#b-tree",
@@ -6849,9 +6863,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
       "parentTitle": "3. Vyhledávací stromy a jejich využití",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#splay-tree",
@@ -6864,9 +6878,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
       "parentTitle": "3. Vyhledávací stromy a jejich využití",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#kd-strom",
@@ -6924,9 +6938,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md",
       "parentTitle": "4. Vyhledávání v textu pomocí konečných automatů",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md#regulární-výrazy",
@@ -6984,9 +6998,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md",
       "parentTitle": "4. Vyhledávání v textu pomocí konečných automatů",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md#přibližné-vyhledávání-vzoru",
@@ -6999,9 +7013,9 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md",
       "parentTitle": "4. Vyhledávání v textu pomocí konečných automatů",
       "level": 3,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md#hammingova-vzdálenost",
@@ -7044,6 +7058,51 @@
       "parentId": "doc:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md",
       "parentTitle": "4. Vyhledávání v textu pomocí konečných automatů",
       "level": 3,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md#1-jádro-pal-na-jednu-stránku",
+      "title": "1. Jádro PAL na jednu stránku",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/shrnuti-pro-statnice#1-jádro-pal-na-jednu-stránku",
+      "sourceRel": "Společné/Pokročilá algoritmizace/5. Shrnutí pro státnice.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "parentTitle": "5. Shrnutí pro státnice",
+      "level": 1,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md#2-co-padalo-u-zkoušky",
+      "title": "2. Co padalo u zkoušky",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/shrnuti-pro-statnice#2-co-padalo-u-zkoušky",
+      "sourceRel": "Společné/Pokročilá algoritmizace/5. Shrnutí pro státnice.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "parentTitle": "5. Shrnutí pro státnice",
+      "level": 1,
+      "incoming": 2,
+      "outgoing": 0,
+      "degree": 2
+    },
+    {
+      "id": "heading:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md#3-tipy-z-historických-zkušeností",
+      "title": "3. Tipy z historických zkušeností",
+      "type": "heading",
+      "group": "Společné",
+      "folder": "Společné/Pokročilá algoritmizace",
+      "url": "/spolecne/pokrocila-algoritmizace/shrnuti-pro-statnice#3-tipy-z-historických-zkušeností",
+      "sourceRel": "Společné/Pokročilá algoritmizace/5. Shrnutí pro státnice.md",
+      "parentId": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "parentTitle": "5. Shrnutí pro státnice",
+      "level": 1,
       "incoming": 2,
       "outgoing": 0,
       "degree": 2
@@ -7059,9 +7118,9 @@
       "parentId": "doc:spolecne/teorie-algoritmu/1-asymptoticky-rust-casova-a-pametova-slozitost-spravnost-algoritmu.md",
       "parentTitle": "1. Asymptotický růst, časová a paměťová složitost, správnost algoritmů",
       "level": 2,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
       "id": "heading:spolecne/teorie-algoritmu/2-deterministicke-vicepaskove-a-nedeterministicke-turingovy-stroje.md#9-jazyk-přijímaný-turingovým-strojem",
@@ -12807,6 +12866,34 @@
       "anchor": "#slovníkové-automaty-dictionary-automata"
     },
     {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "type": "wiki",
+      "label": "Shrnutí pro státnice a historické otázky",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md#1-jádro-pal-na-jednu-stránku",
+      "type": "heading",
+      "label": "Jádro PAL na jednu stránku",
+      "anchor": "#1-jádro-pal-na-jednu-stránku"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md#2-co-padalo-u-zkoušky",
+      "type": "heading",
+      "label": "Co padalo u zkoušky",
+      "anchor": "#2-co-padalo-u-zkoušky"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/0-obsah-pal.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md#3-tipy-z-historických-zkušeností",
+      "type": "heading",
+      "label": "Tipy z historických zkušeností",
+      "anchor": "#3-tipy-z-historických-zkušeností"
+    },
+    {
       "source": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
       "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#union-find",
       "type": "heading",
@@ -12839,6 +12926,188 @@
       "type": "heading",
       "label": "přijímání vs rozhodování",
       "anchor": "#11-přijímání-vs-rozhodování"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "doc:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md",
+      "type": "wiki",
+      "label": "1. Standardní grafové úlohy s polynomiální složitostí řešení",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "doc:spolecne/pokrocila-algoritmizace/2-kombinatoricke-a-ciselne-teoreticke-algoritmy-izomorfizmus-prvociselnost.md",
+      "type": "wiki",
+      "label": "2. Kombinatorické a číselně teoretické algoritmy, izomorfizmus, prvočíselnost",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "doc:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md",
+      "type": "wiki",
+      "label": "3. Vyhledávací stromy a jejich využití",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "doc:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md",
+      "type": "wiki",
+      "label": "4. Vyhledávání v textu pomocí konečných automatů",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "doc:spolecne/kombinatoricka-optimalizace/3-nejkratsi-cesty.md",
+      "type": "wiki",
+      "label": "KO - Nejkratší cesty",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "doc:spolecne/kombinatoricka-optimalizace/4-toky-v-sitich-a-parovani.md",
+      "type": "wiki",
+      "label": "KO - Toky a párování",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "doc:spolecne/teorie-algoritmu/1-asymptoticky-rust-casova-a-pametova-slozitost-spravnost-algoritmu.md",
+      "type": "wiki",
+      "label": "TAL - Složitost",
+      "anchor": ""
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#základní-grafové-pojmy-stupeň-cesta-tah-kružnicecyklus",
+      "type": "heading",
+      "label": "Grafové pojmy",
+      "anchor": "#základní-grafové-pojmy-stupeň-cesta-tah-kružnicecyklus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#reprezentace-grafů",
+      "type": "heading",
+      "label": "Reprezentace grafů",
+      "anchor": "#reprezentace-grafů"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-minimální-kostru-grafu",
+      "type": "heading",
+      "label": "MST",
+      "anchor": "#algoritmy-pro-minimální-kostru-grafu"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#kruskalův-greedy-algoritmus",
+      "type": "heading",
+      "label": "Kruskal",
+      "anchor": "#kruskalův-greedy-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#prim-jarníkův-algoritmus",
+      "type": "heading",
+      "label": "Prim-Jarník",
+      "anchor": "#prim-jarníkův-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#borůvkův-algoritmus",
+      "type": "heading",
+      "label": "Borůvka",
+      "anchor": "#borůvkův-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#union-find",
+      "type": "heading",
+      "label": "Union-Find",
+      "anchor": "#union-find"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#algoritmy-pro-silně-souvislé-komponenty",
+      "type": "heading",
+      "label": "SSK",
+      "anchor": "#algoritmy-pro-silně-souvislé-komponenty"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#kosaraju-sharirův-algoritmus",
+      "type": "heading",
+      "label": "Kosaraju-Sharir",
+      "anchor": "#kosaraju-sharirův-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/1-standardni-grafove-ulohy-s-polynomialni-slozitosti-reseni.md#tarjanův-algoritmus",
+      "type": "heading",
+      "label": "Tarjan",
+      "anchor": "#tarjanův-algoritmus"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/teorie-algoritmu/1-asymptoticky-rust-casova-a-pametova-slozitost-spravnost-algoritmu.md#33-amortizovaná-složitost",
+      "type": "heading",
+      "label": "Amortizovaná složitost",
+      "anchor": "#33-amortizovaná-složitost"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#b-tree",
+      "type": "heading",
+      "label": "B-tree",
+      "anchor": "#b-tree"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#avl-strom",
+      "type": "heading",
+      "label": "AVL",
+      "anchor": "#avl-strom"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#red-black-tree-rb-tree",
+      "type": "heading",
+      "label": "Red-black tree",
+      "anchor": "#red-black-tree-rb-tree"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/3-vyhledavaci-stromy-a-jejich-vyuziti.md#splay-tree",
+      "type": "heading",
+      "label": "Splay tree",
+      "anchor": "#splay-tree"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md#konečné-automaty",
+      "type": "heading",
+      "label": "Konečné automaty",
+      "anchor": "#konečné-automaty"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md#algoritmy-vyhledávání-v-textu",
+      "type": "heading",
+      "label": "Vyhledávání v textu",
+      "anchor": "#algoritmy-vyhledávání-v-textu"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md#přibližné-vyhledávání-vzoru",
+      "type": "heading",
+      "label": "Přibližné vyhledávání",
+      "anchor": "#přibližné-vyhledávání-vzoru"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/4-vyhledavani-v-textu-pomoci-konecnych-automatu.md#slovníkové-automaty-dictionary-automata",
+      "type": "heading",
+      "label": "Slovníkové automaty",
+      "anchor": "#slovníkové-automaty-dictionary-automata"
     },
     {
       "source": "doc:spolecne/teorie-algoritmu/0-obsah-predmetu-tal.md",
@@ -15215,6 +15484,24 @@
       "label": "obsahuje nadpis"
     },
     {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md#1-jádro-pal-na-jednu-stránku",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md#2-co-padalo-u-zkoušky",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md",
+      "target": "heading:spolecne/pokrocila-algoritmizace/5-shrnuti-pro-statnice.md#3-tipy-z-historických-zkušeností",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
       "source": "doc:spolecne/teorie-algoritmu/1-asymptoticky-rust-casova-a-pametova-slozitost-spravnost-algoritmu.md",
       "target": "heading:spolecne/teorie-algoritmu/1-asymptoticky-rust-casova-a-pametova-slozitost-spravnost-algoritmu.md#33-amortizovaná-složitost",
       "type": "contains",
@@ -15330,9 +15617,9 @@
     }
   ],
   "stats": {
-    "documents": 122,
-    "headings": 375,
+    "documents": 123,
+    "headings": 378,
     "missing": 1,
-    "links": 1194
+    "links": 1227
   }
 }
