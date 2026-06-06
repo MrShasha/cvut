@@ -339,9 +339,9 @@ const addFrontMatter = (note, content, sidebarPosition) => {
 
 const protectMarkdownCode = (content, transform) => {
   const protectedSnippets = [];
-  const placeholderPrefix = 'CODEX_PROTECTED_MARKDOWN_SNIPPET';
+  const placeholderPrefix = 'CODEXPROTECTEDMARKDOWNSNIPPET';
   const protectedContent = content.replace(/```[\s\S]*?```|`[^`\n]*`/g, (match) => {
-    const placeholder = `${placeholderPrefix}_${protectedSnippets.length}__`;
+    const placeholder = `${placeholderPrefix}${protectedSnippets.length}X`;
     protectedSnippets.push(match);
     return placeholder;
   });
@@ -349,7 +349,7 @@ const protectMarkdownCode = (content, transform) => {
   const transformed = transform(protectedContent);
 
   return protectedSnippets.reduce(
-    (current, snippet, index) => current.replace(`${placeholderPrefix}_${index}__`, snippet),
+    (current, snippet, index) => current.replaceAll(`${placeholderPrefix}${index}X`, snippet),
     transformed,
   );
 };

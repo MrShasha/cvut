@@ -1,5 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import Layout from '@theme/Layout';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import commissionData from '@site/src/data/commission-data.json';
 import styles from './komise.module.css';
 
@@ -16,6 +17,21 @@ const formatPercent = (value) => {
   if (value >= 10) return `${Math.round(value)} %`;
   return `${value.toFixed(1)} %`;
 };
+
+const formatNumber = (value) => Number(value).toLocaleString('cs-CZ', {maximumFractionDigits: 1});
+
+const SCREWED_LABELS = [
+  'Podezřele klidné vody',
+  'Lehké mrzení',
+  'Dá se dýchat',
+  'Začíná jít do tuhého',
+  'Střední státnicová mlha',
+  'Radši zopakovat definice',
+  'Tabule bude pracovat přesčas',
+  'Tady už se potí fixy',
+  'Nouzový režim',
+  'Akademický boss fight',
+];
 
 const yearWeight = (year) => {
   if (!year) return 0.92;
@@ -167,6 +183,51 @@ function useAnalysis(fieldSubjects, selectedProfessors) {
   }, [fieldSubjects, selectedProfessors]);
 }
 
+function useScrewedMeter(selectedProfessors) {
+  return useMemo(() => {
+    const members = selectedProfessors
+      .map((name) => professorByName.get(name))
+      .filter(Boolean)
+      .map((professor) => ({
+        name: professor.name,
+        score: professor.screwed?.score ?? 5,
+        confidence: professor.screwed?.confidence ?? 0,
+        mentions: professor.screwed?.mentions ?? 0,
+        signalCount: professor.screwed?.signalCount ?? 0,
+        examinerCount: professor.examinerCount,
+        reason: professor.screwed?.reason ?? '',
+        method: professor.screwed?.method ?? 'heuristic-fallback',
+      }));
+
+    if (!members.length) {
+      return {
+        level: 1,
+        average: 0,
+        confidence: 0,
+        members,
+        label: 'Vyber komisi',
+      };
+    }
+
+    const weightedSum = members.reduce((sum, member) => {
+      const weight = 0.75 + member.confidence;
+      return sum + member.score * weight;
+    }, 0);
+    const totalWeight = members.reduce((sum, member) => sum + 0.75 + member.confidence, 0);
+    const average = weightedSum / totalWeight;
+    const level = Math.min(10, Math.max(1, Math.round(average)));
+    const confidence = members.reduce((sum, member) => sum + member.confidence, 0) / members.length;
+
+    return {
+      level,
+      average,
+      confidence,
+      members: [...members].sort((a, b) => b.score - a.score || b.confidence - a.confidence),
+      label: SCREWED_LABELS[level - 1],
+    };
+  }, [selectedProfessors]);
+}
+
 function SubjectOption(subject, checked, onToggle) {
   const required = REQUIRED_SUBJECTS.has(subject.id);
 
@@ -301,6 +362,97 @@ function QuestionGroup({title, description, emptyText, questions}) {
   );
 }
 
+function ScrewedMeme({level}) {
+  const [failed, setFailed] = useState(false);
+  const src = useBaseUrl(`/img/komise-screwed/level-${level}.webp`);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
+  if (failed) {
+    return (
+      <div className={styles.memePlaceholder}>
+        <strong>level-{level}.webp</strong>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      className={styles.screwedMeme}
+      src={src}
+      alt={`How screwed are you level ${level}`}
+      loading="lazy"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
+function ScrewedMeter({meter}) {
+  const scoreText = meter.average > 0 ? formatNumber(meter.average) : '-';
+  const confidenceText = `${Math.round(meter.confidence * 100)} %`;
+
+  return (
+    <section className={`${styles.resultSection} ${styles.screwedSection}`}>
+      <div className={styles.screwedHeader}>
+        <div>
+          <span>How screwed are you?</span>
+          <h2>{meter.label}</h2>
+          <p>
+            Odhad je odvozený z historických popisů členů komise v podkladech. Je to memometr, ne rozsudek.
+          </p>
+        </div>
+        <div className={styles.screwedScore}>
+          <strong>{meter.level}</strong>
+          <span>/ 10</span>
+        </div>
+      </div>
+
+      <div className={styles.screwedBody}>
+        <div className={styles.screwedGauge}>
+          <div className={styles.screwedTrack}>
+            <span style={{width: `${meter.level * 10}%`}} />
+          </div>
+          <dl>
+            <div>
+              <dt>Průměr</dt>
+              <dd>{scoreText}</dd>
+            </div>
+            <div>
+              <dt>Jistota</dt>
+              <dd>{confidenceText}</dd>
+            </div>
+            <div>
+              <dt>Členové</dt>
+              <dd>{meter.members.length}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <ScrewedMeme level={meter.level} />
+      </div>
+
+      {meter.members.length > 0 ? (
+        <div className={styles.screwedMembers}>
+          {meter.members.map((member) => (
+            <article key={member.name}>
+              <strong>{member.name}</strong>
+              <span>{member.score}/10</span>
+              {member.reason && <small>{member.reason}</small>}
+              <small>
+                {member.mentions} zmínek, {member.signalCount} signálů
+              </small>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p className={styles.emptyResult}>Vyber členy komise a memometr začne panikařit za tebe.</p>
+      )}
+    </section>
+  );
+}
+
 function CommissionAnalyzer() {
   const [subjectFilter, setSubjectFilter] = useState('');
   const [professorFilter, setProfessorFilter] = useState('');
@@ -333,6 +485,7 @@ function CommissionAnalyzer() {
   }, [professorFilter]);
 
   const analysis = useAnalysis(selectedOptionalSubjects, selectedProfessors);
+  const screwedMeter = useScrewedMeter(selectedProfessors);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -410,11 +563,10 @@ function CommissionAnalyzer() {
       </section>
 
       <section className={styles.notice}>
-        <strong>Ber to jako vodítko, ne věštírnu.</strong>
-        <span>
+        <p>
           Odhad vychází jen z materiálu <code>{commissionData.source}</code>. Pokud v seznamu není předmět
           nebo profesor, znamená to, že není v materiálech, ze kterých se čerpá.
-        </span>
+        </p>
         <button type="button" onClick={copyShareLink}>
           {shareStatus || 'Kopírovat odkaz'}
         </button>
@@ -494,6 +646,8 @@ function CommissionAnalyzer() {
               <strong>{analysis.totalEvidence}</strong>
             </div>
           </div>
+
+          <ScrewedMeter meter={screwedMeter} />
 
           <SubjectGroup
             title="Společná otázka: TAL / PAL / KO"
