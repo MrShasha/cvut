@@ -410,11 +410,10 @@ function CommissionAnalyzer() {
       </section>
 
       <section className={styles.notice}>
-        <strong>Ber to jako vodítko, ne věštírnu.</strong>
-        <span>
+        <p>
           Odhad vychází jen z materiálu <code>{commissionData.source}</code>. Pokud v seznamu není předmět
           nebo profesor, znamená to, že není v materiálech, ze kterých se čerpá.
-        </span>
+        </p>
         <button type="button" onClick={copyShareLink}>
           {shareStatus || 'Kopírovat odkaz'}
         </button>
