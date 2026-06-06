@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DFA vs NFA průchod textem</title>
+<style>
+:root{--bg:#101318;--panel:#171c24;--panel2:#202734;--text:#eef2f7;--muted:#aab4c3;--accent:#7aa2ff;--green:#9ddc7b;--yellow:#ffd166;--edge:#8fa0b8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{display:grid;grid-template-columns:390px 1fr;min-height:100vh}
+.side{background:var(--panel);padding:18px;border-right:1px solid #2a3240;overflow:auto}
+.main{padding:18px;overflow:hidden}
+h1{font-size:20px;margin:0 0 10px}
+.small{color:var(--muted);font-size:13px;line-height:1.45}
+code{background:#0d1117;border:1px solid #2a3240;padding:1px 5px;border-radius:5px}
+.controls{display:flex;gap:8px;margin:16px 0;flex-wrap:wrap}
+button{background:var(--panel2);color:var(--text);border:1px solid #3a4557;border-radius:8px;padding:8px 11px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+input[type=range]{width:100%}
+.card{background:var(--panel2);border:1px solid #2a3240;border-radius:12px;padding:14px;margin-top:14px}
+.pill{display:inline-block;color:#d8e2f2;background:#111827;border:1px solid #334155;border-radius:999px;padding:4px 9px;margin:3px 3px 0 0;font-size:12px}
+.title{font-weight:750;font-size:17px;margin:8px 0}.note{color:#d7deea;line-height:1.45}
+.legend{display:grid;gap:5px;margin-top:12px;font-size:13px;color:var(--muted)}
+.textbar{display:flex;gap:8px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.char{width:42px;height:42px;display:grid;place-items:center;background:#111827;border:1px solid #334155;border-radius:10px;font-weight:850;font-size:18px}
+.char.current{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(255,209,102,.18)}
+.char.done{background:#1b2a22;border-color:#3d6b48}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.panel{background:#0d1117;border:1px solid #2a3240;border-radius:14px;padding:12px}
+.panel h2{margin:0 0 8px;font-size:16px}
+svg{width:100%;height:360px}
+.state{fill:#24314b;stroke:#dbe7ff;stroke-width:2}.state.active{fill:#31583c;stroke:var(--green);stroke-width:5}.state.accept{stroke-dasharray:5 4}
+.stateText{fill:white;font-weight:850;font-size:15px;dominant-baseline:middle;text-anchor:middle}
+.edge{stroke:var(--edge);stroke-width:2;fill:none;marker-end:url(#arrow)}.edgeLabel{fill:#cbd5e1;font-size:13px;font-weight:700;text-anchor:middle}.activeEdge{stroke:var(--yellow);stroke-width:5;marker-end:url(#arrowY)}
+.subsetBox{margin-top:8px;padding:10px;background:#111827;border:1px solid #334155;border-radius:10px;font-size:14px;color:#dbe7ff}
+.accepted{border-color:var(--green);color:#d9ffe0}
+.stepList{margin-top:10px;max-height:40vh;overflow:auto;border-top:1px solid #2a3240}
+.stepItem{font-size:12px;color:var(--muted);padding:6px 4px;border-bottom:1px solid #222a36;cursor:pointer}
+.stepItem.active{color:white;background:#263148}
+@media(max-width:1050px){.wrap{grid-template-columns:1fr}.side{border-right:0;border-bottom:1px solid #2a3240}.split{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<aside class="side">
+<h1>DFA vs NFA: průchod textem</h1>
+<div class="small">Jazyk: <code>Σ*abΣ*</code>, tedy text obsahuje substring <code>ab</code>. NFA může být ve více stavech najednou. DFA je deterministická verze, kde jeden stav reprezentuje celou množinu NFA stavů.</div>
+<div class="controls"><button id="prev">◀ Předchozí</button><button id="next">Další ▶</button><button id="play">Play</button></div>
+<input id="range" type="range" min="0" max="0" value="0">
+<div class="card">
+<div id="counter" class="small"></div>
+<div class="pill">NFA = množina aktivních stavů</div><div class="pill">DFA = jeden subset stav</div>
+<div id="title" class="title"></div><div id="note" class="note"></div>
+<div class="legend"><div>Zeleně = aktivní stav/stavy.</div><div>Žlutě = právě použitý přechod.</div><div>Přijímací stav obsahuje <code>q2</code>, tedy už jsme někde viděli <code>ab</code>.</div></div>
+</div>
+<div id="stepList" class="stepList"></div>
+</aside>
+<main class="main">
+<div id="textbar" class="textbar"></div>
+<div class="split">
+<section class="panel">
+<h2>NFA průchod</h2>
+<svg id="nfaSvg" viewBox="0 0 640 350"><defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#8fa0b8"></path></marker><marker id="arrowY" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#ffd166"></path></marker></defs></svg>
+<div id="nfaInfo" class="subsetBox"></div>
+</section>
+<section class="panel">
+<h2>DFA průchod přes subset stavy</h2>
+<svg id="dfaSvg" viewBox="0 0 640 350"><defs><marker id="arrow2" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#8fa0b8"></path></marker><marker id="arrowY2" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L8,3 z" fill="#ffd166"></path></marker></defs></svg>
+<div id="dfaInfo" class="subsetBox"></div>
+</section>
+</div>
+</main>
+</div>
+<script>
+const steps = [{"title": "Start", "note": "Oba automaty poznávají jazyk Σ*abΣ*: text obsahuje substring „ab“. NFA drží množinu aktivních stavů. DFA drží jeden superstav, který je přesně touto množinou.", "idx": 0, "char": null, "phase": "start", "text": "baababba", "nfaActive": ["q0"], "dfaState": "A", "dfaSubset": ["q0"], "nfaAccepted": false, "dfaAccepted": false, "prevDfa": null}, {"title": "Čteme znak 1: „b“", "note": "Před znakem „b“ je NFA aktivní v množině {q0}. DFA je v jednom stavu A, tedy subset {q0}.", "idx": 0, "char": "b", "phase": "before", "text": "baababba", "nfaActive": ["q0"], "dfaState": "A", "dfaSubset": ["q0"], "nfaAccepted": false, "dfaAccepted": false, "prevDfa": null}, {"title": "Po znaku „b“", "note": "NFA provede všechny možné přechody paralelně: {q0} --b--> {q0}. DFA udělá jeden přechod: A --b--> A.", "idx": 0, "char": "b", "phase": "after", "text": "baababba", "nfaActive": ["q0"], "dfaState": "A", "dfaSubset": ["q0"], "nfaAccepted": false, "dfaAccepted": false, "prevDfa": "A"}, {"title": "Čteme znak 2: „a“", "note": "Před znakem „a“ je NFA aktivní v množině {q0}. DFA je v jednom stavu A, tedy subset {q0}.", "idx": 1, "char": "a", "phase": "before", "text": "baababba", "nfaActive": ["q0"], "dfaState": "A", "dfaSubset": ["q0"], "nfaAccepted": false, "dfaAccepted": false, "prevDfa": null}, {"title": "Po znaku „a“", "note": "NFA provede všechny možné přechody paralelně: {q0} --a--> {q0, q1}. DFA udělá jeden přechod: A --a--> B.", "idx": 1, "char": "a", "phase": "after", "text": "baababba", "nfaActive": ["q0", "q1"], "dfaState": "B", "dfaSubset": ["q0", "q1"], "nfaAccepted": false, "dfaAccepted": false, "prevDfa": "A"}, {"title": "Čteme znak 3: „a“", "note": "Před znakem „a“ je NFA aktivní v množině {q0, q1}. DFA je v jednom stavu B, tedy subset {q0, q1}.", "idx": 2, "char": "a", "phase": "before", "text": "baababba", "nfaActive": ["q0", "q1"], "dfaState": "B", "dfaSubset": ["q0", "q1"], "nfaAccepted": false, "dfaAccepted": false, "prevDfa": null}, {"title": "Po znaku „a“", "note": "NFA provede všechny možné přechody paralelně: {q0, q1} --a--> {q0, q1}. DFA udělá jeden přechod: B --a--> B.", "idx": 2, "char": "a", "phase": "after", "text": "baababba", "nfaActive": ["q0", "q1"], "dfaState": "B", "dfaSubset": ["q0", "q1"], "nfaAccepted": false, "dfaAccepted": false, "prevDfa": "B"}, {"title": "Čteme znak 4: „b“", "note": "Před znakem „b“ je NFA aktivní v množině {q0, q1}. DFA je v jednom stavu B, tedy subset {q0, q1}.", "idx": 3, "char": "b", "phase": "before", "text": "baababba", "nfaActive": ["q0", "q1"], "dfaState": "B", "dfaSubset": ["q0", "q1"], "nfaAccepted": false, "dfaAccepted": false, "prevDfa": null}, {"title": "Po znaku „b“", "note": "NFA provede všechny možné přechody paralelně: {q0, q1} --b--> {q0, q2}. DFA udělá jeden přechod: B --b--> C.", "idx": 3, "char": "b", "phase": "after", "text": "baababba", "nfaActive": ["q0", "q2"], "dfaState": "C", "dfaSubset": ["q0", "q2"], "nfaAccepted": true, "dfaAccepted": true, "prevDfa": "B"}, {"title": "Čteme znak 5: „a“", "note": "Před znakem „a“ je NFA aktivní v množině {q0, q2}. DFA je v jednom stavu C, tedy subset {q0, q2}.", "idx": 4, "char": "a", "phase": "before", "text": "baababba", "nfaActive": ["q0", "q2"], "dfaState": "C", "dfaSubset": ["q0", "q2"], "nfaAccepted": true, "dfaAccepted": true, "prevDfa": null}, {"title": "Po znaku „a“", "note": "NFA provede všechny možné přechody paralelně: {q0, q2} --a--> {q0, q1, q2}. DFA udělá jeden přechod: C --a--> D.", "idx": 4, "char": "a", "phase": "after", "text": "baababba", "nfaActive": ["q0", "q1", "q2"], "dfaState": "D", "dfaSubset": ["q0", "q1", "q2"], "nfaAccepted": true, "dfaAccepted": true, "prevDfa": "C"}, {"title": "Čteme znak 6: „b“", "note": "Před znakem „b“ je NFA aktivní v množině {q0, q1, q2}. DFA je v jednom stavu D, tedy subset {q0, q1, q2}.", "idx": 5, "char": "b", "phase": "before", "text": "baababba", "nfaActive": ["q0", "q1", "q2"], "dfaState": "D", "dfaSubset": ["q0", "q1", "q2"], "nfaAccepted": true, "dfaAccepted": true, "prevDfa": null}, {"title": "Po znaku „b“", "note": "NFA provede všechny možné přechody paralelně: {q0, q1, q2} --b--> {q0, q2}. DFA udělá jeden přechod: D --b--> C.", "idx": 5, "char": "b", "phase": "after", "text": "baababba", "nfaActive": ["q0", "q2"], "dfaState": "C", "dfaSubset": ["q0", "q2"], "nfaAccepted": true, "dfaAccepted": true, "prevDfa": "D"}, {"title": "Čteme znak 7: „b“", "note": "Před znakem „b“ je NFA aktivní v množině {q0, q2}. DFA je v jednom stavu C, tedy subset {q0, q2}.", "idx": 6, "char": "b", "phase": "before", "text": "baababba", "nfaActive": ["q0", "q2"], "dfaState": "C", "dfaSubset": ["q0", "q2"], "nfaAccepted": true, "dfaAccepted": true, "prevDfa": null}, {"title": "Po znaku „b“", "note": "NFA provede všechny možné přechody paralelně: {q0, q2} --b--> {q0, q2}. DFA udělá jeden přechod: C --b--> C.", "idx": 6, "char": "b", "phase": "after", "text": "baababba", "nfaActive": ["q0", "q2"], "dfaState": "C", "dfaSubset": ["q0", "q2"], "nfaAccepted": true, "dfaAccepted": true, "prevDfa": "C"}, {"title": "Čteme znak 8: „a“", "note": "Před znakem „a“ je NFA aktivní v množině {q0, q2}. DFA je v jednom stavu C, tedy subset {q0, q2}.", "idx": 7, "char": "a", "phase": "before", "text": "baababba", "nfaActive": ["q0", "q2"], "dfaState": "C", "dfaSubset": ["q0", "q2"], "nfaAccepted": true, "dfaAccepted": true, "prevDfa": null}, {"title": "Po znaku „a“", "note": "NFA provede všechny možné přechody paralelně: {q0, q2} --a--> {q0, q1, q2}. DFA udělá jeden přechod: C --a--> D.", "idx": 7, "char": "a", "phase": "after", "text": "baababba", "nfaActive": ["q0", "q1", "q2"], "dfaState": "D", "dfaSubset": ["q0", "q1", "q2"], "nfaAccepted": true, "dfaAccepted": true, "prevDfa": "C"}];
+let i=0, timer=null;
+const textbar=document.getElementById("textbar"), nfaSvg=document.getElementById("nfaSvg"), dfaSvg=document.getElementById("dfaSvg"), nfaInfo=document.getElementById("nfaInfo"), dfaInfo=document.getElementById("dfaInfo"), title=document.getElementById("title"), note=document.getElementById("note"), counter=document.getElementById("counter"), range=document.getElementById("range"), stepList=document.getElementById("stepList");
+range.max=steps.length-1;
+function add(svg,name,attrs,text=null){const el=document.createElementNS("http://www.w3.org/2000/svg",name);for(const[k,v]of Object.entries(attrs))el.setAttribute(k,v);if(text!==null)el.textContent=text;svg.appendChild(el);return el}
+function clearSvg(svg){const defs=svg.querySelector("defs").cloneNode(true);svg.innerHTML="";svg.appendChild(defs)}
+function drawState(svg,x,y,label,active,accept=false){add(svg,"circle",{cx:x,cy:y,r:38,class:"state"+(active?" active":"")+(accept?" accept":"")});if(accept)add(svg,"circle",{cx:x,cy:y,r:30,fill:"none",stroke:"#dbe7ff","stroke-width":2});add(svg,"text",{x:x,y:y+1,class:"stateText"},label)}
+function line(svg,x1,y1,x2,y2,label,active=false,marker="arrow"){add(svg,"line",{x1:x1,y1:y1,x2:x2,y2:y2,class:"edge"+(active?" activeEdge":""),"marker-end":`url(#${active?marker+"Y":marker})`});add(svg,"text",{x:(x1+x2)/2,y:(y1+y2)/2-8,class:"edgeLabel"},label)}
+function curved(svg,d,labelX,labelY,label,active=false,marker="arrow"){add(svg,"path",{d:d,class:"edge"+(active?" activeEdge":""),"marker-end":`url(#${active?marker+"Y":marker})`});add(svg,"text",{x:labelX,y:labelY,class:"edgeLabel"},label)}
+function activeNfaEdges(step){if(step.phase!=="after")return[];const c=step.char,active=new Set(step.nfaActive),arr=[];if(active.has("q0"))arr.push("q0loop");if(c==="a"&&active.has("q1"))arr.push("q0q1");if(c==="b"&&active.has("q2"))arr.push("q1q2");if(active.has("q2"))arr.push("q2loop");return arr}
+function drawNFA(step){clearSvg(nfaSvg);const active=new Set(step.nfaActive),ae=new Set(activeNfaEdges(step));curved(nfaSvg,"M115 145 C60 80, 170 45, 165 110",108,62,"a,b",ae.has("q0loop"));line(nfaSvg,178,150,282,150,"a",ae.has("q0q1"));line(nfaSvg,358,150,462,150,"b",ae.has("q1q2"));curved(nfaSvg,"M525 145 C470 80, 580 45, 575 110",518,62,"a,b",ae.has("q2loop"));drawState(nfaSvg,140,150,"q0",active.has("q0"));drawState(nfaSvg,320,150,"q1",active.has("q1"));drawState(nfaSvg,500,150,"q2",active.has("q2"),true);add(nfaSvg,"text",{x:140,y:245,class:"edgeLabel"},"start / hledám začátek");add(nfaSvg,"text",{x:320,y:245,class:"edgeLabel"},"viděl jsem 'a'");add(nfaSvg,"text",{x:500,y:245,class:"edgeLabel"},"viděl jsem 'ab'")}
+const dfaPos={A:[135,110],B:[325,110],C:[135,250],D:[325,250]}, dfaSubset={A:"{q0}",B:"{q0,q1}",C:"{q0,q2}",D:"{q0,q1,q2}"};
+function activeDfaEdge(step){if(step.phase!=="after")return null;return (step.prevDfa||"")+step.char+step.dfaState}
+function drawDFA(step){clearSvg(dfaSvg);const activeEdge=activeDfaEdge(step);function edge(from,to,label,key){const[x1,y1]=dfaPos[from],[x2,y2]=dfaPos[to];if(from===to){const d=`M${x1-20} ${y1-35} C${x1-75} ${y1-95}, ${x1+75} ${y1-95}, ${x1+20} ${y1-35}`;curved(dfaSvg,d,x1,y1-82,label,activeEdge===key,"arrow2")}else{line(dfaSvg,x1+38*Math.sign(x2-x1||1),y1,x2-38*Math.sign(x2-x1||1),y2,label,activeEdge===key,"arrow2")}}edge("A","B","a","AaB");edge("A","A","b","AbA");edge("B","B","a","BaB");edge("B","C","b","BbC");edge("C","D","a","CaD");edge("C","C","b","CbC");edge("D","D","a","DaD");edge("D","C","b","DbC");for(const s of["A","B","C","D"]){const[x,y]=dfaPos[s];const accept=s==="C"||s==="D";drawState(dfaSvg,x,y,s,step.dfaState===s,accept);add(dfaSvg,"text",{x:x,y:y+58,class:"edgeLabel"},dfaSubset[s])}}
+function drawText(step){textbar.innerHTML="";const label=document.createElement("div");label.className="small";label.textContent="Text:";textbar.appendChild(label);[...step.text].forEach((ch,idx)=>{const div=document.createElement("div");div.className="char";if(idx<step.idx||(idx===step.idx&&step.phase==="after"))div.classList.add("done");if(idx===step.idx&&step.phase!=="start")div.classList.add("current");div.textContent=ch;textbar.appendChild(div)})}
+function draw(){const step=steps[i];title.textContent=step.title;note.textContent=step.note;counter.textContent=`Krok ${i+1} / ${steps.length}`;range.value=i;drawText(step);drawNFA(step);drawDFA(step);nfaInfo.className="subsetBox"+(step.nfaAccepted?" accepted":"");dfaInfo.className="subsetBox"+(step.dfaAccepted?" accepted":"");nfaInfo.innerHTML=`<b>NFA active states:</b> {${step.nfaActive.join(", ")}}<br><b>acceptuje?</b> ${step.nfaAccepted?"ano, obsahuje q2":"zatím ne"}`;dfaInfo.innerHTML=`<b>DFA state:</b> ${step.dfaState} = {${step.dfaSubset.join(", ")}}<br><b>acceptuje?</b> ${step.dfaAccepted?"ano, subset obsahuje q2":"zatím ne"}`;[...stepList.children].forEach(el=>{if(el.dataset.idx!==undefined)el.classList.toggle("active",Number(el.dataset.idx)===i)})}
+function fillSteps(){stepList.innerHTML="";steps.forEach((s,idx)=>{const div=document.createElement("div");div.className="stepItem";div.dataset.idx=idx;div.textContent=`${idx+1}. ${s.title}`;div.onclick=()=>{i=idx;draw()};stepList.appendChild(div)})}
+document.getElementById("next").onclick=()=>{i=Math.min(steps.length-1,i+1);draw()};
+document.getElementById("prev").onclick=()=>{i=Math.max(0,i-1);draw()};
+document.getElementById("play").onclick=()=>{const btn=document.getElementById("play");if(timer){clearInterval(timer);timer=null;btn.textContent="Play"}else{btn.textContent="Stop";timer=setInterval(()=>{if(i>=steps.length-1){clearInterval(timer);timer=null;btn.textContent="Play"}else{i++;draw()}},950)}};
+range.oninput=e=>{i=Number(e.target.value);draw()};
+document.addEventListener("keydown",e=>{if(e.key==="ArrowRight"){i=Math.min(steps.length-1,i+1);draw()}if(e.key==="ArrowLeft"){i=Math.max(0,i-1);draw()}});
+fillSteps();draw();
+</script>
+</body>
+</html>
