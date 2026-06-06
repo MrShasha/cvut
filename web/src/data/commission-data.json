@@ -186,6 +186,14 @@
       "name": "Berezovskyj",
       "questionCount": 16,
       "examinerCount": 5,
+      "screwed": {
+        "score": 7,
+        "confidence": 1,
+        "mentions": 13,
+        "signalCount": 8,
+        "reason": "Opakovaně vyžaduje formální definice a umí skákat do řeči; v zápiscích ale není popsaný jako někdo, kdo by cíleně topil.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -217,6 +225,14 @@
       "name": "Berka",
       "questionCount": 12,
       "examinerCount": 3,
+      "screwed": {
+        "score": 4,
+        "confidence": 1,
+        "mentions": 12,
+        "signalCount": 9,
+        "reason": "Ptá se na praktické doplňky a občas chce konkrétní detaily, ale většina záznamů ho popisuje jako v pohodě a hodnotícího rozumně.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -252,6 +268,14 @@
       "name": "Bittner",
       "questionCount": 1,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.55,
+        "mentions": 3,
+        "signalCount": 1,
+        "reason": "V materiálu je málo přímého zkoušení; zmínky působí spíše neutrálně, proto zůstává u středního rizika.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -263,6 +287,14 @@
       "name": "Blaško",
       "questionCount": 8,
       "examinerCount": 2,
+      "screwed": {
+        "score": 7,
+        "confidence": 0.8,
+        "mentions": 8,
+        "signalCount": 0,
+        "reason": "Umí být dost přísný na význam slov a přesné formulace; u TAL umí zastavit, když slyší dost, ale tlak na definice je znatelný.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -290,6 +322,14 @@
       "name": "Bošanský",
       "questionCount": 1,
       "examinerCount": 1,
+      "screwed": {
+        "score": 3,
+        "confidence": 0.5,
+        "mentions": 4,
+        "signalCount": 1,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -301,6 +341,14 @@
       "name": "Bouchner",
       "questionCount": 3,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.1,
+        "mentions": 1,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "HCI",
@@ -320,6 +368,14 @@
       "name": "Buk",
       "questionCount": 6,
       "examinerCount": 2,
+      "screwed": {
+        "score": 6,
+        "confidence": 1,
+        "mentions": 16,
+        "signalCount": 3,
+        "reason": "Skóre táhne hlavně obtížnost souvisejících témat, ne jasně negativní chování v komisi.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -343,6 +399,14 @@
       "name": "Bureš",
       "questionCount": 36,
       "examinerCount": 3,
+      "screwed": {
+        "score": 5,
+        "confidence": 1,
+        "mentions": 10,
+        "signalCount": 1,
+        "reason": "Chce formálnější definice a praktické detaily, ale zápisky opakovaně říkají, že otázky nebyly zákeřné a hodnocení působilo mírně.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -410,6 +474,14 @@
       "name": "Čmolík",
       "questionCount": 6,
       "examinerCount": 3,
+      "screwed": {
+        "score": 7,
+        "confidence": 1,
+        "mentions": 15,
+        "signalCount": 9,
+        "reason": "Často pokračuje otevřenými dotazy a chce slyšet konkrétní interpretace i samozřejmé detaily; někdy je ale schopný otázku rychle uzavřít.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -429,6 +501,14 @@
       "name": "Demlová",
       "questionCount": 37,
       "examinerCount": 8,
+      "screwed": {
+        "score": 2,
+        "confidence": 1,
+        "mentions": 30,
+        "signalCount": 11,
+        "reason": "Napříč záznamy působí jako velmi podporující: pomáhá, opravuje bez potápění a zvedá náladu komise.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -492,6 +572,14 @@
       "name": "Dostál",
       "questionCount": 2,
       "examinerCount": 0,
+      "screwed": {
+        "score": 1,
+        "confidence": 1,
+        "mentions": 25,
+        "signalCount": 29,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -507,6 +595,14 @@
       "name": "Drchal",
       "questionCount": 2,
       "examinerCount": 1,
+      "screwed": {
+        "score": 7,
+        "confidence": 0.4,
+        "mentions": 3,
+        "signalCount": 1,
+        "reason": "Automatický odhad našel smíšené nebo mírně rizikové signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -522,6 +618,14 @@
       "name": "Faigl",
       "questionCount": 3,
       "examinerCount": 1,
+      "screwed": {
+        "score": 6,
+        "confidence": 0.82,
+        "mentions": 7,
+        "signalCount": 1,
+        "reason": "Když se odbočí od jádra otázky, zastaví to a chce formální vlastnosti; nejde však o zákeřné zkoušení.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -541,6 +645,14 @@
       "name": "Felkel",
       "questionCount": 2,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.2,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -556,6 +668,14 @@
       "name": "Filip",
       "questionCount": 24,
       "examinerCount": 1,
+      "screwed": {
+        "score": 6,
+        "confidence": 1,
+        "mentions": 14,
+        "signalCount": 2,
+        "reason": "Materiál dává málo přímých signálů; riziko je spíše z náročnosti témat než z popisu konkrétního přístupu.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -599,6 +719,14 @@
       "name": "Franc",
       "questionCount": 2,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.2,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -614,6 +742,14 @@
       "name": "Gollová",
       "questionCount": 2,
       "examinerCount": 1,
+      "screwed": {
+        "score": 2,
+        "confidence": 0.5,
+        "mentions": 3,
+        "signalCount": 2,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "OSW",
@@ -629,6 +765,14 @@
       "name": "Habala",
       "questionCount": 11,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.42,
+        "mentions": 3,
+        "signalCount": 0,
+        "reason": "V materiálu se objevuje často jako člen komise, ale bez výrazného přímého zkoušení; proto zůstává neutrální profil.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -668,6 +812,14 @@
       "name": "Hanzálek",
       "questionCount": 15,
       "examinerCount": 10,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 21,
+        "signalCount": 5,
+        "reason": "Záznamy ho opakovaně popisují jako hodného a návodného; umí chtít přesnost, ale spíš se snaží dostat ze studenta použitelnou odpověď.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -699,6 +851,14 @@
       "name": "Havran",
       "questionCount": 3,
       "examinerCount": 0,
+      "screwed": {
+        "score": 10,
+        "confidence": 1,
+        "mentions": 7,
+        "signalCount": 11,
+        "reason": "Nejsilnější negativní profil v materiálu: detailní záznam popisuje tvrdé topení, rozsekání diplomky a dojem předem rozhodnutého verdiktu.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -714,6 +874,14 @@
       "name": "Hekrdla",
       "questionCount": 15,
       "examinerCount": 5,
+      "screwed": {
+        "score": 2,
+        "confidence": 1,
+        "mentions": 19,
+        "signalCount": 7,
+        "reason": "Přímých zmínek je míň, ale dostupné popisy jsou podporující: úsměv, pomoc a žádná snaha potopit.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -749,6 +917,14 @@
       "name": "Herout",
       "questionCount": 4,
       "examinerCount": 3,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 10,
+        "signalCount": 5,
+        "reason": "Vystupuje hlavně u drobných nebo věcných dotazů; materiál neukazuje výrazně rizikové zkoušení.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "OSP",
@@ -772,6 +948,14 @@
       "name": "Hnětynka",
       "questionCount": 2,
       "examinerCount": 1,
+      "screwed": {
+        "score": 2,
+        "confidence": 0.5,
+        "mentions": 3,
+        "signalCount": 2,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "ESW",
@@ -787,6 +971,14 @@
       "name": "Horčík",
       "questionCount": 9,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.42,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "Je častěji uvedený v komisi než popsaný jako zkoušející, takže z podkladů nevychází jasný směr rizika.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -822,6 +1014,14 @@
       "name": "Hrnčíř",
       "questionCount": 5,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.7,
+        "mentions": 7,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -845,6 +1045,14 @@
       "name": "Hrušák",
       "questionCount": 1,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.2,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -856,6 +1064,14 @@
       "name": "Hudec",
       "questionCount": 1,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.2,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -867,6 +1083,14 @@
       "name": "Hušek",
       "questionCount": 1,
       "examinerCount": 1,
+      "screwed": {
+        "score": 3,
+        "confidence": 0.6,
+        "mentions": 5,
+        "signalCount": 1,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -878,6 +1102,14 @@
       "name": "Chrpa",
       "questionCount": 2,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.1,
+        "mentions": 1,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -893,6 +1125,14 @@
       "name": "Jakob",
       "questionCount": 23,
       "examinerCount": 0,
+      "screwed": {
+        "score": 2,
+        "confidence": 1,
+        "mentions": 9,
+        "signalCount": 6,
+        "reason": "Zmíněný jako hodný a nápomocný, bez negativních signálů v dostupných záznamech.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -932,6 +1172,14 @@
       "name": "Jakovenko",
       "questionCount": 4,
       "examinerCount": 1,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.3,
+        "mentions": 3,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -947,6 +1195,14 @@
       "name": "Jelínek",
       "questionCount": 14,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.42,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "Objevuje se hlavně jako předseda bez výrazných popisů zkoušení, takže profil drží neutrální riziko.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -974,6 +1230,14 @@
       "name": "Kléma",
       "questionCount": 8,
       "examinerCount": 3,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 17,
+        "signalCount": 4,
+        "reason": "Umí se doptávat na statistické detaily, ale záznamy ho popisují jako návodného, přátelského a férového.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "SAN",
@@ -1001,6 +1265,14 @@
       "name": "Klíma",
       "questionCount": 4,
       "examinerCount": 0,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 11,
+        "signalCount": 14,
+        "reason": "Opakovaně pohodový a podporující profil; ptá se k věci a podle zápisků umí podržet.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -1016,6 +1288,14 @@
       "name": "Kohout",
       "questionCount": 10,
       "examinerCount": 0,
+      "screwed": {
+        "score": 4,
+        "confidence": 0.58,
+        "mentions": 3,
+        "signalCount": 1,
+        "reason": "Má pár zvláštnějších dotazů k diplomce, ale dostupné popisy ho drží spíš v klidné a rozumné části spektra.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -1047,6 +1327,14 @@
       "name": "Kouba",
       "questionCount": 10,
       "examinerCount": 0,
+      "screwed": {
+        "score": 2,
+        "confidence": 1,
+        "mentions": 9,
+        "signalCount": 3,
+        "reason": "Dostupné zmínky jsou jednoznačně klidné: naprosto v pohodě, žádné zákeřné dotazy.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -1078,6 +1366,14 @@
       "name": "Krajník",
       "questionCount": 1,
       "examinerCount": 1,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.2,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "UIR",
@@ -1089,6 +1385,14 @@
       "name": "Krátký",
       "questionCount": 13,
       "examinerCount": 2,
+      "screwed": {
+        "score": 7,
+        "confidence": 1,
+        "mentions": 8,
+        "signalCount": 5,
+        "reason": "Umí jít do hloubky a chytit se vedlejších detailů; některé záznamy jsou pohodové, ale riziko vykoupání je reálné.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -1124,6 +1428,14 @@
       "name": "Kroha",
       "questionCount": 8,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.1,
+        "mentions": 1,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -1155,6 +1467,14 @@
       "name": "Křivánek",
       "questionCount": 6,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.1,
+        "mentions": 1,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "GVG",
@@ -1186,6 +1506,14 @@
       "name": "Kubalík",
       "questionCount": 1,
       "examinerCount": 0,
+      "screwed": {
+        "score": 1,
+        "confidence": 0.4,
+        "mentions": 2,
+        "signalCount": 2,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -1197,6 +1525,14 @@
       "name": "Kubr",
       "questionCount": 14,
       "examinerCount": 3,
+      "screwed": {
+        "score": 5,
+        "confidence": 1,
+        "mentions": 12,
+        "signalCount": 1,
+        "reason": "Zkouší základní grafová témata, ale umí chtít přesnější složitosti a detaily, takže nejde o úplně bezpracnou variantu.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -1232,6 +1568,14 @@
       "name": "Lisý",
       "questionCount": 5,
       "examinerCount": 2,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 10,
+        "signalCount": 4,
+        "reason": "U B-stromů stačily obecné vlastnosti a když student něco nevěděl, dál se v tom nešťoural; u DP spíš věcné drobné dotazy.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "DS2",
@@ -1251,6 +1595,14 @@
       "name": "Macek",
       "questionCount": 35,
       "examinerCount": 3,
+      "screwed": {
+        "score": 4,
+        "confidence": 1,
+        "mentions": 28,
+        "signalCount": 8,
+        "reason": "V materiálu je spíše jako přítomný člen komise než jako výrazný zkoušející, proto zůstává mírně pod středem.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -1318,6 +1670,14 @@
       "name": "Macík",
       "questionCount": 18,
       "examinerCount": 6,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 10,
+        "signalCount": 1,
+        "reason": "Při HCI/NUR působí příjemně, signalizuje spokojenost a když je potřeba, pomůže studentovi se opravit.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -1361,6 +1721,14 @@
       "name": "Malý",
       "questionCount": 20,
       "examinerCount": 2,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 12,
+        "signalCount": 3,
+        "reason": "Zápisky ho popisují jako velmi příjemného a věcného; doptává se hlavně na použití v praxi a přikyvuje, když odpověď sedí.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -1404,6 +1772,14 @@
       "name": "Mareček",
       "questionCount": 11,
       "examinerCount": 3,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.9,
+        "mentions": 9,
+        "signalCount": 0,
+        "reason": "Málo přímého kontextu; z dostupných zmínek nevychází ani výrazně podpůrný, ani výrazně rizikový profil.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -1439,6 +1815,14 @@
       "name": "Mařík",
       "questionCount": 51,
       "examinerCount": 12,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 42,
+        "signalCount": 18,
+        "reason": "Má víc dotazů a může působit přísněji u obhajoby, ale u zkoušení často stačí věcné odpovědi a umí otázku rychle ukončit.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -1522,6 +1906,14 @@
       "name": "Matas",
       "questionCount": 21,
       "examinerCount": 0,
+      "screwed": {
+        "score": 9,
+        "confidence": 1,
+        "mentions": 5,
+        "signalCount": 6,
+        "reason": "Silně náročný profil: chce přesné definice, ignoruje obecné vyprávění a dokáže studenta nepříjemně rozebrat na detailech.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -1545,6 +1937,14 @@
       "name": "Matoušek",
       "questionCount": 2,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.3,
+        "mentions": 3,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -1560,6 +1960,14 @@
       "name": "Míkovec",
       "questionCount": 27,
       "examinerCount": 0,
+      "screwed": {
+        "score": 4,
+        "confidence": 1,
+        "mentions": 10,
+        "signalCount": 3,
+        "reason": "Objevuje se často v komisích, ale bez silných negativních signálů; působí spíše neutrálně až mírně klidně.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -1603,6 +2011,14 @@
       "name": "Mrázová",
       "questionCount": 2,
       "examinerCount": 1,
+      "screwed": {
+        "score": 4,
+        "confidence": 0.72,
+        "mentions": 3,
+        "signalCount": 2,
+        "reason": "Umí se déle zastavit u detailů a vlastních oblíbených témat, ale popis je zároveň velmi milý, přátelský a navádějící.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "SAN",
@@ -1618,6 +2034,14 @@
       "name": "Müller",
       "questionCount": 5,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.2,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -1637,6 +2061,14 @@
       "name": "Náplava",
       "questionCount": 1,
       "examinerCount": 1,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.2,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -1648,6 +2080,14 @@
       "name": "Navara",
       "questionCount": 1,
       "examinerCount": 0,
+      "screwed": {
+        "score": 7,
+        "confidence": 0.3,
+        "mentions": 2,
+        "signalCount": 1,
+        "reason": "Automatický odhad našel smíšené nebo mírně rizikové signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -1659,6 +2099,14 @@
       "name": "Novák",
       "questionCount": 6,
       "examinerCount": 2,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.7,
+        "mentions": 7,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -1682,6 +2130,14 @@
       "name": "Pačes",
       "questionCount": 12,
       "examinerCount": 0,
+      "screwed": {
+        "score": 2,
+        "confidence": 1,
+        "mentions": 7,
+        "signalCount": 5,
+        "reason": "Jako předseda je popisovaný velmi pozitivně: usměvavý, klidný a bez zásahů, které by studenta zbytečně potápěly.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -1729,6 +2185,14 @@
       "name": "Patera",
       "questionCount": 3,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.5,
+        "mentions": 3,
+        "signalCount": 2,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -1744,6 +2208,14 @@
       "name": "Pěchouček",
       "questionCount": 1,
       "examinerCount": 0,
+      "screwed": {
+        "score": 3,
+        "confidence": 0.2,
+        "mentions": 1,
+        "signalCount": 1,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -1755,6 +2227,14 @@
       "name": "Pevný",
       "questionCount": 1,
       "examinerCount": 1,
+      "screwed": {
+        "score": 2,
+        "confidence": 0.6,
+        "mentions": 4,
+        "signalCount": 2,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "ESW",
@@ -1766,6 +2246,14 @@
       "name": "Píša",
       "questionCount": 18,
       "examinerCount": 5,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 24,
+        "signalCount": 7,
+        "reason": "Záznamy ho popisují jako v pohodě a věcného, často s praktickými technickými dotazy.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -1809,6 +2297,14 @@
       "name": "Procházka",
       "questionCount": 4,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.2,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -1824,6 +2320,14 @@
       "name": "Průša",
       "questionCount": 3,
       "examinerCount": 1,
+      "screwed": {
+        "score": 3,
+        "confidence": 0.6,
+        "mentions": 5,
+        "signalCount": 1,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -1843,6 +2347,14 @@
       "name": "Rogalewicz",
       "questionCount": 22,
       "examinerCount": 4,
+      "screwed": {
+        "score": 7,
+        "confidence": 1,
+        "mentions": 17,
+        "signalCount": 5,
+        "reason": "Dostupné popisy naznačují rýpavější, méně příjemný styl a tlak na přesné formulace.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -1890,6 +2402,14 @@
       "name": "Rollo",
       "questionCount": 9,
       "examinerCount": 0,
+      "screwed": {
+        "score": 4,
+        "confidence": 0.62,
+        "mentions": 4,
+        "signalCount": 1,
+        "reason": "V dostupném kontextu se doptává ze zajímavosti a bez rýpání; přímého zkoušení je ale málo, proto zůstává lehce opatrné skóre.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -1925,6 +2445,14 @@
       "name": "Sedláček",
       "questionCount": 21,
       "examinerCount": 3,
+      "screwed": {
+        "score": 5,
+        "confidence": 1,
+        "mentions": 11,
+        "signalCount": 4,
+        "reason": "Umí trochu rýpnout a u technických otázek chce konkrétní principy, ale celkový popis zůstává spíš věcný a bez dramatu.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -1976,6 +2504,14 @@
       "name": "Slavík",
       "questionCount": 10,
       "examinerCount": 4,
+      "screwed": {
+        "score": 8,
+        "confidence": 1,
+        "mentions": 21,
+        "signalCount": 13,
+        "reason": "V materiálech se opakovaně objevuje jako rýpavý a konfliktnější; umí se přít o formulace a způsob zápisu.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "NUR",
@@ -2011,6 +2547,14 @@
       "name": "Sloup",
       "questionCount": 6,
       "examinerCount": 1,
+      "screwed": {
+        "score": 3,
+        "confidence": 0.6,
+        "mentions": 3,
+        "signalCount": 1,
+        "reason": "Dostupný zápis ho řadí do hodné komise, která se v neznalostech zbytečně nešťourala.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "GVG",
@@ -2042,6 +2586,14 @@
       "name": "Sochor",
       "questionCount": 17,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.4,
+        "mentions": 1,
+        "signalCount": 0,
+        "reason": "V materiálech je málo přímého kontextu a někdy ani nebylo jasné, zda byl přítomen, proto zůstává neutrální profil.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -2061,6 +2613,14 @@
       "name": "Sojka",
       "questionCount": 7,
       "examinerCount": 1,
+      "screwed": {
+        "score": 6,
+        "confidence": 1,
+        "mentions": 11,
+        "signalCount": 7,
+        "reason": "Ptá se technicky a umí jít až na nízkou úroveň detailu, ale záznamy nejsou vyloženě potápěcí.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "DS2",
@@ -2088,6 +2648,14 @@
       "name": "Sporka",
       "questionCount": 14,
       "examinerCount": 0,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 8,
+        "signalCount": 2,
+        "reason": "Působí mile a udržuje kontakt; u zkoušení se ptá na základy bez chytáků, spíš věcně než potápěcí.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -2131,6 +2699,14 @@
       "name": "Strnad",
       "questionCount": 9,
       "examinerCount": 2,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.8,
+        "mentions": 7,
+        "signalCount": 1,
+        "reason": "Zkouší náročnější TPJ témata, ale zápisky nedávají dost signálů pro výrazně hodné ani výrazně drsné hodnocení.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -2162,6 +2738,14 @@
       "name": "Svatoš",
       "questionCount": 2,
       "examinerCount": 2,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.2,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "AVS",
@@ -2177,6 +2761,14 @@
       "name": "Sýkora",
       "questionCount": 25,
       "examinerCount": 1,
+      "screwed": {
+        "score": 3,
+        "confidence": 0.62,
+        "mentions": 5,
+        "signalCount": 1,
+        "reason": "V dostupných zápiscích spíš mlčí nebo má konstruktivní dotazy; u oborové otázky není popsaný jako zákeřný.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -2212,6 +2804,14 @@
       "name": "Šára",
       "questionCount": 1,
       "examinerCount": 1,
+      "screwed": {
+        "score": 3,
+        "confidence": 0.9,
+        "mentions": 6,
+        "signalCount": 3,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -2223,6 +2823,14 @@
       "name": "Šišlák",
       "questionCount": 5,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.7,
+        "mentions": 7,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -2246,6 +2854,14 @@
       "name": "Šmejkal",
       "questionCount": 2,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.2,
+        "mentions": 2,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "KRP",
@@ -2261,6 +2877,14 @@
       "name": "Štepanovský",
       "questionCount": 1,
       "examinerCount": 1,
+      "screwed": {
+        "score": 2,
+        "confidence": 0.7,
+        "mentions": 5,
+        "signalCount": 2,
+        "reason": "Automatický odhad našel převážně uklidňující signály.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "PAP",
@@ -2272,6 +2896,14 @@
       "name": "Šůcha",
       "questionCount": 18,
       "examinerCount": 8,
+      "screwed": {
+        "score": 5,
+        "confidence": 1,
+        "mentions": 27,
+        "signalCount": 10,
+        "reason": "Chce přesné formulace, proměnné a detaily algoritmu, ale často je věcný, férový a když slyší dost, zkoušení ukončí.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -2311,6 +2943,14 @@
       "name": "Šusta",
       "questionCount": 4,
       "examinerCount": 2,
+      "screwed": {
+        "score": 7,
+        "confidence": 0.8,
+        "mentions": 6,
+        "signalCount": 2,
+        "reason": "Jeden záznam popisuje, že studentovi nestačil základ, působil naštvaně a otázky byly těžko čitelné; jiný průchod byl klidnější.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KRP",
@@ -2334,6 +2974,14 @@
       "name": "Tišer",
       "questionCount": 18,
       "examinerCount": 3,
+      "screwed": {
+        "score": 5,
+        "confidence": 1,
+        "mentions": 12,
+        "signalCount": 1,
+        "reason": "Typicky se drží TAL formalit a redukcí; chce přesnost a konkrétní převod, ale zápisky neukazují snahu studenta dusit.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -2365,6 +3013,14 @@
       "name": "Velebil",
       "questionCount": 24,
       "examinerCount": 6,
+      "screwed": {
+        "score": 6,
+        "confidence": 1,
+        "mentions": 15,
+        "signalCount": 9,
+        "reason": "Dokáže studenta vykoupat ve formálnějších oblastech, zároveň ale vede k tomu, co chce slyšet.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -2388,6 +3044,14 @@
       "name": "Vojtáš",
       "questionCount": 2,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.1,
+        "mentions": 1,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -2403,6 +3067,14 @@
       "name": "Vokřínek",
       "questionCount": 22,
       "examinerCount": 4,
+      "screwed": {
+        "score": 5,
+        "confidence": 1,
+        "mentions": 36,
+        "signalCount": 4,
+        "reason": "Profil je smíšený a spíše neutrální; objevuje se u věcných dotazů bez jasného vzorce potápění.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -2442,6 +3114,14 @@
       "name": "Vyskočil",
       "questionCount": 11,
       "examinerCount": 3,
+      "screwed": {
+        "score": 8,
+        "confidence": 1,
+        "mentions": 20,
+        "signalCount": 18,
+        "reason": "Opakovaně se objevuje jako člověk, který ryje do diplomky i odpovědi a umí zaskočit; pár záznamů je mírnějších, ale celkový signál je rizikový.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -2469,6 +3149,14 @@
       "name": "Werner",
       "questionCount": 5,
       "examinerCount": 1,
+      "screwed": {
+        "score": 2,
+        "confidence": 0.78,
+        "mentions": 4,
+        "signalCount": 2,
+        "reason": "U ILP byl popsaný jako naprosto super, snažil se pomoct a když viděl, že se student nechytá, otázku ukončil.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -2496,6 +3184,14 @@
       "name": "Žára",
       "questionCount": 35,
       "examinerCount": 0,
+      "screwed": {
+        "score": 7,
+        "confidence": 1,
+        "mentions": 16,
+        "signalCount": 12,
+        "reason": "Materiál je rozporuplný: někdy hodný a milý, jindy silně kritický k prezentaci a obhajobě. Proto vyšší, ale ne maximální riziko.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "PAL",
@@ -2539,6 +3235,14 @@
       "name": "Železný",
       "questionCount": 9,
       "examinerCount": 0,
+      "screwed": {
+        "score": 3,
+        "confidence": 1,
+        "mentions": 7,
+        "signalCount": 3,
+        "reason": "Popisovaný jako milý, nápomocný a tolerantní k chybám, s věcnými dotazy k prezentaci.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",
@@ -2570,6 +3274,14 @@
       "name": "Žikovský",
       "questionCount": 4,
       "examinerCount": 0,
+      "screwed": {
+        "score": 5,
+        "confidence": 0.1,
+        "mentions": 1,
+        "signalCount": 0,
+        "reason": "V materiálech je jen několik nejednoznačných stop, proto zůstává skóre poblíž středu.",
+        "method": "heuristic-fallback"
+      },
       "subjects": [
         {
           "subject": "KO",
@@ -2593,6 +3305,14 @@
       "name": "Žukovec",
       "questionCount": 49,
       "examinerCount": 8,
+      "screwed": {
+        "score": 6,
+        "confidence": 1,
+        "mentions": 30,
+        "signalCount": 2,
+        "reason": "Častá zkoušející TAL: většinou férově kývá a nechává mluvit, ale přesně najde mezery v definicích a umí se na nich chvíli držet.",
+        "method": "context-profile"
+      },
       "subjects": [
         {
           "subject": "TAL",

@@ -57,7 +57,7 @@
 
 .notice {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.6rem 0.85rem;
   align-items: start;
   margin: 1rem clamp(1rem, 3vw, 2rem);
@@ -299,6 +299,181 @@
   font-weight: 650;
 }
 
+.screwedSection {
+  display: grid;
+}
+
+.screwedHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+  background:
+    linear-gradient(90deg, rgba(245, 158, 11, 0.12), transparent 46%),
+    var(--ifm-background-surface-color);
+}
+
+.screwedHeader span {
+  color: #b45309;
+  font-size: 0.76rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.screwedHeader h2 {
+  margin: 0.12rem 0 0;
+  font-size: 1.25rem;
+  line-height: 1.15;
+}
+
+.screwedHeader p {
+  margin: 0.25rem 0 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.screwedScore {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  min-width: 5.25rem;
+  color: #b45309;
+}
+
+.screwedScore strong {
+  font-size: 3rem;
+  line-height: 0.9;
+}
+
+.screwedScore span {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.screwedBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 260px);
+  gap: 1rem;
+  align-items: stretch;
+  padding: 1rem;
+}
+
+.screwedGauge {
+  display: grid;
+  gap: 0.8rem;
+  align-content: center;
+}
+
+.screwedTrack {
+  height: 1rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ifm-color-emphasis-300) 60%, transparent);
+}
+
+.screwedTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #16a34a, #f59e0b 52%, #dc2626);
+}
+
+.screwedGauge dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0;
+}
+
+.screwedGauge dl div {
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 6px;
+  background: var(--ifm-background-color);
+}
+
+.screwedGauge dt {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.72rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.screwedGauge dd {
+  margin: 0.08rem 0 0;
+  color: var(--ifm-heading-color);
+  font-size: 1.2rem;
+  font-weight: 850;
+}
+
+.screwedMeme,
+.memePlaceholder {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 6px;
+  background: var(--ifm-background-color);
+  object-fit: cover;
+}
+
+.memePlaceholder {
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: var(--ifm-color-emphasis-700);
+  text-align: center;
+}
+
+.memePlaceholder strong {
+  overflow-wrap: anywhere;
+}
+
+.screwedMembers {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  padding: 0 1rem 1rem;
+}
+
+.screwedMembers article {
+  min-width: 0;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 6px;
+  background: var(--ifm-background-color);
+  padding: 0.65rem;
+}
+
+.screwedMembers strong,
+.screwedMembers span,
+.screwedMembers small {
+  display: block;
+}
+
+.screwedMembers strong {
+  overflow: hidden;
+  color: var(--ifm-color-emphasis-900);
+  font-size: 0.9rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.screwedMembers span {
+  margin-top: 0.1rem;
+  color: #b45309;
+  font-size: 1.15rem;
+  font-weight: 850;
+}
+
+.screwedMembers small {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.75rem;
+}
+
 .subjectResults {
   display: grid;
 }
@@ -464,6 +639,9 @@
 
   .controls,
   .summaryGrid,
+  .screwedBody,
+  .screwedGauge dl,
+  .screwedMembers,
   .questionResults {
     grid-template-columns: 1fr;
   }

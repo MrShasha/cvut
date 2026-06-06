@@ -1,136 +1,869 @@
-<div class="tree-cert-widget" style="background-color: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; max-width: 850px; margin: 20px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.3); box-sizing: border-box;">
-    <h3 style="margin-top: 0; color: #569cd6; border-bottom: 1px solid #3c3c3c; padding-bottom: 8px;">Rekonstrukce z certifikátu</h3>
-    
-    <div style="margin-bottom: 15px;">
-        <label style="font-size: 0.85rem; display: block; margin-bottom: 5px;">Binární certifikát (0=dolů/uzel, 1=nahoru/zpět):</label>
-        <div style="display: flex; gap: 8px;">
-            <input type="text" id="tree-input" value="0010110011" style="flex: 1; background: #252526; border: 1px solid #444; color: #ce9178; padding: 8px; border-radius: 4px; font-weight: bold; letter-spacing: 2px;">
-            <button id="tree-reconstruct" style="background: #0e639c; color: white; border: none; padding: 0 15px; border-radius: 4px; cursor: pointer;">Vykreslit</button>
-        </div>
-        <div style="font-size: 0.75rem; color: #888; margin-top: 5px;">Příklady: 0101 (2 uzly), 001101 (3 uzly - cesta), 0010110011 (centrální uzel se 3 listy)</div>
+<div id="pal-cert-widget" class="pal-cert-widget">
+  <style>
+    .pal-cert-widget {
+      --bg: #1e1e1e;
+      --panel: #252526;
+      --canvas: #101214;
+      --line: #3c3c3c;
+      --muted: #a7adba;
+      --text: #e8e8e8;
+      --blue: #569cd6;
+      --cyan: #4fc1ff;
+      --green: #6a9955;
+      --orange: #ce9178;
+      --yellow: #dcdcaa;
+      --red: #c94f45;
+      max-width: 1040px;
+      margin: 20px auto;
+      padding: 18px;
+      border-radius: 8px;
+      background: var(--bg);
+      color: var(--text);
+      box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      box-sizing: border-box;
+    }
+
+    .pal-cert-widget * {
+      box-sizing: border-box;
+    }
+
+    .pal-cert-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .pal-cert-title {
+      margin: 0;
+      color: var(--blue);
+      font-size: 1.05rem;
+    }
+
+    .pal-cert-subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .pal-cert-tabs {
+      display: inline-flex;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #181818;
+      flex-shrink: 0;
+    }
+
+    .pal-cert-tab,
+    .pal-cert-btn,
+    .pal-cert-icon-btn {
+      border: 1px solid transparent;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .pal-cert-tab {
+      padding: 7px 10px;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .pal-cert-tab.active {
+      background: #0e639c;
+      color: #fff;
+    }
+
+    .pal-cert-controls {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      margin: 14px 0;
+      align-items: center;
+    }
+
+    .pal-cert-input-row {
+      display: flex;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .pal-cert-input {
+      min-width: 0;
+      width: 100%;
+      border: 1px solid #555;
+      border-radius: 5px;
+      background: #151515;
+      color: var(--orange);
+      padding: 9px 10px;
+      font: inherit;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .pal-cert-btn {
+      padding: 8px 11px;
+      background: #2d2d2d;
+      border-color: #4c4c4c;
+      font-size: 0.78rem;
+      white-space: nowrap;
+    }
+
+    .pal-cert-btn.primary {
+      background: #0e639c;
+      border-color: #1177bb;
+      color: #fff;
+    }
+
+    .pal-cert-btn.danger {
+      background: #5f221d;
+      border-color: #8a332c;
+    }
+
+    .pal-cert-btn:disabled,
+    .pal-cert-tab:disabled {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    .pal-cert-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.75fr);
+      gap: 14px;
+    }
+
+    .pal-cert-canvas,
+    .pal-cert-side,
+    .pal-cert-timeline {
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--panel);
+    }
+
+    .pal-cert-canvas {
+      min-height: 430px;
+      background: radial-gradient(circle at 50% 0%, #172130, var(--canvas) 46%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .pal-cert-svg {
+      width: 100%;
+      height: 430px;
+      display: block;
+    }
+
+    .pal-cert-side {
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .pal-cert-label {
+      margin: 0 0 7px;
+      color: var(--cyan);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .pal-cert-output {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      min-height: 44px;
+      padding: 9px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background: #161616;
+      margin-bottom: 12px;
+      align-content: flex-start;
+    }
+
+    .pal-cert-token {
+      min-width: 21px;
+      height: 25px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      color: #fff;
+      font-weight: 800;
+      background: #444;
+      transition: transform 180ms ease, background 180ms ease, opacity 180ms ease;
+    }
+
+    .pal-cert-token.open {
+      background: #0e639c;
+    }
+
+    .pal-cert-token.close {
+      background: #8b5a14;
+    }
+
+    .pal-cert-token.active {
+      transform: translateY(-3px);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.18);
+    }
+
+    .pal-cert-stack {
+      min-height: 128px;
+      padding: 9px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background: #161616;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 5px;
+      margin-bottom: 12px;
+    }
+
+    .pal-cert-stack-item {
+      padding: 6px 8px;
+      border-radius: 4px;
+      background: #333;
+      border-left: 3px solid var(--blue);
+      color: #fff;
+      font-size: 0.78rem;
+    }
+
+    .pal-cert-note {
+      min-height: 72px;
+      padding: 10px;
+      border-left: 3px solid var(--blue);
+      border-radius: 4px;
+      background: #1a1a1a;
+      color: #d8d8d8;
+      font-size: 0.78rem;
+      line-height: 1.45;
+    }
+
+    .pal-cert-note strong {
+      color: var(--yellow);
+    }
+
+    .pal-cert-timeline {
+      margin-top: 14px;
+      padding: 10px;
+    }
+
+    .pal-cert-step-text {
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.45;
+      min-height: 38px;
+    }
+
+    .pal-cert-progress {
+      width: 100%;
+      height: 8px;
+      margin-top: 9px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #141414;
+      border: 1px solid #333;
+    }
+
+    .pal-cert-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--blue), var(--green));
+      transition: width 180ms ease;
+    }
+
+    .pal-cert-examples {
+      margin-top: 9px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.74rem;
+      align-items: center;
+    }
+
+    .pal-cert-example {
+      border: 1px solid #444;
+      border-radius: 999px;
+      padding: 4px 8px;
+      color: var(--orange);
+      background: #181818;
+      cursor: pointer;
+    }
+
+    @media (max-width: 760px) {
+      .pal-cert-header,
+      .pal-cert-controls,
+      .pal-cert-main {
+        grid-template-columns: 1fr;
+        display: grid;
+      }
+
+      .pal-cert-header {
+        display: grid;
+      }
+
+      .pal-cert-tabs,
+      .pal-cert-input-row {
+        width: 100%;
+      }
+
+      .pal-cert-input-row {
+        flex-wrap: wrap;
+      }
+
+      .pal-cert-input {
+        flex-basis: 100%;
+      }
+
+      .pal-cert-btn {
+        flex: 1;
+      }
+    }
+  </style>
+
+  <div class="pal-cert-header">
+    <div>
+      <h3 class="pal-cert-title">Certifikát stromu: animace oběma směry</h3>
+      <div class="pal-cert-subtitle">
+        Modré <strong>0</strong> otevře uzel, zlaté <strong>1</strong> uzel zavře. Při tvorbě certifikátu se nejdřív spočítají certifikáty potomků,
+        lexikograficky se seřadí a rodič je obalí jako <strong>0 ... 1</strong>.
+      </div>
+    </div>
+    <div class="pal-cert-tabs" role="tablist" aria-label="Režim widgetu">
+      <button class="pal-cert-tab active" id="pal-mode-encode" type="button">strom → certifikát</button>
+      <button class="pal-cert-tab" id="pal-mode-decode" type="button">certifikát → strom</button>
+    </div>
+  </div>
+
+  <div class="pal-cert-controls">
+    <div class="pal-cert-input-row">
+      <input class="pal-cert-input" id="pal-cert-input" value="00010110100111" spellcheck="false" aria-label="Binární certifikát stromu">
+      <button class="pal-cert-btn primary" id="pal-play" type="button">Animovat</button>
+      <button class="pal-cert-btn" id="pal-step" type="button">Krok</button>
+      <button class="pal-cert-btn" id="pal-pause" type="button">Pauza</button>
+      <button class="pal-cert-btn danger" id="pal-reset" type="button">Reset</button>
+    </div>
+    <button class="pal-cert-btn" id="pal-add-child" type="button">Přidat potomka k vybranému uzlu</button>
+  </div>
+
+  <div class="pal-cert-main">
+    <div class="pal-cert-canvas">
+      <svg class="pal-cert-svg" id="pal-cert-svg" viewBox="0 0 720 430" role="img" aria-label="Vizualizace stromu"></svg>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 280px; gap: 20px;">
-        <div style="background: #111; border: 1px solid #3c3c3c; border-radius: 6px; position: relative; height: 350px;">
-            <svg id="tree-svg" width="100%" height="100%" style="display: block;"></svg>
-        </div>
-        
-        <div style="background: #252526; padding: 15px; border-radius: 6px; border: 1px solid #3c3c3c;">
-            <h4 style="margin: 0 0 10px 0; font-size: 0.9rem; color: #9cdcfe;">Stav zásobníku (Stack)</h4>
-            <div id="tree-stack" style="display: flex; flex-direction: column-reverse; gap: 4px; min-height: 200px; font-size: 0.8rem;"></div>
-            <div id="tree-info" style="margin-top: 15px; font-size: 0.85rem; padding: 8px; background: #1e1e1e; border-left: 3px solid #569cd6;">
-                Zadejte validní certifikát.
-            </div>
-        </div>
-    </div>
+    <div class="pal-cert-side">
+      <p class="pal-cert-label">Certifikát</p>
+      <div class="pal-cert-output" id="pal-cert-output"></div>
 
-    <div style="margin-top: 15px; background: #2d2d2d; padding: 12px; border-radius: 6px; font-size: 0.85rem;">
-        <strong>Matematický model:</strong> <span style="color: #ce9178;" id="tree-math">V = ∅, E = ∅</span>
+      <p class="pal-cert-label">Zásobník / aktivní cesta</p>
+      <div class="pal-cert-stack" id="pal-cert-stack"></div>
+
+      <div class="pal-cert-note" id="pal-cert-note"></div>
+
+      <div class="pal-cert-examples">
+        Příklady:
+        <button class="pal-cert-example" type="button" data-cert="01">01</button>
+        <button class="pal-cert-example" type="button" data-cert="001101">001101</button>
+        <button class="pal-cert-example" type="button" data-cert="00010110100111">00010110100111</button>
+      </div>
     </div>
+  </div>
+
+  <div class="pal-cert-timeline">
+    <div class="pal-cert-step-text" id="pal-cert-step-text"></div>
+    <div class="pal-cert-progress"><div class="pal-cert-progress-fill" id="pal-cert-progress"></div></div>
+  </div>
 </div>
 
 <script>
-(function() {
-    const input = document.getElementById('tree-input');
-    const btn = document.getElementById('tree-reconstruct');
-    const svg = document.getElementById('tree-svg');
-    const stackEl = document.getElementById('tree-stack');
-    const infoEl = document.getElementById('tree-info');
-    const mathEl = document.getElementById('tree-math');
+(function () {
+  const widget = document.getElementById("pal-cert-widget");
+  const svg = document.getElementById("pal-cert-svg");
+  const input = document.getElementById("pal-cert-input");
+  const output = document.getElementById("pal-cert-output");
+  const stackEl = document.getElementById("pal-cert-stack");
+  const note = document.getElementById("pal-cert-note");
+  const stepText = document.getElementById("pal-cert-step-text");
+  const progress = document.getElementById("pal-cert-progress");
+  const playBtn = document.getElementById("pal-play");
+  const stepBtn = document.getElementById("pal-step");
+  const pauseBtn = document.getElementById("pal-pause");
+  const resetBtn = document.getElementById("pal-reset");
+  const addChildBtn = document.getElementById("pal-add-child");
+  const encodeTab = document.getElementById("pal-mode-encode");
+  const decodeTab = document.getElementById("pal-mode-decode");
 
-    function draw() {
-        const cert = input.value.trim();
-        svg.innerHTML = '';
-        stackEl.innerHTML = '';
-        
-        if (!/^[01]+$/.test(cert) || cert.length % 2 !== 0) {
-            infoEl.innerHTML = "❌ Neplatný formát. Délka musí být sudá a obsahovat jen 0 a 1.";
-            return;
-        }
+  let mode = "encode";
+  let selectedId = 0;
+  let idCounter = 7;
+  let timer = null;
+  let stepIndex = -1;
+  let steps = [];
+  let lastGeneratedCert = input.value;
 
-        const nodes = [];
-        const edges = [];
-        const stack = [];
-        let nodeCounter = 0;
+  let tree = {
+    id: 0,
+    children: [
+      { id: 1, children: [{ id: 3, children: [] }, { id: 4, children: [] }] },
+      { id: 2, children: [{ id: 5, children: [{ id: 6, children: [] }] }] }
+    ]
+  };
 
-        try {
-            for (let i = 0; i < cert.length; i++) {
-                const bit = cert[i];
-                if (bit === '0') {
-                    const newNode = { id: nodeCounter++, level: stack.length, parent: stack[stack.length - 1] };
-                    nodes.push(newNode);
-                    if (newNode.parent !== undefined) {
-                        edges.push([newNode.parent, newNode.id]);
-                    }
-                    stack.push(newNode.id);
-                } else {
-                    if (stack.length === 0) throw new Error("Underflow");
-                    stack.pop();
-                }
-            }
+  function cloneTree(node) {
+    return { id: node.id, children: node.children.map(cloneTree) };
+  }
 
-            const width = svg.clientWidth || 500;
-            const height = 350;
-            const levelHeight = 60;
-            
-            const levelCounts = {};
-            nodes.forEach(n => {
-                levelCounts[n.level] = (levelCounts[n.level] || 0) + 1;
-                n.posIdx = levelCounts[n.level] - 1;
-            });
+  function walk(node, fn, parent) {
+    fn(node, parent);
+    node.children.forEach(child => walk(child, fn, node));
+  }
 
-            const nodeCoords = {};
+  function countLeaves(node) {
+    if (!node.children.length) return 1;
+    return node.children.reduce((sum, child) => sum + countLeaves(child), 0);
+  }
 
-            // Draw edges
-            edges.forEach(e => {
-                const n1 = nodes[e[0]];
-                const n2 = nodes[e[1]];
-                const x1 = (n1.posIdx + 1) * (width / (levelCounts[n1.level] + 1));
-                const y1 = 40 + n1.level * levelHeight;
-                const x2 = (n2.posIdx + 1) * (width / (levelCounts[n2.level] + 1));
-                const y2 = 40 + n2.level * levelHeight;
-                
-                nodeCoords[n1.id] = {x: x1, y: y1};
-                nodeCoords[n2.id] = {x: x2, y: y2};
+  function layout(root) {
+    const positions = {};
+    const maxDepth = getDepth(root);
+    const yStep = Math.max(58, 310 / Math.max(1, maxDepth));
+    let cursor = 0;
 
-                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute("x1", x1); line.setAttribute("y1", y1);
-                line.setAttribute("x2", x2); line.setAttribute("y2", y2);
-                line.setAttribute("stroke", "#555");
-                line.setAttribute("stroke-width", "2");
-                svg.appendChild(line);
-            });
+    function assign(node, depth) {
+      if (!node.children.length) {
+        cursor += 1;
+        positions[node.id] = { x: cursor, y: depth };
+        return positions[node.id].x;
+      }
 
-            // Draw nodes
-            nodes.forEach(n => {
-                const x = (n.posIdx + 1) * (width / (levelCounts[n.level] + 1));
-                const y = 40 + n.level * levelHeight;
-                nodeCoords[n.id] = {x: x, y: y};
-
-                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                circle.setAttribute("cx", x); circle.setAttribute("cy", y);
-                circle.setAttribute("r", "12");
-                circle.setAttribute("fill", "#569cd6");
-                svg.appendChild(circle);
-
-                const txt = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                txt.setAttribute("x", x); txt.setAttribute("y", y + 4);
-                txt.setAttribute("text-anchor", "middle");
-                txt.setAttribute("fill", "white");
-                txt.setAttribute("font-size", "10px");
-                txt.textContent = n.id;
-                svg.appendChild(txt);
-            });
-
-            infoEl.innerHTML = `✅ Rekonstrukce úspěšná.<br>Uzly: ${nodes.length}<br>Hrany: ${edges.length}`;
-            mathEl.innerHTML = `V = {${nodes.map(n=>n.id).join(',')}}, E = {${edges.map(e=>`{${e[0]},${e[1]}}`).join(',')}}`;
-
-        } catch(e) {
-            infoEl.innerHTML = "❌ Kritická chyba v certifikátu: Předčasné uzavření větve (1 bez 0).";
-        }
+      const childXs = node.children.map(child => assign(child, depth + 1));
+      positions[node.id] = {
+        x: childXs.reduce((a, b) => a + b, 0) / childXs.length,
+        y: depth
+      };
+      return positions[node.id].x;
     }
 
-    btn.addEventListener('click', draw);
-    draw();
+    assign(root, 0);
+    const leaves = Math.max(1, countLeaves(root));
+    Object.values(positions).forEach(pos => {
+      pos.x = 54 + (pos.x - 1) * ((720 - 108) / Math.max(1, leaves - 1 || 1));
+      if (leaves === 1) pos.x = 360;
+      pos.y = 48 + pos.y * yStep;
+    });
+    return positions;
+  }
+
+  function getDepth(node) {
+    if (!node.children.length) return 0;
+    return 1 + Math.max(...node.children.map(getDepth));
+  }
+
+  function line(x1, y1, x2, y2, color, width, opacity) {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    el.setAttribute("x1", x1);
+    el.setAttribute("y1", y1);
+    el.setAttribute("x2", x2);
+    el.setAttribute("y2", y2);
+    el.setAttribute("stroke", color);
+    el.setAttribute("stroke-width", width);
+    el.setAttribute("stroke-linecap", "round");
+    el.setAttribute("opacity", opacity == null ? "1" : opacity);
+    svg.appendChild(el);
+  }
+
+  function circle(x, y, r, fill, stroke) {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    el.setAttribute("cx", x);
+    el.setAttribute("cy", y);
+    el.setAttribute("r", r);
+    el.setAttribute("fill", fill);
+    el.setAttribute("stroke", stroke || "#1e1e1e");
+    el.setAttribute("stroke-width", "2");
+    svg.appendChild(el);
+    return el;
+  }
+
+  function text(x, y, value, color, size) {
+    const el = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    el.setAttribute("x", x);
+    el.setAttribute("y", y);
+    el.setAttribute("text-anchor", "middle");
+    el.setAttribute("fill", color || "#fff");
+    el.setAttribute("font-size", size || "11px");
+    el.setAttribute("font-weight", "700");
+    el.textContent = value;
+    svg.appendChild(el);
+  }
+
+  function renderTree(root, state) {
+    svg.innerHTML = "";
+    if (!root) {
+      text(360, 210, "Strom zatím neobsahuje žádný uzel.", "#a7adba", "15px");
+      return;
+    }
+
+    const positions = layout(root);
+    const activePath = new Set(state && state.path ? state.path : []);
+    const highlighted = new Set(state && state.highlighted ? state.highlighted : []);
+    const selected = state && state.selected != null ? state.selected : selectedId;
+    const edgeFlash = state && state.edgeFlash ? state.edgeFlash : null;
+
+    walk(root, (node, parent) => {
+      if (!parent) return;
+      const a = positions[parent.id];
+      const b = positions[node.id];
+      const hot = edgeFlash && edgeFlash[0] === parent.id && edgeFlash[1] === node.id;
+      line(a.x, a.y, b.x, b.y, hot ? "#6a9955" : "#555", hot ? 4 : 2, hot ? 1 : 0.9);
+    });
+
+    walk(root, node => {
+      const p = positions[node.id];
+      const isSelected = node.id === selected;
+      const isActive = activePath.has(node.id);
+      const isHighlighted = highlighted.has(node.id);
+      const fill = isHighlighted ? "#dcdcaa" : isActive ? "#6a9955" : isSelected ? "#ce9178" : "#569cd6";
+      const r = isHighlighted || isActive || isSelected ? 17 : 14;
+      const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      g.style.cursor = mode === "encode" ? "pointer" : "default";
+      g.addEventListener("click", () => {
+        if (mode !== "encode") return;
+        selectedId = node.id;
+        stop();
+        rebuildSteps();
+        showStep(-1);
+      });
+      svg.appendChild(g);
+      const c = circle(p.x, p.y, r, fill, "#101214");
+      g.appendChild(c);
+      const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      label.setAttribute("x", p.x);
+      label.setAttribute("y", p.y + 4);
+      label.setAttribute("text-anchor", "middle");
+      label.setAttribute("fill", "#fff");
+      label.setAttribute("font-size", "11px");
+      label.setAttribute("font-weight", "800");
+      label.textContent = node.id;
+      g.appendChild(label);
+    });
+  }
+
+  function renderTokens(tokens, activeIndex) {
+    output.innerHTML = "";
+    const list = tokens && tokens.length ? tokens : [];
+    list.forEach((token, idx) => {
+      const span = document.createElement("span");
+      span.className = "pal-cert-token " + (token === "0" ? "open" : "close") + (idx === activeIndex ? " active" : "");
+      span.textContent = token;
+      output.appendChild(span);
+    });
+  }
+
+  function renderStack(items) {
+    stackEl.innerHTML = "";
+    (items || []).forEach(item => {
+      const div = document.createElement("div");
+      div.className = "pal-cert-stack-item";
+      div.textContent = "uzel " + item;
+      stackEl.appendChild(div);
+    });
+  }
+
+  function computeCertificate(node) {
+    if (!node.children.length) return "01";
+    return "0" + node.children.map(computeCertificate).sort().join("") + "1";
+  }
+
+  function buildEncodeSteps() {
+    const result = [];
+    const tokens = [];
+
+    function visit(node, path) {
+      result.push({
+        tree: cloneTree(tree),
+        tokens: tokens.slice(),
+        activeToken: -1,
+        path,
+        highlighted: [node.id],
+        stack: path,
+        message: "Vstupujeme do uzlu " + node.id + ". Certifikát podstromu začne symbolem 0."
+      });
+
+      tokens.push("0");
+      result.push({
+        tree: cloneTree(tree),
+        tokens: tokens.slice(),
+        activeToken: tokens.length - 1,
+        path,
+        highlighted: [node.id],
+        stack: path,
+        message: "Zapisuji 0 za otevření uzlu " + node.id + "."
+      });
+
+      const orderedChildren = node.children
+        .map(child => ({ child, cert: computeCertificate(child) }))
+        .sort((a, b) => a.cert.localeCompare(b.cert));
+
+      if (orderedChildren.length > 1) {
+        result.push({
+          tree: cloneTree(tree),
+          tokens: tokens.slice(),
+          activeToken: -1,
+          path,
+          highlighted: orderedChildren.map(x => x.child.id),
+          stack: path,
+          message: "Certifikáty potomků uzlu " + node.id + " se lexikograficky seřadí: " + orderedChildren.map(x => x.cert).join(" < ") + "."
+        });
+      }
+
+      orderedChildren.forEach(({ child }) => visit(child, path.concat(child.id)));
+
+      tokens.push("1");
+      result.push({
+        tree: cloneTree(tree),
+        tokens: tokens.slice(),
+        activeToken: tokens.length - 1,
+        path,
+        highlighted: [node.id],
+        stack: path.slice(0, -1),
+        message: "Zapisuji 1 za uzavření uzlu " + node.id + ". Podstrom má certifikát " + computeCertificate(node) + "."
+      });
+    }
+
+    visit(tree, [tree.id]);
+    result.push({
+      tree: cloneTree(tree),
+      tokens: tokens.slice(),
+      activeToken: -1,
+      path: [],
+      highlighted: [],
+      stack: [],
+      message: "Hotovo. Kanonický certifikát celého stromu je " + tokens.join("") + "."
+    });
+    lastGeneratedCert = tokens.join("");
+    input.value = lastGeneratedCert;
+    return result;
+  }
+
+  function validateCert(cert) {
+    if (!/^[01]+$/.test(cert) || cert.length % 2 !== 0) {
+      return "Certifikát musí obsahovat jen 0 a 1 a mít sudou délku.";
+    }
+    let balance = 0;
+    for (let i = 0; i < cert.length; i++) {
+      balance += cert[i] === "0" ? 1 : -1;
+      if (balance < 0) return "Na pozici " + (i + 1) + " je 1 bez otevřeného uzlu.";
+    }
+    if (balance !== 0) return "Certifikát není uzavřený: počet 0 a 1 nesedí.";
+    return "";
+  }
+
+  function buildDecodeSteps() {
+    const cert = input.value.trim();
+    const error = validateCert(cert);
+    if (error) {
+      note.innerHTML = "<strong>Neplatný certifikát.</strong><br>" + error;
+      return [];
+    }
+
+    const result = [];
+    const nodes = [];
+    const stack = [];
+    let root = null;
+
+    function currentTree() {
+      return root ? cloneTree(root) : null;
+    }
+
+    for (let i = 0; i < cert.length; i++) {
+      const bit = cert[i];
+      if (bit === "0") {
+        const node = { id: nodes.length, children: [] };
+        nodes.push(node);
+        if (stack.length) {
+          stack[stack.length - 1].children.push(node);
+        } else if (!root) {
+          root = node;
+        }
+        const parent = stack.length ? stack[stack.length - 1].id : null;
+        stack.push(node);
+
+        result.push({
+          tree: currentTree(),
+          tokens: cert.split(""),
+          activeToken: i,
+          path: stack.map(x => x.id),
+          highlighted: [node.id],
+          stack: stack.map(x => x.id),
+          edgeFlash: parent == null ? null : [parent, node.id],
+          message: "Čtu 0 na pozici " + (i + 1) + ": vytvořím uzel " + node.id + (parent == null ? " jako kořen." : " a připojím ho k uzlu " + parent + ".")
+        });
+      } else {
+        const closed = stack.pop();
+        result.push({
+          tree: currentTree(),
+          tokens: cert.split(""),
+          activeToken: i,
+          path: stack.map(x => x.id),
+          highlighted: [closed.id],
+          stack: stack.map(x => x.id),
+          message: "Čtu 1 na pozici " + (i + 1) + ": zavírám uzel " + closed.id + " a vracím se o úroveň výš."
+        });
+      }
+    }
+
+    result.push({
+      tree: currentTree(),
+      tokens: cert.split(""),
+      activeToken: -1,
+      path: [],
+      highlighted: [],
+      stack: [],
+      message: "Rekonstrukce hotová. Vznikl strom s " + nodes.length + " uzly a " + Math.max(0, nodes.length - 1) + " hranami."
+    });
+
+    return result;
+  }
+
+  function rebuildSteps() {
+    stop();
+    steps = mode === "encode" ? buildEncodeSteps() : buildDecodeSteps();
+    stepIndex = -1;
+    if (mode === "encode") {
+      addChildBtn.disabled = false;
+      input.readOnly = true;
+    } else {
+      addChildBtn.disabled = true;
+      input.readOnly = false;
+    }
+  }
+
+  function showStep(index) {
+    stepIndex = index;
+    const pct = steps.length ? Math.max(0, (stepIndex + 1) / steps.length) * 100 : 0;
+    progress.style.width = pct + "%";
+
+    if (index < 0 || !steps.length) {
+      const cert = mode === "encode" ? computeCertificate(tree) : input.value.trim();
+      renderTree(mode === "encode" ? tree : null, { selected: selectedId });
+      renderTokens(cert.split(""), -1);
+      renderStack([]);
+      note.innerHTML = mode === "encode"
+        ? "<strong>Strom → certifikát.</strong><br>Klikni na uzel, přidej potomka a spusť animaci postorder výpočtu."
+        : "<strong>Certifikát → strom.</strong><br>Zadej binární certifikát a spusť animaci zásobníkové rekonstrukce.";
+      stepText.textContent = "Připraveno.";
+      return;
+    }
+
+    const state = steps[index];
+    renderTree(state.tree, state);
+    renderTokens(state.tokens, state.activeToken);
+    renderStack(state.stack);
+    note.innerHTML = "<strong>Krok " + (index + 1) + " / " + steps.length + ".</strong><br>" + state.message;
+    stepText.textContent = state.message;
+  }
+
+  function nextStep() {
+    if (!steps.length) rebuildSteps();
+    if (!steps.length) return false;
+    if (stepIndex >= steps.length - 1) {
+      stop();
+      return false;
+    }
+    showStep(stepIndex + 1);
+    return true;
+  }
+
+  function play() {
+    if (!steps.length || stepIndex >= steps.length - 1) {
+      rebuildSteps();
+      showStep(-1);
+    }
+    stop();
+    nextStep();
+    timer = window.setInterval(() => {
+      if (!nextStep()) stop();
+    }, 760);
+  }
+
+  function stop() {
+    if (timer) {
+      window.clearInterval(timer);
+      timer = null;
+    }
+  }
+
+  function findNode(root, id) {
+    let found = null;
+    walk(root, node => {
+      if (node.id === id) found = node;
+    });
+    return found;
+  }
+
+  function resetTree() {
+    tree = {
+      id: 0,
+      children: [
+        { id: 1, children: [{ id: 3, children: [] }, { id: 4, children: [] }] },
+        { id: 2, children: [{ id: 5, children: [{ id: 6, children: [] }] }] }
+      ]
+    };
+    idCounter = 7;
+    selectedId = 0;
+  }
+
+  function setMode(nextMode) {
+    mode = nextMode;
+    encodeTab.classList.toggle("active", mode === "encode");
+    decodeTab.classList.toggle("active", mode === "decode");
+    if (mode === "decode") input.value = lastGeneratedCert || computeCertificate(tree);
+    rebuildSteps();
+    showStep(-1);
+  }
+
+  playBtn.addEventListener("click", play);
+  stepBtn.addEventListener("click", () => {
+    stop();
+    if (!steps.length) rebuildSteps();
+    nextStep();
+  });
+  pauseBtn.addEventListener("click", stop);
+  resetBtn.addEventListener("click", () => {
+    stop();
+    if (mode === "encode") resetTree();
+    rebuildSteps();
+    showStep(-1);
+  });
+  addChildBtn.addEventListener("click", () => {
+    if (mode !== "encode") return;
+    const node = findNode(tree, selectedId) || tree;
+    node.children.push({ id: idCounter++, children: [] });
+    rebuildSteps();
+    showStep(-1);
+  });
+  encodeTab.addEventListener("click", () => setMode("encode"));
+  decodeTab.addEventListener("click", () => setMode("decode"));
+  input.addEventListener("input", () => {
+    if (mode !== "decode") return;
+    rebuildSteps();
+    showStep(-1);
+  });
+  widget.querySelectorAll(".pal-cert-example").forEach(btn => {
+    btn.addEventListener("click", () => {
+      setMode("decode");
+      input.value = btn.dataset.cert;
+      rebuildSteps();
+      showStep(-1);
+    });
+  });
+
+  rebuildSteps();
+  showStep(-1);
 })();
 </script>
