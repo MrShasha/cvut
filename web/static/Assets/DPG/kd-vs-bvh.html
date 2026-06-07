@@ -1,0 +1,322 @@
+<div id="dpg-dynamic-root" style="background: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: monospace; max-width: 900px; margin: 20px auto; border: 1px solid #333; user-select: none;">
+  
+  <div style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="margin: 0; color: #569cd6; font-size: 1.2rem;">Live Dynamic HDS: Move Triangles to Restructure Trees</h3>
+    <span style="font-size: 0.8rem; color: #4ec9b0; background: #2d2d2d; padding: 4px 8px; border-radius: 4px;">Chytněte a posuňte trojúhelníky</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 25px;">
+    <div style="background: #151515; padding: 15px; border-radius: 6px; border: 1px solid #2d2d2d;">
+      <div style="font-weight: bold; color: #569cd6; margin-bottom: 10px; font-size: 0.95rem;">1. KD-Tree (Fixní dělení prostoru x=140, y=100 / Dynamický obsah uzlů)</div>
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 280px; text-align: center;">
+          <canvas id="dpg-dyn-kd-space" width="300" height="200" style="background: #111; border: 1px solid #444; border-radius: 4px; cursor: move;"></canvas>
+        </div>
+        <div style="flex: 1; min-width: 320px; text-align: center;">
+          <canvas id="dpg-dyn-kd-graph" width="400" height="200" style="background: #111; border: 1px solid #444; border-radius: 4px;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #151515; padding: 15px; border-radius: 6px; border: 1px solid #2d2d2d;">
+      <div style="font-weight: bold; color: #4ec9b0; margin-bottom: 10px; font-size: 0.95rem;">2. BVH (Adaptivní objektové obálky / Dynamické přeskupování topologie)</div>
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 280px; text-align: center;">
+          <canvas id="dpg-dyn-bvh-space" width="300" height="200" style="background: #111; border: 1px solid #444; border-radius: 4px; cursor: move;"></canvas>
+        </div>
+        <div style="flex: 1; min-width: 320px; text-align: center;">
+          <canvas id="dpg-dyn-bvh-graph" width="400" height="200" style="background: #111; border: 1px solid #444; border-radius: 4px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 15px; background: #1a1a1a; padding: 12px; border-radius: 4px; border: 1px solid #2d2d2d; font-size: 0.85rem; line-height: 1.5;">
+    <div style="font-weight: bold; color: #dcdcaa; margin-bottom: 4px;">Sledujte chování při přesunu:</div>
+    <div id="dpg-dyn-log" style="color: #b5cea8;">Přesuňte objekty blízko k sobě nebo přes dělící linie, abyste viděli změnu struktury stromu.</div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // Definice trojúhelníků pomocí relativních offsetů kolem lokálního středu (pro snazší dragging)
+  const tris = [
+    { cx: 70,  cy: 80,  x1: -40, y1: -40, x2: 40,  y2: -30, x3: -10, y3: 50,  lbl: "T1", clr: "#ff8c00" },
+    { cx: 165, cy: 95,  x1: -45, y1: -15, x2: 45,  y2: -55, x3: -5,  y3: 55,  lbl: "T2", clr: "#da70d6" },
+    { cx: 250, cy: 145, x1: -30, y1: -35, x2: 30,  y2: -25, x3: -10, y3: 35,  lbl: "T3", clr: "#4ec9b0" }
+  ];
+
+  let draggedTri = null;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let origCx = 0;
+  let origCy = 0;
+
+  function getGlobalCoords(t) {
+    return {
+      x1: t.cx + t.x1, y1: t.cy + t.y1,
+      x2: t.cx + t.x2, y2: t.cy + t.y2,
+      x3: t.cx + t.x3, y3: t.cy + t.y3
+    };
+  }
+
+  function getAABB(t) {
+    const g = getGlobalCoords(t);
+    return {
+      minX: Math.min(g.x1, g.x2, g.x3),
+      minY: Math.min(g.y1, g.y2, g.y3),
+      maxX: Math.max(g.x1, g.x2, g.x3),
+      maxY: Math.max(g.y1, g.y2, g.y3)
+    };
+  }
+
+  function pointInTri(px, py, t) {
+    const g = getGlobalCoords(t);
+    const v0x = g.x3 - g.x1, v0y = g.y3 - g.y1;
+    const v1x = g.x2 - g.x1, v1y = g.y2 - g.y1;
+    const v2x = px - g.x1,   v2y = py - g.y1;
+    const dot00 = v0x*v0x + v0y*v0y;
+    const dot01 = v0x*v1x + v0y*v1y;
+    const dot02 = v0x*v2x + v0y*v2y;
+    const dot11 = v1x*v1x + v1y*v1y;
+    const dot12 = v1x*v2x + v1y*v2y;
+    const invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+    const u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+    const v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+    return (u >= 0) && (v >= 0) && (u + v <= 1);
+  }
+
+  function drawTriangle(ctx, t) {
+    const g = getGlobalCoords(t);
+    ctx.fillStyle = t.clr + "33";
+    ctx.strokeStyle = t.clr;
+    ctx.lineWidth = draggedTri == t ? 3 : 1.5;
+    ctx.beginPath();
+    ctx.moveTo(g.x1, g.y1);
+    ctx.lineTo(g.x2, g.y2);
+    ctx.lineTo(g.x3, g.y3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#fff";
+    ctx.font = "10px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(t.lbl, t.cx, t.cy + 4);
+  }
+
+  function drawNodeCircle(ctx, x, y, text, isLeaf, active) {
+    ctx.fillStyle = active ? (isLeaf ? "#ce9178" : "#569cd6") : "#333";
+    ctx.strokeStyle = active ? "#fff" : "#555";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(x, y, 18, 0, 7);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = active ? "#fff" : "#888";
+    ctx.font = "10px monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text, x, y);
+  }
+
+  function drawGraphLine(ctx, x1, y1, x2, y2, active) {
+    ctx.strokeStyle = active ? "#666" : "#222";
+    ctx.lineWidth = active ? 1.5 : 1;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  function render() {
+    const cKdS = document.getElementById("dpg-dyn-kd-space");
+    const cKdG = document.getElementById("dpg-dyn-kd-graph");
+    const cBvhS = document.getElementById("dpg-dyn-bvh-space");
+    const cBvhG = document.getElementById("dpg-dyn-bvh-graph");
+
+    if (!cKdS) return;
+
+    const sKd = cKdS.getContext("2d");
+    const gKd = cKdG.getContext("2d");
+    const sBvh = cBvhS.getContext("2d");
+    const gBvh = cBvhG.getContext("2d");
+
+    sKd.clearRect(0, 0, 300, 200);
+    gKd.clearRect(0, 0, 400, 200);
+    sBvh.clearRect(0, 0, 300, 200);
+    gBvh.clearRect(0, 0, 400, 200);
+
+    // Kreslení scény na obě plátna
+    tris.forEach(t => {
+      drawTriangle(sKd, t);
+      drawTriangle(sBvh, t);
+    });
+
+    // --- 1. EVALUACE A KRESLENÍ KD-TREE ---
+    // Fixní dělicí roviny
+    sKd.strokeStyle = "#cd5c5c"; sKd.lineWidth = 1.5;
+    sKd.beginPath(); sKd.moveTo(140, 0); sKd.lineTo(140, 200); sKd.stroke();
+    sKd.strokeStyle = "#9acd32";
+    sKd.beginPath(); sKd.moveTo(0, 100); sKd.lineTo(140, 100); sKd.stroke();
+    sKd.beginPath(); sKd.moveTo(140, 90); sKd.lineTo(300, 90); sKd.stroke();
+
+    // Spočítáme, ve kterých regionech leží jednotlivé trojúhelníky
+    let kdL1 = [], kdL2 = [], kdR1 = [], kdR2 = [];
+    tris.forEach(t => {
+      const box = getAABB(t);
+      if (box.minX < 140) {
+        if (box.minY < 100) kdL1.push(t.lbl);
+        if (box.maxY > 100) kdL2.push(t.lbl);
+      }
+      if (box.maxX > 140) {
+        if (box.minY < 90)  kdR1.push(t.lbl);
+        if (box.maxY > 90)  kdR2.push(t.lbl);
+      }
+    });
+
+    // Vykreslení KD Grafu
+    drawGraphLine(gKd, 200, 30, 100, 90, true);
+    drawGraphLine(gKd, 200, 30, 300, 90, true);
+    drawGraphLine(gKd, 100, 90, 50, 160, true);
+    drawGraphLine(gKd, 100, 90, 150, 160, true);
+    drawGraphLine(gKd, 300, 90, 250, 160, true);
+    drawGraphLine(gKd, 300, 90, 350, 160, true);
+
+    drawNodeCircle(gKd, 200, 30, "X=140", false, true);
+    drawNodeCircle(gKd, 100, 90, "Y=100", false, true);
+    drawNodeCircle(gKd, 300, 90, "Y=90",  false, true);
+
+    drawNodeCircle(gKd, 50,  160, kdL1.join(",") || "Ø", true, true);
+    drawNodeCircle(gKd, 150, 160, kdL2.join(",") || "Ø", true, true);
+    drawNodeCircle(gKd, 250, 160, kdR1.join(",") || "Ø", true, true);
+    drawNodeCircle(gKd, 350, 160, kdR2.join(",") || "Ø", true, true);
+
+
+    // --- 2. EVALUACE A KRESLENÍ BVH ---
+    // Provedeme shlukování (Top-down clustering na základě pozice těžišť cx)
+    let bvhSorted = [...tris].sort((a, b) => a.cx - b.cx);
+    
+    // Rozdělíme na základě aktuálního prostorového uspořádání
+    let leftCluster = [bvhSorted[0]];
+    let rightCluster = [];
+    
+    // Rozhodnutí o rozdělení zbylých dvou objektů podle vzdáleností těžišť
+    if ((bvhSorted[1].cx - bvhSorted[0].cx) < (bvhSorted[2].cx - bvhSorted[1].cx)) {
+      leftCluster.push(bvhSorted[1]);
+      rightCluster.push(bvhSorted[2]);
+    } else {
+      rightCluster.push(bvhSorted[1]);
+      rightCluster.push(bvhSorted[2]);
+    }
+
+    // Vypočteme AABB obálky pro clustery
+    function computeClusterAABB(cluster) {
+      let minX = 999, minY = 999, maxX = -999, maxY = -999;
+      cluster.forEach(t => {
+        const b = getAABB(t);
+        if (b.minX < minX) minX = b.minX;
+        if (b.minY < minY) minY = b.minY;
+        if (b.maxX > maxX) maxX = b.maxX;
+        if (b.maxY > maxY) maxY = b.maxY;
+      });
+      return { minX, minY, maxX, maxY };
+    }
+
+    const boxL = computeClusterAABB(leftCluster);
+    const boxR = computeClusterAABB(rightCluster);
+
+    // Vykreslení obálek do prostoru BVH
+    sBvh.strokeStyle = "#569cd6"; sBvh.lineWidth = 1.2;
+    sBvh.strokeRect(boxL.minX - 2, boxL.minY - 2, (boxL.maxX - boxL.minX) + 4, (boxL.maxY - boxL.minY) + 4);
+    sBvh.strokeStyle = "#ce9178";
+    sBvh.strokeRect(boxR.minX - 2, boxR.minY - 2, (boxR.maxX - boxR.minX) + 4, (boxR.maxY - boxR.minY) + 4);
+
+    // Vykreslení BVH Grafu topologie
+    const lblL = leftCluster.map(t => t.lbl).join(",");
+    const lblR = rightCluster.map(t => t.lbl).join(",");
+
+    drawGraphLine(gBvh, 200, 30, 100, 100, true);
+    drawGraphLine(gBvh, 200, 30, 300, 100, true);
+    
+    drawNodeCircle(gBvh, 200, 30, "Root", false, true);
+    
+    // Pokud má uzel víc jak 1 objekt, je to vnitřní uzel hierarchie, jinak rovnou finální list
+    drawNodeCircle(gBvh, 100, 100, lblL, leftCluster.length == 1, true);
+    drawNodeCircle(gBvh, 300, 100, lblR, rightCluster.length == 1, true);
+
+    if (leftCluster.length > 1) {
+      drawGraphLine(gBvh, 100, 100, 50, 160, true);
+      drawGraphLine(gBvh, 100, 100, 150, 160, true);
+      drawNodeCircle(gBvh, 50,  160, leftCluster[0].lbl, true, true);
+      drawNodeCircle(gBvh, 150, 160, leftCluster[1].lbl, true, true);
+    }
+    if (rightCluster.length > 1) {
+      drawGraphLine(gBvh, 300, 100, 250, 160, true);
+      drawGraphLine(gBvh, 300, 100, 350, 160, true);
+      drawNodeCircle(gBvh, 250, 160, rightCluster[0].lbl, true, true);
+      drawNodeCircle(gBvh, 350, 160, rightCluster[1].lbl, true, true);
+    }
+
+    // Výpis do logu
+    let totalRefs = kdL1.length + kdL2.length + kdR1.length + kdR2.length;
+    document.getElementById("dpg-dyn-log").innerHTML = 
+      `<b>kd-Tree celkem referencí: ${totalRefs}</b> (objekty se dělí liniemi prostoro-vého dělení).<br>` +
+      `<b>BVH topologické rozdělení:</b> Levý cluster [${lblL}], Pravý cluster [${lblR}] (obálky se dynamicky adaptují a překrývají).`;
+  }
+
+  function handleMouseDown(e, canvas) {
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const my = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+    for (let i = 0; i < tris.length; i++) {
+      if (pointInTri(mx, my, tris[i])) {
+        draggedTri = tris[i];
+        dragStartX = mx;
+        dragStartY = my;
+        origCx = draggedTri.cx;
+        origCy = draggedTri.cy;
+        break;
+      }
+    }
+  }
+
+  function handleMouseMove(e, canvas) {
+    if (!draggedTri) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+    const my = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+    draggedTri.cx = origCx + (mx - dragStartX);
+    draggedTri.cy = origCy + (my - dragStartY);
+
+    // Bezpečnostní bounds plátna
+    draggedTri.cx = Math.max(40, Math.min(260, draggedTri.cx));
+    draggedTri.cy = Math.max(40, Math.min(160, draggedTri.cy));
+
+    render();
+  }
+
+  function handleMouseUp() {
+    draggedTri = null;
+    render();
+  }
+
+  const interval = setInterval(() => {
+    const sKd = document.getElementById("dpg-dyn-kd-space");
+    const sBvh = document.getElementById("dpg-dyn-bvh-space");
+    if (sKd && sBvh) {
+      clearInterval(interval);
+
+      sKd.addEventListener("mousedown", (e) => handleMouseDown(e, sKd));
+      sKd.addEventListener("mousemove", (e) => handleMouseMove(e, sKd));
+      window.addEventListener("mouseup", handleMouseUp);
+
+      sBvh.addEventListener("mousedown", (e) => handleMouseDown(e, sBvh));
+      sBvh.addEventListener("mousemove", (e) => handleMouseMove(e, sBvh));
+
+      render();
+    }
+  }, 100);
+})();
+</script>
