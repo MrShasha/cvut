@@ -1,0 +1,227 @@
+<div id="dpg-bv-fixed-root" style="background: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: monospace; max-width: 900px; margin: 20px auto; border: 1px solid #333; user-select: none;">
+  
+  <div style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="margin: 0; color: #569cd6; font-size: 1.2rem;">Bounding Volumes: Exact Minimal Enclosing Sphere</h3>
+    <button id="dpg-bv-fixed-reset" style="background: #a4373a; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-family: monospace;">Reset Pozic</button>
+  </div>
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1.2; min-width: 320px;">
+      <canvas id="dpg-bv-fixed-canvas" width="450" height="350" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block; width: 100%; height: auto;"></canvas>
+    </div>
+
+    <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 12px;">
+      
+      <div style="background: #151515; padding: 10px; border-radius: 4px; border: 1px solid #ff8c00;">
+        <div style="font-weight: bold; color: #ff8c00; font-size: 0.85rem;">1. Bounding Sphere (Minimal Enclosing)</div>
+        <div id="dpg-fixed-sphere" style="font-size: 0.8rem; color: #ccc; margin-top: 4px; line-height: 1.4;">Plocha: --</div>
+      </div>
+
+      <div style="background: #151515; padding: 10px; border-radius: 4px; border: 1px solid #569cd6;">
+        <div style="font-weight: bold; color: #569cd6; font-size: 0.85rem;">2. AABB</div>
+        <div id="dpg-fixed-aabb" style="font-size: 0.8rem; color: #ccc; margin-top: 4px; line-height: 1.4;">Plocha: --</div>
+      </div>
+
+      <div style="background: #151515; padding: 10px; border-radius: 4px; border: 1px solid #da70d6;">
+        <div style="font-weight: bold; color: #da70d6; font-size: 0.85rem;">3. 8-DOP</div>
+        <div id="dpg-fixed-kdop" style="font-size: 0.8rem; color: #ccc; margin-top: 4px; line-height: 1.4;">Plocha: --</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  let pts = [
+    {x: 220, y: 60},
+    {x: 290, y: 150},
+    {x: 260, y: 240},
+    {x: 220, y: 210},
+    {x: 180, y: 240},
+    {x: 160, y: 150}
+  ];
+
+  let activePt = null;
+
+  // Funkce pro exaktní výpočet kružnice ze 2 bodů
+  function circleFrom2Points(p1, p2) {
+    let cx = (p1.x + p2.x) / 2;
+    let cy = (p1.y + p2.y) / 2;
+    let r = Math.hypot(p1.x - cx, p1.y - cy);
+    return { cx, cy, r };
+  }
+
+  // Funkce pro exaktní výpočet kružnice ze 3 bodů (circumcircle)
+  function circleFrom3Points(p1, p2, p3) {
+    let d = 2 * (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y));
+    if (Math.abs(d) < 0.00001) return null; // Kolinerární body
+
+    let ux = ((p1.x*p1.x + p1.y*p1.y) * (p2.y - p3.y) + (p2.x*p2.x + p2.y*p2.y) * (p3.y - p1.y) + (p3.x*p3.x + p3.y*p3.y) * (p1.y - p2.y)) / d;
+    let uy = ((p1.x*p1.x + p1.y*p1.y) * (p3.x - p2.x) + (p2.x*p2.x + p2.y*p2.y) * (p1.x - p3.x) + (p3.x*p3.x + p3.y*p3.y) * (p2.x - p1.x)) / d;
+    let r = Math.hypot(p1.x - ux, p1.y - uy);
+    return { cx: ux, cy: uy, r: r };
+  }
+
+  // Vyhodnocení, zda kružnice obsahuje všechny body s malou tolerancí
+  function containsAll(circle, points) {
+    for (let i = 0; i < points.length; i++) {
+      if (Math.hypot(points[i].x - circle.cx, points[i].y - circle.cy) > circle.r + 0.1) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Výpočet minimální enclosing kružnice (brute-force stabilní varianta pro malé N)
+  function getMinEnclosingCircle(points) {
+    if (points.length == 0) return { cx: 0, cy: 0, r: 0 };
+    if (points.length == 1) return { cx: points[0].x, cy: points[0].y, r: 0 };
+
+    let minCircle = { cx: 0, cy: 0, r: 999999 };
+
+    // Třída 1: Kružnice definované dvojicemi bodů
+    for (let i = 0; i < points.length; i++) {
+      for (let j = i + 1; j < points.length; j++) {
+        let c = circleFrom2Points(points[i], points[j]);
+        if (c.r < minCircle.r && containsAll(c, points)) {
+          minCircle = c;
+        }
+      }
+    }
+
+    // Třída 2: Kružnice definované trojicemi bodů
+    for (let i = 0; i < points.length; i++) {
+      for (let j = i + 1; j < points.length; j++) {
+        for (let k = j + 1; k < points.length; k++) {
+          let c = circleFrom3Points(points[i], points[j], points[k]);
+          if (c && c.r < minCircle.r && containsAll(c, points)) {
+            minCircle = c;
+          }
+        }
+      }
+    }
+    return minCircle;
+  }
+
+  function render() {
+    const canvas = document.getElementById("dpg-bv-fixed-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Kreslení vnitřního polygonu sítě
+    ctx.fillStyle = "rgba(255, 255, 255, 0.04)";
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+
+    // 1. AABB
+    let minX = 999, maxX = -999, minY = 999, maxY = -999;
+    pts.forEach(p => {
+      if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x;
+      if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
+    });
+
+    ctx.strokeStyle = "#569cd6";
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(minX, minY, maxX - minX, maxY - minY);
+    let areaAABB = (maxX - minX) * (maxY - minY);
+    document.getElementById("dpg-fixed-aabb").innerHTML = 
+      `Rozměry: ${(maxX - minX).toFixed(0)} x ${(maxY - minY).toFixed(0)} px<br><b style="color:#569cd6;">Plocha: ${areaAABB.toFixed(0)} px²</b>`;
+
+    // 2. EXAKTNÍ MINIMÁLNÍ SPHERE (Welzl / Brute-force optimal)
+    let sphere = getMinEnclosingCircle(pts);
+    ctx.strokeStyle = "#ff8c00";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); 
+    ctx.arc(sphere.cx, sphere.cy, sphere.r, 0, 7); 
+    ctx.stroke();
+    
+    let areaSphere = Math.PI * sphere.r * sphere.r;
+    document.getElementById("dpg-fixed-sphere").innerHTML = 
+      `Střed: [${sphere.cx.toFixed(0)}, ${sphere.cy.toFixed(0)}], R: ${sphere.r.toFixed(1)} px<br><b style="color:#ff8c00;">Plocha: ${areaSphere.toFixed(0)} px²</b>`;
+
+    // 3. 8-DOP
+    let minD1 = 9999, maxD1 = -9999;
+    pts.forEach(p => {
+      let d1 = p.x + p.y;
+      if (d1 < minD1) minD1 = d1; if (d1 > maxD1) maxD1 = d1;
+    });
+    ctx.strokeStyle = "#da70d6";
+    ctx.lineWidth = 2;
+    let offset1 = Math.min((maxX-minX)*0.35, Math.max(10, minD1 - (minX + minY)));
+    let offset2 = Math.min((maxX-minX)*0.35, Math.max(10, (maxX + maxY) - maxD1));
+
+    ctx.beginPath();
+    ctx.moveTo(minX + offset1, minY); ctx.lineTo(maxX - offset1, minY);
+    ctx.lineTo(maxX, minY + offset1); ctx.lineTo(maxX, maxY - offset2);
+    ctx.lineTo(maxX - offset2, maxY); ctx.lineTo(minX + offset2, maxY);
+    ctx.lineTo(minX, maxY - offset1); ctx.lineTo(minX, minY + offset1);
+    ctx.closePath(); ctx.stroke();
+
+    let areaDOP = areaAABB - (offset1 * offset1 * 0.5) - (offset2 * offset2 * 0.5);
+    document.getElementById("dpg-fixed-kdop").innerHTML = 
+      `Těsnější obálka s k=8 směry.<br><b style="color:#da70d6;">Plocha: ${areaDOP.toFixed(0)} px²</b>`;
+
+    // Ovládací prvky
+    pts.forEach(p => {
+      ctx.fillStyle = (activePt == p) ? "#ff8c00" : "#ffffff";
+      ctx.strokeStyle = "#111";
+      ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, 7); ctx.fill(); ctx.stroke();
+    });
+  }
+
+  function getMouse(e, canvas) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * (canvas.width / rect.width),
+      y: (e.clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  const interval = setInterval(() => {
+    const canvas = document.getElementById("dpg-bv-fixed-canvas");
+    const rst = document.getElementById("dpg-bv-fixed-reset");
+    if (canvas) {
+      clearInterval(interval);
+
+      canvas.addEventListener("mousedown", (e) => {
+        const m = getMouse(e, canvas);
+        for (let i = 0; i < pts.length; i++) {
+          if (Math.hypot(pts[i].x - m.x, pts[i].y - m.y) < 15) {
+            activePt = pts[i];
+            render();
+            break;
+          }
+        }
+      });
+
+      canvas.addEventListener("mousemove", (e) => {
+        if (!activePt) return;
+        const m = getMouse(e, canvas);
+        activePt.x = Math.max(10, Math.min(canvas.width - 10, m.x));
+        activePt.y = Math.max(10, Math.min(canvas.height - 10, m.y));
+        render();
+      });
+
+      window.addEventListener("mouseup", () => {
+        if (activePt) { activePt = null; render(); }
+      });
+
+      rst.addEventListener("click", () => {
+        pts = [
+          {x: 220, y: 60}, {x: 280, y: 150}, {x: 260, y: 240},
+          {x: 220, y: 210}, {x: 180, y: 240}, {x: 160, y: 150}
+        ];
+        render();
+      });
+
+      render();
+    }
+  }, 100);
+})();
+</script>
