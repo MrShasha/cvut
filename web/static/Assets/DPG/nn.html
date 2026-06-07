@@ -1,0 +1,191 @@
+<div class="dpg-widget-container" style="background: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: monospace; max-width: 800px; margin: 20px auto; border: 1px solid #333; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+    <h3 style="margin: 0; color: #569cd6; font-size: 1.2rem;">NN Search: Inkrementální kd-Tree vs VP-Tree Pruning</h3>
+    <div style="font-size: 0.8rem; background: #2d2d2d; padding: 4px 8px; border-radius: 4px; color: #888;">Hýbejte kurzorem (dotaz q)</div>
+  </div>
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 340px;">
+      <div style="text-align: center; font-size: 0.85rem; color: #569cd6; margin-bottom: 6px; font-weight: bold;">kd-Tree (AABB Box Pruning)</div>
+      <canvas id="canvas-kdtree" width="360" height="360" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block; width: 100%; height: auto;"></canvas>
+    </div>
+    <div style="flex: 1; min-width: 340px;">
+      <div style="text-align: center; font-size: 0.85rem; color: #4ec9b0; margin-bottom: 6px; font-weight: bold;">VP-Tree (Vantage Point Metric Pruning)</div>
+      <canvas id="canvas-vptree" width="360" height="360" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block; width: 100%; height: auto;"></canvas>
+    </div>
+  </div>
+
+  <div style="margin-top: 15px; display: flex; gap: 15px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 280px; background: #151515; padding: 12px; border-radius: 4px; border: 1px solid #2d2d2d;">
+      <div style="font-weight: bold; color: #dcdcaa; margin-bottom: 6px; font-size: 0.85rem;">kd-Tree Matematický Stav</div>
+      <div id="math-kd" style="font-size: 0.8rem; color: #b5cea8; line-height: 1.4;">Vzdálenost q k AABB boxu...</div>
+    </div>
+    <div style="flex: 1; min-width: 280px; background: #151515; padding: 12px; border-radius: 4px; border: 1px solid #2d2d2d;">
+      <div style="font-weight: bold; color: #dcdcaa; margin-bottom: 6px; font-size: 0.85rem;">VP-Tree Matematický Stav</div>
+      <div id="math-vp" style="font-size: 0.8rem; color: #b5cea8; line-height: 1.4;">Trojúhelníková nerovnost...</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 10px; background: #2d1e2d; padding: 10px; border-radius: 4px; border: 1px solid #4a234a; font-size: 0.85rem; color: #da70d6; line-height: 1.3;">
+    <strong>Havranův zkouškový chyták:</strong> Prokletí dimenzionality (Curse of dimensionality) způsobuje, že od d ≥ 15 kd-strom degraduje na naivní vyhledávání O(N). Metrické struktury jako VP-tree operují pouze na distancích d(p,q) využívajících trojúhelníkovou nerovnost k řezání celých sférických prostorů.
+  </div>
+</div>
+
+<script>
+(function() {
+  const cvsKd = document.getElementById('canvas-kdtree');
+  const cvsVp = document.getElementById('canvas-vptree');
+  const ctxKd = cvsKd.getContext('2d');
+  const ctxVp = cvsVp.getContext('2d');
+
+  let qx = 190, qy = 160;
+
+  const pts = [
+    {x: 60, y: 80}, {x: 140, y: 50}, {x: 80, y: 220}, {x: 150, y: 290},
+    {x: 240, y: 70}, {x: 310, y: 110}, {x: 220, y: 250}, {x: 320, y: 310}
+  ];
+
+  const vpPivot = {x: 180, y: 180};
+  const vpRadius = 110; 
+
+  function getMousePos(e, canvas) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * (canvas.width / rect.width),
+      y: (e.clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  function onMove(e) {
+    const pos = getMousePos(e, e.target);
+    qx = Math.max(0, Math.min(360, pos.x));
+    qy = Math.max(0, Math.min(360, pos.y));
+    render();
+  }
+
+  cvsKd.addEventListener('mousemove', onMove);
+  cvsVp.addEventListener('mousemove', onMove);
+
+  function sqDistToBox(qx, qy, minX, minY, maxX, maxY) {
+    let dx = Math.max(0, minX - qx) + Math.max(0, qx - maxX);
+    let dy = Math.max(0, minY - qy) + Math.max(0, qy - maxY);
+    return dx * dx + dy * dy;
+  }
+
+  function render() {
+    ctxKd.clearRect(0,0,360,360);
+    ctxVp.clearRect(0,0,360,360);
+
+    let nearestPt = null;
+    let minDist = Infinity;
+    pts.forEach(p => {
+      let d = Math.hypot(p.x - qx, p.y - qy);
+      if(d < minDist) { minDist = d; nearestPt = p; }
+    });
+
+    const boxes = [
+      {minX: 0, minY: 0, maxX: 180, maxY: 180, label: 'L1 (X-levý)'},
+      {minX: 0, minY: 180, maxX: 180, maxY: 360, label: 'L2 (X-levý)'},
+      {minX: 180, minY: 0, maxX: 360, maxY: 180, label: 'R1 (X-pravý)'},
+      {minX: 180, minY: 180, maxX: 360, maxY: 360, label: 'R2 (X-pravý)'}
+    ];
+
+    ctxKd.strokeStyle = '#444';
+    ctxKd.lineWidth = 1;
+    ctxKd.beginPath(); ctxKd.moveTo(180, 0); ctxKd.lineTo(180, 360); ctxKd.stroke();
+    ctxKd.beginPath(); ctxKd.moveTo(0, 180); ctxKd.lineTo(180, 180); ctxKd.stroke();
+    ctxKd.beginPath(); ctxKd.moveTo(180, 180); ctxKd.lineTo(360, 180); ctxKd.stroke();
+
+    let kdMathTxt = `Aktuální d_min = <b>${minDist.toFixed(1)} px</b><br><br>`;
+
+    boxes.forEach(b => {
+      let dBox = Math.sqrt(sqDistToBox(qx, qy, b.minX, b.minY, b.maxX, b.maxY));
+      let prune = dBox > minDist;
+      
+      if(prune) {
+        ctxKd.fillStyle = 'rgba(255, 69, 0, 0.15)';
+        ctxKd.fillRect(b.minX, b.minY, b.maxX - b.minX, b.maxY - b.minY);
+        ctxKd.strokeStyle = '#ff4500';
+        ctxKd.lineWidth = 1;
+        ctxKd.strokeRect(b.minX, b.minY, b.maxX - b.minX, b.maxY - b.minY);
+        kdMathTxt += `<span style="color:#ff4500;">Box ${b.label}: d_box(${dBox.toFixed(0)}) > d_min → PRUNE</span><br>`;
+      } else {
+        ctxKd.fillStyle = 'rgba(86, 156, 214, 0.05)';
+        ctxKd.fillRect(b.minX, b.minY, b.maxX - b.minX, b.maxY - b.minY);
+        kdMathTxt += `<span style="color:#4ec9b0;">Box ${b.label}: d_box(${dBox.toFixed(0)}) ≤ d_min → VISIT</span><br>`;
+      }
+    });
+
+    pts.forEach(p => {
+      ctxKd.fillStyle = (p === nearestPt) ? '#ff8c00' : '#569cd6';
+      ctxKd.beginPath(); ctxKd.arc(p.x, p.y, (p === nearestPt) ? 5 : 4, 0, Math.PI*2); ctxKd.fill();
+    });
+    ctxKd.strokeStyle = 'rgba(255,140,0,0.3)';
+    ctxKd.lineWidth = 1.2;
+    ctxKd.beginPath(); ctxKd.arc(qx, qy, minDist, 0, Math.PI*2); ctxKd.stroke();
+    ctxKd.fillStyle = '#dcdcaa';
+    ctxKd.beginPath(); ctxKd.arc(qx, qy, 4, 0, Math.PI*2); ctxKd.fill();
+
+    document.getElementById('math-kd').innerHTML = kdMathTxt;
+
+    ctxVp.fillStyle = 'rgba(78, 201, 176, 0.04)';
+    ctxVp.beginPath(); ctxVp.arc(vpPivot.x, vpPivot.y, vpRadius, 0, Math.PI*2); ctxVp.fill();
+    ctxVp.strokeStyle = 'rgba(78, 201, 176, 0.4)';
+    ctxVp.lineWidth = 1.5;
+    ctxVp.setLineDash([4, 4]);
+    ctxVp.beginPath(); ctxVp.arc(vpPivot.x, vpPivot.y, vpRadius, 0, Math.PI*2); ctxVp.stroke();
+    ctxVp.setLineDash([]);
+
+    let d_q_p = Math.hypot(qx - vpPivot.x, qy - vpPivot.y);
+    
+    let pruneInner = (d_q_p > vpRadius + minDist);
+    let pruneOuter = (d_q_p < vpRadius - minDist);
+
+    if(pruneInner) {
+      ctxVp.fillStyle = 'rgba(255, 69, 0, 0.12)';
+      ctxVp.beginPath(); ctxVp.arc(vpPivot.x, vpPivot.y, vpRadius, 0, Math.PI*2); ctxVp.fill();
+    }
+    if(pruneOuter) {
+      ctxVp.fillStyle = 'rgba(255, 69, 0, 0.12)';
+      ctxVp.save();
+      ctxVp.beginPath();
+      ctxVp.rect(0,0,360,360);
+      ctxVp.arc(vpPivot.x, vpPivot.y, vpRadius, 0, Math.PI*2, true);
+      ctxVp.clip();
+      ctxVp.fill();
+      ctxVp.restore();
+    }
+
+    pts.forEach(p => {
+      let dFromPivot = Math.hypot(p.x - vpPivot.x, p.y - vpPivot.y);
+      let inside = dFromPivot <= vpRadius;
+      ctxVp.fillStyle = inside ? '#4ec9b0' : '#da70d6';
+      ctxVp.beginPath(); ctxVp.arc(p.x, p.y, (p === nearestPt) ? 5 : 4, 0, Math.PI*2); ctxVp.fill();
+    });
+
+    ctxVp.fillStyle = '#ff8c00';
+    ctxVp.beginPath(); ctxVp.arc(vpPivot.x, vpPivot.y, 5, 0, Math.PI*2); ctxVp.fill();
+    ctxVp.fillStyle = '#ffffff';
+    ctxVp.font = '10px monospace';
+    ctxVp.fillText("Pivot p", vpPivot.x - 20, vpPivot.y - 8);
+
+    ctxVp.strokeStyle = '#ce9178';
+    ctxVp.lineWidth = 1;
+    ctxVp.beginPath(); ctxVp.moveTo(vpPivot.x, vpPivot.y); ctxVp.lineTo(qx, qy); ctxVp.stroke();
+
+    ctxVp.strokeStyle = 'rgba(255,140,0,0.3)';
+    ctxVp.beginPath(); ctxVp.arc(qx, qy, minDist, 0, Math.PI*2); ctxVp.stroke();
+    ctxVp.fillStyle = '#dcdcaa';
+    ctxVp.beginPath(); ctxVp.arc(qx, qy, 4, 0, Math.PI*2); ctxVp.fill();
+
+    let vpMathTxt = `d(q, p) = <b>${d_q_p.toFixed(1)} px</b>, μ = ${vpRadius}<br>d_min = <b>${minDist.toFixed(1)} px</b><br><br>`;
+    if(pruneInner) vpMathTxt += `<span style="color:#ff4500;">Prune Vnitřní větev:<br>d(q,p) > μ + d_min (${d_q_p.toFixed(0)} > ${vpRadius+Math.round(minDist)})</span>`;
+    else if(pruneOuter) vpMathTxt += `<span style="color:#ff4500;">Prune Vnější větev:<br>d(q,p) < μ - d_min (${d_q_p.toFixed(0)} < ${vpRadius-Math.round(minDist)})</span>`;
+    else vpMathTxt += `<span style="color:#4ec9b0;">Nelze oříznout podstrom.<br>Musíme prohledat vnitřní i vnější uzly.</span>`;
+    
+    document.getElementById('math-vp').innerHTML = vpMathTxt;
+  }
+
+  render();
+})();
+</script>

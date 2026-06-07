@@ -1,0 +1,269 @@
+<div class="dpg-widget-container" style="background: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: monospace; max-width: 800px; margin: 20px auto; border: 1px solid #333; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+    <h3 style="margin: 0; color: #569cd6; font-size: 1.2rem;">Spatial Indexing: IBR vs BBR vs 2.5D</h3>
+    <div style="display: flex; gap: 8px;">
+      <button id="btn-voxel" onclick="setMode('voxel')" style="background: #0e639c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-family: monospace;">Voxel (Morton)</button>
+      <button id="btn-point" onclick="setMode('point')" style="background: #2d2d2d; color: #ccc; border: 1px solid #444; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-family: monospace;">Point Cloud (NN)</button>
+      <button id="btn-height" onclick="setMode('height')" style="background: #2d2d2d; color: #ccc; border: 1px solid #444; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-family: monospace;">2.5D Heightfield</button>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 300px; position: relative;">
+      <canvas id="canvas-spatial" width="400" height="400" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block; width: 100%; height: auto; cursor: crosshair;"></canvas>
+    </div>
+    
+    <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+      <div style="background: #151515; padding: 12px; border-radius: 4px; border: 1px solid #2d2d2d; height: 100%;">
+        <div style="font-weight: bold; color: #4ec9b0; margin-bottom: 8px;" id="mode-title">Voxel Representation (Interior-Based)</div>
+        <div id="mode-desc" style="font-size: 0.85rem; color: #b5cea8; margin-bottom: 15px; line-height: 1.4;">Z-křivka (Mortonův řád) mapuje 2D prostor na 1D paměťové pole prokládáním bitů. Zajišťuje prostorovou lokalitu dat.</div>
+        
+        <div style="border-top: 1px solid #2d2d2d; padding-top: 10px;">
+          <div style="font-size: 0.8rem; color: #888; margin-bottom: 4px;">Pozice kurzoru:</div>
+          <div id="stat-pos" style="color: #ce9178;">X: 0, Y: 0</div>
+        </div>
+        
+        <div style="margin-top: 10px;">
+          <div id="stat-math-label" style="font-size: 0.8rem; color: #888; margin-bottom: 4px;">Mortonův klíč (Binárně):</div>
+          <div id="stat-math-val" style="color: #dcdcaa; word-break: break-all; font-size: 0.9rem;">M = interleave(X, Y)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 15px; background: #151515; padding: 12px; border-radius: 4px; border: 1px solid #2d2d2d;">
+    <div style="font-size: 0.8rem; color: #888; margin-bottom: 4px;">Havranův zkouškový kontext:</div>
+    <div id="exam-context" style="font-size: 0.85rem; color: #da70d6; line-height: 1.4;">U mřížek a voxelů vyžaduje znalost prostorového uspořádání v paměti. Mortonův kód umožňuje O(1) adresaci se zachováním lokality bez nutnosti rekurzivních pointerů.</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('canvas-spatial');
+  const ctx = canvas.getContext('2d');
+  let mode = 'voxel';
+  let mouseX = 200, mouseY = 200;
+
+  const points = [];
+  for(let i=0; i<30; i++) {
+    points.push({
+      x: 40 + Math.random() * 320,
+      y: 40 + Math.random() * 320,
+      nx: Math.random() * 2 - 1,
+      ny: Math.random() * 2 - 1
+    });
+  }
+
+  const heightSamples = 16;
+  const heights = [];
+  const quadMinMax = [];
+  for(let i=0; i<heightSamples; i++) {
+    heights.push(150 + Math.sin(i*0.8)*60 + Math.cos(i*1.5)*30);
+  }
+  for(let i=0; i<heightSamples; i+=4) {
+    let chunk = heights.slice(i, i+4);
+    quadMinMax.push({min: Math.min(...chunk), max: Math.max(...chunk)});
+  }
+
+  window.setMode = function(newMode) {
+    mode = newMode;
+    ['voxel', 'point', 'height'].forEach(m => {
+      const btn = document.getElementById('btn-' + m);
+      if(m === mode) {
+        btn.style.background = '#0e639c';
+        btn.style.color = 'white';
+        btn.style.border = 'none';
+      } else {
+        btn.style.background = '#2d2d2d';
+        btn.style.color = '#ccc';
+        btn.style.border = '1px solid #444';
+      }
+    });
+    update();
+  };
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+    mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+    update();
+  });
+
+  function part1By1(x) {
+    x &= 0x0000ffff;
+    x = (x | (x << 8)) & 0x00ff00ff;
+    x = (x | (x << 4)) & 0x0f0f0f0f;
+    x = (x | (x << 2)) & 0x33333333;
+    x = (x | (x << 1)) & 0x55555555;
+    return x;
+  }
+
+  function interleave(x, y) {
+    return (part1By1(y) << 1) || part1By1(x);
+  }
+
+  function drawZCurve(x, y, w, h, depth) {
+    if (depth === 0) return [{x: x + w/2, y: y + h/2}];
+    const nw = w/2, nh = h/2;
+    return [
+      ...drawZCurve(x, y, nw, nh, depth-1),
+      ...drawZCurve(x + nw, y, nw, nh, depth-1),
+      ...drawZCurve(x, y + nh, nw, nh, depth-1),
+      ...drawZCurve(x + nw, y + nh, nw, nh, depth-1)
+    ];
+  }
+
+  function update() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    const title = document.getElementById('mode-title');
+    const desc = document.getElementById('mode-desc');
+    const sPos = document.getElementById('stat-pos');
+    const sMLabel = document.getElementById('stat-math-label');
+    const sMVal = document.getElementById('stat-math-val');
+    const sExam = document.getElementById('exam-context');
+
+    if(mode === 'voxel') {
+      title.innerText = "Voxel Representation (Interior-Based)";
+      desc.innerText = "Z-křivka (Mortonův řád) mapuje 2D prostor na 1D řetězec v paměti prokládáním bitů souřadnic. Zajišťuje skvělou prostorovou lokalitu pro cache paměť.";
+      sExam.innerText = "Havran zkouší: Výhodu IBR (Interior-Based Representation) pro rychlý 'point-inside' test (O(1) v mřížce). Sledujte, jak se mění binární kód klíče při přechodu hranic buněk.";
+      
+      const gridSize = 8;
+      const cellW = canvas.width / gridSize;
+      ctx.strokeStyle = '#222';
+      for(let i=0; i<=gridSize; i++) {
+        ctx.beginPath(); ctx.moveTo(i*cellW, 0); ctx.lineTo(i*cellW, canvas.height); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i*cellW); ctx.lineTo(canvas.width, i*cellW); ctx.stroke();
+      }
+
+      const pts = drawZCurve(0, 0, canvas.width, canvas.height, 3);
+      ctx.strokeStyle = 'rgba(86, 156, 214, 0.35)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for(let i=1; i<pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+      ctx.stroke();
+
+      let cx = Math.floor(mouseX / cellW);
+      let cy = Math.floor(mouseY / cellW);
+      cx = Math.max(0, Math.min(gridSize-1, cx));
+      cy = Math.max(0, Math.min(gridSize-1, cy));
+
+      ctx.fillStyle = 'rgba(86, 156, 214, 0.2)';
+      ctx.fillRect(cx*cellW, cy*cellW, cellW, cellW);
+      ctx.strokeStyle = '#569cd6';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(cx*cellW, cy*cellW, cellW, cellW);
+
+      sPos.innerText = `Index Buňky -> X: ${cx}, Y: ${cy}`;
+      sMLabel.innerText = "Výpočet Mortonova klíče:";
+      let mKey = interleave(cx, cy);
+      let binX = cx.toString(2).padStart(3, '0');
+      let binY = cy.toString(2).padStart(3, '0');
+      let binM = '';
+      for(let i=0; i<3; i++) binM += binY[i] + binX[i];
+      sMVal.innerHTML = `X = ${binX}₂<br>Y = ${binY}₂<br>M = Interleave(Y, X) = <b>${binM}₂ (Dec: ${mKey})</b>`;
+
+    } else if(mode === 'point') {
+      title.innerText = "Point-Based Data & Normal Estimation";
+      desc.innerText = "Reprezentace pomocí mračna bodů (Point Cloud) nemá explicitní topologii. Pro výpočet normál sítě se v okolí dotazu vyhledají nejbližší sousedé (NN) a proloží se jimi rovina (PCA).";
+      sExam.innerText = "Havran zkouší: Konverze Point Cloud -> Mesh vyžaduje intenzivní vyhledávání blízkosti. Zde vidíte k-NN dotaz (k=5) nutný pro odhad lokální tangentní roviny povrchu.";
+
+      points.forEach(p => {
+        ctx.fillStyle = '#4ec9b0';
+        ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
+      });
+
+      let idxs = points.map((p, i) => {
+        let d = Math.hypot(p.x - mouseX, p.y - mouseY);
+        return {id: i, d: d, x: p.x, y: p.y, nx: p.nx, ny: p.ny};
+      });
+      idxs.sort((a,b) => a.d - b.d);
+      let knn = idxs.slice(0, 5);
+
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(mouseX, mouseY, knn[4].d, 0, Math.PI*2); ctx.stroke();
+
+      ctx.fillStyle = 'rgba(212, 196, 110, 0.2)';
+      ctx.beginPath(); ctx.arc(mouseX, mouseY, knn[4].d, 0, Math.PI*2); ctx.fill();
+
+      knn.forEach(p => {
+        ctx.strokeStyle = '#ce9178';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(mouseX, mouseY); ctx.lineTo(p.x, p.y); ctx.stroke();
+        ctx.fillStyle = '#ff8c00';
+        ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill();
+      });
+
+      ctx.fillStyle = '#dcdcaa';
+      ctx.beginPath(); ctx.arc(mouseX, mouseY, 5, 0, Math.PI*2); ctx.fill();
+
+      sPos.innerText = `Dotaz q = [${Math.round(mouseX)}, ${Math.round(mouseY)}]`;
+      sMLabel.innerText = "Euklidovské vzdálenosti k-NN (k=5):";
+      sMVal.innerHTML = knn.map((p, i) => `d_${i+1} = ${p.d.toFixed(1)} px`).join('<br>');
+
+    } else if(mode === 'height') {
+      title.innerText = "2.5D Heightfield & Hierarchical Skip";
+      desc.innerText = "Výšková pole ukládají výšku v pravidelné 2D mřížce. Hierarchická verze (Quadtree nad mřížkou) drží min/max hodnoty v podstromech, což umožňuje paprskům bezpečně přeskakovat prázdný prostor.";
+      sExam.innerText = "Havran zkouší: Výšková pole jako specifická 2.5D struktura. Traversal využívá hierarchické obálky (min/max). Pokud paprsek mine horní bounding box (červená linka), přeskočí se celý podstrom (4 buňky).";
+
+      const step = canvas.width / heightSamples;
+      
+      ctx.fillStyle = '#1a2b1a';
+      ctx.beginPath();
+      ctx.moveTo(0, canvas.height);
+      for(let i=0; i<heightSamples; i++) {
+        ctx.lineTo(i*step, heights[i]);
+        ctx.lineTo((i+1)*step, heights[i]);
+      }
+      ctx.lineTo(canvas.width, canvas.height);
+      ctx.fill();
+
+      ctx.strokeStyle = '#4ec9b0';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      for(let i=0; i<heightSamples; i++) {
+        ctx.moveTo(i*step, heights[i]);
+        ctx.lineTo((i+1)*step, heights[i]);
+        if(i < heightSamples - 1) ctx.lineTo((i+1)*step, heights[i+1]);
+      }
+      ctx.stroke();
+
+      ctx.lineWidth = 1;
+      for(let i=0; i<quadMinMax.length; i++) {
+        let xStart = i * 4 * step;
+        let xEnd = xStart + 4 * step;
+        let q = quadMinMax[i];
+        
+        ctx.strokeStyle = 'rgba(218, 112, 214, 0.4)';
+        ctx.strokeRect(xStart, q.min, 4*step, q.max - q.min);
+        
+        ctx.fillStyle = 'rgba(218, 112, 214, 0.05)';
+        ctx.fillRect(xStart, q.min, 4*step, q.max - q.min);
+
+        ctx.strokeStyle = '#da70d6';
+        ctx.beginPath(); ctx.moveTo(xStart, q.min); ctx.lineTo(xEnd, q.min); ctx.stroke();
+      }
+
+      ctx.strokeStyle = '#dcdcaa';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(0, mouseY); ctx.lineTo(canvas.width, mouseY); ctx.stroke();
+
+      let currentSample = Math.floor(mouseX / step);
+      currentSample = Math.max(0, Math.min(heightSamples-1, currentSample));
+      let currentQuad = Math.floor(currentSample / 4);
+
+      ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+      ctx.fillRect(currentSample*step, heights[currentSample], step, canvas.height - heights[currentSample]);
+
+      sPos.innerText = `X vzorek: ${currentSample}, Segment Quadtree: ${currentQuad}`;
+      sMLabel.innerText = "Hierarchické Min/Max uzlu:";
+      sMVal.innerHTML = `Uzel Quadtree ${currentQuad} (rozsah X: ${currentQuad*4}-${currentQuad*4+3}):<br>Max Výška: ${(canvas.height - quadMinMax[currentQuad].min).toFixed(0)} m<br>Min Výška: ${(canvas.height - quadMinMax[currentQuad].max).toFixed(0)} m<br>Dotaz výšky y: ${(canvas.height - mouseY).toFixed(0)} m -> ` + 
+        (mouseY < quadMinMax[currentQuad].min ? '<b style="color:#ff4500;">SKIP NODE</b>' : '<b style="color:#4ec9b0;">TRAVERSE CHILD</b>');
+    }
+  }
+
+  update();
+})();
+</script>
