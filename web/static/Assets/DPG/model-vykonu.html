@@ -1,0 +1,182 @@
+<div class="dpg-widget-container" style="background: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: monospace; max-width: 800px; margin: 20px auto; border: 1px solid #333; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+    <h3 style="margin: 0; color: #569cd6; font-size: 1.2rem;">HDS Performance Model Engine</h3>
+    <div style="display: flex; gap: 8px;">
+      <button id="perf-btn-apriori" onclick="setPerfMode('apriori')" style="background: #0e639c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-family: monospace;">A Priori (Stavba)</button>
+      <button id="perf-btn-aposteriori" onclick="setPerfMode('aposteriori')" style="background: #2d2d2d; color: #ccc; border: 1px solid #444; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-family: monospace;">A Posteriori (Měření)</button>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 15px; background: #151515; padding: 10px; border-radius: 4px; border: 1px solid #2d2d2d; font-size: 0.85rem; color: #4ec9b0;" id="perf-mode-desc">
+    Režim A Priori: Používá se během konstrukce (např. SAH). Algoritmus odhaduje budoucí cenu na základě geometrie a pravděpodobností předtím, než reálný paprsek vůbec vystřelí.
+  </div>
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 15px;">
+    <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 10px;">
+      <div style="font-weight: bold; color: #da70d6; font-size: 0.9rem;">Algoritmus (Počty operací):</div>
+      
+      <div>
+        <label style="font-size: 0.8rem; color: #b5cea8; display: flex; justify-content: space-between;">
+          <span>N_TS (Kroky traverzování):</span><span id="val-nts">12</span>
+        </label>
+        <input type="range" id="slider-nts" min="1" max="50" value="12" style="width: 100%; cursor: pointer;">
+      </div>
+
+      <div>
+        <label style="font-size: 0.8rem; color: #b5cea8; display: flex; justify-content: space-between;">
+          <span>N_LO (Testy primitiv v listu):</span><span id="val-nlo">4</span>
+        </label>
+        <input type="range" id="slider-nlo" min="0" max="30" value="4" style="width: 100%; cursor: pointer;">
+      </div>
+
+      <div>
+        <label style="font-size: 0.8rem; color: #b5cea8; display: flex; justify-content: space-between;">
+          <span>N_ACCESS (Paměťové přístupy):</span><span id="val-naccess">2</span>
+        </label>
+        <input type="range" id="slider-naccess" min="1" max="20" value="2" style="width: 100%; cursor: pointer;">
+      </div>
+    </div>
+
+    <div style="flex: 1; min-width: 280px; display: flex; flex-direction: column; gap: 10px;">
+      <div style="font-weight: bold; color: #4ec9b0; font-size: 0.9rem;">Hardware & Primitiva (Jednotkové ceny):</div>
+      
+      <div>
+        <label style="font-size: 0.8rem; color: #b5cea8; display: flex; justify-content: space-between;">
+          <span>C_TS (Cena kroku v uzlu):</span><span id="val-cts">1.5 ns</span>
+        </label>
+        <input type="range" id="slider-cts" min="0.5" max="5" step="0.1" value="1.5" style="width: 100%; cursor: pointer;">
+      </div>
+
+      <div>
+        <label style="font-size: 0.8rem; color: #b5cea8; display: flex; justify-content: space-between;">
+          <span>C_LO (Cena průsečíku primitiva):</span><span id="val-clo">4.0 ns</span>
+        </label>
+        <input type="range" id="slider-clo" min="1.0" max="15" step="0.5" value="4.0" style="width: 100%; cursor: pointer;">
+      </div>
+
+      <div>
+        <label style="font-size: 0.8rem; color: #b5cea8; display: flex; justify-content: space-between;">
+          <span>C_ACCESS (Cena čtení z RAM/Cache):</span><span id="val-caccess">10 ns</span>
+        </label>
+        <input type="range" id="slider-caccess" min="2" max="100" step="1" value="10" style="width: 100%; cursor: pointer;">
+      </div>
+    </div>
+  </div>
+
+  <div style="background: #111; padding: 15px; border-radius: 4px; border: 1px solid #444; margin-bottom: 15px;">
+    <div style="font-size: 0.85rem; color: #888; margin-bottom: 10px; display: flex; justify-content: space-between;">
+      <span>Vizuální rozpad celkové ceny dotazu:</span>
+      <span id="total-cost-badge" style="font-size: 1.1rem; color: #ff8c00; font-weight: bold;">C = 0.00 ns</span>
+    </div>
+    <div style="height: 30px; display: flex; border-radius: 4px; overflow: hidden; background: #222;">
+      <div id="bar-ct" style="background: #569cd6; width: 33%; transition: width 0.1s; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: white; font-weight: bold;">CT</div>
+      <div id="bar-cl" style="background: #4ec9b0; width: 33%; transition: width 0.1s; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: white; font-weight: bold;">CL</div>
+      <div id="bar-cr" style="background: #ce9178; width: 34%; transition: width 0.1s; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: white; font-weight: bold;">CR</div>
+    </div>
+  </div>
+
+  <div style="background: #151515; padding: 12px; border-radius: 4px; border: 1px solid #2d2d2d; font-size: 0.85rem; line-height: 1.5;">
+    <div style="font-weight: bold; color: #dcdcaa; margin-bottom: 6px;">Live kalkulace modelu:</div>
+    <div id="perf-math-equations">
+      C_T = N_TS * C_TS = ...<br>
+      C_L = N_LO * C_LO = ...<br>
+      C_R = N_ACCESS * C_ACCESS = ...
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  let perfMode = 'apriori';
+
+  const inputs = [
+    'slider-nts', 'slider-nlo', 'slider-naccess',
+    'slider-cts', 'slider-clo', 'slider-caccess'
+  ];
+
+  inputs.forEach(id => {
+    document.getElementById(id).addEventListener('input', calculatePerformance);
+  });
+
+  window.setPerfMode = function(mode) {
+    perfMode = mode;
+    const btnPri = document.getElementById('perf-btn-apriori');
+    const btnPost = document.getElementById('perf-btn-aposteriori');
+    const desc = document.getElementById('perf-mode-desc');
+
+    if(mode === 'apriori') {
+      btnPri.style.background = '#0e639c'; btnPri.style.color = 'white'; btnPri.style.border = 'none';
+      btnPost.style.background = '#2d2d2d'; btnPost.style.color = '#ccc'; btnPost.style.border = '1px solid #444';
+      desc.innerText = "Režim A Priori: Používá se během konstrukce (např. SAH). Algoritmus odhaduje budoucí cenu na základě geometrie scény a geometrických pravděpodobností předtím, než reálný paprsek vůbec vystřelí.";
+      
+      // Nastavit modelové teoretické hodnoty pro SAH odhad
+      document.getElementById('slider-cts').value = 1.0;
+      document.getElementById('slider-clo').value = 2.0;
+      document.getElementById('slider-caccess').value = 0.0; // Při a priori se s LL-cache často neuvažuje přímo
+    } else {
+      btnPost.style.background = '#0e639c'; btnPost.style.color = 'white'; btnPost.style.border = 'none';
+      btnPri.style.background = '#2d2d2d'; btnPri.style.color = '#ccc'; btnPri.style.border = '1px solid #444';
+      desc.innerText = "Režim A Posteriori: Skutečné profilování hotové struktury na reálném hardwaru. Zohledňuje faktory jako penalizace za chybné větvení (Branch prediction) a hlavně latenci paměťové hierarchie (Cache Misses v C_ACCESS).";
+      
+      // Zvednout latenci paměti, protože RAM simuluje reálný HW dopad
+      document.getElementById('slider-caccess').value = 40;
+    }
+    calculatePerformance();
+  };
+
+  function calculatePerformance() {
+    const nts = parseInt(document.getElementById('slider-nts').value);
+    const nlo = parseInt(document.getElementById('slider-nlo').value);
+    const naccess = parseInt(document.getElementById('slider-naccess').value);
+    
+    const cts = parseFloat(document.getElementById('slider-cts').value);
+    const clo = parseFloat(document.getElementById('slider-clo').value);
+    const caccess = parseFloat(document.getElementById('slider-caccess').value);
+
+    // Update textů u sliderů
+    document.getElementById('val-nts').innerText = nts;
+    document.getElementById('val-nlo').innerText = nlo;
+    document.getElementById('val-naccess').innerText = naccess;
+    document.getElementById('val-cts').innerText = cts.toFixed(1) + " ns";
+    document.getElementById('val-clo').innerText = clo.toFixed(1) + " ns";
+    document.getElementById('val-caccess').innerText = caccess + " ns";
+
+    // Výpočet dílčích složek ceny
+    const cT = nts * cts;
+    const cL = nlo * clo;
+    const cR = naccess * caccess;
+    const cTotal = cT + cL + cR;
+
+    // Procentuální vyjádření pro graf
+    const pctT = cTotal > 0 ? (cT / cTotal) * 100 : 0;
+    const pctL = cTotal > 0 ? (cL / cTotal) * 100 : 0;
+    const pctR = cTotal > 0 ? (cR / cTotal) * 100 : 0;
+
+    // Update grafických sloupců
+    const barT = document.getElementById('bar-ct');
+    const barL = document.getElementById('bar-cl');
+    const barR = document.getElementById('bar-cr');
+
+    barT.style.width = pctT + '%';
+    barT.innerText = pctT > 10 ? `C_T (${pctT.toFixed(0)}%)` : '';
+    
+    barL.style.width = pctL + '%';
+    barL.innerText = pctL > 10 ? `C_L (${pctL.toFixed(0)}%)` : '';
+    
+    barR.style.width = pctR + '%';
+    barR.innerText = pctR > 10 ? `C_R (${pctR.toFixed(0)}%)` : '';
+
+    // Celková cena
+    document.getElementById('total-cost-badge').innerText = `C = ${cTotal.toFixed(2)} ns`;
+
+    // Rovnice matematického feedbacku
+    document.getElementById('perf-math-equations').innerHTML = 
+      `C_T (Traverzování) = N_TS * C_TS = ${nts} * ${cts.toFixed(1)} ns = <span style="color:#569cd6; font-weight:bold;">${cT.toFixed(2)} ns</span><br>` +
+      `C_L (Listy / Primitiva) = N_LO * C_LO = ${nlo} * ${clo.toFixed(1)} ns = <span style="color:#4ec9b0; font-weight:bold;">${cL.toFixed(2)} ns</span><br>` +
+      `C_R (Paměťový přístup) = N_ACCESS * C_ACCESS = ${naccess} * ${caccess} ns = <span style="color:#ce9178; font-weight:bold;">${cR.toFixed(2)} ns</span><br><br>` +
+      `<b style="color:#ff8c00;">Celková vypočtená cena: C = ${cT.toFixed(2)} + ${cL.toFixed(2)} + ${cR.toFixed(2)} = ${cTotal.toFixed(2)} ns per dotaz</b>`;
+  }
+
+  calculatePerformance();
+})();
+</script>
