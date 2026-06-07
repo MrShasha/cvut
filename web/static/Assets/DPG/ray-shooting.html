@@ -1,0 +1,132 @@
+<div class="dpg-widget-container" style="background: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: monospace; max-width: 800px; margin: 20px auto; border: 1px solid #333; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+  <div style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="margin: 0; color: #569cd6; font-size: 1.2rem;">Ray Shooting: SAH Cost & Traversal Engine</h3>
+    <span style="font-size: 0.8rem; color: #cd5c5c; background: #2d2d2d; padding: 3px 8px; border-radius: 4px;">Havran Core téma</span>
+  </div>
+
+  <div style="margin-bottom: 15px;">
+    <label style="font-size: 0.85rem; color: #b5cea8;">Poloha dělicí roviny (X_split):</label>
+    <input type="range" id="sah-split-slider" min="60" max="340" value="200" style="width: 100%; margin-top: 5px; display: block; cursor: pointer;">
+  </div>
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 380px;">
+      <canvas id="canvas-ray" width="400" height="260" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block; width: 100%; height: auto;"></canvas>
+    </div>
+    
+    <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+      <div style="background: #151515; padding: 12px; border-radius: 4px; border: 1px solid #2d2d2d; font-size: 0.85rem; height: 100%;">
+        <div style="font-weight: bold; color: #4ec9b0; margin-bottom: 8px;">1. Výpočet Heuristiky (SAH Cost)</div>
+        <div id="sah-math" style="line-height: 1.4; color: #ce9178; margin-bottom: 12px;">C(x) = ...</div>
+        
+        <div style="font-weight: bold; color: #569cd6; border-top: 1px solid #2d2d2d; padding-top: 8px; margin-bottom: 6px;">2. Traversal Logika Paprsku</div>
+        <div id="traversal-math" style="line-height: 1.4; color: #dcdcaa;">t_split = ...</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 15px; background: #151515; padding: 12px; border-radius: 4px; border: 1px solid #2d2d2d; font-size: 0.85rem; line-height: 1.4;">
+    <span style="color: #888;">Stav Traversal rekurze (Zásobník):</span>
+    <div id="stack-visual" style="margin-top: 5px; font-weight: bold;">[Kořen: t_entry=0.0, t_exit=1.0]</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('canvas-ray');
+  const ctx = canvas.getContext('2d');
+  const slider = document.getElementById('sah-split-slider');
+
+  const ray = { ox: 20, oy: 130, dx: 1, dy: 0 }; 
+  const tris = [
+    {x1: 70, y1: 40, x2: 90, y2: 100, label: 'T1'},
+    {x1: 110, y1: 160, x2: 150, y2: 220, label: 'T2'},
+    {x1: 250, y1: 50, x2: 290, y2: 120, label: 'T3'},
+    {x1: 310, y1: 180, x2: 350, y2: 240, label: 'T4'},
+    {x1: 330, y1: 70, x2: 370, y2: 140, label: 'T5'}
+  ];
+
+  slider.addEventListener('input', update);
+
+  function update() {
+    let xSplit = parseFloat(slider.value);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(40, 20, 320, 220);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '10px monospace';
+    ctx.fillText("Parent AABB", 45, 32);
+
+    ctx.strokeStyle = '#da70d6';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(xSplit, 20); ctx.lineTo(xSplit, 240); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#da70d6';
+    ctx.fillText(`x_split = ${xSplit}`, xSplit - 35, 15);
+
+    let nL = 0, nR = 0;
+    tris.forEach(t => {
+      let inL = (t.x1 < xSplit);
+      let inR = (t.x2 > xSplit);
+      if(inL) nL++;
+      if(inR) nR++;
+
+      ctx.strokeStyle = '#4ec9b0';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(t.x1, t.y1); ctx.lineTo(t.x2, t.y2); ctx.stroke();
+      ctx.fillStyle = '#888';
+      ctx.fillText(t.label, t.x1, t.y1 - 4);
+    });
+
+    ctx.strokeStyle = '#ff8c00';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(ray.ox, ray.oy); ctx.lineTo(380, ray.oy); ctx.stroke();
+    ctx.fillStyle = '#ff8c00';
+    ctx.beginPath(); ctx.arc(ray.ox, ray.oy, 4, 0, Math.PI*2); ctx.fill();
+    ctx.fillText("Paprsek", ray.ox, ray.oy - 8);
+
+    let saParent = 320; 
+    let saL = xSplit - 40;
+    let saR = 360 - xSplit;
+    let pL = saL / saParent;
+    let pR = saR / saParent;
+
+    let cT = 1.0, cI = 1.5; 
+    let cost = cT + cI * (pL * nL + pR * nR);
+
+    document.getElementById('sah-math').innerHTML = 
+      `P_L = SA_L / SA_P = ${pL.toFixed(2)} (N_L = ${nL})<br>` +
+      `P_R = SA_R / SA_P = ${pR.toFixed(2)} (N_R = ${nR})<br>` +
+      `<b style="color:#ff8c00;">Cena C(x) = ${cT} + ${cI}·(${pL.toFixed(2)}·${nL} + ${pR.toFixed(2)}·${nR}) = ${cost.toFixed(2)}</b>`;
+
+    let tEntry = 0.0;
+    let tExit = 1.0;
+    let totalXDist = 320; 
+    let tSplit = (xSplit - 40) / totalXDist;
+
+    let travText = `t_entry = ${tEntry.toFixed(2)}, t_exit = ${tExit.toFixed(2)}<br>` +
+                   `<b style="color:#569cd6;">t_split = ${tSplit.toFixed(2)}</b><br><br>`;
+    
+    let stackText = "";
+
+    if (tSplit > tExit) {
+      travText += `<span style="color:#ff4500;">t_split > t_exit → Pouze LEVÝ (near)</span>`;
+      stackText = `<span style="color:#4ec9b0;">[Levý uzel: t=0.0 až ${tExit.toFixed(2)}]</span>`;
+    } else if (tSplit < tEntry) {
+      travText += `<span style="color:#ff4500;">t_split < t_entry → Pouze PRAVÝ (far)</span>`;
+      stackText = `<span style="color:#4ec9b0;">[Pravý uzel: t=${tEntry.toFixed(2)} až 1.0]</span>`;
+    } else {
+      travText += `<span style="color:#4ec9b0;">Procházet OBA: Levý (near) pak Pravý (far)</span>`;
+      stackText = `<span style="color:#569cd6;">1. [Levý: t=0.0 až ${tSplit.toFixed(2)}]</span><br><span style="color:#888;">2. [Pravý: t=${tSplit.toFixed(2)} až 1.0] (Zásobník)</span>`;
+    }
+
+    document.getElementById('traversal-math').innerHTML = travText;
+    document.getElementById('stack-visual').innerHTML = stackText;
+  }
+
+  update();
+})();
+</script>
