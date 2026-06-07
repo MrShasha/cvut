@@ -1,0 +1,164 @@
+<div class="dpg-widget-container" style="background: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: monospace; max-width: 800px; margin: 20px auto; border: 1px solid #333; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+  <div style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="margin: 0; color: #569cd6; font-size: 1.2rem;">Collision Detection: BVH Refitting & Cost</h3>
+    <span style="font-size: 0.8rem; color: #a4c2f4; background: #2d2d2d; padding: 3px 8px; border-radius: 4px;">Pohybujte jezdcem deformace</span>
+  </div>
+
+  <div style="margin-bottom: 15px;">
+    <label style="font-size: 0.85rem; color: #b5cea8;">Deformace geometrie (Morfing vrcholů spodního objektu):</label>
+    <input type="range" id="cd-morph-slider" min="0" max="100" value="0" style="width: 100%; margin-top: 5px; display: block; cursor: pointer;">
+  </div>
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 360px;">
+      <canvas id="canvas-cd" width="380" height="300" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block; width: 100%; height: auto;"></canvas>
+    </div>
+    
+    <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; justify-content: space-between;">
+      <div style="background: #151515; padding: 12px; border-radius: 4px; border: 1px solid #2d2d2d; font-size: 0.85rem; height: 100%;">
+        <div style="font-weight: bold; color: #4ec9b0; margin-bottom: 6px;">Stav Kolize (BVH Intersection)</div>
+        <div id="cd-status" style="font-size: 1.1rem; font-weight: bold; margin-bottom: 12px;">KOLIZE: NE</div>
+
+        <div style="font-weight: bold; color: #da70d6; border-top: 1px solid #2d2d2d; padding-top: 8px; margin-bottom: 6px;">Havranův Cenový Model CD</div>
+        <div style="color: #b5cea8; line-height: 1.4;">
+          $$C_{total} = N_V \cdot C_V + N_P \cdot C_P + N_U \cdot C_U$$
+          <div id="cd-cost-breakdown" style="margin-top: 8px; color: #ce9178;">
+            N_V (testy obálek): 0<br>
+            N_P (testy primitiv): 0<br>
+            N_U (update/refit uzlů): 0
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 15px; background: #2d1e1e; padding: 10px; border-radius: 4px; border: 1px solid #5a2323; font-size: 0.85rem; color: #f44336; line-height: 1.3;">
+    <strong>Zkouškový detail (Refitting):</strong> Pro deformovatelné objekty (např. animované postavy) je kompletní re-build BVH stromu příliš drahý. Využívá se bottom-up <i>Refit</i> – listy se přizpůsobí novým pozicím vrcholů a rodičovské AABB se exaktně přepočítají jako sjednocení obálek svých dětí: $AABB(parent) = AABB(child_1) \cup AABB(child_2)$.
+  </div>
+</div>
+
+<script>
+(function() {
+  const canvas = document.getElementById('canvas-cd');
+  const ctx = canvas.getContext('2d');
+  const slider = document.getElementById('cd-morph-slider');
+
+  const objA = {
+    t1: {x1: 140, y1: 50, x2: 190, y2: 100, x3: 130, y3: 110},
+    t2: {x1: 190, y1: 100, x2: 240, y2: 60, x3: 250, y3: 120}
+  };
+
+  const objBBase = {
+    t1: {x1: 150, y1: 220, x2: 200, y2: 170, x3: 130, y3: 160},
+    t2: {x1: 200, y1: 170, x2: 260, y2: 230, x3: 270, y3: 160}
+  };
+
+  slider.addEventListener('input', update);
+
+  function getAABB(t1, t2) {
+    return {
+      minX: Math.min(t1.x1, t1.x2, t1.x3, t2.x1, t2.x2, t2.x3),
+      minY: Math.min(t1.y1, t1.y2, t1.y3, t2.y1, t2.y2, t2.y3),
+      maxX: Math.max(t1.x1, t1.x2, t1.x3, t2.x1, t2.x2, t2.x3),
+      maxY: Math.max(t1.y1, t1.y2, t1.y3, t2.y1, t2.y2, t2.y3)
+    };
+  }
+
+  function getTriAABB(t) {
+    return {
+      minX: Math.min(t.x1, t.x2, t.x3),
+      minY: Math.min(t.y1, t.y2, t.y3),
+      maxX: Math.max(t.x1, t.x2, t.x3),
+      maxY: Math.max(t.y1, t.y2, t.y3)
+    };
+  }
+
+  function intersectAABB(b1, b2) {
+    return !(b2.minX > b1.maxX || b2.maxX < b1.minX || b2.minY > b1.maxY || b2.maxY < b1.minY);
+  }
+
+  function update() {
+    let morph = parseFloat(slider.value);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    let offsetY = - (morph * 0.55); 
+    let objB = {
+      t1: {x1: objBBase.t1.x1, y1: objBBase.t1.y1 + offsetY, x2: objBBase.t1.x2, y2: objBBase.t1.y2 + offsetY, x3: objBBase.t1.x3, y3: objBBase.t1.y3 + offsetY},
+      t2: {x1: objBBase.t2.x1, y1: objBBase.t2.y1 + offsetY, x2: objBBase.t2.x2, y2: objBBase.t2.y2 + offsetY, x3: objBBase.t2.x3, y3: objBBase.t2.y3 + offsetY}
+    };
+
+    let boxA_Root = getAABB(objA.t1, objA.t2);
+    let boxA_T1 = getTriAABB(objA.t1);
+    let boxA_T2 = getTriAABB(objA.t2);
+
+    let boxB_T1 = getTriAABB(objB.t1);
+    let boxB_T2 = getTriAABB(objB.t2);
+    let boxB_Root = {
+      minX: Math.min(boxB_T1.minX, boxB_T2.minX),
+      minY: Math.min(boxB_T1.minY, boxB_T2.minY),
+      maxX: Math.max(boxB_T1.maxX, boxB_T2.maxX),
+      maxY: Math.max(boxB_T1.maxY, boxB_T2.maxY)
+    };
+
+    let nV = 1; 
+    let nP = 0;
+    let nU = morph > 0 ? 3 : 0; 
+    let collision = false;
+
+    let rootOverlap = intersectAABB(boxA_Root, boxB_Root);
+
+    ctx.lineWidth = 1;
+    if (rootOverlap) {
+      nV += 4; 
+      let overlap11 = intersectAABB(boxA_T1, boxB_T1);
+      let overlap12 = intersectAABB(boxA_T1, boxB_T2);
+      let overlap21 = intersectAABB(boxA_T2, boxB_T1);
+      let overlap22 = intersectAABB(boxA_T2, boxB_T2);
+
+      if (overlap11 || overlap12 || overlap21 || overlap22) {
+        nP = 2; 
+        if (morph > 75) collision = true; 
+      }
+
+      ctx.strokeStyle = 'rgba(255, 69, 0, 0.4)';
+      ctx.strokeRect(boxA_Root.minX, boxA_Root.minY, boxA_Root.maxX - boxA_Root.minX, boxA_Root.maxY - boxA_Root.minY);
+      ctx.strokeRect(boxB_Root.minX, boxB_Root.minY, boxB_Root.maxX - boxB_Root.minX, boxB_Root.maxY - boxB_Root.minY);
+    } else {
+      ctx.strokeStyle = 'rgba(86, 156, 214, 0.3)';
+      ctx.strokeRect(boxA_Root.minX, boxA_Root.minY, boxA_Root.maxX - boxA_Root.minX, boxA_Root.maxY - boxA_Root.minY);
+      ctx.strokeRect(boxB_Root.minX, boxB_Root.minY, boxB_Root.maxX - boxB_Root.minX, boxB_Root.maxY - boxB_Root.minY);
+    }
+
+    ctx.fillStyle = 'rgba(86, 156, 214, 0.3)';
+    ctx.beginPath();
+    ctx.moveTo(objA.t1.x1, objA.t1.y1); ctx.lineTo(objA.t1.x2, objA.t1.y2); ctx.lineTo(objA.t1.x3, objA.t1.y3); ctx.closePath(); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(objA.t2.x1, objA.t2.y1); ctx.lineTo(objA.t2.x2, objA.t2.y2); ctx.lineTo(objA.t2.x3, objA.t2.y3); ctx.closePath(); ctx.fill();
+
+    ctx.fillStyle = collision ? 'rgba(255, 69, 0, 0.5)' : 'rgba(78, 201, 176, 0.3)';
+    ctx.beginPath();
+    ctx.moveTo(objB.t1.x1, objB.t1.y1); ctx.lineTo(objB.t1.x2, objB.t1.y2); ctx.lineTo(objB.t1.x3, objB.t1.y3); ctx.closePath(); ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(objB.t2.x1, objB.t2.y1); ctx.lineTo(objB.t2.x2, objB.t2.y2); ctx.lineTo(objB.t2.x3, objB.t2.y3); ctx.closePath(); ctx.fill();
+
+    const statusEl = document.getElementById('cd-status');
+    if (collision) {
+      statusEl.innerText = "KOLIZE: GEOMETRICKÝ PRŮSEČÍK";
+      statusEl.style.color = "#ff4500";
+    } else if (rootOverlap) {
+      statusEl.innerText = "PRŮSEČÍK OBÁLEK (AABB)";
+      statusEl.style.color = "#ff8c00";
+    } else {
+      statusEl.innerText = "BEZ KOLIZE";
+      statusEl.style.color = "#4ec9b0";
+    }
+
+    document.getElementById('cd-cost-breakdown').innerHTML = 
+      `N_V (testované BV páry): ${nV}<br>` +
+      `N_P (testy primitiv): ${nP}<br>` +
+      `N_U (refitované uzly odspodu): ${nU}`;
+  }
+
+  update();
+})();
+</script>

@@ -309,10 +309,10 @@
             </marker>
           </defs>
 
-          <rect class="box" x="245" y="105" width="390" height="310" rx="8"></rect>
-          <text class="box-label" x="257" y="127">single deployable, strict module boundaries</text>
+          <rect class="box" x="220" y="105" width="415" height="310" rx="8"></rect>
+          <text class="box-label" x="232" y="127">single deployable / one codebase, strict module boundaries</text>
 
-          <path class="edge  primary" d="M 148.0 260.0 L 260.0 260.0" style="animation-delay:0.00s"></path>
+          <path class="edge  primary" d="M 148.0 260.0 L 245.0 260.0" style="animation-delay:0.00s"></path>
 
           <g class="edge-label-group">
             <rect class="edge-label-bg" x="164" y="248" width="80" height="22" rx="5"></rect>
@@ -345,12 +345,12 @@
 
           <g class="node actor">
             <rect x="20" y="233" width="128" height="54" rx="7"></rect>
-            <text class="title" x="84" y="253">Client</text>
-            <text class="sub" x="84" y="274">UI</text>
+            <text class="title" x="84" y="253">User</text>
+            <text class="sub" x="84" y="274">browser/client</text>
           </g>
           <g class="node core">
             <rect x="260" y="233" width="120" height="54" rx="7"></rect>
-            <text class="title" x="320" y="253">App shell</text>
+            <text class="title" x="320" y="253">UI + shell</text>
             <text class="sub" x="320" y="274">routing</text>
           </g>
           <g class="node core">
@@ -374,7 +374,7 @@
             <text class="sub" x="760" y="274">schemas/tables</text>
           </g>
         </svg>
-        <div class="caption"><b>request:</b> Klient stále volá jednu aplikaci.</div>
+        <div class="caption"><b>request:</b> Uživatel stále volá jednu aplikaci; UI je uvnitř modular monolitu.</div>
       </section>
 
       <aside class="notes">
@@ -396,7 +396,7 @@
         </section>
         <section>
           <div class="note-title">Flow</div>
-          <ol class="flow"><li><span>1</span>Klient stále volá jednu aplikaci.</li><li><span>2</span>Application shell vybere správný business modul.</li><li><span>3</span>Moduly mají veřejná rozhraní.</li><li><span>4</span>Moduly nesahají do cizích interních detailů.</li><li><span>5</span>Deployment zůstává jeden.</li></ol>
+          <ol class="flow"><li><span>1</span>Uživatel stále volá jednu aplikaci.</li><li><span>2</span>UI a application shell jsou součást stejného deployable unit.</li><li><span>3</span>Shell vybere správný business modul.</li><li><span>4</span>Moduly nesahají do cizích interních detailů.</li><li><span>5</span>Deployment zůstává jeden.</li></ol>
         </section>
       </aside>
     </main>
