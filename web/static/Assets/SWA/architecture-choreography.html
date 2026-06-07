@@ -309,71 +309,76 @@
             </marker>
           </defs>
 
-
-          <path class="edge async primary" d="M 199.0 260.0 L 352.5 260.0" style="animation-delay:0.00s"></path>
+          <path class="edge async primary" d="M 205 140 L 385 140" style="animation-delay:0.00s"></path>
 
           <g class="edge-label-group">
-            <rect class="edge-label-bg" x="235.75" y="248" width="80" height="22" rx="5"></rect>
-            <text class="edge-label" x="275.75" y="260">OrderCreated</text>
+            <rect class="edge-label-bg" x="230" y="128" width="128" height="22" rx="5"></rect>
+            <text class="edge-label" x="294" y="140">publish OrderCreated</text>
           </g>
-          <path class="edge async " d="M 501.4 223.0 L 657.9 142.0" style="animation-delay:0.28s"></path>
+          <path class="edge async" d="M 535 140 L 665 140" style="animation-delay:0.28s"></path>
 
           <g class="edge-label-group">
-            <rect class="edge-label-bg" x="539.65" y="170.5" width="80" height="22" rx="5"></rect>
-            <text class="edge-label" x="579.65" y="182.5">event</text>
+            <rect class="edge-label-bg" x="552" y="128" width="96" height="22" rx="5"></rect>
+            <text class="edge-label" x="600" y="140">subscribe</text>
           </g>
-          <path class="edge async " d="M 507.5 260.0 L 696.0 260.0" style="animation-delay:0.56s"></path>
+          <path class="edge async" d="M 535 250 L 665 250" style="animation-delay:0.56s"></path>
 
           <g class="edge-label-group">
-            <rect class="edge-label-bg" x="561.75" y="248" width="80" height="22" rx="5"></rect>
-            <text class="edge-label" x="601.75" y="260">event</text>
+            <rect class="edge-label-bg" x="552" y="238" width="96" height="22" rx="5"></rect>
+            <text class="edge-label" x="600" y="250">subscribe</text>
           </g>
-          <path class="edge async " d="M 657.9 142.0 L 501.4 223.0" style="animation-delay:0.84s"></path>
+          <path class="edge async" d="M 665 190 L 535 190" style="animation-delay:0.84s"></path>
 
           <g class="edge-label-group">
-            <rect class="edge-label-bg" x="539.65" y="170.5" width="80" height="22" rx="5"></rect>
-            <text class="edge-label" x="579.65" y="182.5">PaymentDone</text>
+            <rect class="edge-label-bg" x="548" y="178" width="104" height="22" rx="5"></rect>
+            <text class="edge-label" x="600" y="190">PaymentDone</text>
           </g>
-          <path class="edge async " d="M 696.0 260.0 L 507.5 260.0" style="animation-delay:1.12s"></path>
+          <path class="edge async" d="M 665 300 L 535 300" style="animation-delay:1.12s"></path>
 
           <g class="edge-label-group">
-            <rect class="edge-label-bg" x="561.75" y="248" width="80" height="22" rx="5"></rect>
-            <text class="edge-label" x="601.75" y="260">Reserved</text>
+            <rect class="edge-label-bg" x="560" y="288" width="80" height="22" rx="5"></rect>
+            <text class="edge-label" x="600" y="300">Reserved</text>
           </g>
-          <path class="edge async " d="M 501.4 297.0 L 657.9 378.0" style="animation-delay:1.40s"></path>
+          <path class="edge async" d="M 535 390 L 665 390" style="animation-delay:1.40s"></path>
 
           <g class="edge-label-group">
-            <rect class="edge-label-bg" x="539.65" y="325.5" width="80" height="22" rx="5"></rect>
-            <text class="edge-label" x="579.65" y="337.5">notify</text>
+            <rect class="edge-label-bg" x="552" y="378" width="96" height="22" rx="5"></rect>
+            <text class="edge-label" x="600" y="390">subscribe</text>
           </g>
 
           <g class="node service">
-            <rect x="71" y="233" width="128" height="54" rx="7"></rect>
-            <text class="title" x="135" y="253">Order</text>
-            <text class="sub" x="135" y="274">OrderCreated</text>
+            <rect x="77" y="113" width="128" height="54" rx="7"></rect>
+            <text class="title" x="141" y="133">Order</text>
+            <text class="sub" x="141" y="154">publishes event</text>
           </g>
           <g class="node broker">
-            <rect x="352.5" y="223" width="155" height="74" rx="7"></rect>
-            <text class="title" x="430" y="253">Event Broker</text>
-            <text class="sub" x="430" y="274">topics</text>
+            <rect x="385" y="70" width="150" height="360" rx="9"></rect>
+            <line x1="410" y1="95" x2="410" y2="405" stroke="#8b5cf6" stroke-width="4" stroke-linecap="round"></line>
+            <circle cx="410" cy="140" r="5" fill="#8b5cf6"></circle>
+            <circle cx="410" cy="190" r="5" fill="#8b5cf6"></circle>
+            <circle cx="410" cy="250" r="5" fill="#8b5cf6"></circle>
+            <circle cx="410" cy="300" r="5" fill="#8b5cf6"></circle>
+            <circle cx="410" cy="390" r="5" fill="#8b5cf6"></circle>
+            <text class="title" x="475" y="236">Event Broker</text>
+            <text class="sub" x="475" y="257">topics / event bus</text>
           </g>
           <g class="node service">
-            <rect x="646" y="88" width="128" height="54" rx="7"></rect>
-            <text class="title" x="710" y="108">Payment</text>
-            <text class="sub" x="710" y="129">PaymentDone</text>
+            <rect x="665" y="113" width="128" height="54" rx="7"></rect>
+            <text class="title" x="729" y="133">Payment</text>
+            <text class="sub" x="729" y="154">reacts + emits</text>
           </g>
           <g class="node service">
-            <rect x="696" y="233" width="128" height="54" rx="7"></rect>
-            <text class="title" x="760" y="253">Inventory</text>
-            <text class="sub" x="760" y="274">Reserved</text>
+            <rect x="665" y="223" width="128" height="54" rx="7"></rect>
+            <text class="title" x="729" y="243">Inventory</text>
+            <text class="sub" x="729" y="264">reacts + emits</text>
           </g>
           <g class="node service">
-            <rect x="646" y="378" width="128" height="54" rx="7"></rect>
-            <text class="title" x="710" y="398">Notification</text>
-            <text class="sub" x="710" y="419">EmailSent</text>
+            <rect x="665" y="363" width="128" height="54" rx="7"></rect>
+            <text class="title" x="729" y="383">Notification</text>
+            <text class="sub" x="729" y="404">reacts only</text>
           </g>
         </svg>
-        <div class="caption"><b>OrderCreated:</b> Order publikuje událost.</div>
+        <div class="caption"><b>Event broker:</b> služby publikují a odebírají eventy; žádná služba neřídí celý proces.</div>
       </section>
 
       <aside class="notes">
