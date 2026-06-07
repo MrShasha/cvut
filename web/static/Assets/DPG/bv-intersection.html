@@ -1,0 +1,225 @@
+<div id="dpg-ray-aabb-root" style="background: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: monospace; max-width: 900px; margin: 20px auto; border: 1px solid #333; user-select: none;">
+  
+  <div style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="margin: 0; color: #569cd6; font-size: 1.2rem;">Ray vs. AABB Intersection: Slab Test</h3>
+    <span style="font-size: 0.8rem; color: #cd5c5c; background: #2d2d2d; padding: 3px 8px; border-radius: 4px;">Varianta A & B</span>
+  </div>
+
+  <div style="margin-bottom: 15px; background: #151515; padding: 10px; border-radius: 4px; border: 1px solid #2d2d2d; font-size: 0.85rem;">
+    <strong>UX Ovládání:</strong> Tažením za velký oranžový bod posunuješ počátek paprsku $O$. Tažením za malý oranžový hrot šipky měníš směr $D$. Sleduj live výpočet parametrů $t$ pro jednotlivé osy (slaby).
+  </div>
+
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1.2; min-width: 320px;">
+      <canvas id="dpg-ray-canvas" width="450" height="350" style="background: #111; border: 1px solid #444; border-radius: 4px; display: block; width: 100%; height: auto;"></canvas>
+    </div>
+
+    <div style="flex: 1; min-width: 320px; display: flex; flex-direction: column; gap: 12px; font-size: 0.82rem;">
+      
+      <div style="background: #151515; padding: 10px; border-radius: 4px; border: 1px solid #333;">
+        <div style="font-weight: bold; color: #b5cea8; margin-bottom: 4px;">Výpočet intervalů (Slabs):</div>
+        <div id="dpg-ray-math-slabs" style="line-height: 1.4; color: #ccc;">Počítám...</div>
+      </div>
+
+      <div style="background: #151515; padding: 10px; border-radius: 4px; border: 1px solid #569cd6;">
+        <div style="font-weight: bold; color: #569cd6; margin-bottom: 4px;">VARIANTA A: Booleovská kontrola</div>
+        <div id="dpg-ray-math-varA" style="line-height: 1.4; color: #ccc;">if (t_xmin > t_ymax) ...</div>
+      </div>
+
+      <div style="background: #151515; padding: 10px; border-radius: 4px; border: 1px solid #4ec9b0;">
+        <div style="font-weight: bold; color: #4ec9b0; margin-bottom: 4px;">VARIANTA B: Přesný průsečík</div>
+        <div id="dpg-ray-math-varB" style="line-height: 1.4; color: #ccc;">t_min = Max(...), t_max = Min(...)</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  // Fixní AABB box uprostřed plátna
+  const aabb = { minX: 150, maxX: 300, minY: 120, maxY: 240 };
+
+  // Paprsek: počátek O a pomocný bod pro směr (Target)
+  let rayO = { x: 50, y: 60 };
+  let rayT = { x: 220, y: 180 };
+
+  let activeHandle = null;
+
+  function render() {
+    const canvas = document.getElementById("dpg-ray-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 1. Kreslení dělících linií slabů (nekonečné přímky ohraničující box)
+    ctx.strokeStyle = "#252525"; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.moveTo(aabb.minX, 0); ctx.lineTo(aabb.minX, canvas.height); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(aabb.maxX, 0); ctx.lineTo(aabb.maxX, canvas.height); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, aabb.minY); ctx.lineTo(canvas.width, aabb.minY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, aabb.maxY); ctx.lineTo(canvas.width, aabb.maxY); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 2. Kreslení samotného AABB boxu
+    ctx.fillStyle = "rgba(86, 156, 214, 0.05)";
+    ctx.fillRect(aabb.minX, aabb.minY, aabb.maxX - aabb.minX, aabb.maxY - aabb.minY);
+    ctx.strokeStyle = "#888"; ctx.lineWidth = 1.5;
+    ctx.strokeRect(aabb.minX, aabb.minY, aabb.maxX - aabb.minX, aabb.maxY - aabb.minY);
+
+    // Popisky boxu
+    ctx.fillStyle = "#888"; ctx.font = "10px monospace";
+    ctx.fillText(`x_min:${aabb.minX}`, aabb.minX - 35, canvas.height - 10);
+    ctx.fillText(`x_max:${aabb.maxX}`, aabb.maxX + 5, canvas.height - 10);
+    ctx.fillText(`y_min:${aabb.minY}`, 10, aabb.minY - 5);
+    ctx.fillText(`y_max:${aabb.maxY}`, 10, aabb.maxY + 12);
+
+    // Vektor směru
+    let dx = rayT.x - rayO.x;
+    let dy = rayT.y - rayO.y;
+    let len = Math.hypot(dx, dy);
+    // Normalizace
+    if (len > 0) { dx /= len; dy /= len; }
+
+    // Prodloužení paprsku přes celé plátno pro vizualizaci trasování
+    ctx.strokeStyle = "rgba(255, 140, 0, 0.25)"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(rayO.x, rayO.y); ctx.lineTo(rayO.x + dx * 600, rayO.y + dy * 600); ctx.stroke();
+
+    // Vykreslení primárního vektoru směru (šipky)
+    ctx.strokeStyle = "#ff8c00"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(rayO.x, rayO.y); ctx.lineTo(rayO.x + dx * 60, rayO.y + dy * 60); ctx.stroke();
+    
+    // Hrot šipky směru
+    ctx.fillStyle = "#ff8c00";
+    ctx.beginPath(); ctx.arc(rayO.x + dx * 60, rayO.y + dy * 60, 4, 0, 7); ctx.fill();
+
+    // Počátek paprsku O
+    ctx.fillStyle = "#ff8c00";
+    ctx.beginPath(); ctx.arc(rayO.x, rayO.y, 6, 0, 7); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.fillText(`O[${rayO.x.toFixed(0)},${rayO.y.toFixed(0)}]`, rayO.x - 20, rayO.y - 12);
+
+    // --- MATEMATICKÝ VÝPOČET SLAB TESTU ---
+    // t_x/y = (x_min/max - o_x) / d_x
+    let tx1 = (aabb.minX - rayO.x) / dx;
+    let tx2 = (aabb.maxX - rayO.x) / dx;
+    let ty1 = (aabb.minY - rayO.y) / dy;
+    let ty2 = (aabb.maxY - rayO.y) / dy;
+
+    // Seřazení slabů podle vstupu a výstupu
+    let txmin = Math.min(tx1, tx2);
+    let txmax = Math.max(tx1, tx2);
+    let tymin = Math.min(ty1, ty2);
+    let tymax = Math.max(ty1, ty2);
+
+    // Výpis dílčích slabů do panelu
+    document.getElementById("dpg-ray-math-slabs").innerHTML = 
+      `t_xmin = ${txmin.toFixed(2)} | t_xmax = ${txmax.toFixed(2)}<br>` +
+      `t_ymin = ${tymin.toFixed(2)} | t_ymax = ${tymax.toFixed(2)}`;
+
+    // VARIANTA A: Booleovská detekce překryvu intervalů
+    // Podmínka z obrázku: (t_xmin > t_ymax) || (t_ymin > t_xmax)
+    let noHit = (txmin > tymax) || (tymin > txmax);
+    let hit = !noHit;
+
+    // Pokud je směr paprsku opačný (t_max je záporné), paprsek letí od boxu pryč
+    if (txmax < 0 || tymax < 0) hit = false;
+
+    let varAEl = document.getElementById("dpg-ray-math-varA");
+    if (noHit || !hit) {
+      varAEl.innerHTML = `<span style="color:#ff4500; font-weight:bold;">MIMO BOX (No Hit)</span><br>` +
+        `Podmínka (t_xmin > t_ymax || t_ymin > t_xmax)<br>` +
+        `Dosazení: (${txmin.toFixed(1)} > ${tymax.toFixed(1)}) || (${tymin.toFixed(1)} > ${txmax.toFixed(1)}) &rarr; <b>true</b>`;
+    } else {
+      varAEl.innerHTML = `<span style="color:#4ec9b0; font-weight:bold;">ZÁSAH (Hit)</span><br>` +
+        `Podmínka testu splněna.<br>Intervaly slabů X a Y se překrývají.`;
+    }
+
+    // VARIANTA B: Analytické vyhodnocení intervalu průsečíku [t_min, t_max]
+    let tMin = Math.max(txmin, tymin);
+    let tMax = Math.min(txmax, tymax);
+
+    let varBEl = document.getElementById("dpg-ray-math-varB");
+    const statusEl = document.getElementById("dpg-inter-status");
+
+    if (hit && tMax >= tMin) {
+      // Výpočet přesných souřadnic bodů průsečíku na stěnách AABB: P = O + t*D
+      let ip1x = rayO.x + tMin * dx;
+      let ip1y = rayO.y + tMin * dy;
+      let ip2x = rayO.x + tMax * dx;
+      let ip2y = rayO.y + tMax * dy;
+
+      // Vykreslení bodů průsečíku na plátno
+      ctx.fillStyle = "#4ec9b0";
+      ctx.beginPath(); ctx.arc(ip1x, ip1y, 5, 0, 7); ctx.fill(); // Vstupní bod
+      ctx.fillStyle = "#cd5c5c";
+      ctx.beginPath(); ctx.arc(ip2x, ip2y, 4, 0, 7); ctx.fill(); // Výstupní bod
+
+      varBEl.innerHTML = 
+        `<b style="color:#4ec9b0;">t_min (vstup) = ${tMin.toFixed(2)}</b><br>` +
+        `<b style="color:#cd5c5c;">t_max (výstup) = ${tMax.toFixed(2)}</b><br><br>` +
+        `Vstupní bod P_min = O + t_min·D =<br>` +
+        `<b>[${ip1x.toFixed(0)}, ${ip1y.toFixed(0)}]</b>`;
+    } else {
+      varBEl.innerHTML = `<span style="color:#888;">Paprsek neprotíná AABB obálku. Průsečíky neexistují.</span>`;
+    }
+  }
+
+  function getMouse(e, canvas) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * (canvas.width / rect.width),
+      y: (e.clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  const interval = setInterval(() => {
+    const canvas = document.getElementById("dpg-ray-canvas");
+    if (canvas) {
+      clearInterval(interval);
+
+      canvas.addEventListener("mousedown", (e) => {
+        const m = getMouse(e, canvas);
+        let dx = rayT.x - rayO.x;
+        let dy = rayT.y - rayO.y;
+        let len = Math.hypot(dx, dy);
+        if (len > 0) { dx /= len; dy /= len; }
+        
+        const tipX = rayO.x + dx * 60;
+        const tipY = rayO.y + dy * 60;
+
+        // Kontrola, zda uživatel chytil počátek O nebo hrot šipky směru
+        if (Math.hypot(rayO.x - m.x, rayO.y - m.y) < 14) {
+          activeHandle = "origin";
+        } else if (Math.hypot(tipX - m.x, tipY - m.y) < 14) {
+          activeHandle = "direction";
+        }
+      });
+
+      canvas.addEventListener("mousemove", (e) => {
+        if (!activeHandle) return;
+        const m = getMouse(e, canvas);
+
+        if (activeHandle == "origin") {
+          // Posun počátku paprsku, přepočítá se i směr k cíli, aby se zachovala orientace
+          let diffX = rayT.x - rayO.x;
+          let diffY = rayT.y - rayO.y;
+          rayO.x = Math.max(10, Math.min(canvas.width - 10, m.x));
+          rayO.y = Math.max(10, Math.min(canvas.height - 10, m.y));
+          rayT.x = rayO.x + diffX;
+          rayT.y = rayO.y + diffY;
+        } else if (activeHandle == "direction") {
+          // Rotace/nastavení nového směrového vektoru targetu
+          rayT.x = Math.max(10, Math.min(canvas.width - 10, m.x));
+          rayT.y = Math.max(10, Math.min(canvas.height - 10, m.y));
+        }
+        render();
+      });
+
+      window.addEventListener("mouseup", () => {
+        if (activeHandle) { activeHandle = null; render(); }
+      });
+
+      render();
+    }
+  }, 100);
+})();
+</script>
