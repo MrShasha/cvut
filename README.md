@@ -14,7 +14,7 @@ Online verze zde: [ČVUT OI výpisky](https://mrshasha.github.io/cvut/)
 
 | Stav        | Předmět                        | Poznámka      |
 | ----------- | ------------------------------ | ------------- |
-| ⚠️ Revize   | Kombinatorická optimalizace 💀 | Jirka + Artur |
+| ✅ Dokončené | Kombinatorická optimalizace 💀 | Jirka + Artur |
 | ✅ Dokončené | Teorie algoritmů 💀            | Artur         |
 | ✅ Dokončené | Pokročilá algoritmizace 💀     | Matěj         |
 ### Softwarové inženýrství
