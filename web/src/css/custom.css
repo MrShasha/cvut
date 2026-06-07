@@ -18,6 +18,35 @@
   object-fit: contain;
 }
 
+.markdown .widget-open-link {
+  display: flex;
+  justify-content: flex-end;
+  margin: -0.35rem 0 1.25rem;
+}
+
+.markdown .widget-open-link a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 6px;
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-color-primary-dark);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 8%);
+}
+
+.markdown .widget-open-link a:hover {
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary-darker);
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgb(15 23 42 / 12%);
+}
+
 .theme-doc-sidebar-container {
   border-right: 1px solid var(--ifm-toc-border-color);
 }
