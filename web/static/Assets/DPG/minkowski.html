@@ -1,0 +1,278 @@
+<div class="minkowski-widget-container" style="background-color: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: monospace; max-width: 900px; margin: 0 auto; box-sizing: border-box;">
+  <div class="minkowski-viewports" style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 300px;">
+      <div style="margin-bottom: 5px; font-weight: bold; color: #569cd6;">Světový prostor (World Space)</div>
+      <canvas id="minkowski-canvas-world" width="400" height="300" style="background-color: #111; border: 1px solid #333; width: 100%; height: auto; cursor: move; touch-action: none;"></canvas>
+      <div style="font-size: 11px; color: #888; margin-top: 2px;">Tažením myši/prstu posouvejte objekt B.</div>
+    </div>
+    <div style="flex: 1; min-width: 300px;">
+      <div style="margin-bottom: 5px; font-weight: bold; color: #4ec9b0;">Prostor konfigurace (Minkowského rozdíl A - B)</div>
+      <canvas id="minkowski-canvas-cspace" width="400" height="300" style="background-color: #111; border: 1px solid #333; width: 100%; height: auto;"></canvas>
+      <div style="font-size: 11px; color: #888; margin-top: 2px;">Počátek [0,0] odpovídá geometrickému středu.</div>
+    </div>
+  </div>
+
+  <div class="minkowski-controls" style="margin-top: 20px; background: #252526; padding: 15px; border-radius: 4px; border: 1px solid #333; display: flex; flex-direction: column; gap: 15px;">
+    <div style="display: flex; align-items: center;">
+      <label style="width: 140px; font-size: 13px;">Rotace objektu B:</label>
+      <input type="range" id="minkowski-rot-b" min="0" max="360" value="0" style="flex: 1; accent-color: #007acc;">
+      <span id="minkowski-rot-val" style="width: 45px; text-align: right; font-size: 13px; margin-left: 10px;">0°</span>
+    </div>
+    <div style="display: flex; justify-content: flex-end;">
+      <button id="minkowski-reset" style="background-color: #0e639c; color: white; border: none; padding: 6px 14px; font-family: monospace; font-size: 13px; cursor: pointer; border-radius: 2px;">Resetovat pozice</button>
+    </div>
+  </div>
+
+  <div id="minkowski-math-panel" style="margin-top: 15px; background: #2d2d2d; padding: 15px; border-radius: 4px; border-left: 4px solid #888; font-size: 13px; line-height: 1.5;">
+    <div><strong>Definice rozdílu:</strong> $A - B = \{x - y \mid x \in A, y \in B\}$</div>
+    <div style="margin-top: 5px;"><strong>Stav detekce kolize:</strong></div>
+    <div id="minkowski-status" style="font-weight: bold; font-size: 14px; margin-top: 5px; padding: 5px; border-radius: 2px;"></div>
+  </div>
+</div>
+
+<script>
+(() => {
+  const canvasW = document.getElementById('minkowski-canvas-world');
+  const canvasC = document.getElementById('minkowski-canvas-cspace');
+  const ctxW = canvasW.getContext('2d');
+  const ctxC = canvasC.getContext('2d');
+  const rotSlider = document.getElementById('minkowski-rot-b');
+  const rotVal = document.getElementById('minkowski-rot-val');
+  const statusPanel = document.getElementById('minkowski-status');
+  const resetBtn = document.getElementById('minkowski-reset');
+
+  const centerW = { x: 200, y: 150 };
+  const centerC = { x: 200, y: 150 };
+
+  const polyA_local = [
+    { x: -30, y: -40 },
+    { x: 50, y: -10 },
+    { x: 0, y: 40 }
+  ];
+  
+  const polyB_local = [
+    { x: -30, y: -20 },
+    { x: 30, y: -20 },
+    { x: 30, y: 20 },
+    { x: -30, y: 20 }
+  ];
+
+  // Default transformation values
+  const defaultPosA = { x: -40, y: -20 };
+  const defaultPosB = { x: 60, y: 40 };
+  const defaultAngleB = 0;
+
+  let posA = { ...defaultPosA };
+  let posB = { ...defaultPosB };
+  let angleB = defaultAngleB;
+
+  let isDragging = false;
+  let dragStart = { x: 0, y: 0 };
+  let dragPosStart = { ...posB };
+
+  function getGlobalPoints(localPoints, pos, angleRad) {
+    const cos = Math.cos(angleRad);
+    const sin = Math.sin(angleRad);
+    return localPoints.map(p => ({
+      x: pos.x + (p.x * cos - p.y * sin),
+      y: pos.y + (p.x * sin + p.y * cos)
+    }));
+  }
+
+  function computeMinkowskiDifference(ptsA, ptsB) {
+    const diffPoints = [];
+    for (let i = 0; i < ptsA.length; i++) {
+      for (let j = 0; j < ptsB.length; j++) {
+        diffPoints.push({
+          x: ptsA[i].x - ptsB[j].x,
+          y: ptsA[i].y - ptsB[j].y
+        });
+      }
+    }
+    return getConvexHull(diffPoints);
+  }
+
+  function getConvexHull(points) {
+    const pts = [...points].sort((a, b) => a.x !== b.x ? a.x - b.x : a.y - b.y);
+    if (pts.length <= 1) return pts;
+    
+    const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+    
+    const lower = [];
+    for (let i = 0; i < pts.length; i++) {
+      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], pts[i]) <= 0) {
+        lower.pop();
+      }
+      lower.push(pts[i]);
+    }
+    
+    const upper = [];
+    for (let i = pts.length - 1; i >= 0; i--) {
+      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], pts[i]) <= 0) {
+        upper.pop();
+      }
+      upper.push(pts[i]);
+    }
+    
+    lower.pop();
+    upper.pop();
+    return lower.concat(upper);
+  }
+
+  function isPointInPolygon(pt, poly) {
+    let inside = false;
+    for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+      const xi = poly[i].x, yi = poly[i].y;
+      const xj = poly[j].x, yj = poly[j].y;
+      const intersect = ((yi > pt.y) !== (yj > pt.y)) && (pt.x < (xj - xi) * (pt.y - yi) / (yj - yi) + xi);
+      if (intersect) inside = !inside;
+    }
+    return inside;
+  }
+
+  function drawGrid(ctx, w, h, center) {
+    ctx.strokeStyle = '#222';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let x = center.x % 40; x < w; x += 40) { ctx.moveTo(x, 0); ctx.lineTo(x, h); }
+    for (let y = center.y % 40; y < h; y += 40) { ctx.moveTo(0, y); ctx.lineTo(w, y); }
+    ctx.stroke();
+
+    ctx.strokeStyle = '#444';
+    ctx.beginPath();
+    ctx.moveTo(center.x, 0); ctx.lineTo(center.x, h);
+    ctx.moveTo(0, center.y); ctx.lineTo(w, center.y);
+    ctx.stroke();
+  }
+
+  function drawPolygon(ctx, pts, center, strokeColor, fillColor) {
+    ctx.beginPath();
+    pts.forEach((p, idx) => {
+      const x = center.x + p.x;
+      const y = center.y + p.y;
+      if (idx === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  function update() {
+    const rad = (angleB * Math.PI) / 180;
+    const ptsA = getGlobalPoints(polyA_local, posA, 0);
+    const ptsB = getGlobalPoints(polyB_local, posB, rad);
+
+    const diffHull = computeMinkowskiDifference(ptsA, ptsB);
+    const collision = isPointInPolygon({ x: 0, y: 0 }, diffHull);
+
+    const strokeColor = collision ? '#ff5555' : '#569cd6';
+    const fillColor = collision ? 'rgba(255, 85, 85, 0.15)' : 'rgba(86, 156, 214, 0.1)';
+    const cSpaceColor = collision ? '#ff5555' : '#4ec9b0';
+    const cSpaceFill = collision ? 'rgba(255, 85, 85, 0.2)' : 'rgba(78, 201, 176, 0.15)';
+
+    // Render World Space
+    ctxW.clearRect(0, 0, canvasW.width, canvasW.height);
+    drawGrid(ctxW, canvasW.width, canvasW.height, centerW);
+    drawPolygon(ctxW, ptsA, centerW, '#dcdcaa', 'rgba(220, 220, 170, 0.1)');
+    drawPolygon(ctxW, ptsB, centerW, strokeColor, fillColor);
+
+    ctxW.fillStyle = '#dcdcaa'; ctxW.fillText("A", centerW.x + posA.x, centerW.y + posA.y);
+    ctxW.fillStyle = strokeColor; ctxW.fillText("B", centerW.x + posB.x, centerW.y + posB.y);
+
+    // Render Configuration Space
+    ctxC.clearRect(0, 0, canvasC.width, canvasC.height);
+    drawGrid(ctxC, canvasC.width, canvasC.height, centerC);
+    drawPolygon(ctxC, diffHull, centerC, cSpaceColor, cSpaceFill);
+
+    ctxC.strokeStyle = '#ffffff';
+    ctxC.lineWidth = 2;
+    ctxC.beginPath();
+    ctxC.moveTo(centerC.x - 8, centerC.y); ctxC.lineTo(centerC.x + 8, centerC.y);
+    ctxC.moveTo(centerC.x, centerC.y - 8); ctxC.lineTo(centerC.x, centerC.y + 8);
+    ctxC.stroke();
+    ctxC.fillStyle = '#ffffff';
+    ctxC.fillText("[0,0]", centerC.x + 12, centerC.y - 4);
+
+    if (collision) {
+      statusPanel.style.backgroundColor = 'rgba(255, 85, 85, 0.2)';
+      statusPanel.style.border = '1px solid #ff5555';
+      statusPanel.style.color = '#ff5555';
+      statusPanel.innerHTML = `KOLIZE! Objekty A a B se protínají &hArr; Počátek [0,0] leží UVNITŘ Minkowského rozdílu A - B.`;
+    } else {
+      statusPanel.style.backgroundColor = 'rgba(78, 201, 176, 0.1)';
+      statusPanel.style.border = '1px solid #4ec9b0';
+      statusPanel.style.color = '#4ec9b0';
+      statusPanel.innerHTML = `BEZ KOLIZE. Objekty jsou disjunktní &hArr; Počátek [0,0] leží VNĚ Minkowského rozdílu A - B.`;
+    }
+  }
+
+  function getMousePos(canvas, evt) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    return {
+      x: (clientX - rect.left) * (canvas.width / rect.width),
+      y: (clientY - rect.top) * (canvas.height / rect.height)
+    };
+  }
+
+  function handleStart(e) {
+    const mousePos = getMousePos(canvasW, e);
+    const clickX = mousePos.x - centerW.x;
+    const clickY = mousePos.y - centerW.y;
+    
+    const dist = Math.hypot(clickX - posB.x, clickY - posB.y);
+    if (dist < 60) {
+      isDragging = true;
+      dragStart = { x: clickX, y: clickY };
+      dragPosStart = { ...posB };
+      e.preventDefault();
+    }
+  }
+
+  function handleMove(e) {
+    if (!isDragging) return;
+    const mousePos = getMousePos(canvasW, e);
+    const currentX = mousePos.x - centerW.x;
+    const currentY = mousePos.y - centerW.y;
+    
+    posB.x = dragPosStart.x + (currentX - dragStart.x);
+    posB.y = dragPosStart.y + (currentY - dragStart.y);
+    update();
+    e.preventDefault();
+  }
+
+  function handleEnd() {
+    isDragging = false;
+  }
+
+  canvasW.addEventListener('mousedown', handleStart);
+  window.addEventListener('mousemove', handleMove);
+  window.addEventListener('mouseup', handleEnd);
+
+  canvasW.addEventListener('touchstart', handleStart, { passive: false });
+  window.addEventListener('touchmove', handleMove, { passive: false });
+  window.addEventListener('touchend', handleEnd);
+
+  rotSlider.addEventListener('input', (e) => {
+    angleB = parseInt(e.target.value, 10);
+    rotVal.innerText = `${angleB}°`;
+    update();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    posA = { ...defaultPosA };
+    posB = { ...defaultPosB };
+    angleB = defaultAngleB;
+    rotSlider.value = defaultAngleB;
+    rotVal.innerText = `${defaultAngleB}°`;
+    update();
+  });
+
+  update();
+})();
+</script>
