@@ -1,5 +1,39 @@
 # Všechny widgety
 
+## [[3. Nejkratší cesty]]
+
+*Sekce: [[3. Nejkratší cesty#Dijkstrův algoritmus|Dijkstrův algoritmus]]*
+
+<iframe
+    src="https://mrshasha.github.io/cvut/Assets/KO/shortest-paths-lab.html?algo=dijkstra"
+    width="100%"
+    height="680px"
+    frameborder="0"
+    style="border-radius: 8px; border: 1px solid #444;">
+</iframe>
+
+*Sekce: [[3. Nejkratší cesty#Bellmanův–Fordův algoritmus 🔔|Bellmanův–Fordův algoritmus 🔔]]*
+
+<iframe
+    src="https://mrshasha.github.io/cvut/Assets/KO/shortest-paths-lab.html?algo=bellman"
+    width="100%"
+    height="680px"
+    frameborder="0"
+    style="border-radius: 8px; border: 1px solid #444;">
+</iframe>
+
+*Sekce: [[3. Nejkratší cesty#Floydův–Warshallův algoritmus 🥊|Floydův–Warshallův algoritmus 🥊]]*
+
+<iframe
+    src="https://mrshasha.github.io/cvut/Assets/KO/shortest-paths-lab.html?algo=floyd"
+    width="100%"
+    height="680px"
+    frameborder="0"
+    style="border-radius: 8px; border: 1px solid #444;">
+</iframe>
+
+---
+
 ## [[4. Toky v sítích a párování]]
 
 *Sekce: [[4. Toky v sítích a párování#Ford-Fulkerson 🚗 a Edmonds-Karp 🐟|Ford-Fulkerson 🚗 a Edmonds-Karp 🐟]]*

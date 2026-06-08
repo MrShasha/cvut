@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nejkratsi cesty - krokovaci widget</title>
+<style>
+:root {
+  --bg: #0d1321;
+  --panel: rgba(18, 26, 43, .94);
+  --panel2: rgba(28, 39, 60, .88);
+  --line: rgba(169, 183, 213, .22);
+  --text: #eef4ff;
+  --muted: #a7b2ca;
+  --blue: #61a5ff;
+  --cyan: #3ee3d8;
+  --green: #72e39a;
+  --amber: #ffc857;
+  --orange: #ff9f68;
+  --red: #ff6b81;
+  --violet: #ad8cff;
+}
+* { box-sizing: border-box; }
+body {
+  min-width: 920px;
+  margin: 0;
+  padding: 14px;
+  overflow-x: auto;
+  background:
+    radial-gradient(circle at 9% 0%, rgba(97, 165, 255, .17), transparent 30rem),
+    radial-gradient(circle at 96% 92%, rgba(255, 200, 87, .12), transparent 30rem),
+    linear-gradient(135deg, #0b1020, #101827 58%, #10131d);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+}
+button, select { font: inherit; }
+.shell { max-width: 1240px; margin: 0 auto; }
+.topbar, .panel, .scene {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .24);
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.eyebrow, .label, .panel-title {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+h1 { margin: 3px 0 0; font-size: 22px; letter-spacing: 0; }
+.subtitle { margin-top: 5px; color: var(--muted); font-size: 13px; line-height: 1.45; max-width: 760px; }
+.controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+button, select {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: rgba(55, 65, 81, .76);
+  color: var(--text);
+}
+button { cursor: pointer; font-weight: 750; transition: transform .18s ease, border-color .18s ease; }
+button:hover { transform: translateY(-1px); border-color: rgba(62, 227, 216, .65); }
+button:disabled { cursor: default; opacity: .45; transform: none; }
+button.primary {
+  min-width: 92px;
+  border-color: rgba(62, 227, 216, .58);
+  background: linear-gradient(135deg, rgba(8, 145, 178, .94), rgba(37, 99, 235, .88));
+}
+.toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(15, 23, 42, .68);
+}
+.progress-track { height: 7px; overflow: hidden; border-radius: 999px; background: rgba(75, 85, 99, .72); }
+.progress-bar { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--amber), var(--green)); transition: width .25s ease; }
+.progress-caption { display: flex; justify-content: space-between; margin-top: 5px; color: var(--muted); font-size: 11px; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 10px; }
+.scene {
+  position: relative;
+  min-height: 560px;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(169, 183, 213, .04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(169, 183, 213, .04) 1px, transparent 1px),
+    rgba(17, 24, 39, .82);
+  background-size: 26px 26px;
+}
+.graph-wrap { position: relative; height: 560px; }
+svg { width: 100%; height: 100%; display: block; }
+.edge { stroke: rgba(169, 183, 213, .34); stroke-width: 2; marker-end: url(#arrow); transition: stroke .2s ease, stroke-width .2s ease; }
+.edge.relax { stroke: var(--amber); stroke-width: 4; filter: drop-shadow(0 0 7px rgba(255, 200, 87, .65)); }
+.edge.best { stroke: var(--green); stroke-width: 4; filter: drop-shadow(0 0 7px rgba(114, 227, 154, .55)); }
+.edge.bad { stroke: var(--red); stroke-width: 4; filter: drop-shadow(0 0 7px rgba(255, 107, 129, .55)); }
+.weight {
+  fill: #111827;
+  stroke: rgba(238, 244, 255, .82);
+  stroke-width: 4;
+  paint-order: stroke;
+  font-size: 13px;
+  font-weight: 900;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.node circle { fill: #142238; stroke: var(--blue); stroke-width: 2.5; transition: fill .2s ease, stroke .2s ease, filter .2s ease; }
+.node text { fill: var(--text); font-weight: 900; text-anchor: middle; dominant-baseline: middle; }
+.node.source circle { stroke: var(--cyan); filter: drop-shadow(0 0 8px rgba(62, 227, 216, .55)); }
+.node.target circle { stroke: var(--orange); }
+.node.current circle { fill: var(--amber); stroke: var(--amber); filter: drop-shadow(0 0 10px rgba(255, 200, 87, .70)); }
+.node.current text { fill: #111827; }
+.node.settled circle { fill: rgba(16, 185, 129, .55); stroke: var(--green); }
+.node.changed circle { fill: rgba(173, 140, 255, .58); stroke: var(--violet); }
+.dist-label {
+  fill: #dbeafe;
+  font-size: 11px;
+  font-weight: 850;
+  text-anchor: middle;
+}
+.matrix-wrap {
+  display: none;
+  height: 560px;
+  padding: 16px;
+  align-content: center;
+  justify-content: center;
+}
+.matrix-wrap.active { display: grid; }
+.matrix {
+  display: grid;
+  grid-template-columns: 36px repeat(5, 68px);
+  gap: 6px;
+}
+.mcell, .axis {
+  display: grid;
+  place-items: center;
+  min-height: 48px;
+  border-radius: 8px;
+}
+.axis { color: var(--muted); font-size: 12px; font-weight: 900; }
+.mcell {
+  position: relative;
+  border: 1px solid rgba(169, 183, 213, .18);
+  background: rgba(15, 23, 42, .78);
+  font-family: Consolas, monospace;
+  font-size: 16px;
+  font-weight: 900;
+  transition: background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.mcell.rowk { border-color: rgba(62, 227, 216, .78); background: rgba(8, 145, 178, .20); }
+.mcell.colk { border-color: rgba(173, 140, 255, .78); background: rgba(91, 33, 182, .24); }
+.mcell.pivot { color: #111827; background: var(--amber); border-color: var(--amber); }
+.mcell.changed { color: #d1fae5; background: rgba(5, 150, 105, .42); border-color: var(--green); transform: translateY(-2px); }
+.side { display: grid; gap: 10px; align-content: start; }
+.panel { padding: 12px; }
+.stat { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(169, 183, 213, .12); }
+.stat:last-child { border-bottom: 0; }
+.stat b { color: #f8fafc; }
+.formula {
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid rgba(62, 227, 216, .24);
+  border-radius: 8px;
+  background: rgba(8, 145, 178, .10);
+  font-family: Consolas, monospace;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+.explain { margin-top: 8px; color: #d3dbea; line-height: 1.48; font-size: 13px; }
+.table { display: grid; gap: 5px; margin-top: 9px; }
+.row {
+  display: grid;
+  grid-template-columns: 42px 1fr 52px;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 7px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .04);
+  color: #dbeafe;
+}
+.row.hot { background: rgba(255, 200, 87, .15); color: #fff7ed; }
+.row.done { background: rgba(16, 185, 129, .14); color: #d1fae5; }
+.legend { display: grid; gap: 7px; margin-top: 9px; }
+.legend-item { display: grid; grid-template-columns: 13px 1fr; gap: 7px; align-items: center; color: #d3dbea; font-size: 12px; }
+.swatch { width: 13px; height: 13px; border-radius: 4px; }
+@media (max-width: 980px) {
+  body { min-width: 860px; }
+  .layout { grid-template-columns: 1fr; }
+  .side { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">Kombinatoricka optimalizace</div>
+      <h1 id="title">Nejkratsi cesty</h1>
+      <div class="subtitle" id="subtitle">Krokovaci vizualizace relaxaci hran.</div>
+    </div>
+    <div class="controls">
+      <select id="algoSel">
+        <option value="dijkstra">Dijkstra</option>
+        <option value="bellman">Bellman-Ford</option>
+        <option value="floyd">Floyd-Warshall</option>
+      </select>
+      <button class="primary" id="playBtn">Prehrat</button>
+      <button id="stepBtn">Krok</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+  </header>
+
+  <section class="toolbar">
+    <div>
+      <div class="progress-track"><div class="progress-bar" id="bar"></div></div>
+      <div class="progress-caption"><span id="phase">Inicializace</span><span id="counter">0 / 0</span></div>
+    </div>
+    <div class="label" id="badge">SPT ze zdroje s</div>
+  </section>
+
+  <div class="layout">
+    <main class="scene">
+      <div class="graph-wrap" id="graphWrap">
+        <svg id="graph" viewBox="0 0 760 560"></svg>
+      </div>
+      <div class="matrix-wrap" id="matrixWrap">
+        <div class="matrix" id="matrix"></div>
+      </div>
+    </main>
+
+    <aside class="side">
+      <section class="panel">
+        <div class="panel-title">Aktualni krok</div>
+        <div class="formula" id="formula"></div>
+        <div class="explain" id="explain"></div>
+      </section>
+      <section class="panel">
+        <div class="panel-title">Vzdalenosti / hodnoty</div>
+        <div class="table" id="distTable"></div>
+      </section>
+      <section class="panel">
+        <div class="panel-title">Legenda</div>
+        <div class="legend">
+          <div class="legend-item"><span class="swatch" style="background:var(--amber)"></span><span>aktualni vrchol, hrana nebo mezivrchol k</span></div>
+          <div class="legend-item"><span class="swatch" style="background:var(--green)"></span><span>zafixovana hodnota nebo zlepseni</span></div>
+          <div class="legend-item"><span class="swatch" style="background:var(--violet)"></span><span>docasne zmenena vzdalenost</span></div>
+          <div class="legend-item"><span class="swatch" style="background:var(--red)"></span><span>detekce negativniho cyklu / varovani</span></div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script>
+const INF = Infinity;
+const nodes = [
+  { id: "s", x: 86, y: 272 },
+  { id: "a", x: 232, y: 122 },
+  { id: "b", x: 250, y: 398 },
+  { id: "c", x: 436, y: 132 },
+  { id: "d", x: 470, y: 390 },
+  { id: "t", x: 642, y: 270 }
+];
+const dijkstraEdges = [
+  ["s","a",2], ["s","b",5], ["a","b",1], ["a","c",4],
+  ["b","d",2], ["c","t",3], ["d","c",1], ["d","t",4]
+];
+const bellmanEdges = [
+  ["s","a",4], ["s","b",5], ["a","b",-2], ["a","c",6],
+  ["b","d",3], ["d","c",-4], ["c","t",3], ["d","t",6]
+];
+const floydLabels = ["0","1","2","3","4"];
+const floydInitial = [
+  [0, 3, 8, INF, -4],
+  [INF, 0, INF, 1, 7],
+  [INF, 4, 0, INF, INF],
+  [2, INF, -5, 0, INF],
+  [INF, INF, INF, 6, 0]
+];
+let algo = "dijkstra";
+let steps = [];
+let cursor = 0;
+let playing = false;
+let timer = null;
+
+const $ = id => document.getElementById(id);
+const fmt = v => v === INF ? "∞" : String(v);
+const edgeKey = (u, v) => `${u}->${v}`;
+
+function getParamAlgo() {
+  const params = new URLSearchParams(location.search);
+  const value = params.get("algo");
+  return ["dijkstra", "bellman", "floyd"].includes(value) ? value : "dijkstra";
+}
+
+function initDistances() {
+  const d = {};
+  const p = {};
+  nodes.forEach(n => { d[n.id] = INF; p[n.id] = null; });
+  d.s = 0;
+  return { d, p };
+}
+
+function cloneObj(obj) {
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function buildDijkstra() {
+  const { d, p } = initDistances();
+  const settled = new Set();
+  const out = [{
+    kind: "graph", d: cloneObj(d), p: cloneObj(p), settled: [], current: null, edge: null,
+    phase: "Start: l(s)=0, ostatni uzly maji nekonecno.",
+    formula: "l(s)=0\nl(v)=∞ pro v ≠ s",
+    explain: "Dijkstra vzdy vybere otevreny uzel s nejmensi docasnou vzdalenosti. Pro nezaporne hrany je tato vzdalenost po vyberu finalni."
+  }];
+  while (settled.size < nodes.length) {
+    let u = null;
+    for (const n of nodes) {
+      if (!settled.has(n.id) && (u === null || d[n.id] < d[u])) u = n.id;
+    }
+    if (u === null || d[u] === INF) break;
+    settled.add(u);
+    out.push({
+      kind: "graph", d: cloneObj(d), p: cloneObj(p), settled: [...settled], current: u, edge: null,
+      phase: `Uzavirame uzel ${u}. Jeho vzdalenost je uz finalni.`,
+      formula: `vyber min l(v) z otevrenych uzlu\nv = ${u}, l(${u}) = ${fmt(d[u])}`,
+      explain: "Uzavreny uzel uz nebude pozdeji zlepsen. To plati prave diky nezapornym vaham hran."
+    });
+    for (const [from, to, w] of dijkstraEdges.filter(e => e[0] === u)) {
+      if (settled.has(to)) continue;
+      const old = d[to];
+      const cand = d[from] + w;
+      let improved = cand < old;
+      if (improved) { d[to] = cand; p[to] = from; }
+      out.push({
+        kind: "graph", d: cloneObj(d), p: cloneObj(p), settled: [...settled],
+        current: to, edge: edgeKey(from, to), improved,
+        phase: improved ? `Relaxace ${from} -> ${to} zlepsila odhad.` : `Relaxace ${from} -> ${to} odhad nezlepsila.`,
+        formula: `l(${to}) = min(${fmt(old)}, l(${from}) + ${w})\n      = min(${fmt(old)}, ${fmt(d[from])} + ${w}) = ${fmt(d[to])}`,
+        explain: improved
+          ? `Do uzlu ${to} jsme nasli kratsi cestu pres ${from}. Predchudce p(${to}) se nastavi na ${from}.`
+          : `Cesta pres ${from} neni lepsi nez soucasny odhad pro ${to}.`
+      });
+    }
+  }
+  return out;
+}
+
+function buildBellman() {
+  const { d, p } = initDistances();
+  const out = [{
+    kind: "graph", d: cloneObj(d), p: cloneObj(p), settled: [], current: null, edge: null,
+    phase: "Start: Bellman-Ford povoluje i zaporne hrany.",
+    formula: "Opakuj |V|-1 krat relaxaci vsech hran.",
+    explain: "Po k-te iteraci jsou spravne nejkratsi cesty, ktere maji nejvyse k hran. Proto staci |V|-1 pruchodu."
+  }];
+  for (let i = 1; i <= nodes.length - 1; i++) {
+    let changed = false;
+    out.push({
+      kind: "graph", d: cloneObj(d), p: cloneObj(p), settled: [], current: null, edge: null,
+      phase: `Iterace ${i}: projdeme vsechny hrany.`,
+      formula: `i = ${i}\nrelaxujeme kazdou hranu (u,v)`,
+      explain: "Narozdil od Dijkstry nic trvale neuzavirame. Odhady se mohou zlepsovat opakovane."
+    });
+    for (const [from, to, w] of bellmanEdges) {
+      const old = d[to];
+      const fromDist = d[from];
+      const cand = fromDist === INF ? INF : fromDist + w;
+      const improved = cand < old;
+      if (improved) { d[to] = cand; p[to] = from; changed = true; }
+      out.push({
+        kind: "graph", d: cloneObj(d), p: cloneObj(p), settled: [], current: to,
+        edge: edgeKey(from, to), improved,
+        phase: improved ? `Hrana ${from} -> ${to} zlepsila vzdalenost.` : `Hrana ${from} -> ${to} bez zmeny.`,
+        formula: `l(${to}) = min(${fmt(old)}, l(${from}) + ${w})\n      = min(${fmt(old)}, ${fmt(fromDist)} + ${w}) = ${fmt(d[to])}`,
+        explain: improved
+          ? `I zaporna hrana muze byt v poradku. Problem by nastal az pri zapornem cyklu, ktery by sel stale zlepsovat.`
+          : `Tato hrana v aktualnim pruchodu neprinesla lepsi odhad.`
+      });
+    }
+    if (!changed) break;
+  }
+  let neg = null;
+  for (const [from, to, w] of bellmanEdges) {
+    if (d[from] !== INF && d[from] + w < d[to]) neg = edgeKey(from, to);
+  }
+  out.push({
+    kind: "graph", d: cloneObj(d), p: cloneObj(p), settled: [], current: null, edge: neg, bad: Boolean(neg),
+    phase: neg ? "Dodatecna relaxace odhalila zaporny cyklus." : "Dodatecna relaxace uz nic nezlepsi.",
+    formula: "n-ta kontrolni iterace\npokud lze jeste zlepsit -> zaporny cyklus",
+    explain: neg
+      ? "Kdyby po |V|-1 iteracich slo stale zlepsovat, nejkratsi sled by nebyl dobre definovany."
+      : "Graf nema dosazitelny zaporny cyklus. Aktualni hodnoty jsou nejkratsi vzdalenosti ze zdroje."
+  });
+  return out;
+}
+
+function buildFloyd() {
+  let D = floydInitial.map(r => [...r]);
+  const out = [{
+    kind: "matrix", D: D.map(r => [...r]), k: -1, changed: [],
+    phase: "Start: matice obsahuje prime hrany.",
+    formula: "D[i][j] = vaha hrany i->j, jinak ∞\nD[i][i] = 0",
+    explain: "Floyd-Warshall resi vsechny dvojice. Postupne dovoluje jako mezivrcholy 0, 1, 2, ..."
+  }];
+  for (let k = 0; k < D.length; k++) {
+    out.push({
+      kind: "matrix", D: D.map(r => [...r]), k, changed: [],
+      phase: `Iterace k=${k}: dovolime cesty pres vrchol ${k}.`,
+      formula: `D[i][j] = min(D[i][j], D[i][${k}] + D[${k}][j])`,
+      explain: "Radek k a sloupec k ukazuji dve poloviny nove kandidatni cesty i -> k -> j."
+    });
+    const changed = [];
+    const old = D.map(r => [...r]);
+    for (let i = 0; i < D.length; i++) {
+      for (let j = 0; j < D.length; j++) {
+        const via = old[i][k] === INF || old[k][j] === INF ? INF : old[i][k] + old[k][j];
+        if (via < old[i][j]) {
+          D[i][j] = via;
+          changed.push(`${i},${j}`);
+        }
+      }
+    }
+    out.push({
+      kind: "matrix", D: D.map(r => [...r]), k, changed,
+      phase: changed.length ? `Update pres k=${k}: zmeneno ${changed.length} bunek.` : `Pres k=${k} se nic nezkratilo.`,
+      formula: `D[i][j] = min(puvodni, cesta pres ${k})`,
+      explain: changed.length
+        ? "Zelene bunky jsou dvojice, pro ktere je cesta pres aktualni mezivrchol kratsi."
+        : "Aktualni mezivrchol neprinesl zadnou lepsi cestu."
+    });
+  }
+  return out;
+}
+
+function build() {
+  algo = $("algoSel").value;
+  if (algo === "dijkstra") steps = buildDijkstra();
+  if (algo === "bellman") steps = buildBellman();
+  if (algo === "floyd") steps = buildFloyd();
+  cursor = 0;
+  stop();
+  render();
+}
+
+function renderGraph(step) {
+  $("graphWrap").style.display = "block";
+  $("matrixWrap").classList.remove("active");
+  const edges = algo === "bellman" ? bellmanEdges : dijkstraEdges;
+  const best = new Set();
+  Object.entries(step.p || {}).forEach(([v, u]) => { if (u) best.add(edgeKey(u, v)); });
+  const defs = `<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(169,183,213,.75)"/></marker></defs>`;
+  const edgeSvg = edges.map(([u, v, w], idx) => {
+    const a = nodes.find(n => n.id === u);
+    const b = nodes.find(n => n.id === v);
+    const mx = (a.x + b.x) / 2;
+    const my = (a.y + b.y) / 2 + (idx % 2 ? -12 : 12);
+    const key = edgeKey(u, v);
+    const cls = ["edge"];
+    if (key === step.edge) cls.push(step.bad ? "bad" : "relax");
+    else if (best.has(key)) cls.push("best");
+    return `<line class="${cls.join(" ")}" x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}"></line><text class="weight" x="${mx}" y="${my}">${w}</text>`;
+  }).join("");
+  const settled = new Set(step.settled || []);
+  const nodeSvg = nodes.map(n => {
+    const cls = ["node"];
+    if (n.id === "s") cls.push("source");
+    if (n.id === "t") cls.push("target");
+    if (settled.has(n.id)) cls.push("settled");
+    if (n.id === step.current) cls.push(step.improved ? "changed" : "current");
+    const d = step.d ? fmt(step.d[n.id]) : "∞";
+    return `<g class="${cls.join(" ")}"><circle cx="${n.x}" cy="${n.y}" r="25"></circle><text x="${n.x}" y="${n.y - 2}">${n.id}</text><text class="dist-label" x="${n.x}" y="${n.y + 38}">l=${d}</text></g>`;
+  }).join("");
+  $("graph").innerHTML = defs + edgeSvg + nodeSvg;
+}
+
+function renderMatrix(step) {
+  $("graphWrap").style.display = "none";
+  $("matrixWrap").classList.add("active");
+  let html = "<div></div>";
+  floydLabels.forEach(x => html += `<div class="axis">${x}</div>`);
+  for (let i = 0; i < step.D.length; i++) {
+    html += `<div class="axis">${i}</div>`;
+    for (let j = 0; j < step.D.length; j++) {
+      const cls = ["mcell"];
+      if (step.k === i && step.k >= 0) cls.push("rowk");
+      if (step.k === j && step.k >= 0) cls.push("colk");
+      if (step.k === i && step.k === j) cls.push("pivot");
+      if ((step.changed || []).includes(`${i},${j}`)) cls.push("changed");
+      html += `<div class="${cls.join(" ")}">${fmt(step.D[i][j])}</div>`;
+    }
+  }
+  $("matrix").innerHTML = html;
+}
+
+function renderTable(step) {
+  if (step.kind === "matrix") {
+    const diag = step.D.map((r, i) => r[i]);
+    $("distTable").innerHTML = diag.map((v, i) => `<div class="row ${step.k === i ? "hot" : ""}"><b>${i}</b><span>D[${i}][${i}]</span><b>${fmt(v)}</b></div>`).join("");
+    return;
+  }
+  const settled = new Set(step.settled || []);
+  $("distTable").innerHTML = nodes.map(n => {
+    const cls = n.id === step.current ? "hot" : settled.has(n.id) ? "done" : "";
+    const pred = step.p && step.p[n.id] ? `p=${step.p[n.id]}` : "p=-";
+    return `<div class="row ${cls}"><b>${n.id}</b><span>${pred}</span><b>${fmt(step.d[n.id])}</b></div>`;
+  }).join("");
+}
+
+function renderMeta() {
+  const titles = {
+    dijkstra: ["Dijkstruv algoritmus", "Label-setting algoritmus pro nezaporne hrany. Sleduj, jak se uzly postupne trvale uzaviraji."],
+    bellman: ["Bellman-Forduv algoritmus", "Label-correcting algoritmus. Opakovane relaxuje vsechny hrany a umi pracovat i se zapornymi vahami."],
+    floyd: ["Floyd-Warshalluv algoritmus", "Dynamicke programovani pro vsechny dvojice. Kazda iterace povoli jeden novy mezivrchol k."]
+  };
+  $("title").textContent = titles[algo][0];
+  $("subtitle").textContent = titles[algo][1];
+  $("badge").textContent = algo === "floyd" ? "APSP - vsechny dvojice" : "SPT ze zdroje s";
+}
+
+function render() {
+  const step = steps[cursor];
+  renderMeta();
+  if (step.kind === "matrix") renderMatrix(step); else renderGraph(step);
+  renderTable(step);
+  $("phase").textContent = step.phase;
+  $("formula").textContent = step.formula;
+  $("explain").textContent = step.explain;
+  $("counter").textContent = `${cursor + 1} / ${steps.length}`;
+  $("bar").style.width = `${((cursor + 1) / steps.length) * 100}%`;
+  $("stepBtn").disabled = cursor >= steps.length - 1;
+  $("playBtn").textContent = playing ? "Pauza" : "Prehrat";
+}
+
+function stepForward() {
+  if (cursor < steps.length - 1) {
+    cursor++;
+    render();
+  } else {
+    stop();
+  }
+}
+
+function play() {
+  if (playing) { stop(); return; }
+  playing = true;
+  render();
+  timer = setInterval(stepForward, 950);
+}
+
+function stop() {
+  playing = false;
+  if (timer) clearInterval(timer);
+  timer = null;
+  if (steps.length) render();
+}
+
+function reset() {
+  cursor = 0;
+  stop();
+  render();
+}
+
+$("algoSel").value = getParamAlgo();
+$("algoSel").addEventListener("change", build);
+$("playBtn").addEventListener("click", play);
+$("stepBtn").addEventListener("click", stepForward);
+$("resetBtn").addEventListener("click", reset);
+build();
+</script>
+</body>
+</html>
