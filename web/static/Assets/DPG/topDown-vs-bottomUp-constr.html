@@ -1,0 +1,247 @@
+<div id="dpg-build-root" style="background: #1e1e1e; color: #e0e0e0; padding: 20px; border-radius: 8px; font-family: monospace; max-width: 900px; margin: 20px auto; border: 1px solid #333; user-select: none;">
+  
+  <div style="border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="margin: 0; color: #569cd6; font-size: 1.2rem;">HDS Construction: Top-Down Split vs. Bottom-Up Merge</h3>
+    <div style="display: flex; gap: 8px;">
+      <button id="dpg-build-btn-prev" style="background: #2d2d2d; color: #ccc; border: 1px solid #444; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-family: monospace;">Krok zpět</button>
+      <button id="dpg-build-btn-next" style="background: #0e639c; color: white; border: none; padding: 5px 14px; border-radius: 4px; cursor: pointer; font-family: monospace; font-weight: bold;">Krok vpřed</button>
+      <button id="dpg-build-btn-reset" style="background: #a4373a; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-family: monospace;">Reset</button>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 20px; background: #151515; padding: 10px; border-radius: 4px; border: 1px solid #2d2d2d; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+    <span>Aktuální krok stavby: <b id="dpg-build-step-num" style="color: #ff8c00;">0 / 3</b></span>
+    <span id="dpg-build-status-text" style="color: #4ec9b0; font-weight: bold;">Inicializovaná scéna (Kořenový stav)</span>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 25px;">
+    <div style="background: #151515; padding: 15px; border-radius: 6px; border: 1px solid #2d2d2d;">
+      <div style="font-weight: bold; color: #569cd6; margin-bottom: 10px; font-size: 0.95rem;">1. Top-Down Strategie (kd-Tree: Rekurzivní dělení prostoru)</div>
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 280px; text-align: center;">
+          <canvas id="dpg-build-td-space" width="300" height="180" style="background: #111; border: 1px solid #444; border-radius: 4px;"></canvas>
+        </div>
+        <div style="flex: 1; min-width: 320px; text-align: center;">
+          <canvas id="dpg-build-td-graph" width="400" height="180" style="background: #111; border: 1px solid #444; border-radius: 4px;"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #151515; padding: 15px; border-radius: 6px; border: 1px solid #2d2d2d;">
+      <div style="font-weight: bold; color: #4ec9b0; margin-bottom: 10px; font-size: 0.95rem;">2. Bottom-Up Strategie (BVH: Postupné shlukování listů odspodu)</div>
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 280px; text-align: center;">
+          <canvas id="dpg-build-bu-space" width="300" height="180" style="background: #111; border: 1px solid #444; border-radius: 4px;"></canvas>
+        </div>
+        <div style="flex: 1; min-width: 320px; text-align: center;">
+          <canvas id="dpg-build-bu-graph" width="400" height="180" style="background: #111; border: 1px solid #444; border-radius: 4px;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(() => {
+  let buildStep = 0;
+  const maxSteps = 3;
+
+  // Čtyři fixní trojúhelníky pro demonstraci stavebních algoritmů
+  const tris = [
+    { x1: 20,  y1: 30,  x2: 90,  y2: 40,  x3: 50,  y3: 110, lbl: "T1", clr: "#ff8c00" },
+    { x1: 75,  y1: 120, x2: 130, y2: 130, x3: 100, y3: 170, lbl: "T2", clr: "#da70d6" },
+    { x1: 155, y1: 30,  x2: 210, y2: 40,  x3: 180, y3: 90,  lbl: "T3", clr: "#4ec9b0" },
+    { x1: 220, y1: 100, x2: 280, y2: 110, x3: 250, y3: 160, lbl: "T4", clr: "#ce9178" }
+  ];
+
+  function drawTri(ctx, t) {
+    ctx.fillStyle = t.clr + "33";
+    ctx.strokeStyle = t.clr;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(t.x1, t.y1);
+    ctx.lineTo(t.x2, t.y2);
+    ctx.lineTo(t.x3, t.y3);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = "#fff";
+    ctx.font = "10px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(t.lbl, (t.x1 + t.x2 + t.x3) / 3, (t.y1 + t.y2 + t.y3) / 3 + 3);
+  }
+
+  function drawNode(ctx, x, y, txt, isLeaf, active) {
+    ctx.fillStyle = active ? (isLeaf ? "#ce9178" : "#569cd6") : "#252525";
+    ctx.strokeStyle = active ? "#fff" : "#444";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(x, y, 16, 0, 7);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = active ? "#fff" : "#666";
+    ctx.font = "9px monospace";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(txt, x, y);
+  }
+
+  function drawEdge(ctx, x1, y1, x2, y2, active) {
+    ctx.strokeStyle = active ? "#555" : "#222";
+    ctx.lineWidth = active ? 1.5 : 1;
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+  }
+
+  function render() {
+    const cTdS = document.getElementById("dpg-build-td-space");
+    const cTdG = document.getElementById("dpg-build-td-graph");
+    const cBuS = document.getElementById("dpg-build-bu-space");
+    const cBuG = document.getElementById("dpg-build-bu-graph");
+
+    if (!cTdS) return;
+
+    const sTd = cTdS.getContext("2d");
+    const gTd = cTdG.getContext("2d");
+    const sBu = cBuS.getContext("2d");
+    const gBu = cBuG.getContext("2d");
+
+    sTd.clearRect(0, 0, 300, 180);
+    gTd.clearRect(0, 0, 400, 180);
+    sBu.clearRect(0, 0, 300, 180);
+    gBu.clearRect(0, 0, 400, 180);
+
+    tris.forEach(t => {
+      drawTri(sTd, t);
+      drawTri(sBu, t);
+    });
+
+    // --- RENDER TOP-DOWN (KD-TREE) ---
+    if (buildStep >= 1) {
+      // Krok 1: První hlavní split (X = 145) rozdělí scénu napůl
+      sTd.strokeStyle = "#cd5c5c"; sTd.lineWidth = 2;
+      sTd.beginPath(); sTd.moveTo(145, 0); sTd.lineTo(145, 180); sTd.stroke();
+    }
+    if (buildStep >= 2) {
+      // Krok 2: Sub-splity v obou větvích (Y = 115 vlevo, Y = 95 vpravo)
+      sTd.strokeStyle = "#9acd32"; sTd.lineWidth = 1.5;
+      sTd.beginPath(); sTd.moveTo(0, 115); sTd.lineTo(145, 115); sTd.stroke();
+    }
+    if (buildStep >= 3) {
+      sTd.strokeStyle = "#9acd32"; sTd.lineWidth = 1.5;
+      sTd.beginPath(); sTd.moveTo(145, 95); sTd.lineTo(300, 95); sTd.stroke();
+    }
+
+    // Top-Down Graf
+    const tdA1 = (buildStep >= 1);
+    const tdA2 = (buildStep >= 2);
+    const tdA3 = (buildStep >= 3);
+
+    drawEdge(gTd, 200, 25, 100, 80, tdA1);
+    drawEdge(gTd, 200, 25, 300, 80, tdA1);
+    drawEdge(gTd, 100, 80, 50, 145, tdA2);
+    drawEdge(gTd, 100, 80, 150, 145, tdA2);
+    drawEdge(gTd, 300, 80, 250, 145, tdA3);
+    drawEdge(gTd, 300, 80, 350, 145, tdA3);
+
+    drawNode(gTd, 200, 25, tdA1 ? "X=145" : "T1-T4", false, true);
+    drawNode(gTd, 100, 80, tdA1 ? (tdA2 ? "Y=115" : "T1,T2") : "", !tdA2, tdA1);
+    drawNode(gTd, 300, 80, tdA1 ? (tdA3 ? "Y=95" : "T3,T4") : "", !tdA3, tdA1);
+    
+    drawNode(gTd, 50,  145, tdA2 ? "T1" : "", true, tdA2);
+    drawNode(gTd, 150, 145, tdA2 ? "T2" : "", true, tdA2);
+    drawNode(gTd, 250, 145, tdA3 ? "T3" : "", true, tdA3);
+    drawNode(gTd, 350, 145, tdA3 ? "T4" : "", true, tdA3);
+
+
+    // --- RENDER BOTTOM-UP (BVH) ---
+    sBu.lineWidth = 1;
+    if (buildStep >= 1) {
+      // Krok 1: Inicializace listů - těsné obálky kolem samostatných trojúhelníků odspodu
+      sBu.strokeStyle = "rgba(255,255,255,0.3)";
+      sBu.strokeRect(20, 30, 70, 80);   // T1
+      sBu.strokeRect(75, 120, 55, 50);  // T2
+      sBu.strokeRect(155, 30, 55, 60);  // T3
+      sBu.strokeRect(220, 100, 60, 60); // T4
+    }
+    if (buildStep >= 2) {
+      // Krok 2: Sloučení nejbližších párů do lokálních sub-obálek (T1+T2) a (T3+T4)
+      sBu.strokeStyle = "#569cd6";
+      sBu.strokeRect(18, 28, 114, 144); // Cluster L
+      sBu.strokeStyle = "#ce9178";
+      sBu.strokeRect(153, 28, 129, 134); // Cluster R
+    }
+    if (buildStep >= 3) {
+      // Krok 3: Finální sloučení sub-obálek do jednoho globálního kořene (Root)
+      sBu.strokeStyle = "#4ec9b0"; sBu.lineWidth = 1.5;
+      sBu.strokeRect(15, 25, 270, 150);
+    }
+
+    // Bottom-Up Graf (Hierarchie se staví odspodu, ale uzly vizualizujeme na fixních pozicích)
+    const buA1 = (buildStep >= 1);
+    const buA2 = (buildStep >= 2);
+    const buA3 = (buildStep >= 3);
+
+    drawEdge(gBu, 200, 25, 100, 80, buA3);
+    drawEdge(gBu, 200, 25, 300, 80, buA3);
+    drawEdge(gBu, 100, 80, 50, 145, buA2);
+    drawEdge(gBu, 100, 80, 150, 145, buA2);
+    drawEdge(gBu, 300, 80, 250, 145, buA2);
+    drawEdge(gBu, 300, 80, 350, 145, buA2);
+
+    // Aktivace uzlů reflektuje reálný postup zdola nahoru
+    drawNode(gBu, 50,  145, buA1 ? "T1" : "", true, buA1);
+    drawNode(gBu, 150, 145, buA1 ? "T2" : "", true, buA1);
+    drawNode(gBu, 250, 145, buA1 ? "T3" : "", true, buA1);
+    drawNode(gBu, 350, 145, buA1 ? "T4" : "", true, buA1);
+
+    drawNode(gBu, 100, 80, buA2 ? "Node L" : "", false, buA2);
+    drawNode(gBu, 300, 80, buA2 ? "Node R" : "", false, buA2);
+
+    drawNode(gBu, 200, 25, buA3 ? "Root" : "", false, buA3);
+
+    // TEXT LOGIC STATUS UPDATE
+    const statusTxt = document.getElementById("dpg-build-status-text");
+    document.getElementById("dpg-build-step-num").innerText = `${buildStep} / ${maxSteps}`;
+
+    if (buildStep == 0) {
+      statusTxt.innerText = "Inicializovaná scéna (Geometrie bez indexace)";
+      statusTxt.style.color = "#ccc";
+    }
+    if (buildStep == 1) {
+      statusTxt.innerText = "TD: Vytvořen Root a split rovina X145 | BU: Spočítány těsné AABB pro jednotlivé listy (T1-T4).";
+      statusTxt.style.color = "#569cd6";
+    }
+    if (buildStep == 2) {
+      statusTxt.innerText = "TD: Levý prostor rozdělen rovinou Y115 | BU: Nejbližší listy sloučeny do Node L [T1,T2] a Node R [T3,T4].";
+      statusTxt.style.color = "#da70d6";
+    }
+    if (buildStep == 3) {
+      statusTxt.innerText = "TD: Stavba dokončena (Pravý prostor rozdělen Y95) | BU: Hotovo (Sub-obálky sloučeny do finálního Rootu).";
+      statusTxt.style.color = "#4ec9b0";
+    }
+  }
+
+  function setStep(s) {
+    buildStep = s;
+    if (buildStep < 0) buildStep = 0;
+    if (buildStep > maxSteps) buildStep = maxSteps;
+    render();
+  }
+
+  const interval = setInterval(() => {
+    const nextBtn = document.getElementById("dpg-build-btn-next");
+    if (nextBtn) {
+      clearInterval(interval);
+
+      nextBtn.addEventListener("click", () => setStep(buildStep + 1));
+      document.getElementById("dpg-build-btn-prev").addEventListener("click", () => setStep(buildStep - 1));
+      document.getElementById("dpg-build-btn-reset").addEventListener("click", () => setStep(0));
+
+      render();
+    }
+  }, 100);
+})();
+</script>

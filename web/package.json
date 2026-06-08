@@ -5,6 +5,7 @@
   "scripts": {
     "generate-docs": "node scripts/generate-docs.mjs",
     "generate-commission-data": "node scripts/generate-commission-data.mjs",
+    "generate-widget-pages": "node scripts/generate-widget-pages.mjs",
     "prestart": "npm run generate-docs",
     "start": "docusaurus start --host 0.0.0.0",
     "prebuild": "npm run generate-docs",
