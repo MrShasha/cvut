@@ -1,14 +1,8 @@
-[[1. Data structures for searching in multidimensional spaces]]
+# Všechny widgety
 
-- [[1. Data structures for searching in multidimensional spaces#Regular and hierarchical data structures, time and space complexity|Regular and hierarchical data structures, time and space complexity]]
-- [[1. Data structures for searching in multidimensional spaces#Cost model and general building and search algorithm for hierarchical data structures|Cost model and general building and search algorithm for hierarchical data structures]]
-- [[1. Data structures for searching in multidimensional spaces#Data structures for representations of points and shapes including nets, special data structures|Data structures for representations of points and shapes including nets, special data structures]]
-- [[1. Data structures for searching in multidimensional spaces#Data structures and applications for the nearest neighbor, k-nearest neighbor and range search queries|Data structures and applications for the nearest neighbor, k-nearest neighbor and range search queries]]
-- [[1. Data structures for searching in multidimensional spaces#Data structures and algorithms for high-dimensional search|Data structures and algorithms for high-dimensional search]]
-- [[1. Data structures for searching in multidimensional spaces#Algorithms for building and traversal of the data structures for ray shooting and applications|Algorithms for building and traversal of the data structures for ray shooting and applications]]
-- [[1. Data structures for searching in multidimensional spaces#Data structures for collision detection, the complexity and applications|Data structures for collision detection, the complexity and applications]]
+## [[0. Obsah DPG]]
 
-# Widgety
+*Sekce: [[0. Obsah DPG#Widgety|Widgety]]*
 
 <iframe 
     src="https://mrshasha.github.io/cvut/Assets/DPG/model-vykonu.html" 
@@ -17,6 +11,9 @@
     frameborder="0" 
     style="border-radius: 8px; border: 1px solid #444;">
 </iframe>
+
+*Sekce: [[0. Obsah DPG#Widgety|Widgety]]*
+
 <iframe 
     src="https://mrshasha.github.io/cvut/Assets/DPG/kd-vs-bvh.html" 
     width="100%" 
@@ -24,6 +21,9 @@
     frameborder="0" 
     style="border-radius: 8px; border: 1px solid #444;">
 </iframe>
+
+*Sekce: [[0. Obsah DPG#Widgety|Widgety]]*
+
 <iframe 
     src="https://mrshasha.github.io/cvut/Assets/DPG/topDown-vs-bottomUp-constr.html" 
     width="100%" 
@@ -31,6 +31,9 @@
     frameborder="0" 
     style="border-radius: 8px; border: 1px solid #444;">
 </iframe>
+
+*Sekce: [[0. Obsah DPG#Widgety|Widgety]]*
+
 <iframe 
     src="https://mrshasha.github.io/cvut/Assets/DPG/bbox.html" 
     width="100%" 
@@ -38,6 +41,9 @@
     frameborder="0" 
     style="border-radius: 8px; border: 1px solid #444;">
 </iframe>
+
+*Sekce: [[0. Obsah DPG#Widgety|Widgety]]*
+
 <iframe 
     src="https://mrshasha.github.io/cvut/Assets/DPG/bv-intersection.html" 
     width="100%" 
@@ -45,6 +51,9 @@
     frameborder="0" 
     style="border-radius: 8px; border: 1px solid #444;">
 </iframe>
+
+*Sekce: [[0. Obsah DPG#Widgety|Widgety]]*
+
 <iframe 
     src="https://mrshasha.github.io/cvut/Assets/DPG/representation.html" 
     width="100%" 
@@ -52,6 +61,9 @@
     frameborder="0" 
     style="border-radius: 8px; border: 1px solid #444;">
 </iframe>
+
+*Sekce: [[0. Obsah DPG#Widgety|Widgety]]*
+
 <iframe 
     src="https://mrshasha.github.io/cvut/Assets/DPG/nn.html" 
     width="100%" 
@@ -59,6 +71,9 @@
     frameborder="0" 
     style="border-radius: 8px; border: 1px solid #444;">
 </iframe>
+
+*Sekce: [[0. Obsah DPG#Widgety|Widgety]]*
+
 <iframe 
     src="https://mrshasha.github.io/cvut/Assets/DPG/ray-shooting.html" 
     width="100%" 
@@ -66,6 +81,9 @@
     frameborder="0" 
     style="border-radius: 8px; border: 1px solid #444;">
 </iframe>
+
+*Sekce: [[0. Obsah DPG#Widgety|Widgety]]*
+
 <iframe 
     src="https://mrshasha.github.io/cvut/Assets/DPG/cd.html" 
     width="100%" 
@@ -75,4 +93,3 @@
 </iframe>
 
 ---
-[[Všechny widgety]]
