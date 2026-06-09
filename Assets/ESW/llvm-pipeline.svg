@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">LLVM pipeline</title>
+  <desc id="desc">Diagram showing language frontends, LLVM IR, machine independent optimization, machine specific backend, and generated machine code.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <linearGradient id="irGrad" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#e0f2fe"/>
+      <stop offset="100%" stop-color="#dbeafe"/>
+    </linearGradient>
+    <linearGradient id="midGrad" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#dcfce7"/>
+      <stop offset="100%" stop-color="#bbf7d0"/>
+    </linearGradient>
+    <linearGradient id="backGrad" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#fef3c7"/>
+      <stop offset="100%" stop-color="#fde68a"/>
+    </linearGradient>
+    <style>
+      .title { font: 700 30px system-ui, -apple-system, Segoe UI, sans-serif; fill: #0f172a; }
+      .subtitle { font: 500 15px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; }
+      .box-title { font: 700 18px system-ui, -apple-system, Segoe UI, sans-serif; fill: #0f172a; }
+      .box-text { font: 500 14px system-ui, -apple-system, Segoe UI, sans-serif; fill: #334155; }
+      .small { font: 500 13px system-ui, -apple-system, Segoe UI, sans-serif; fill: #475569; }
+      .label { font: 700 13px system-ui, -apple-system, Segoe UI, sans-serif; fill: #1e293b; }
+      .box { stroke: #94a3b8; stroke-width: 1.4; rx: 14; }
+      .lane { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.2; rx: 18; }
+      .arrow { stroke: #334155; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+      .thin-arrow { stroke: #64748b; stroke-width: 1.8; fill: none; marker-end: url(#arrow); }
+      .chip { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1; rx: 9; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="560" fill="#ffffff"/>
+
+  <text x="44" y="52" class="title">LLVM compiler pipeline</text>
+  <text x="44" y="80" class="subtitle">Frontend rozumí jazyku. Middle-end optimalizuje LLVM IR. Backend generuje kód pro konkrétní CPU.</text>
+
+  <rect x="34" y="110" width="1132" height="360" class="lane"/>
+
+  <rect x="62" y="150" width="165" height="100" class="box" fill="#f1f5f9"/>
+  <text x="86" y="182" class="box-title">Source code</text>
+  <text x="86" y="209" class="box-text">C / C++</text>
+  <text x="86" y="229" class="box-text">Rust / Swift</text>
+
+  <path class="arrow" d="M 232 200 H 285"/>
+
+  <rect x="295" y="142" width="175" height="116" class="box" fill="#ede9fe"/>
+  <text x="325" y="173" class="box-title">Frontend</text>
+  <text x="322" y="201" class="box-text">lexer + parser</text>
+  <text x="322" y="222" class="box-text">semantic analysis</text>
+  <text x="322" y="243" class="small">např. Clang</text>
+
+  <path class="arrow" d="M 475 200 H 525"/>
+
+  <rect x="535" y="132" width="185" height="136" class="box" fill="url(#irGrad)"/>
+  <text x="584" y="163" class="box-title">LLVM IR</text>
+  <text x="565" y="193" class="box-text">typed IR</text>
+  <text x="565" y="214" class="box-text">CFG</text>
+  <text x="565" y="235" class="box-text">SSA + phi</text>
+  <text x="565" y="256" class="small">machine-independent</text>
+
+  <path class="arrow" d="M 725 200 H 775"/>
+
+  <rect x="785" y="122" width="195" height="156" class="box" fill="url(#midGrad)"/>
+  <text x="828" y="153" class="box-title">Middle-end</text>
+  <text x="814" y="183" class="box-text">constant folding</text>
+  <text x="814" y="204" class="box-text">DCE / CSE / LICM</text>
+  <text x="814" y="225" class="box-text">inlining</text>
+  <text x="814" y="246" class="box-text">vectorization</text>
+  <text x="814" y="267" class="small">nezávislé na CPU</text>
+
+  <path class="arrow" d="M 985 200 H 1035"/>
+
+  <rect x="1045" y="142" width="95" height="116" class="box" fill="url(#backGrad)"/>
+  <text x="1064" y="173" class="box-title">Backend</text>
+  <text x="1060" y="201" class="box-text">instr.</text>
+  <text x="1060" y="222" class="box-text">regs</text>
+  <text x="1060" y="243" class="box-text">layout</text>
+
+  <path class="thin-arrow" d="M 1092 264 V 325"/>
+
+  <rect x="972" y="336" width="190" height="92" class="box" fill="#fee2e2"/>
+  <text x="1014" y="368" class="box-title">Machine code</text>
+  <text x="1004" y="396" class="box-text">x86-64 / ARM64</text>
+  <text x="1004" y="417" class="box-text">RISC-V / target ISA</text>
+
+  <rect x="535" y="324" width="185" height="104" class="chip"/>
+  <text x="563" y="350" class="label">High-level passes</text>
+  <text x="559" y="376" class="small">pracují nad IR</text>
+  <text x="559" y="397" class="small">řeší hodnoty, větve,</text>
+  <text x="559" y="418" class="small">smyčky a volání funkcí</text>
+
+  <rect x="785" y="324" width="195" height="104" class="chip"/>
+  <text x="813" y="350" class="label">Low-level passes</text>
+  <text x="809" y="376" class="small">řeší konkrétní CPU</text>
+  <text x="809" y="397" class="small">registry, instrukce,</text>
+  <text x="809" y="418" class="small">scheduling a code layout</text>
+
+  <path class="thin-arrow" d="M 628 324 V 282"/>
+  <path class="thin-arrow" d="M 882 324 V 282"/>
+
+  <text x="64" y="512" class="subtitle">Klíčová hranice: IR dovoluje sdílet optimalizace mezi jazyky; backend odděluje optimalizace závislé na konkrétní architektuře.</text>
+</svg>
