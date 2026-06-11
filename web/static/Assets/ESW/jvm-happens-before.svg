@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="520" viewBox="0 0 1180 520" role="img" aria-labelledby="title desc">
+  <title id="title">Java happens-before and synchronization</title>
+  <desc id="desc">Diagram showing volatile release/acquire and monitor unlock/lock happens-before relationships between two Java threads.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fbff; }
+      .lane { fill: #ffffff; stroke: #8aa0b4; stroke-width: 1.5; rx: 14; }
+      .step { fill: #eef6ff; stroke: #315f8c; stroke-width: 1.5; rx: 10; }
+      .sync { fill: #fff4df; stroke: #9b6a1d; stroke-width: 1.6; rx: 10; }
+      .ok { fill: #ecf8ef; stroke: #347a4c; stroke-width: 1.6; rx: 10; }
+      .bad { fill: #fff0f0; stroke: #a24a4a; stroke-width: 1.4; rx: 10; }
+      .label { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #193246; }
+      .small { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 13px; fill: #33485c; }
+      .tiny { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 12px; fill: #546575; }
+      .arrow { stroke: #3d596f; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .hb { stroke: #2e7d49; stroke-width: 2.5; fill: none; marker-end: url(#arrowGreen); stroke-dasharray: 8 6; }
+      .warn { stroke: #a24a4a; stroke-width: 2; fill: none; marker-end: url(#arrowRed); stroke-dasharray: 6 6; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#3d596f"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2e7d49"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#a24a4a"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1180" height="520"/>
+  <text x="40" y="44" class="label" style="font-size:24px">Java Memory Model: happens-before</text>
+  <text x="40" y="68" class="small">Synchronizační akce vytváří vztah, díky kterému druhé vlákno vidí publikované změny.</text>
+
+  <rect class="lane" x="55" y="115" width="500" height="290"/>
+  <text x="80" y="148" class="label">Thread A: writer</text>
+  <rect class="step" x="95" y="185" width="205" height="62"/>
+  <text x="197.5" y="211" text-anchor="middle" class="small">data = 42</text>
+  <text x="197.5" y="232" text-anchor="middle" class="tiny">ordinary write</text>
+  <path class="arrow" d="M 300 216 H 355"/>
+  <rect class="sync" x="355" y="185" width="150" height="62"/>
+  <text x="430" y="211" text-anchor="middle" class="small">ready = true</text>
+  <text x="430" y="232" text-anchor="middle" class="tiny">volatile write / release</text>
+
+  <rect class="lane" x="625" y="115" width="500" height="290"/>
+  <text x="650" y="148" class="label">Thread B: reader</text>
+  <rect class="sync" x="675" y="185" width="150" height="62"/>
+  <text x="750" y="211" text-anchor="middle" class="small">if (ready)</text>
+  <text x="750" y="232" text-anchor="middle" class="tiny">volatile read / acquire</text>
+  <path class="arrow" d="M 825 216 H 880"/>
+  <rect class="ok" x="880" y="185" width="205" height="62"/>
+  <text x="982.5" y="211" text-anchor="middle" class="small">use(data)</text>
+  <text x="982.5" y="232" text-anchor="middle" class="tiny">must see data = 42</text>
+
+  <path class="hb" d="M 430 247 C 500 330, 675 330, 750 247"/>
+  <text x="590" y="354" text-anchor="middle" class="small" fill="#2e7d49">volatile write HB volatile read</text>
+
+  <rect class="sync" x="115" y="300" width="165" height="58"/>
+  <text x="197.5" y="324" text-anchor="middle" class="small">monitorexit(lock)</text>
+  <text x="197.5" y="344" text-anchor="middle" class="tiny">unlock</text>
+  <rect class="sync" x="900" y="300" width="165" height="58"/>
+  <text x="982.5" y="324" text-anchor="middle" class="small">monitorenter(lock)</text>
+  <text x="982.5" y="344" text-anchor="middle" class="tiny">subsequent lock</text>
+  <path class="hb" d="M 280 329 H 900"/>
+  <text x="590" y="310" text-anchor="middle" class="small" fill="#2e7d49">unlock same monitor HB subsequent lock</text>
+
+  <rect class="bad" x="350" y="430" width="480" height="55"/>
+  <text x="590" y="454" text-anchor="middle" class="small">Bez volatile nebo stejného monitoru nevzniká HB vztah</text>
+  <text x="590" y="474" text-anchor="middle" class="tiny">reader může vidět stale data nebo porušené pořadí</text>
+  <path class="warn" d="M 520 405 V 430"/>
+  <path class="warn" d="M 660 405 V 430"/>
+</svg>

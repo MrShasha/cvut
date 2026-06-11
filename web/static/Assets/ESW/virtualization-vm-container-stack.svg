@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">VM versus container stack</title>
+  <desc id="desc">Comparison of bare metal, virtual machine and container execution stacks.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fb; }
+      .panel { fill: #ffffff; stroke: #c9d1df; stroke-width: 2; }
+      .title { font: 700 28px Arial, sans-serif; fill: #172033; }
+      .subtitle { font: 700 19px Arial, sans-serif; fill: #24324a; }
+      .label { font: 600 15px Arial, sans-serif; fill: #24324a; }
+      .small { font: 400 13px Arial, sans-serif; fill: #53627a; }
+      .layerApp { fill: #e8f1ff; stroke: #6a93d8; stroke-width: 1.5; }
+      .layerOS { fill: #eaf8ef; stroke: #62ad76; stroke-width: 1.5; }
+      .layerVirt { fill: #fff2df; stroke: #d69a45; stroke-width: 1.5; }
+      .layerHW { fill: #f3f4f7; stroke: #8c98ab; stroke-width: 1.5; }
+      .layerWarn { fill: #fde8e8; stroke: #d46a6a; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1200" height="760"/>
+  <text class="title" x="48" y="50">Bare metal vs VM vs container</text>
+  <text class="small" x="48" y="78">VM has a guest kernel and virtual hardware. Container is an isolated process on the host kernel.</text>
+
+  <rect class="panel" x="55" y="120" width="330" height="545" rx="16"/>
+  <text class="subtitle" x="140" y="160">Bare metal</text>
+  <rect class="layerApp" x="95" y="215" width="250" height="70" rx="10"/>
+  <text class="label" x="175" y="255">Application</text>
+  <rect class="layerOS" x="95" y="305" width="250" height="80" rx="10"/>
+  <text class="label" x="170" y="340">Host OS</text>
+  <text class="small" x="172" y="362">kernel + drivers</text>
+  <rect class="layerHW" x="95" y="505" width="250" height="80" rx="10"/>
+  <text class="label" x="175" y="545">Hardware</text>
+  <text class="small" x="135" y="620">lowest overhead, strongest hardware control</text>
+
+  <rect class="panel" x="435" y="120" width="330" height="545" rx="16"/>
+  <text class="subtitle" x="570" y="160">VM</text>
+  <rect class="layerApp" x="475" y="195" width="250" height="56" rx="10"/>
+  <text class="label" x="555" y="229">Application</text>
+  <rect class="layerOS" x="475" y="265" width="250" height="70" rx="10"/>
+  <text class="label" x="548" y="294">Guest OS</text>
+  <text class="small" x="548" y="315">own kernel</text>
+  <rect class="layerVirt" x="475" y="350" width="250" height="62" rx="10"/>
+  <text class="label" x="537" y="386">Virtual hardware</text>
+  <rect class="layerWarn" x="475" y="430" width="250" height="62" rx="10"/>
+  <text class="label" x="550" y="466">Hypervisor</text>
+  <rect class="layerHW" x="475" y="510" width="250" height="75" rx="10"/>
+  <text class="label" x="555" y="550">Hardware</text>
+  <text class="small" x="500" y="620">strong isolation, possible VM exits and steal time</text>
+
+  <rect class="panel" x="815" y="120" width="330" height="545" rx="16"/>
+  <text class="subtitle" x="940" y="160">Container</text>
+  <rect class="layerApp" x="855" y="215" width="250" height="70" rx="10"/>
+  <text class="label" x="935" y="255">Application</text>
+  <rect class="layerVirt" x="855" y="305" width="250" height="80" rx="10"/>
+  <text class="label" x="908" y="338">Namespaces</text>
+  <text class="small" x="910" y="360">cgroups limits</text>
+  <rect class="layerOS" x="855" y="405" width="250" height="80" rx="10"/>
+  <text class="label" x="922" y="438">Host kernel</text>
+  <text class="small" x="910" y="460">shared by containers</text>
+  <rect class="layerHW" x="855" y="505" width="250" height="80" rx="10"/>
+  <text class="label" x="935" y="545">Hardware</text>
+  <text class="small" x="890" y="620">fast startup, lower overhead, shared kernel</text>
+</svg>

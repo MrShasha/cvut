@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="540" viewBox="0 0 1180 540" role="img" aria-labelledby="title desc">
+  <title id="title">Java NIO Selector pipeline</title>
+  <desc id="desc">Diagram of sockets registered in a selector, readiness events, selection keys, handlers, byte buffers and optional worker pool.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fbff; }
+      .panel { fill: #ffffff; stroke: #8798aa; stroke-width: 1.5; rx: 14; }
+      .sock { fill: #eef7ff; stroke: #315f8c; stroke-width: 1.5; rx: 9; }
+      .selector { fill: #ecf8ef; stroke: #347a4c; stroke-width: 1.6; rx: 10; }
+      .key { fill: #fff4df; stroke: #9b6a1d; stroke-width: 1.5; rx: 9; }
+      .buf { fill: #f0edff; stroke: #6b59a0; stroke-width: 1.5; rx: 9; }
+      .warn { fill: #fff0f0; stroke: #a24a4a; stroke-width: 1.4; rx: 9; }
+      .label { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #1d3144; }
+      .small { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 13px; fill: #34485c; }
+      .tiny { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 12px; fill: #586a7a; }
+      .arrow { stroke: #43586c; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #65798b; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 6 6; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#43586c"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1180" height="540"/>
+  <text x="40" y="44" class="label" style="font-size:24px">Java NIO Selector</text>
+  <text x="40" y="68" class="small">Jeden selector sleduje mnoho non-blocking channelů a vrací jen ready keys.</text>
+
+  <rect class="panel" x="40" y="110" width="250" height="320"/>
+  <text x="65" y="145" class="label">Channels</text>
+  <rect class="sock" x="75" y="185" width="175" height="42"/>
+  <text x="162.5" y="211" text-anchor="middle" class="tiny">ServerSocketChannel</text>
+  <rect class="sock" x="75" y="250" width="175" height="42"/>
+  <text x="162.5" y="276" text-anchor="middle" class="tiny">SocketChannel A</text>
+  <rect class="sock" x="75" y="315" width="175" height="42"/>
+  <text x="162.5" y="341" text-anchor="middle" class="tiny">SocketChannel B</text>
+
+  <path class="arrow" d="M 290 266 H 370"/>
+  <rect class="selector" x="370" y="175" width="210" height="150"/>
+  <text x="475" y="211" text-anchor="middle" class="label">Selector</text>
+  <text x="475" y="238" text-anchor="middle" class="small">select()</text>
+  <text x="475" y="264" text-anchor="middle" class="tiny">epoll/kqueue/poll</text>
+  <text x="475" y="287" text-anchor="middle" class="tiny">waits for readiness</text>
+
+  <path class="arrow" d="M 580 250 H 650"/>
+  <rect class="key" x="650" y="135" width="180" height="62"/>
+  <text x="740" y="161" text-anchor="middle" class="small">OP_ACCEPT</text>
+  <text x="740" y="181" text-anchor="middle" class="tiny">new connection</text>
+  <rect class="key" x="650" y="230" width="180" height="62"/>
+  <text x="740" y="256" text-anchor="middle" class="small">OP_READ</text>
+  <text x="740" y="276" text-anchor="middle" class="tiny">data available</text>
+  <rect class="key" x="650" y="325" width="180" height="62"/>
+  <text x="740" y="351" text-anchor="middle" class="small">OP_WRITE</text>
+  <text x="740" y="371" text-anchor="middle" class="tiny">socket accepts bytes</text>
+
+  <path class="arrow" d="M 830 261 H 905"/>
+  <rect class="buf" x="905" y="145" width="205" height="88"/>
+  <text x="1007.5" y="176" text-anchor="middle" class="label">Connection state</text>
+  <text x="1007.5" y="202" text-anchor="middle" class="tiny">parser, buffers, pending writes</text>
+  <rect class="buf" x="905" y="270" width="205" height="88"/>
+  <text x="1007.5" y="301" text-anchor="middle" class="label">ByteBuffer</text>
+  <text x="1007.5" y="327" text-anchor="middle" class="tiny">write -> flip -> read</text>
+
+  <path class="dash" d="M 1007 358 V 420"/>
+  <rect class="warn" x="840" y="420" width="335" height="48"/>
+  <text x="1007.5" y="449" text-anchor="middle" class="small">Blocking/CPU work goes to worker pool, not event loop</text>
+
+  <text x="370" y="390" class="small">Selected keys must be removed after handling.</text>
+  <text x="370" y="414" class="tiny">TCP is stream-based: one read may contain partial, one, or multiple messages.</text>
+</svg>

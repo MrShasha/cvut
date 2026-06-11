@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560" role="img" aria-labelledby="title desc">
+  <title id="title">CAS loop and Treiber stack</title>
+  <desc id="desc">Diagram of CAS loop retry behavior and Treiber stack push/pop through an AtomicReference top pointer.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfaf6; }
+      .panel { fill: #ffffff; stroke: #9a927e; stroke-width: 1.5; rx: 14; }
+      .node { fill: #eef7ff; stroke: #315f8c; stroke-width: 1.6; rx: 10; }
+      .new { fill: #ecf8ef; stroke: #347a4c; stroke-width: 1.7; rx: 10; }
+      .cas { fill: #fff3d7; stroke: #9c6818; stroke-width: 1.7; rx: 10; }
+      .fail { fill: #fff0f0; stroke: #a24a4a; stroke-width: 1.5; rx: 10; }
+      .label { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #2c2b24; }
+      .small { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 13px; fill: #464237; }
+      .tiny { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 12px; fill: #5f5a4d; }
+      .arrow { stroke: #4c4a40; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .green { stroke: #2e7d49; stroke-width: 2.3; fill: none; marker-end: url(#arrowGreen); }
+      .red { stroke: #a24a4a; stroke-width: 2.1; fill: none; marker-end: url(#arrowRed); stroke-dasharray: 6 6; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4c4a40"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2e7d49"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#a24a4a"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1180" height="560"/>
+  <text x="40" y="44" class="label" style="font-size:24px">CAS loop + Treiber stack</text>
+  <text x="40" y="68" class="small">Lock-free struktura nemá monitor, ale soutěží o atomickou změnu sdíleného pointeru.</text>
+
+  <rect class="panel" x="45" y="105" width="520" height="365"/>
+  <text x="75" y="140" class="label">Treiber stack state</text>
+
+  <rect class="cas" x="95" y="190" width="120" height="60"/>
+  <text x="155" y="216" text-anchor="middle" class="small">top</text>
+  <text x="155" y="237" text-anchor="middle" class="tiny">AtomicReference</text>
+
+  <rect class="node" x="285" y="180" width="105" height="80"/>
+  <text x="337.5" y="211" text-anchor="middle" class="small">Node A</text>
+  <text x="337.5" y="235" text-anchor="middle" class="tiny">value</text>
+  <rect class="node" x="455" y="180" width="105" height="80"/>
+  <text x="507.5" y="211" text-anchor="middle" class="small">Node B</text>
+  <text x="507.5" y="235" text-anchor="middle" class="tiny">next</text>
+  <path class="arrow" d="M 215 220 H 285"/>
+  <path class="arrow" d="M 390 220 H 455"/>
+
+  <rect class="new" x="285" y="325" width="105" height="80"/>
+  <text x="337.5" y="356" text-anchor="middle" class="small">New node</text>
+  <text x="337.5" y="380" text-anchor="middle" class="tiny">next = oldTop</text>
+  <path class="green" d="M 337 325 C 335 295, 335 275, 337 260"/>
+  <text x="430" y="322" class="tiny">prepare before CAS</text>
+
+  <path class="green" d="M 285 365 C 205 350, 155 305, 155 250"/>
+  <text x="120" y="315" class="small" fill="#2e7d49">CAS(top, oldTop, newNode)</text>
+  <text x="120" y="337" class="tiny">success = linearization point</text>
+
+  <rect class="panel" x="625" y="105" width="510" height="365"/>
+  <text x="655" y="140" class="label">CAS retry behavior</text>
+
+  <rect class="cas" x="670" y="185" width="155" height="58"/>
+  <text x="747.5" y="210" text-anchor="middle" class="small">read oldTop</text>
+  <text x="747.5" y="230" text-anchor="middle" class="tiny">snapshot</text>
+  <path class="arrow" d="M 825 214 H 875"/>
+
+  <rect class="cas" x="875" y="185" width="170" height="58"/>
+  <text x="960" y="210" text-anchor="middle" class="small">compute new state</text>
+  <text x="960" y="230" text-anchor="middle" class="tiny">new.next = oldTop</text>
+  <path class="arrow" d="M 960 243 V 290"/>
+
+  <rect class="cas" x="875" y="290" width="170" height="58"/>
+  <text x="960" y="315" text-anchor="middle" class="small">compareAndSet</text>
+  <text x="960" y="335" text-anchor="middle" class="tiny">expected oldTop</text>
+
+  <path class="green" d="M 875 319 H 805"/>
+  <rect class="new" x="665" y="290" width="140" height="58"/>
+  <text x="735" y="315" text-anchor="middle" class="small">success</text>
+  <text x="735" y="335" text-anchor="middle" class="tiny">operation done</text>
+
+  <path class="red" d="M 960 348 C 960 405, 730 405, 747 243"/>
+  <rect class="fail" x="820" y="405" width="250" height="42"/>
+  <text x="945" y="431" text-anchor="middle" class="small">failure means someone else changed top</text>
+
+  <text x="655" y="500" class="small">Lock-free pointa: při neúspěšném CAS pravděpodobně pokročilo jiné vlákno.</text>
+  <text x="655" y="522" class="tiny">Není to wait-free: jedno konkrétní vlákno může CAS prohrávat opakovaně.</text>
+</svg>

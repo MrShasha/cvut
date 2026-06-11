@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Scalar pipeline, superscalar CPU and multicore</title>
+  <desc id="desc">Comparison of a scalar instruction pipeline, a superscalar core with multiple execution units, and a multicore CPU with separate cores.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f8fb; }
+      .panel { fill: #ffffff; stroke: #c9d1df; stroke-width: 2; rx: 16; }
+      .title { font: 700 28px Arial, sans-serif; fill: #172033; }
+      .subtitle { font: 600 18px Arial, sans-serif; fill: #24324a; }
+      .label { font: 500 15px Arial, sans-serif; fill: #24324a; }
+      .small { font: 400 13px Arial, sans-serif; fill: #53627a; }
+      .tiny { font: 500 12px Arial, sans-serif; fill: #53627a; }
+      .stage { fill: #e8f1ff; stroke: #6a93d8; stroke-width: 1.5; rx: 8; }
+      .stage2 { fill: #eaf8ef; stroke: #62ad76; stroke-width: 1.5; rx: 8; }
+      .stage3 { fill: #fff2df; stroke: #d69a45; stroke-width: 1.5; rx: 8; }
+      .lane { fill: #f3f6fb; stroke: #c9d1df; stroke-width: 1.2; rx: 10; }
+      .unitA { fill: #e8f1ff; stroke: #6a93d8; stroke-width: 1.5; rx: 8; }
+      .unitB { fill: #eaf8ef; stroke: #62ad76; stroke-width: 1.5; rx: 8; }
+      .unitC { fill: #fff2df; stroke: #d69a45; stroke-width: 1.5; rx: 8; }
+      .core { fill: #ffffff; stroke: #8c98ab; stroke-width: 1.5; rx: 12; }
+      .arrow { stroke: #53627a; stroke-width: 2; marker-end: url(#arrow); fill: none; }
+      .dash { stroke: #8c98ab; stroke-width: 1.4; stroke-dasharray: 5 5; fill: none; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#53627a"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1200" height="760"/>
+  <text class="title" x="48" y="48">CPU parallelism: pipeline vs superscalar vs multicore</text>
+  <text class="small" x="48" y="76">Pipeline and superscalar are inside one core. Multicore is parallelism across cores.</text>
+
+  <rect class="panel" x="40" y="105" width="1120" height="175"/>
+  <text class="subtitle" x="65" y="138">1. Scalar instruction pipeline: one issue lane, overlapped stages</text>
+  <text class="small" x="65" y="162">After the pipeline is full, an ideal scalar core can retire about one instruction per cycle.</text>
+
+  <text class="tiny" x="70" y="201">cycle 1</text>
+  <text class="tiny" x="200" y="201">cycle 2</text>
+  <text class="tiny" x="330" y="201">cycle 3</text>
+  <text class="tiny" x="460" y="201">cycle 4</text>
+  <text class="tiny" x="590" y="201">cycle 5</text>
+  <line class="dash" x1="62" y1="207" x2="720" y2="207"/>
+
+  <rect class="stage" x="70" y="220" width="95" height="34"/><text class="label" x="103" y="242">F</text>
+  <rect class="stage" x="180" y="220" width="95" height="34"/><text class="label" x="213" y="242">D</text>
+  <rect class="stage" x="290" y="220" width="95" height="34"/><text class="label" x="323" y="242">E</text>
+  <rect class="stage" x="400" y="220" width="95" height="34"/><text class="label" x="432" y="242">M</text>
+  <rect class="stage" x="510" y="220" width="95" height="34"/><text class="label" x="543" y="242">W</text>
+  <text class="small" x="625" y="242">instruction I1</text>
+
+  <rect class="stage2" x="180" y="258" width="95" height="16"/>
+  <rect class="stage2" x="290" y="258" width="95" height="16"/>
+  <rect class="stage2" x="400" y="258" width="95" height="16"/>
+  <rect class="stage2" x="510" y="258" width="95" height="16"/>
+  <rect class="stage2" x="620" y="258" width="95" height="16"/>
+  <text class="small" x="735" y="272">I2 is already in the pipeline</text>
+
+  <rect class="unitA" x="840" y="185" width="95" height="34"/><text class="label" x="866" y="207">Fetch</text>
+  <path class="arrow" d="M 940 202 H 970"/>
+  <rect class="unitA" x="980" y="185" width="95" height="34"/><text class="label" x="1002" y="207">Decode</text>
+  <rect class="unitA" x="840" y="230" width="95" height="34"/><text class="label" x="861" y="252">Execute</text>
+  <path class="arrow" d="M 940 247 H 970"/>
+  <rect class="unitA" x="980" y="230" width="95" height="34"/><text class="label" x="1005" y="252">Retire</text>
+
+  <rect class="panel" x="40" y="305" width="1120" height="205"/>
+  <text class="subtitle" x="65" y="338">2. Superscalar core: multiple issue lanes inside one core</text>
+  <text class="small" x="65" y="362">Independent instructions can be decoded, scheduled and executed on different units in the same cycle.</text>
+
+  <rect class="lane" x="70" y="390" width="220" height="86"/>
+  <text class="label" x="92" y="418">Fetch and Decode</text>
+  <text class="small" x="92" y="443">several instructions</text>
+  <text class="small" x="92" y="463">from one thread</text>
+
+  <path class="arrow" d="M 300 433 H 350"/>
+  <rect class="lane" x="360" y="382" width="185" height="102"/>
+  <text class="label" x="392" y="410">Scheduler</text>
+  <text class="small" x="387" y="435">find independent</text>
+  <text class="small" x="402" y="455">instructions</text>
+
+  <path class="arrow" d="M 555 433 H 605"/>
+  <rect class="unitA" x="620" y="350" width="125" height="36"/><text class="label" x="660" y="373">ALU</text>
+  <rect class="unitB" x="620" y="397" width="125" height="36"/><text class="label" x="658" y="420">Load</text>
+  <rect class="unitC" x="620" y="444" width="125" height="36"/><text class="label" x="655" y="467">SIMD</text>
+
+  <rect class="unitA" x="775" y="350" width="125" height="36"/><text class="label" x="815" y="373">ALU</text>
+  <rect class="unitB" x="775" y="397" width="125" height="36"/><text class="label" x="812" y="420">Store</text>
+  <rect class="unitC" x="775" y="444" width="125" height="36"/><text class="label" x="812" y="467">FPU</text>
+
+  <path class="arrow" d="M 910 433 H 960"/>
+  <rect class="lane" x="975" y="382" width="145" height="102"/>
+  <text class="label" x="1018" y="410">Retire</text>
+  <text class="small" x="1000" y="435">commit results</text>
+  <text class="small" x="1000" y="455">in program order</text>
+
+  <text class="small" x="65" y="497">Limit: dependent instruction chains and cache misses leave units idle.</text>
+
+  <rect class="panel" x="40" y="535" width="1120" height="175"/>
+  <text class="subtitle" x="65" y="568">3. Multicore: separate cores, separate instruction streams</text>
+  <text class="small" x="65" y="592">More cores help only when the program has multiple independent threads or tasks.</text>
+
+  <rect class="core" x="90" y="620" width="180" height="58"/><text class="label" x="128" y="645">Core 0</text><text class="small" x="128" y="664">thread A</text>
+  <rect class="core" x="310" y="620" width="180" height="58"/><text class="label" x="348" y="645">Core 1</text><text class="small" x="348" y="664">thread B</text>
+  <rect class="core" x="530" y="620" width="180" height="58"/><text class="label" x="568" y="645">Core 2</text><text class="small" x="568" y="664">thread C</text>
+  <rect class="core" x="750" y="620" width="180" height="58"/><text class="label" x="788" y="645">Core 3</text><text class="small" x="788" y="664">thread D</text>
+
+  <path class="dash" d="M 180 620 C 260 575, 320 575, 400 620"/>
+  <path class="dash" d="M 620 620 C 690 575, 770 575, 840 620"/>
+  <text class="small" x="960" y="637">Shared limits:</text>
+  <text class="small" x="960" y="660">memory bandwidth, locks,</text>
+  <text class="small" x="960" y="683">cache coherency, GC.</text>
+</svg>

@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="520" viewBox="0 0 1180 520" role="img" aria-labelledby="title desc">
+  <title id="title">JVM runtime pipeline</title>
+  <desc id="desc">Pipeline from Java source through javac, bytecode, JVM interpreter and tiered JIT compilation to native code in code cache.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7faf7; }
+      .panel { fill: #ffffff; stroke: #9aa89a; stroke-width: 1.4; rx: 12; }
+      .box { fill: #ffffff; stroke: #2c4a3a; stroke-width: 1.8; rx: 10; }
+      .hot { fill: #fff3d6; stroke: #a56718; }
+      .jit { fill: #e9f3ff; stroke: #2f5f91; }
+      .runtime { fill: #ecf7ef; stroke: #2f7048; }
+      .danger { fill: #fff0f0; stroke: #a44; }
+      .label { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #183026; }
+      .small { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 13px; fill: #33443b; }
+      .tiny { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 12px; fill: #4a5d52; }
+      .arrow { stroke: #385246; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .softArrow { stroke: #687c70; stroke-width: 1.8; fill: none; marker-end: url(#arrowSoft); stroke-dasharray: 6 6; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#385246"/>
+    </marker>
+    <marker id="arrowSoft" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#687c70"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1180" height="520"/>
+  <text x="40" y="44" class="label" style="font-size:24px">JVM execution pipeline</text>
+  <text x="40" y="68" class="small">Bytecode startuje rychle, runtime profil řídí JIT a hot kód končí jako native code v code cache.</text>
+
+  <rect class="box" x="40" y="120" width="150" height="92"/>
+  <text x="115" y="154" text-anchor="middle" class="label">Java source</text>
+  <text x="115" y="179" text-anchor="middle" class="small">.java</text>
+
+  <path class="arrow" d="M 190 166 H 245"/>
+  <rect class="box" x="245" y="120" width="145" height="92"/>
+  <text x="317.5" y="154" text-anchor="middle" class="label">javac</text>
+  <text x="317.5" y="179" text-anchor="middle" class="small">static compile</text>
+
+  <path class="arrow" d="M 390 166 H 445"/>
+  <rect class="box" x="445" y="120" width="170" height="92"/>
+  <text x="530" y="151" text-anchor="middle" class="label">.class</text>
+  <text x="530" y="176" text-anchor="middle" class="small">bytecode</text>
+  <text x="530" y="194" text-anchor="middle" class="tiny">constant pool + methods</text>
+
+  <path class="arrow" d="M 615 166 H 670"/>
+  <rect class="runtime" x="670" y="120" width="180" height="92"/>
+  <text x="760" y="151" text-anchor="middle" class="label">Interpreter</text>
+  <text x="760" y="176" text-anchor="middle" class="small">runs immediately</text>
+  <text x="760" y="194" text-anchor="middle" class="tiny">collects counters</text>
+
+  <path class="arrow" d="M 850 166 H 905"/>
+  <rect class="jit" x="905" y="120" width="110" height="92"/>
+  <text x="960" y="154" text-anchor="middle" class="label">C1</text>
+  <text x="960" y="179" text-anchor="middle" class="small">fast JIT</text>
+
+  <path class="arrow" d="M 1015 166 H 1060"/>
+  <rect class="jit" x="1060" y="120" width="80" height="92"/>
+  <text x="1100" y="154" text-anchor="middle" class="label">C2</text>
+  <text x="1100" y="179" text-anchor="middle" class="small">opt JIT</text>
+
+  <rect class="panel" x="675" y="280" width="430" height="150"/>
+  <text x="700" y="312" class="label">Runtime profile</text>
+  <text x="700" y="340" class="small">invocation counter</text>
+  <text x="700" y="365" class="small">backedge counter</text>
+  <text x="700" y="390" class="small">branch probability</text>
+  <text x="700" y="415" class="small">receiver type profile</text>
+  <text x="910" y="340" class="small">inline cache</text>
+  <text x="910" y="365" class="small">deoptimization info</text>
+  <text x="910" y="390" class="small">OopMaps at safepoints</text>
+
+  <path class="softArrow" d="M 760 212 C 760 250, 775 260, 815 280"/>
+  <path class="softArrow" d="M 890 280 C 900 248, 934 230, 960 212"/>
+  <path class="softArrow" d="M 990 280 C 1010 248, 1064 230, 1095 212"/>
+
+  <rect class="hot" x="420" y="280" width="190" height="150"/>
+  <text x="515" y="313" text-anchor="middle" class="label">Code cache</text>
+  <text x="515" y="340" text-anchor="middle" class="small">native machine code</text>
+  <text x="515" y="365" text-anchor="middle" class="small">compiled methods</text>
+  <text x="515" y="390" text-anchor="middle" class="small">inline stubs</text>
+  <text x="515" y="415" text-anchor="middle" class="tiny">can be invalidated</text>
+
+  <path class="arrow" d="M 960 212 C 940 255, 700 355, 610 355"/>
+  <path class="arrow" d="M 1100 212 C 1080 270, 730 375, 610 375"/>
+
+  <rect class="danger" x="40" y="300" width="270" height="110"/>
+  <text x="175" y="332" text-anchor="middle" class="label">Safepoints</text>
+  <text x="175" y="360" text-anchor="middle" class="small">GC, deoptimization, thread dump</text>
+  <text x="175" y="384" text-anchor="middle" class="small">OopMap tells where refs are</text>
+
+  <path class="softArrow" d="M 670 196 C 525 260, 350 310, 310 345"/>
+  <path class="softArrow" d="M 905 196 C 660 270, 370 320, 310 358"/>
+  <path class="softArrow" d="M 1060 196 C 735 285, 390 330, 310 372"/>
+</svg>

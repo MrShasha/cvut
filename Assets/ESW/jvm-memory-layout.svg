@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="620" viewBox="0 0 1180 620" role="img" aria-labelledby="title desc">
+  <title id="title">JVM memory layout</title>
+  <desc id="desc">Diagram of JVM per-thread memory, shared heap, metaspace, code cache, stack frame, and Java object layout.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fbff; }
+      .area { fill: #ffffff; stroke: #7a8fa6; stroke-width: 1.5; rx: 14; }
+      .thread { fill: #edf6ff; stroke: #35658f; stroke-width: 1.5; rx: 12; }
+      .shared { fill: #f0f8f0; stroke: #3d7548; stroke-width: 1.5; rx: 12; }
+      .frame { fill: #fff7e8; stroke: #9b6b22; stroke-width: 1.4; rx: 10; }
+      .object { fill: #fff0f0; stroke: #9d4a4a; stroke-width: 1.4; rx: 10; }
+      .code { fill: #efeaff; stroke: #6a5797; stroke-width: 1.4; rx: 10; }
+      .label { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #1b2d3b; }
+      .small { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 13px; fill: #314255; }
+      .tiny { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 12px; fill: #4b5b68; }
+      .arrow { stroke: #465a69; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #647a8a; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 5 6; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#465a69"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1180" height="620"/>
+  <text x="40" y="44" class="label" style="font-size:24px">JVM memory layout</text>
+  <text x="40" y="68" class="small">Per-thread execution state is separate; heap, metaspace and code cache are shared by the JVM process.</text>
+
+  <rect class="area" x="35" y="95" width="520" height="430"/>
+  <text x="60" y="128" class="label">Per-thread memory</text>
+
+  <rect class="thread" x="65" y="155" width="210" height="120"/>
+  <text x="170" y="185" text-anchor="middle" class="label">Thread A</text>
+  <text x="90" y="215" class="small">PC register</text>
+  <text x="90" y="240" class="small">JVM stack</text>
+  <text x="90" y="265" class="small">Native method stack</text>
+
+  <rect class="thread" x="315" y="155" width="210" height="120"/>
+  <text x="420" y="185" text-anchor="middle" class="label">Thread B</text>
+  <text x="340" y="215" class="small">PC register</text>
+  <text x="340" y="240" class="small">JVM stack</text>
+  <text x="340" y="265" class="small">Native method stack</text>
+
+  <rect class="frame" x="80" y="325" width="430" height="165"/>
+  <text x="295" y="356" text-anchor="middle" class="label">JVM stack frame</text>
+  <rect x="110" y="378" width="160" height="32" fill="#ffffff" stroke="#9b6b22"/>
+  <text x="190" y="399" text-anchor="middle" class="small">local variables</text>
+  <rect x="110" y="420" width="160" height="32" fill="#ffffff" stroke="#9b6b22"/>
+  <text x="190" y="441" text-anchor="middle" class="small">operand stack</text>
+  <rect x="320" y="378" width="160" height="32" fill="#ffffff" stroke="#9b6b22"/>
+  <text x="400" y="399" text-anchor="middle" class="small">constant pool ref</text>
+  <rect x="320" y="420" width="160" height="32" fill="#ffffff" stroke="#9b6b22"/>
+  <text x="400" y="441" text-anchor="middle" class="small">return info</text>
+  <text x="295" y="474" text-anchor="middle" class="tiny">compiled frame can keep values in CPU registers and reconstruct state at safepoints</text>
+
+  <rect class="area" x="605" y="95" width="540" height="430"/>
+  <text x="630" y="128" class="label">Shared JVM memory</text>
+
+  <rect class="shared" x="635" y="155" width="225" height="155"/>
+  <text x="747.5" y="186" text-anchor="middle" class="label">Heap</text>
+  <text x="665" y="216" class="small">objects</text>
+  <text x="665" y="241" class="small">arrays</text>
+  <text x="665" y="266" class="small">young/old regions</text>
+  <text x="665" y="291" class="small">managed by GC</text>
+
+  <rect class="shared" x="890" y="155" width="225" height="155"/>
+  <text x="1002.5" y="186" text-anchor="middle" class="label">Metaspace</text>
+  <text x="920" y="216" class="small">class metadata</text>
+  <text x="920" y="241" class="small">method metadata</text>
+  <text x="920" y="266" class="small">constant pools</text>
+  <text x="920" y="291" class="small">class loaders matter</text>
+
+  <rect class="code" x="635" y="345" width="225" height="115"/>
+  <text x="747.5" y="377" text-anchor="middle" class="label">Code cache</text>
+  <text x="665" y="407" class="small">C1/C2 native code</text>
+  <text x="665" y="432" class="small">compiled methods</text>
+
+  <rect class="object" x="890" y="345" width="225" height="115"/>
+  <text x="1002.5" y="377" text-anchor="middle" class="label">Object layout</text>
+  <text x="920" y="407" class="small">mark word</text>
+  <text x="920" y="432" class="small">klass pointer + fields</text>
+
+  <path class="dash" d="M 270 395 C 440 350, 520 225, 635 225"/>
+  <text x="456" y="302" class="tiny">local reference points to heap object</text>
+
+  <path class="dash" d="M 860 402 H 890"/>
+  <text x="872" y="392" text-anchor="middle" class="tiny">oop</text>
+
+  <rect x="900" y="482" width="200" height="36" fill="#ffffff" stroke="#9d4a4a"/>
+  <text x="1000" y="505" text-anchor="middle" class="tiny">compressed oop: 4B offset instead of 8B address</text>
+</svg>
