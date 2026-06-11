@@ -753,8 +753,8 @@
       "generatedRel": "softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
       "summary": "Kapitoly 1. Úvod, hardware a motivace1. Úvod, hardware a motivace - Motivace a definice efektivního softwaru1. Úvod, hardware a motivace — co vlastně znamená \"efektivní\" a proč na tom záleží. - Výkon jako trade-off1. Úvo",
       "incoming": 0,
-      "outgoing": 156,
-      "degree": 156
+      "outgoing": 154,
+      "degree": 154
     },
     {
       "id": "doc:softwarove-inzenyrstvi/efektivni-software/1-uvod-hardware-a-motivace.md",
@@ -947,10 +947,10 @@
       "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
       "generatedRel": "softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "summary": "- Proč virtualizace patří do performance témat14. Virtualizace: aplikace často neběží na bare metal a výkon ovlivňuje VM/container/cloud vrstva. - Bare metal, VM a container14. Virtualizace: rozdíl mezi fyzickým serverem",
+      "summary": "- Proč virtualizace patří do performance témat14. Virtualizace: aplikace často běží ve VM/containeru, ne přímo na hardware. - Bare metal, VM a container14. Virtualizace: co je fyzický server, virtuální stroj a kontejner.",
       "incoming": 2,
-      "outgoing": 20,
-      "degree": 22
+      "outgoing": 16,
+      "degree": 18
     },
     {
       "id": "doc:softwarove-inzenyrstvi/efektivni-software/15-shrnuti-pro-statnice.md",
@@ -6840,27 +6840,12 @@
       "degree": 3
     },
     {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-namespaces-a-cgroups",
-      "title": "Kontejnery: namespaces a cgroups",
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-a-cgroups",
+      "title": "Kontejnery a cgroups",
       "type": "heading",
       "group": "Softwarové Inženýrství",
       "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#kontejnery-namespaces-a-cgroups",
-      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
-      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "parentTitle": "14. Virtualizace",
-      "level": 1,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#cpu-a-memory-limity-v-kontejnerech",
-      "title": "CPU a memory limity v kontejnerech",
-      "type": "heading",
-      "group": "Softwarové Inženýrství",
-      "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#cpu-a-memory-limity-v-kontejnerech",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#kontejnery-a-cgroups",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
       "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
       "parentTitle": "14. Virtualizace",
@@ -6885,27 +6870,12 @@
       "degree": 3
     },
     {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-problémy-v-izolovaném-prostředí",
-      "title": "Performance problémy v izolovaném prostředí",
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-diagnostika",
+      "title": "Performance diagnostika",
       "type": "heading",
       "group": "Softwarové Inženýrství",
       "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#performance-problémy-v-izolovaném-prostředí",
-      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
-      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "parentTitle": "14. Virtualizace",
-      "level": 1,
-      "incoming": 3,
-      "outgoing": 0,
-      "degree": 3
-    },
-    {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#praktická-diagnostika",
-      "title": "Praktická diagnostika",
-      "type": "heading",
-      "group": "Softwarové Inženýrství",
-      "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#praktická-diagnostika",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#performance-diagnostika",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
       "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
       "parentTitle": "14. Virtualizace",
@@ -13876,17 +13846,10 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-namespaces-a-cgroups",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-a-cgroups",
       "type": "heading",
-      "label": "Kontejnery: namespaces a cgroups",
-      "anchor": "#kontejnery-namespaces-a-cgroups"
-    },
-    {
-      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#cpu-a-memory-limity-v-kontejnerech",
-      "type": "heading",
-      "label": "CPU a memory limity v kontejnerech",
-      "anchor": "#cpu-a-memory-limity-v-kontejnerech"
+      "label": "Kontejnery a cgroups",
+      "anchor": "#kontejnery-a-cgroups"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
@@ -13897,17 +13860,10 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-problémy-v-izolovaném-prostředí",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-diagnostika",
       "type": "heading",
-      "label": "Performance problémy v izolovaném prostředí",
-      "anchor": "#performance-problémy-v-izolovaném-prostředí"
-    },
-    {
-      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#praktická-diagnostika",
-      "type": "heading",
-      "label": "Praktická diagnostika",
-      "anchor": "#praktická-diagnostika"
+      "label": "Performance diagnostika",
+      "anchor": "#performance-diagnostika"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
@@ -14912,17 +14868,10 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-namespaces-a-cgroups",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-a-cgroups",
       "type": "heading",
-      "label": "Kontejnery: namespaces a cgroups",
-      "anchor": "#kontejnery-namespaces-a-cgroups"
-    },
-    {
-      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#cpu-a-memory-limity-v-kontejnerech",
-      "type": "heading",
-      "label": "CPU a memory limity v kontejnerech",
-      "anchor": "#cpu-a-memory-limity-v-kontejnerech"
+      "label": "Kontejnery a cgroups",
+      "anchor": "#kontejnery-a-cgroups"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
@@ -14933,17 +14882,10 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-problémy-v-izolovaném-prostředí",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-diagnostika",
       "type": "heading",
-      "label": "Performance problémy v izolovaném prostředí",
-      "anchor": "#performance-problémy-v-izolovaném-prostředí"
-    },
-    {
-      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#praktická-diagnostika",
-      "type": "heading",
-      "label": "Praktická diagnostika",
-      "anchor": "#praktická-diagnostika"
+      "label": "Performance diagnostika",
+      "anchor": "#performance-diagnostika"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/15-shrnuti-pro-statnice.md",
@@ -20638,13 +20580,7 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-namespaces-a-cgroups",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#cpu-a-memory-limity-v-kontejnerech",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-a-cgroups",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
@@ -20656,13 +20592,7 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-problémy-v-izolovaném-prostředí",
-      "type": "contains",
-      "label": "obsahuje nadpis"
-    },
-    {
-      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#praktická-diagnostika",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-diagnostika",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
@@ -21971,8 +21901,8 @@
   ],
   "stats": {
     "documents": 136,
-    "headings": 551,
+    "headings": 549,
     "missing": 0,
-    "links": 1764
+    "links": 1758
   }
 }
