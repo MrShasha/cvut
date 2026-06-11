@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560" role="img" aria-labelledby="title desc">
+  <title id="title">JVM allocation, TLAB and escape analysis</title>
+  <desc id="desc">Diagram showing Eden split into thread-local allocation buffers, bump-the-pointer allocation, refill slow path, and JIT escape analysis eliminating allocation.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fbff; }
+      .panel { fill: #ffffff; stroke: #8798aa; stroke-width: 1.5; rx: 14; }
+      .heap { fill: #ecf8ef; stroke: #347a4c; stroke-width: 1.5; rx: 10; }
+      .tlab { fill: #eef7ff; stroke: #315f8c; stroke-width: 1.5; rx: 9; }
+      .obj { fill: #fff4df; stroke: #9b6a1d; stroke-width: 1.4; rx: 7; }
+      .jit { fill: #f0edff; stroke: #6b59a0; stroke-width: 1.5; rx: 10; }
+      .warn { fill: #fff0f0; stroke: #a24a4a; stroke-width: 1.4; rx: 9; }
+      .label { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #1d3144; }
+      .small { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 13px; fill: #34485c; }
+      .tiny { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 12px; fill: #586a7a; }
+      .arrow { stroke: #43586c; stroke-width: 2.2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #65798b; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 6 6; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#43586c"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1180" height="560"/>
+  <text x="40" y="44" class="label" style="font-size:24px">JVM allocation: fast path vs eliminated allocation</text>
+  <text x="40" y="68" class="small">Běžná alokace jde přes TLAB bump pointer; JIT může některé objekty odstranit úplně.</text>
+
+  <rect class="panel" x="40" y="105" width="660" height="380"/>
+  <text x="70" y="140" class="label">Eden space with TLABs</text>
+  <rect class="heap" x="70" y="175" width="590" height="245"/>
+  <text x="95" y="205" class="small">Young generation / Eden</text>
+
+  <rect class="tlab" x="105" y="235" width="165" height="58"/>
+  <text x="187.5" y="257" text-anchor="middle" class="tiny">Thread A TLAB</text>
+  <rect class="obj" x="115" y="267" width="38" height="16"/>
+  <rect class="obj" x="158" y="267" width="30" height="16"/>
+  <line x1="205" y1="235" x2="205" y2="293" stroke="#315f8c" stroke-width="2"/>
+  <text x="214" y="281" class="tiny">ptr</text>
+
+  <rect class="tlab" x="330" y="235" width="165" height="58"/>
+  <text x="412.5" y="257" text-anchor="middle" class="tiny">Thread B TLAB</text>
+  <rect class="obj" x="340" y="267" width="45" height="16"/>
+  <line x1="397" y1="235" x2="397" y2="293" stroke="#315f8c" stroke-width="2"/>
+  <text x="406" y="281" class="tiny">ptr</text>
+
+  <rect class="tlab" x="105" y="325" width="165" height="58"/>
+  <text x="187.5" y="347" text-anchor="middle" class="tiny">Thread C TLAB</text>
+  <line x1="120" y1="325" x2="120" y2="383" stroke="#315f8c" stroke-width="2"/>
+  <text x="129" y="371" class="tiny">ptr</text>
+
+  <rect class="warn" x="330" y="325" width="260" height="58"/>
+  <text x="460" y="348" text-anchor="middle" class="small">TLAB full?</text>
+  <text x="460" y="369" text-anchor="middle" class="tiny">refill / slow path / maybe GC</text>
+  <path class="dash" d="M 270 354 H 330"/>
+
+  <rect class="panel" x="740" y="105" width="400" height="380"/>
+  <text x="770" y="140" class="label">Escape analysis</text>
+  <rect class="jit" x="790" y="185" width="300" height="64"/>
+  <text x="940" y="211" text-anchor="middle" class="small">new Point(x, y)</text>
+  <text x="940" y="232" text-anchor="middle" class="tiny">does it escape?</text>
+
+  <path class="arrow" d="M 940 249 V 290"/>
+  <rect class="jit" x="790" y="290" width="135" height="72"/>
+  <text x="857.5" y="316" text-anchor="middle" class="small">NoEscape</text>
+  <text x="857.5" y="337" text-anchor="middle" class="tiny">scalar replacement</text>
+  <text x="857.5" y="353" text-anchor="middle" class="tiny">no heap object</text>
+
+  <rect class="warn" x="955" y="290" width="135" height="72"/>
+  <text x="1022.5" y="316" text-anchor="middle" class="small">GlobalEscape</text>
+  <text x="1022.5" y="337" text-anchor="middle" class="tiny">heap allocation</text>
+  <text x="1022.5" y="353" text-anchor="middle" class="tiny">GC sees object</text>
+
+  <path class="arrow" d="M 910 326 H 955"/>
+  <rect class="heap" x="820" y="405" width="240" height="44"/>
+  <text x="940" y="432" text-anchor="middle" class="tiny">allocation pressure depends on what survives optimization</text>
+</svg>

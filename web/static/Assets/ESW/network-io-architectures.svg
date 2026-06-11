@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560" role="img" aria-labelledby="title desc">
+  <title id="title">Network server threading architectures</title>
+  <desc id="desc">Comparison of thread-per-connection, event loop reactor, and Java virtual thread server architectures.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7faf8; }
+      .panel { fill: #ffffff; stroke: #87968b; stroke-width: 1.5; rx: 14; }
+      .client { fill: #eef7ff; stroke: #315f8c; stroke-width: 1.4; rx: 9; }
+      .thread { fill: #fff4dd; stroke: #9b6a1d; stroke-width: 1.4; rx: 9; }
+      .loop { fill: #ecf8ef; stroke: #347a4c; stroke-width: 1.5; rx: 9; }
+      .vt { fill: #f0edff; stroke: #6b59a0; stroke-width: 1.5; rx: 9; }
+      .bad { fill: #fff0f0; stroke: #a24a4a; stroke-width: 1.4; rx: 9; }
+      .label { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #21342b; }
+      .small { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 13px; fill: #33463c; }
+      .tiny { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 12px; fill: #59675f; }
+      .arrow { stroke: #44584e; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #65766c; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 6 6; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#44584e"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1180" height="560"/>
+  <text x="40" y="44" class="label" style="font-size:24px">C10K: jak organizovat čekání</text>
+  <text x="40" y="68" class="small">Stejná síťová práce, tři různé modely: OS thready, event loop, virtual threads.</text>
+
+  <rect class="panel" x="35" y="105" width="350" height="380"/>
+  <text x="60" y="140" class="label">Thread per connection</text>
+  <text x="60" y="164" class="small">Jednoduché, ale drahé při mnoha idle spojeních.</text>
+  <rect class="client" x="65" y="205" width="90" height="42"/>
+  <text x="110" y="231" text-anchor="middle" class="tiny">client</text>
+  <rect class="thread" x="230" y="205" width="105" height="42"/>
+  <text x="282.5" y="231" text-anchor="middle" class="tiny">OS thread</text>
+  <path class="arrow" d="M 155 226 H 230"/>
+  <rect class="client" x="65" y="270" width="90" height="42"/>
+  <text x="110" y="296" text-anchor="middle" class="tiny">client</text>
+  <rect class="thread" x="230" y="270" width="105" height="42"/>
+  <text x="282.5" y="296" text-anchor="middle" class="tiny">OS thread</text>
+  <path class="arrow" d="M 155 291 H 230"/>
+  <rect class="client" x="65" y="335" width="90" height="42"/>
+  <text x="110" y="361" text-anchor="middle" class="tiny">client</text>
+  <rect class="thread" x="230" y="335" width="105" height="42"/>
+  <text x="282.5" y="361" text-anchor="middle" class="tiny">OS thread</text>
+  <path class="arrow" d="M 155 356 H 230"/>
+  <rect class="bad" x="65" y="415" width="270" height="44"/>
+  <text x="200" y="442" text-anchor="middle" class="tiny">10k connections -> stacks + context switches</text>
+
+  <rect class="panel" x="415" y="105" width="350" height="380"/>
+  <text x="440" y="140" class="label">Event loop / Reactor</text>
+  <text x="440" y="164" class="small">Málo vláken čeká na mnoho socketů.</text>
+  <rect class="client" x="445" y="205" width="82" height="38"/>
+  <text x="486" y="229" text-anchor="middle" class="tiny">socket</text>
+  <rect class="client" x="445" y="260" width="82" height="38"/>
+  <text x="486" y="284" text-anchor="middle" class="tiny">socket</text>
+  <rect class="client" x="445" y="315" width="82" height="38"/>
+  <text x="486" y="339" text-anchor="middle" class="tiny">socket</text>
+  <rect class="loop" x="595" y="235" width="125" height="82"/>
+  <text x="657.5" y="265" text-anchor="middle" class="small">event loop</text>
+  <text x="657.5" y="286" text-anchor="middle" class="tiny">epoll/select</text>
+  <text x="657.5" y="304" text-anchor="middle" class="tiny">ready events</text>
+  <path class="arrow" d="M 527 224 C 560 230, 575 242, 595 252"/>
+  <path class="arrow" d="M 527 279 H 595"/>
+  <path class="arrow" d="M 527 334 C 560 328, 575 310, 595 300"/>
+  <rect class="thread" x="500" y="395" width="180" height="44"/>
+  <text x="590" y="421" text-anchor="middle" class="tiny">worker pool for blocking/CPU work</text>
+  <path class="dash" d="M 657 317 V 395"/>
+
+  <rect class="panel" x="795" y="105" width="350" height="380"/>
+  <text x="820" y="140" class="label">Virtual threads</text>
+  <text x="820" y="164" class="small">Blocking styl, čekání organizuje JVM.</text>
+  <rect class="vt" x="825" y="205" width="95" height="42"/>
+  <text x="872.5" y="231" text-anchor="middle" class="tiny">virtual thread</text>
+  <rect class="vt" x="825" y="270" width="95" height="42"/>
+  <text x="872.5" y="296" text-anchor="middle" class="tiny">virtual thread</text>
+  <rect class="vt" x="825" y="335" width="95" height="42"/>
+  <text x="872.5" y="361" text-anchor="middle" class="tiny">virtual thread</text>
+  <rect class="thread" x="1010" y="240" width="92" height="45"/>
+  <text x="1056" y="267" text-anchor="middle" class="tiny">carrier</text>
+  <rect class="thread" x="1010" y="315" width="92" height="45"/>
+  <text x="1056" y="342" text-anchor="middle" class="tiny">carrier</text>
+  <path class="arrow" d="M 920 226 C 960 226, 980 245, 1010 260"/>
+  <path class="dash" d="M 920 291 C 960 292, 980 320, 1010 336"/>
+  <path class="dash" d="M 920 356 C 960 356, 980 345, 1010 338"/>
+  <rect class="bad" x="825" y="415" width="277" height="44"/>
+  <text x="963.5" y="442" text-anchor="middle" class="tiny">still needs limits, timeouts, backpressure</text>
+</svg>

@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="520" viewBox="0 0 980 520" role="img" aria-label="Sequential array access compared with linked list pointer chasing">
+  <rect width="980" height="520" fill="#f7f9fb"/>
+  <text x="490" y="44" text-anchor="middle" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#172033">Sequential access vs pointer chasing</text>
+  <text x="490" y="72" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#667085">Cache line brings nearby bytes. Arrays reuse them; linked lists often jump away.</text>
+
+  <g font-family="Arial, sans-serif">
+    <text x="70" y="122" font-size="20" font-weight="700" fill="#172033">Array: contiguous memory</text>
+    <text x="70" y="148" font-size="14" fill="#667085">One miss can load multiple useful elements.</text>
+
+    <rect x="70" y="175" width="104" height="58" rx="6" fill="#2563eb"/>
+    <rect x="180" y="175" width="104" height="58" rx="6" fill="#2563eb"/>
+    <rect x="290" y="175" width="104" height="58" rx="6" fill="#2563eb"/>
+    <rect x="400" y="175" width="104" height="58" rx="6" fill="#2563eb"/>
+    <rect x="510" y="175" width="104" height="58" rx="6" fill="#dbeafe" stroke="#93c5fd"/>
+    <rect x="620" y="175" width="104" height="58" rx="6" fill="#dbeafe" stroke="#93c5fd"/>
+    <rect x="730" y="175" width="104" height="58" rx="6" fill="#dbeafe" stroke="#93c5fd"/>
+    <rect x="840" y="175" width="70" height="58" rx="6" fill="#dbeafe" stroke="#93c5fd"/>
+
+    <text x="122" y="210" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">a[0]</text>
+    <text x="232" y="210" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">a[1]</text>
+    <text x="342" y="210" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">a[2]</text>
+    <text x="452" y="210" text-anchor="middle" font-size="16" font-weight="700" fill="#ffffff">a[3]</text>
+    <text x="562" y="210" text-anchor="middle" font-size="16" fill="#1e3a8a">a[4]</text>
+    <text x="672" y="210" text-anchor="middle" font-size="16" fill="#1e3a8a">a[5]</text>
+    <text x="782" y="210" text-anchor="middle" font-size="16" fill="#1e3a8a">a[6]</text>
+    <text x="875" y="210" text-anchor="middle" font-size="16" fill="#1e3a8a">...</text>
+
+    <path d="M70 250 H504" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
+    <text x="287" y="280" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">one cache line already contains next elements</text>
+
+    <text x="70" y="342" font-size="20" font-weight="700" fill="#172033">Linked list: scattered nodes</text>
+    <text x="70" y="368" font-size="14" fill="#667085">Each next pointer can lead to another cache line and another miss.</text>
+
+    <rect x="78" y="405" width="118" height="62" rx="7" fill="#fef3c7" stroke="#f59e0b"/>
+    <rect x="312" y="382" width="118" height="62" rx="7" fill="#fef3c7" stroke="#f59e0b"/>
+    <rect x="562" y="425" width="118" height="62" rx="7" fill="#fef3c7" stroke="#f59e0b"/>
+    <rect x="804" y="390" width="118" height="62" rx="7" fill="#fef3c7" stroke="#f59e0b"/>
+
+    <text x="137" y="439" text-anchor="middle" font-size="15" font-weight="700" fill="#92400e">node</text>
+    <text x="371" y="416" text-anchor="middle" font-size="15" font-weight="700" fill="#92400e">node</text>
+    <text x="621" y="459" text-anchor="middle" font-size="15" font-weight="700" fill="#92400e">node</text>
+    <text x="863" y="424" text-anchor="middle" font-size="15" font-weight="700" fill="#92400e">node</text>
+
+    <path d="M196 431 C240 410, 270 400, 312 407" stroke="#b7791f" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <path d="M430 415 C485 425, 520 445, 562 455" stroke="#b7791f" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+    <path d="M680 455 C730 438, 762 414, 804 419" stroke="#b7791f" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+  </g>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b7791f"/>
+    </marker>
+  </defs>
+</svg>

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560" role="img" aria-labelledby="title desc">
+  <title id="title">Bloom filter and Java reference reachability</title>
+  <desc id="desc">Diagram showing Bloom filter hash functions setting bits and Java reachability levels from strong to phantom references.</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfaf6; }
+      .panel { fill: #ffffff; stroke: #9a927e; stroke-width: 1.5; rx: 14; }
+      .bit0 { fill: #f2f4f0; stroke: #9a927e; stroke-width: 1.2; rx: 4; }
+      .bit1 { fill: #fff4df; stroke: #9b6a1d; stroke-width: 1.4; rx: 4; }
+      .hash { fill: #eef7ff; stroke: #315f8c; stroke-width: 1.4; rx: 9; }
+      .ref { fill: #ecf8ef; stroke: #347a4c; stroke-width: 1.5; rx: 9; }
+      .weak { fill: #fff0f0; stroke: #a24a4a; stroke-width: 1.4; rx: 9; }
+      .label { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #2c2b24; }
+      .small { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 13px; fill: #464237; }
+      .tiny { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 12px; fill: #5f5a4d; }
+      .arrow { stroke: #4c4a40; stroke-width: 2.1; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #6c675c; stroke-width: 1.7; fill: none; marker-end: url(#arrow); stroke-dasharray: 6 6; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4c4a40"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1180" height="560"/>
+  <text x="40" y="44" class="label" style="font-size:24px">Bloom filter + Java reference types</text>
+  <text x="40" y="68" class="small">Bloom filter šetří paměť za cenu false positives; reference types říkají GC, jak silně objekt držíš.</text>
+
+  <rect class="panel" x="40" y="105" width="560" height="380"/>
+  <text x="70" y="140" class="label">Bloom filter</text>
+  <rect class="hash" x="80" y="190" width="110" height="44"/>
+  <text x="135" y="218" text-anchor="middle" class="tiny">hash1(x)</text>
+  <rect class="hash" x="80" y="260" width="110" height="44"/>
+  <text x="135" y="288" text-anchor="middle" class="tiny">hash2(x)</text>
+  <rect class="hash" x="80" y="330" width="110" height="44"/>
+  <text x="135" y="358" text-anchor="middle" class="tiny">hash3(x)</text>
+
+  <g transform="translate(265,245)">
+    <rect class="bit0" x="0" y="0" width="38" height="48"/>
+    <rect class="bit1" x="44" y="0" width="38" height="48"/>
+    <rect class="bit0" x="88" y="0" width="38" height="48"/>
+    <rect class="bit1" x="132" y="0" width="38" height="48"/>
+    <rect class="bit0" x="176" y="0" width="38" height="48"/>
+    <rect class="bit1" x="220" y="0" width="38" height="48"/>
+    <rect class="bit0" x="264" y="0" width="38" height="48"/>
+    <text x="19" y="30" text-anchor="middle" class="tiny">0</text>
+    <text x="63" y="30" text-anchor="middle" class="tiny">1</text>
+    <text x="107" y="30" text-anchor="middle" class="tiny">0</text>
+    <text x="151" y="30" text-anchor="middle" class="tiny">1</text>
+    <text x="195" y="30" text-anchor="middle" class="tiny">0</text>
+    <text x="239" y="30" text-anchor="middle" class="tiny">1</text>
+    <text x="283" y="30" text-anchor="middle" class="tiny">0</text>
+  </g>
+
+  <path class="arrow" d="M 190 212 C 235 212, 260 245, 309 245"/>
+  <path class="arrow" d="M 190 282 H 397"/>
+  <path class="arrow" d="M 190 352 C 250 352, 300 310, 485 293"/>
+  <text x="320" y="370" class="small">all bits 1 -> maybe yes</text>
+  <text x="320" y="392" class="small">any bit 0 -> definitely not</text>
+
+  <rect class="panel" x="640" y="105" width="500" height="380"/>
+  <text x="670" y="140" class="label">Reference reachability</text>
+  <rect class="ref" x="690" y="185" width="150" height="48"/>
+  <text x="765" y="214" text-anchor="middle" class="small">Strong</text>
+  <rect class="ref" x="690" y="255" width="150" height="48"/>
+  <text x="765" y="284" text-anchor="middle" class="small">Soft</text>
+  <rect class="weak" x="690" y="325" width="150" height="48"/>
+  <text x="765" y="354" text-anchor="middle" class="small">Weak</text>
+  <rect class="weak" x="690" y="395" width="150" height="48"/>
+  <text x="765" y="424" text-anchor="middle" class="small">Phantom</text>
+
+  <rect class="hash" x="940" y="185" width="150" height="48"/>
+  <text x="1015" y="214" text-anchor="middle" class="tiny">keeps alive</text>
+  <rect class="hash" x="940" y="255" width="150" height="48"/>
+  <text x="1015" y="284" text-anchor="middle" class="tiny">memory pressure</text>
+  <rect class="hash" x="940" y="325" width="150" height="48"/>
+  <text x="1015" y="354" text-anchor="middle" class="tiny">cleared by GC</text>
+  <rect class="hash" x="940" y="395" width="150" height="48"/>
+  <text x="1015" y="424" text-anchor="middle" class="tiny">queue cleanup</text>
+
+  <path class="arrow" d="M 840 209 H 940"/>
+  <path class="arrow" d="M 840 279 H 940"/>
+  <path class="arrow" d="M 840 349 H 940"/>
+  <path class="arrow" d="M 840 419 H 940"/>
+  <path class="dash" d="M 765 233 V 255"/>
+  <path class="dash" d="M 765 303 V 325"/>
+  <path class="dash" d="M 765 373 V 395"/>
+</svg>

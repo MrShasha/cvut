@@ -1,170 +1,747 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulátor Cache Architektury</title>
-    <style>
-        body { font-family: system-ui, -apple-system, sans-serif; background: #1e1e1e; color: #fff; padding: 20px; }
-        .controls { background: #2d2d2d; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-        select, input, button { padding: 8px 12px; border: none; border-radius: 4px; background: #3d3d3d; color: #fff; }
-        button { background: #0984e3; cursor: pointer; font-weight: bold; }
-        button:hover { background: #74b9ff; color: #000; }
-        .btn-danger { background: #d63031; }
-        .btn-danger:hover { background: #ff7675; }
-        .stats { display: flex; gap: 20px; margin-bottom: 20px; font-weight: bold; }
-        .stat-box { background: #2d2d2d; padding: 10px 20px; border-radius: 8px; border-left: 4px solid #0984e3; }
-        .cache-container { display: grid; gap: 15px; }
-        .set-box { background: #2d2d2d; border: 1px solid #444; border-radius: 8px; padding: 10px; }
-        .set-title { font-size: 0.9em; color: #aaa; margin-bottom: 10px; border-bottom: 1px solid #444; padding-bottom: 5px; }
-        .blocks-container { display: flex; gap: 10px; }
-        .block { flex: 1; background: #111; border: 1px dashed #555; height: 40px; display: flex; align-items: center; justify-content: center; font-family: monospace; border-radius: 4px; transition: all 0.3s ease; }
-        .block.filled { background: #00b894; border: 1px solid #55efc4; color: #000; font-weight: bold; }
-        .block.highlight { animation: pulse 0.5s ease-out; background: #fdcb6e; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simulátor cache line</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --panel: #ffffff;
+      --panel-soft: #eef3f8;
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d7dee8;
+      --blue: #2563eb;
+      --cyan: #0e7490;
+      --green: #15803d;
+      --amber: #b7791f;
+      --red: #b42318;
+      --shadow: 0 10px 28px rgba(21, 32, 51, 0.10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    .app {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    button,
+    select {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      padding: 8px 11px;
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 650;
+    }
+
+    button.primary {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #ffffff;
+    }
+
+    button:hover,
+    select:hover {
+      border-color: #9aa7b8;
+    }
+
+    button.primary:hover {
+      background: #1d4ed8;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.9fr);
+      gap: 14px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .panel h2 {
+      margin: 0 0 10px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .memory-grid {
+      display: grid;
+      grid-template-columns: repeat(16, minmax(28px, 1fr));
+      gap: 5px;
+    }
+
+    .cell {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #f8fafc;
+      display: grid;
+      place-items: center;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 160ms ease;
+      background: var(--blue);
+    }
+
+    .cell span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cell.line {
+      border-color: #93c5fd;
+      background: #eff6ff;
+    }
+
+    .cell.active {
+      color: #ffffff;
+      border-color: var(--blue);
+    }
+
+    .cell.active::before {
+      opacity: 1;
+    }
+
+    .section-note {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .address-split {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .split-box {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--panel-soft);
+    }
+
+    .split-label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .split-value {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .cache-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .set {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfe;
+    }
+
+    .set.active-set {
+      border-color: var(--blue);
+      box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.25);
+    }
+
+    .set-title,
+    .way-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .way {
+      min-height: 54px;
+      border: 1px dashed #b8c2cf;
+      border-radius: 7px;
+      padding: 7px;
+      background: #ffffff;
+      margin-top: 6px;
+    }
+
+    .way.hit {
+      border-style: solid;
+      border-color: var(--green);
+      background: #ecfdf3;
+    }
+
+    .way.miss {
+      border-style: solid;
+      border-color: var(--amber);
+      background: #fffbeb;
+    }
+
+    .line-cells {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+    }
+
+    .mini-cell {
+      min-height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 5px;
+      background: #e5edf7;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+    }
+
+    .mini-cell.active-offset {
+      background: var(--blue);
+      color: #ffffff;
+      font-weight: 800;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfe;
+    }
+
+    .stat-label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat-value {
+      display: block;
+      margin-top: 3px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .explain {
+      min-height: 86px;
+      border-left: 4px solid var(--blue);
+      background: #eff6ff;
+      padding: 10px 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .explain strong {
+      color: #0f3d99;
+    }
+
+    .false-sharing {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .core {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      background: #fbfcfe;
+    }
+
+    .core.invalid { opacity: 0.64; }
+
+    .core.modified {
+      border-color: var(--red);
+      background: #fff1f0;
+    }
+
+    .core.shared {
+      border-color: var(--cyan);
+      background: #ecfeff;
+    }
+
+    .core h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+    }
+
+    .core-line {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+
+    .core-cell {
+      min-height: 34px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      background: #e5edf7;
+    }
+
+    .core-cell.write-a {
+      background: #dbeafe;
+      color: #1e3a8a;
+      font-weight: 800;
+    }
+
+    .core-cell.write-b {
+      background: #fef3c7;
+      color: #92400e;
+      font-weight: 800;
+    }
+
+    .hidden { display: none; }
+
+    @media (max-width: 840px) {
+      .topbar,
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        justify-content: flex-start;
+      }
+
+      .memory-grid {
+        grid-template-columns: repeat(8, minmax(28px, 1fr));
+      }
+
+      .address-split,
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .cache-grid,
+      .false-sharing,
+      .address-split,
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-
-    <div class="controls">
-        <select id="archSelect">
-            <option value="8">Přímé mapování (8 Setů, 1 Blok)</option>
-            <option value="4">2-Cestná (4 Sety, 2 Bloky)</option>
-            <option value="1">Plně asociativní (1 Set, 8 Bloků)</option>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>Simulátor cache line</h1>
+        <p class="lead">Sleduj, jak se adresa rozpadne na cache line, set, tag a offset. Demo používá linku 4 buněk, aby byl princip vidět; reálná cache line bývá typicky 64 B.</p>
+      </div>
+      <div class="controls">
+        <select id="mode">
+          <option value="sequential">Sekvenční přístup</option>
+          <option value="random">Náhodný přístup</option>
+          <option value="conflict">Conflict misses</option>
+          <option value="false-sharing">False sharing</option>
         </select>
-        <input type="number" id="addressInput" placeholder="Zadej adresu bloku (např. 0)" min="0">
-        <button onclick="processAccess()">Načíst do Cache</button>
-        <button onclick="runPathological()" class="btn-danger">Simulovat patologický konflikt</button>
-        <button onclick="initCache()">Reset</button>
-    </div>
+        <button id="step" class="primary" type="button">Další přístup</button>
+        <button id="run" type="button">Spustit</button>
+        <button id="reset" type="button">Reset</button>
+      </div>
+    </header>
 
-    <div class="stats">
-        <div class="stat-box">Hity: <span id="hits">0</span></div>
-        <div class="stat-box">Missy: <span id="misses">0</span></div>
-        <div class="stat-box">Hit Rate: <span id="hitrate">0</span>%</div>
-    </div>
+    <section class="grid">
+      <div class="panel">
+        <h2>Hlavní paměť</h2>
+        <div id="memory" class="memory-grid" aria-label="Main memory cells"></div>
+        <p class="section-note">Modré buňky jsou právě načtená cache line. Tmavě modrá buňka je konkrétní adresa, na kterou CPU sáhlo.</p>
 
-    <div id="cacheGrid" class="cache-container"></div>
+        <div id="addressSplit" class="address-split">
+          <div class="split-box">
+            <span class="split-label">adresa</span>
+            <span id="addrValue" class="split-value">-</span>
+          </div>
+          <div class="split-box">
+            <span class="split-label">blok = floor(adresa / 4)</span>
+            <span id="blockValue" class="split-value">-</span>
+          </div>
+          <div class="split-box">
+            <span class="split-label">set = blok mod 4</span>
+            <span id="setValue" class="split-value">-</span>
+          </div>
+          <div class="split-box">
+            <span class="split-label">tag / offset</span>
+            <span id="tagOffsetValue" class="split-value">-</span>
+          </div>
+        </div>
 
-    <script>
-        let cache = [];
-        let numSets = 8;
-        let blocksPerSet = 1;
-        let hits = 0; let misses = 0;
+        <div id="falseSharingPanel" class="false-sharing hidden">
+          <div id="coreA" class="core shared">
+            <h3>Core A cache</h3>
+            <div class="core-line">
+              <div class="core-cell write-a">A</div>
+              <div class="core-cell">x</div>
+              <div class="core-cell">x</div>
+              <div class="core-cell">x</div>
+            </div>
+          </div>
+          <div id="coreB" class="core shared">
+            <h3>Core B cache</h3>
+            <div class="core-line">
+              <div class="core-cell">x</div>
+              <div class="core-cell write-b">B</div>
+              <div class="core-cell">x</div>
+              <div class="core-cell">x</div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        const cacheGrid = document.getElementById('cacheGrid');
-        const archSelect = document.getElementById('archSelect');
-        const addrInput = document.getElementById('addressInput');
+      <aside class="panel">
+        <h2>Cache: 4 sety, 2 ways</h2>
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">přístupy</span>
+            <span id="accessValue" class="stat-value">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">hity</span>
+            <span id="hitsValue" class="stat-value">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">missy</span>
+            <span id="missesValue" class="stat-value">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">hit rate</span>
+            <span id="hitRateValue" class="stat-value">0%</span>
+          </div>
+        </div>
 
-        archSelect.addEventListener('change', (e) => {
-            numSets = parseInt(e.target.value);
-            blocksPerSet = 8 / numSets;
-            initCache();
+        <div id="explain" class="explain">Vyber pattern a stiskni <strong>Další přístup</strong>.</div>
+        <div id="cache" class="cache-grid" aria-label="Cache sets and ways"></div>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const lineSize = 4;
+    const setCount = 4;
+    const ways = 2;
+    const memorySize = 64;
+
+    const sequences = {
+      sequential: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+      random: [3, 41, 8, 27, 2, 55, 14, 36, 7, 49, 18, 31, 5, 60, 22, 11],
+      conflict: [0, 16, 32, 48, 0, 16, 32, 48, 4, 20, 36, 52],
+      "false-sharing": [0, 1, 0, 1, 0, 1, 0, 1]
+    };
+
+    let cache;
+    let pointer;
+    let hits;
+    let misses;
+    let last;
+    let timer;
+    let falseOwner;
+
+    const memoryEl = document.getElementById("memory");
+    const cacheEl = document.getElementById("cache");
+    const modeEl = document.getElementById("mode");
+    const stepEl = document.getElementById("step");
+    const runEl = document.getElementById("run");
+    const resetEl = document.getElementById("reset");
+    const explainEl = document.getElementById("explain");
+    const falsePanelEl = document.getElementById("falseSharingPanel");
+    const coreAEl = document.getElementById("coreA");
+    const coreBEl = document.getElementById("coreB");
+
+    function makeEmptyCache() {
+      return Array.from({ length: setCount }, () =>
+        Array.from({ length: ways }, () => null)
+      );
+    }
+
+    function reset() {
+      stopRun();
+      cache = makeEmptyCache();
+      pointer = 0;
+      hits = 0;
+      misses = 0;
+      last = null;
+      falseOwner = null;
+      explainEl.innerHTML = "Vyber pattern a stiskni <strong>Další přístup</strong>.";
+      render();
+    }
+
+    function currentSequence() {
+      return sequences[modeEl.value];
+    }
+
+    function splitAddress(address) {
+      const block = Math.floor(address / lineSize);
+      const set = block % setCount;
+      const tag = Math.floor(block / setCount);
+      const offset = address % lineSize;
+      const lineStart = block * lineSize;
+      return { address, block, set, tag, offset, lineStart };
+    }
+
+    function access(address) {
+      const info = splitAddress(address);
+      const setWays = cache[info.set];
+      const hitWay = setWays.findIndex((line) => line && line.tag === info.tag);
+      const isHit = hitWay !== -1;
+      let changedWay = hitWay;
+      let evicted = null;
+
+      if (isHit) {
+        hits += 1;
+      } else {
+        misses += 1;
+        const emptyWay = setWays.findIndex((line) => line === null);
+        changedWay = emptyWay === -1 ? 0 : emptyWay;
+        evicted = setWays[changedWay];
+        setWays[changedWay] = {
+          tag: info.tag,
+          block: info.block,
+          cells: Array.from({ length: lineSize }, (_, i) => info.lineStart + i)
+        };
+      }
+
+      if (modeEl.value === "false-sharing") {
+        falseOwner = address === 0 ? "A" : "B";
+      }
+
+      last = { ...info, hit: isHit, way: changedWay, evicted };
+      pointer += 1;
+      explain(last);
+      render();
+    }
+
+    function explain(info) {
+      if (modeEl.value === "false-sharing") {
+        const thread = info.address === 0 ? "Thread A zapisuje counter A" : "Thread B zapisuje counter B";
+        const other = info.address === 0 ? "Core B" : "Core A";
+        explainEl.innerHTML = `<strong>${thread}.</strong> Counter A a counter B jsou různé proměnné, ale leží ve stejné cache line. Zápis dá vlastnictví jednomu jádru a invaliduje linku v ${other}. To je false sharing.`;
+        return;
+      }
+
+      const status = info.hit ? "cache hit" : "cache miss";
+      const lineText = `[${info.lineStart}..${info.lineStart + lineSize - 1}]`;
+      const evictText = info.evicted
+        ? ` Stará linka s tagem ${info.evicted.tag} byla z tohoto setu vyhozena.`
+        : "";
+      explainEl.innerHTML = `<strong>Adresa ${info.address}: ${status}.</strong> CPU načte cache line ${lineText}. Blok ${info.block} mapuje do setu ${info.set}; tag ${info.tag} rozlišuje, který paměťový blok tam leží; offset ${info.offset} vybírá hodnotu uvnitř linky.${evictText}`;
+    }
+
+    function step() {
+      const seq = currentSequence();
+      access(seq[pointer % seq.length]);
+    }
+
+    function run() {
+      if (timer) {
+        stopRun();
+        return;
+      }
+      runEl.textContent = "Stop";
+      step();
+      timer = window.setInterval(step, 760);
+    }
+
+    function stopRun() {
+      if (!timer) return;
+      window.clearInterval(timer);
+      timer = null;
+      runEl.textContent = "Spustit";
+    }
+
+    function renderMemory() {
+      memoryEl.innerHTML = "";
+      const activeLineStart = last ? last.lineStart : -1;
+      for (let i = 0; i < memorySize; i += 1) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        if (i >= activeLineStart && i < activeLineStart + lineSize) {
+          cell.classList.add("line");
+        }
+        if (last && i === last.address) {
+          cell.classList.add("active");
+        }
+        const label = document.createElement("span");
+        label.textContent = i;
+        cell.appendChild(label);
+        memoryEl.appendChild(cell);
+      }
+    }
+
+    function renderAddress() {
+      document.getElementById("addrValue").textContent = last ? last.address : "-";
+      document.getElementById("blockValue").textContent = last ? last.block : "-";
+      document.getElementById("setValue").textContent = last ? last.set : "-";
+      document.getElementById("tagOffsetValue").textContent = last ? `${last.tag} / ${last.offset}` : "-";
+    }
+
+    function renderStats() {
+      const total = hits + misses;
+      document.getElementById("accessValue").textContent = total;
+      document.getElementById("hitsValue").textContent = hits;
+      document.getElementById("missesValue").textContent = misses;
+      document.getElementById("hitRateValue").textContent = total ? `${Math.round((hits / total) * 100)}%` : "0%";
+    }
+
+    function renderCache() {
+      cacheEl.innerHTML = "";
+      cache.forEach((setWays, setIndex) => {
+        const set = document.createElement("section");
+        set.className = "set";
+        if (last && last.set === setIndex) set.classList.add("active-set");
+
+        const title = document.createElement("div");
+        title.className = "set-title";
+        title.innerHTML = `<span>set ${setIndex}</span><span>2 ways</span>`;
+        set.appendChild(title);
+
+        setWays.forEach((line, wayIndex) => {
+          const wayEl = document.createElement("div");
+          wayEl.className = "way";
+          if (last && last.set === setIndex && last.way === wayIndex) {
+            wayEl.classList.add(last.hit ? "hit" : "miss");
+          }
+
+          const head = document.createElement("div");
+          head.className = "way-head";
+          head.innerHTML = line
+            ? `<span>way ${wayIndex}</span><span>tag ${line.tag}</span>`
+            : `<span>way ${wayIndex}</span><span>empty</span>`;
+          wayEl.appendChild(head);
+
+          const cells = document.createElement("div");
+          cells.className = "line-cells";
+          for (let i = 0; i < lineSize; i += 1) {
+            const mini = document.createElement("div");
+            mini.className = "mini-cell";
+            mini.textContent = line ? line.cells[i] : "-";
+            if (line && last && line.block === last.block && i === last.offset) {
+              mini.classList.add("active-offset");
+            }
+            cells.appendChild(mini);
+          }
+          wayEl.appendChild(cells);
+          set.appendChild(wayEl);
         });
 
-        function initCache() {
-            cache = Array.from({ length: numSets }, () => []);
-            hits = 0; misses = 0;
-            updateStats();
-            renderCache();
-        }
+        cacheEl.appendChild(set);
+      });
+    }
 
-        function renderCache() {
-            cacheGrid.style.gridTemplateColumns = `repeat(${Math.min(numSets, 4)}, 1fr)`;
-            cacheGrid.innerHTML = '';
-            
-            for (let i = 0; i < numSets; i++) {
-                const setDiv = document.createElement('div');
-                setDiv.className = 'set-box';
-                setDiv.id = `set-${i}`;
-                
-                const title = document.createElement('div');
-                title.className = 'set-title';
-                title.innerText = `Zóna (Set) ${i}`;
-                setDiv.appendChild(title);
+    function renderFalseSharing() {
+      const enabled = modeEl.value === "false-sharing";
+      falsePanelEl.classList.toggle("hidden", !enabled);
+      if (!enabled) return;
 
-                const blocksDiv = document.createElement('div');
-                blocksDiv.className = 'blocks-container';
-                
-                for (let j = 0; j < blocksPerSet; j++) {
-                    const blockDiv = document.createElement('div');
-                    blockDiv.className = 'block';
-                    blockDiv.id = `block-${i}-${j}`;
-                    
-                    if (cache[i] && cache[i][j] !== undefined) {
-                        blockDiv.innerText = `Adr: ${cache[i][j]}`;
-                        blockDiv.classList.add('filled');
-                    } else {
-                        blockDiv.innerText = '[ Prázdno ]';
-                    }
-                    blocksDiv.appendChild(blockDiv);
-                }
-                setDiv.appendChild(blocksDiv);
-                cacheGrid.appendChild(setDiv);
-            }
-        }
+      coreAEl.className = "core";
+      coreBEl.className = "core";
 
-        function processAccess(address = null) {
-            const addr = address !== null ? address : parseInt(addrInput.value);
-            if (isNaN(addr)) return;
+      if (!falseOwner) {
+        coreAEl.classList.add("shared");
+        coreBEl.classList.add("shared");
+        return;
+      }
 
-            const setIndex = addr % numSets;
-            const targetSet = cache[setIndex];
+      if (falseOwner === "A") {
+        coreAEl.classList.add("modified");
+        coreBEl.classList.add("invalid");
+      } else {
+        coreBEl.classList.add("modified");
+        coreAEl.classList.add("invalid");
+      }
+    }
 
-            // Animace cílového setu
-            const setUI = document.getElementById(`set-${setIndex}`);
-            setUI.style.borderColor = '#fdcb6e';
-            setTimeout(() => setUI.style.borderColor = '#444', 500);
+    function render() {
+      renderMemory();
+      renderAddress();
+      renderStats();
+      renderCache();
+      renderFalseSharing();
+    }
 
-            const existingIndex = targetSet.indexOf(addr);
+    stepEl.addEventListener("click", step);
+    runEl.addEventListener("click", run);
+    resetEl.addEventListener("click", reset);
+    modeEl.addEventListener("change", reset);
 
-            if (existingIndex !== -1) {
-                // Cache Hit
-                hits++;
-                const blockUI = document.getElementById(`block-${setIndex}-${existingIndex}`);
-                highlightBlock(blockUI);
-            } else {
-                // Cache Miss
-                misses++;
-                if (targetSet.length >= blocksPerSet) {
-                    targetSet.shift(); // Eviction (vyhodí nejstarší - FIFO zjednodušení)
-                }
-                targetSet.push(addr);
-                renderCache(); // Znovuvykreslení nového stavu
-                
-                // Zvýraznění nově přidaného
-                const newIndex = targetSet.length - 1;
-                const blockUI = document.getElementById(`block-${setIndex}-${newIndex}`);
-                highlightBlock(blockUI);
-            }
-            updateStats();
-        }
-
-        function highlightBlock(element) {
-            if(!element) return;
-            element.classList.remove('highlight');
-            void element.offsetWidth; // Trigger reflow
-            element.classList.add('highlight');
-        }
-
-        function updateStats() {
-            document.getElementById('hits').innerText = hits;
-            document.getElementById('misses').innerText = misses;
-            const total = hits + misses;
-            document.getElementById('hitrate').innerText = total === 0 ? "0" : Math.round((hits / total) * 100);
-        }
-
-        async function runPathological() {
-            initCache();
-            const sequence = [0, 8, 16, 24, 0, 8, 16, 24]; // Simulace skoků po mocninách dvojky
-            for (let addr of sequence) {
-                addrInput.value = addr;
-                processAccess(addr);
-                await new Promise(r => setTimeout(r, 800)); // Pauza pro vizualizaci
-            }
-        }
-
-        initCache();
-    </script>
+    reset();
+  </script>
 </body>
 </html>

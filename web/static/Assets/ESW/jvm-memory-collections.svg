@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="560" viewBox="0 0 1180 560" role="img" aria-labelledby="title desc">
+  <title id="title">JVM memory analysis and collections overhead</title>
+  <desc id="desc">Diagram explaining shallow size, retained size, primitive arrays, object arrays, and boxed values in Java collections.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fbf8; }
+      .panel { fill: #ffffff; stroke: #87968b; stroke-width: 1.5; rx: 14; }
+      .obj { fill: #eef7ff; stroke: #315f8c; stroke-width: 1.5; rx: 9; }
+      .arr { fill: #ecf8ef; stroke: #347a4c; stroke-width: 1.5; rx: 9; }
+      .box { fill: #fff4df; stroke: #9b6a1d; stroke-width: 1.5; rx: 9; }
+      .warn { fill: #fff0f0; stroke: #a24a4a; stroke-width: 1.4; rx: 9; }
+      .label { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 18px; font-weight: 700; fill: #21342b; }
+      .small { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 13px; fill: #33463c; }
+      .tiny { font-family: Inter, Segoe UI, Arial, sans-serif; font-size: 12px; fill: #59675f; }
+      .arrow { stroke: #44584e; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #65766c; stroke-width: 1.8; fill: none; marker-end: url(#arrow); stroke-dasharray: 6 6; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#44584e"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1180" height="560"/>
+  <text x="40" y="44" class="label" style="font-size:24px">JVM memory: co opravdu zabírá místo</text>
+  <text x="40" y="68" class="small">Shallow size měří objekt samotný; retained size měří celý objektový graf, který drží při životě.</text>
+
+  <rect class="panel" x="35" y="105" width="360" height="380"/>
+  <text x="60" y="140" class="label">Shallow vs retained</text>
+  <rect class="obj" x="70" y="185" width="120" height="58"/>
+  <text x="130" y="211" text-anchor="middle" class="small">Cache</text>
+  <text x="130" y="231" text-anchor="middle" class="tiny">shallow small</text>
+  <rect class="obj" x="245" y="185" width="110" height="58"/>
+  <text x="300" y="211" text-anchor="middle" class="small">HashMap</text>
+  <text x="300" y="231" text-anchor="middle" class="tiny">table + nodes</text>
+  <path class="arrow" d="M 190 214 H 245"/>
+  <rect class="box" x="70" y="295" width="82" height="48"/>
+  <text x="111" y="324" text-anchor="middle" class="tiny">String key</text>
+  <rect class="box" x="170" y="295" width="82" height="48"/>
+  <text x="211" y="324" text-anchor="middle" class="tiny">byte[]</text>
+  <rect class="box" x="270" y="295" width="82" height="48"/>
+  <text x="311" y="324" text-anchor="middle" class="tiny">DTO</text>
+  <path class="dash" d="M 300 243 C 280 270, 210 285, 111 295"/>
+  <path class="dash" d="M 300 243 C 295 270, 255 285, 211 295"/>
+  <path class="dash" d="M 300 243 C 315 270, 320 285, 311 295"/>
+  <rect class="warn" x="70" y="395" width="282" height="48"/>
+  <text x="211" y="424" text-anchor="middle" class="tiny">retained size = vše, co by zmizelo s Cache</text>
+
+  <rect class="panel" x="415" y="105" width="350" height="380"/>
+  <text x="440" y="140" class="label">int[]</text>
+  <text x="440" y="164" class="small">Jeden objekt, hodnoty přímo za sebou.</text>
+  <rect class="arr" x="450" y="210" width="275" height="64"/>
+  <text x="485" y="247" text-anchor="middle" class="tiny">hdr</text>
+  <line x1="520" y1="210" x2="520" y2="274" stroke="#347a4c"/>
+  <text x="552" y="247" text-anchor="middle" class="tiny">len</text>
+  <line x1="585" y1="210" x2="585" y2="274" stroke="#347a4c"/>
+  <text x="620" y="247" text-anchor="middle" class="tiny">42</text>
+  <line x1="655" y1="210" x2="655" y2="274" stroke="#347a4c"/>
+  <text x="690" y="247" text-anchor="middle" class="tiny">43</text>
+  <line x1="725" y1="210" x2="725" y2="274" stroke="#347a4c"/>
+  <text x="745" y="247" text-anchor="middle" class="tiny">...</text>
+  <rect class="arr" x="470" y="330" width="235" height="46"/>
+  <text x="587.5" y="358" text-anchor="middle" class="small">good locality, no boxing</text>
+
+  <rect class="panel" x="795" y="105" width="350" height="380"/>
+  <text x="820" y="140" class="label">ArrayList&lt;Integer&gt;</text>
+  <text x="820" y="164" class="small">Array drží reference, hodnoty jsou objekty.</text>
+  <rect class="arr" x="830" y="210" width="270" height="55"/>
+  <text x="865" y="242" text-anchor="middle" class="tiny">ref</text>
+  <line x1="900" y1="210" x2="900" y2="265" stroke="#347a4c"/>
+  <text x="935" y="242" text-anchor="middle" class="tiny">ref</text>
+  <line x1="970" y1="210" x2="970" y2="265" stroke="#347a4c"/>
+  <text x="1005" y="242" text-anchor="middle" class="tiny">ref</text>
+  <line x1="1040" y1="210" x2="1040" y2="265" stroke="#347a4c"/>
+  <text x="1070" y="242" text-anchor="middle" class="tiny">...</text>
+  <rect class="box" x="820" y="330" width="86" height="48"/>
+  <text x="863" y="359" text-anchor="middle" class="tiny">Integer</text>
+  <rect class="box" x="925" y="330" width="86" height="48"/>
+  <text x="968" y="359" text-anchor="middle" class="tiny">Integer</text>
+  <rect class="box" x="1030" y="330" width="86" height="48"/>
+  <text x="1073" y="359" text-anchor="middle" class="tiny">Integer</text>
+  <path class="arrow" d="M 865 265 V 330"/>
+  <path class="arrow" d="M 935 265 C 940 295, 955 305, 968 330"/>
+  <path class="arrow" d="M 1005 265 C 1020 300, 1045 310, 1073 330"/>
+  <rect class="warn" x="830" y="415" width="270" height="46"/>
+  <text x="965" y="443" text-anchor="middle" class="tiny">more objects, more GC, worse cache locality</text>
+</svg>
