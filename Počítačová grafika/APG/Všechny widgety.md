@@ -80,7 +80,7 @@
     style="border-radius: 8px; border: 1px solid #444;">
 </iframe>
 
-*Sekce: [[6. Stíny#Srovnání obou metod|Srovnání obou metod]]*
+*Sekce: [[6. Stíny#Srovnání metod|Srovnání metod]]*
 
 <iframe 
     src="https://mrshasha.github.io/cvut/Assets/APG/projective-shadows.html" 
