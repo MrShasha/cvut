@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760" role="img" aria-labelledby="title desc">
+  <title id="title">Virtualized I/O paths</title>
+  <desc id="desc">Comparison of device emulation, virtio paravirtualized I/O, and pass-through or SR-IOV I/O.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#53627a"/>
+    </marker>
+    <style>
+      .bg { fill: #f7f8fb; }
+      .panel { fill: #ffffff; stroke: #c9d1df; stroke-width: 2; }
+      .title { font: 700 28px Arial, sans-serif; fill: #172033; }
+      .subtitle { font: 700 19px Arial, sans-serif; fill: #24324a; }
+      .label { font: 600 15px Arial, sans-serif; fill: #24324a; }
+      .small { font: 400 13px Arial, sans-serif; fill: #53627a; }
+      .boxA { fill: #e8f1ff; stroke: #6a93d8; stroke-width: 1.5; }
+      .boxB { fill: #fff2df; stroke: #d69a45; stroke-width: 1.5; }
+      .boxC { fill: #eaf8ef; stroke: #62ad76; stroke-width: 1.5; }
+      .boxD { fill: #fde8e8; stroke: #d46a6a; stroke-width: 1.5; }
+      .arrow { stroke: #53627a; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1200" height="760"/>
+  <text class="title" x="48" y="50">Virtualized I/O paths</text>
+  <text class="small" x="48" y="78">The fewer traps, copies and software device emulation steps, the lower the overhead.</text>
+
+  <rect class="panel" x="50" y="120" width="340" height="560" rx="16"/>
+  <text class="subtitle" x="105" y="158">Full emulation</text>
+  <rect class="boxA" x="95" y="205" width="250" height="55" rx="10"/>
+  <text class="label" x="160" y="239">Guest driver</text>
+  <path class="arrow" d="M 220 262 V 305"/>
+  <rect class="boxD" x="95" y="310" width="250" height="65" rx="10"/>
+  <text class="label" x="155" y="339">VM exit / entry</text>
+  <text class="small" x="153" y="360">trap to hypervisor</text>
+  <path class="arrow" d="M 220 378 V 420"/>
+  <rect class="boxB" x="95" y="425" width="250" height="65" rx="10"/>
+  <text class="label" x="135" y="454">Software device</text>
+  <text class="small" x="155" y="475">e1000 emulation</text>
+  <path class="arrow" d="M 220 493 V 535"/>
+  <rect class="boxC" x="95" y="540" width="250" height="55" rx="10"/>
+  <text class="label" x="175" y="574">Host NIC</text>
+  <text class="small" x="112" y="635">compatible, but highest CPU overhead</text>
+
+  <rect class="panel" x="430" y="120" width="340" height="560" rx="16"/>
+  <text class="subtitle" x="535" y="158">Virtio</text>
+  <rect class="boxA" x="475" y="205" width="250" height="55" rx="10"/>
+  <text class="label" x="150" y="0" transform="translate(475 239)">Guest virtio driver</text>
+  <path class="arrow" d="M 600 262 V 305"/>
+  <rect class="boxC" x="475" y="310" width="250" height="70" rx="10"/>
+  <text class="label" x="540" y="339">Virtqueue</text>
+  <text class="small" x="525" y="360">shared memory ring</text>
+  <path class="arrow" d="M 600 383 V 425"/>
+  <rect class="boxB" x="475" y="430" width="250" height="65" rx="10"/>
+  <text class="label" x="532" y="459">Host backend</text>
+  <text class="small" x="535" y="480">fewer VM exits</text>
+  <path class="arrow" d="M 600 498 V 540"/>
+  <rect class="boxC" x="475" y="545" width="250" height="55" rx="10"/>
+  <text class="label" x="555" y="579">Host NIC</text>
+  <text class="small" x="488" y="635">standard efficient path for KVM/Linux guests</text>
+
+  <rect class="panel" x="810" y="120" width="340" height="560" rx="16"/>
+  <text class="subtitle" x="870" y="158">Pass-through / SR-IOV</text>
+  <rect class="boxA" x="855" y="215" width="250" height="60" rx="10"/>
+  <text class="label" x="920" y="251">Guest driver</text>
+  <path class="arrow" d="M 980 278 V 335"/>
+  <rect class="boxC" x="855" y="340" width="250" height="80" rx="10"/>
+  <text class="label" x="895" y="372">Virtual Function</text>
+  <text class="small" x="930" y="394">or device</text>
+  <path class="arrow" d="M 980 423 V 500"/>
+  <rect class="boxC" x="855" y="505" width="250" height="65" rx="10"/>
+  <text class="label" x="925" y="534">Physical NIC</text>
+  <text class="small" x="890" y="555">IOMMU protects DMA</text>
+  <text class="small" x="858" y="635">near-native, less flexible migration/sharing</text>
+</svg>

@@ -753,8 +753,8 @@
       "generatedRel": "softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
       "summary": "Kapitoly 1. Úvod, hardware a motivace1. Úvod, hardware a motivace - Motivace a definice efektivního softwaru1. Úvod, hardware a motivace — co vlastně znamená \"efektivní\" a proč na tom záleží. - Výkon jako trade-off1. Úvo",
       "incoming": 0,
-      "outgoing": 144,
-      "degree": 144
+      "outgoing": 156,
+      "degree": 156
     },
     {
       "id": "doc:softwarove-inzenyrstvi/efektivni-software/1-uvod-hardware-a-motivace.md",
@@ -933,10 +933,10 @@
       "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/13. Garbage Collectors v JVM.md",
       "generatedRel": "softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
-      "summary": "- Základy automatické správy paměti13. Garbage Collectors v JVM: GC roots, dosažitelnost (reachability), mark phase — jak GC ví, co je \"živé\". - Generational hypothesis a heap organizace13. Garbage Collectors v JVM: proč",
+      "summary": "- Proč existuje automatic memory management13. Garbage Collectors v JVM: proč Java nemá free(), co řeší GC a proč memory leak stále existuje. - Tracing GC, GC roots a reachability13. Garbage Collectors v JVM: objekt je ž",
       "incoming": 3,
-      "outgoing": 10,
-      "degree": 13
+      "outgoing": 22,
+      "degree": 25
     },
     {
       "id": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
@@ -947,10 +947,10 @@
       "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
       "generatedRel": "softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "summary": "- Historie a motivace virtualizace14. Virtualizace: proč vznikla virtualizace, co řeší a jaké jsou hlavní use-cases v moderním datacenter. - Základy virtualizace: VMM a hypervisor14. Virtualizace: Virtual Machine Monitor",
+      "summary": "- Proč virtualizace patří do performance témat14. Virtualizace: aplikace často neběží na bare metal a výkon ovlivňuje VM/container/cloud vrstva. - Bare metal, VM a container14. Virtualizace: rozdíl mezi fyzickým serverem",
       "incoming": 2,
-      "outgoing": 10,
-      "degree": 12
+      "outgoing": 20,
+      "degree": 22
     },
     {
       "id": "doc:softwarove-inzenyrstvi/efektivni-software/15-shrnuti-pro-statnice.md",
@@ -6600,12 +6600,12 @@
       "degree": 3
     },
     {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#základy-automatické-správy-paměti",
-      "title": "Základy automatické správy paměti",
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#proč-existuje-automatic-memory-management",
+      "title": "Proč existuje automatic memory management",
       "type": "heading",
       "group": "Softwarové Inženýrství",
       "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#základy-automatické-správy-paměti",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#proč-existuje-automatic-memory-management",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/13. Garbage Collectors v JVM.md",
       "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
       "parentTitle": "13. Garbage Collectors v JVM",
@@ -6615,27 +6615,72 @@
       "degree": 3
     },
     {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#generational-hypothesis-a-heap-organizace",
-      "title": "Generational hypothesis a heap organizace",
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#tracing-gc-gc-roots-a-reachability",
+      "title": "Tracing GC, GC roots a reachability",
       "type": "heading",
       "group": "Softwarové Inženýrství",
       "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#generational-hypothesis-a-heap-organizace",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#tracing-gc-gc-roots-a-reachability",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/13. Garbage Collectors v JVM.md",
       "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
       "parentTitle": "13. Garbage Collectors v JVM",
       "level": 1,
-      "incoming": 2,
+      "incoming": 3,
       "outgoing": 0,
-      "degree": 2
+      "degree": 3
     },
     {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#design-dimensions-gc",
-      "title": "Design dimensions GC",
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#stop-the-world-safepoints-a-concurrent-práce",
+      "title": "Stop-the-world, safepoints a concurrent práce",
       "type": "heading",
       "group": "Softwarové Inženýrství",
       "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#design-dimensions-gc",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#stop-the-world-safepoints-a-concurrent-práce",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/13. Garbage Collectors v JVM.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "parentTitle": "13. Garbage Collectors v JVM",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#generational-hypothesis-a-organizace-heapu",
+      "title": "Generational hypothesis a organizace heapu",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#generational-hypothesis-a-organizace-heapu",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/13. Garbage Collectors v JVM.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "parentTitle": "13. Garbage Collectors v JVM",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#základní-algoritmy-gc",
+      "title": "Základní algoritmy GC",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#základní-algoritmy-gc",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/13. Garbage Collectors v JVM.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "parentTitle": "13. Garbage Collectors v JVM",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#barriers-card-table-a-remembered-sets",
+      "title": "Barriers, card table a remembered sets",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#barriers-card-table-a-remembered-sets",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/13. Garbage Collectors v JVM.md",
       "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
       "parentTitle": "13. Garbage Collectors v JVM",
@@ -6675,42 +6720,57 @@
       "degree": 3
     },
     {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#historie-a-motivace-virtualizace",
-      "title": "Historie a motivace virtualizace",
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#low-latency-collectory-zgc-a-shenandoah",
+      "title": "Low-latency collectory ZGC a Shenandoah",
       "type": "heading",
       "group": "Softwarové Inženýrství",
       "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#historie-a-motivace-virtualizace",
-      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
-      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "parentTitle": "14. Virtualizace",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#low-latency-collectory-zgc-a-shenandoah",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/13. Garbage Collectors v JVM.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "parentTitle": "13. Garbage Collectors v JVM",
       "level": 1,
       "incoming": 3,
       "outgoing": 0,
       "degree": 3
     },
     {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#základy-virtualizace-vmm-a-hypervisor",
-      "title": "Základy virtualizace: VMM a hypervisor",
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#reference-counting-vs-tracing-gc",
+      "title": "Reference counting vs tracing GC",
       "type": "heading",
       "group": "Softwarové Inženýrství",
       "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#základy-virtualizace-vmm-a-hypervisor",
-      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
-      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "parentTitle": "14. Virtualizace",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#reference-counting-vs-tracing-gc",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/13. Garbage Collectors v JVM.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "parentTitle": "13. Garbage Collectors v JVM",
       "level": 1,
       "incoming": 2,
       "outgoing": 0,
       "degree": 2
     },
     {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#hardware-asistovaná-virtualizace",
-      "title": "Hardware-asistovaná virtualizace",
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#praktické-dopady-logy-a-tuning",
+      "title": "Praktické dopady, logy a tuning",
       "type": "heading",
       "group": "Softwarové Inženýrství",
       "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#hardware-asistovaná-virtualizace",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/garbage-collectors-v-jvm#praktické-dopady-logy-a-tuning",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/13. Garbage Collectors v JVM.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "parentTitle": "13. Garbage Collectors v JVM",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#proč-virtualizace-patří-do-performance-témat",
+      "title": "Proč virtualizace patří do performance témat",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#proč-virtualizace-patří-do-performance-témat",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
       "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
       "parentTitle": "14. Virtualizace",
@@ -6720,12 +6780,12 @@
       "degree": 3
     },
     {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#io-virtualizace",
-      "title": "I/O virtualizace",
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#bare-metal-vm-a-container",
+      "title": "Bare metal, VM a container",
       "type": "heading",
       "group": "Softwarové Inženýrství",
       "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#io-virtualizace",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#bare-metal-vm-a-container",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
       "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
       "parentTitle": "14. Virtualizace",
@@ -6735,12 +6795,117 @@
       "degree": 3
     },
     {
-      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#efektivní-inter-vm-networking",
-      "title": "Efektivní inter-VM networking",
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#hypervisor-a-cpu-virtualizace",
+      "title": "Hypervisor a CPU virtualizace",
       "type": "heading",
       "group": "Softwarové Inženýrství",
       "folder": "Softwarové Inženýrství/Efektivní Software",
-      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#efektivní-inter-vm-networking",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#hypervisor-a-cpu-virtualizace",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "parentTitle": "14. Virtualizace",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#memory-virtualizace",
+      "title": "Memory virtualizace",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#memory-virtualizace",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "parentTitle": "14. Virtualizace",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#io-a-network-virtualizace",
+      "title": "I/O a network virtualizace",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#io-a-network-virtualizace",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "parentTitle": "14. Virtualizace",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-namespaces-a-cgroups",
+      "title": "Kontejnery: namespaces a cgroups",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#kontejnery-namespaces-a-cgroups",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "parentTitle": "14. Virtualizace",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#cpu-a-memory-limity-v-kontejnerech",
+      "title": "CPU a memory limity v kontejnerech",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#cpu-a-memory-limity-v-kontejnerech",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "parentTitle": "14. Virtualizace",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#jvm-v-containeru",
+      "title": "JVM v containeru",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#jvm-v-containeru",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "parentTitle": "14. Virtualizace",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-problémy-v-izolovaném-prostředí",
+      "title": "Performance problémy v izolovaném prostředí",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#performance-problémy-v-izolovaném-prostředí",
+      "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
+      "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "parentTitle": "14. Virtualizace",
+      "level": 1,
+      "incoming": 3,
+      "outgoing": 0,
+      "degree": 3
+    },
+    {
+      "id": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#praktická-diagnostika",
+      "title": "Praktická diagnostika",
+      "type": "heading",
+      "group": "Softwarové Inženýrství",
+      "folder": "Softwarové Inženýrství/Efektivní Software",
+      "url": "/softwarove-inzenyrstvi/efektivni-software/virtualizace#praktická-diagnostika",
       "sourceRel": "Softwarové Inženýrství/Efektivní Software/14. Virtualizace.md",
       "parentId": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
       "parentTitle": "14. Virtualizace",
@@ -13599,17 +13764,45 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#základy-automatické-správy-paměti",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#proč-existuje-automatic-memory-management",
       "type": "heading",
-      "label": "Základy automatické správy paměti",
-      "anchor": "#základy-automatické-správy-paměti"
+      "label": "Proč existuje automatic memory management",
+      "anchor": "#proč-existuje-automatic-memory-management"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#design-dimensions-gc",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#tracing-gc-gc-roots-a-reachability",
       "type": "heading",
-      "label": "Design dimensions GC",
-      "anchor": "#design-dimensions-gc"
+      "label": "Tracing GC, GC roots a reachability",
+      "anchor": "#tracing-gc-gc-roots-a-reachability"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#stop-the-world-safepoints-a-concurrent-práce",
+      "type": "heading",
+      "label": "Stop-the-world, safepoints a concurrent práce",
+      "anchor": "#stop-the-world-safepoints-a-concurrent-práce"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#generational-hypothesis-a-organizace-heapu",
+      "type": "heading",
+      "label": "Generational hypothesis a organizace heapu",
+      "anchor": "#generational-hypothesis-a-organizace-heapu"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#základní-algoritmy-gc",
+      "type": "heading",
+      "label": "Základní algoritmy GC",
+      "anchor": "#základní-algoritmy-gc"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#barriers-card-table-a-remembered-sets",
+      "type": "heading",
+      "label": "Barriers, card table a remembered sets",
+      "anchor": "#barriers-card-table-a-remembered-sets"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
@@ -13627,6 +13820,20 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#low-latency-collectory-zgc-a-shenandoah",
+      "type": "heading",
+      "label": "Low-latency collectory: ZGC a Shenandoah",
+      "anchor": "#low-latency-collectory-zgc-a-shenandoah"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#praktické-dopady-logy-a-tuning",
+      "type": "heading",
+      "label": "Praktické dopady, logy a tuning",
+      "anchor": "#praktické-dopady-logy-a-tuning"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
       "target": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
       "type": "wiki",
       "label": "Virtualizace",
@@ -13634,31 +13841,73 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#historie-a-motivace-virtualizace",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#proč-virtualizace-patří-do-performance-témat",
       "type": "heading",
-      "label": "Historie a motivace virtualizace",
-      "anchor": "#historie-a-motivace-virtualizace"
+      "label": "Proč virtualizace patří do performance témat",
+      "anchor": "#proč-virtualizace-patří-do-performance-témat"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#hardware-asistovaná-virtualizace",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#bare-metal-vm-a-container",
       "type": "heading",
-      "label": "Hardware-asistovaná virtualizace",
-      "anchor": "#hardware-asistovaná-virtualizace"
+      "label": "Bare metal, VM a container",
+      "anchor": "#bare-metal-vm-a-container"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#io-virtualizace",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#hypervisor-a-cpu-virtualizace",
       "type": "heading",
-      "label": "I/O virtualizace",
-      "anchor": "#io-virtualizace"
+      "label": "Hypervisor a CPU virtualizace",
+      "anchor": "#hypervisor-a-cpu-virtualizace"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#efektivní-inter-vm-networking",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#memory-virtualizace",
       "type": "heading",
-      "label": "Efektivní inter-VM networking",
-      "anchor": "#efektivní-inter-vm-networking"
+      "label": "Memory virtualizace",
+      "anchor": "#memory-virtualizace"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#io-a-network-virtualizace",
+      "type": "heading",
+      "label": "I/O a network virtualizace",
+      "anchor": "#io-a-network-virtualizace"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-namespaces-a-cgroups",
+      "type": "heading",
+      "label": "Kontejnery: namespaces a cgroups",
+      "anchor": "#kontejnery-namespaces-a-cgroups"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#cpu-a-memory-limity-v-kontejnerech",
+      "type": "heading",
+      "label": "CPU a memory limity v kontejnerech",
+      "anchor": "#cpu-a-memory-limity-v-kontejnerech"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#jvm-v-containeru",
+      "type": "heading",
+      "label": "JVM v containeru",
+      "anchor": "#jvm-v-containeru"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-problémy-v-izolovaném-prostředí",
+      "type": "heading",
+      "label": "Performance problémy v izolovaném prostředí",
+      "anchor": "#performance-problémy-v-izolovaném-prostředí"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#praktická-diagnostika",
+      "type": "heading",
+      "label": "Praktická diagnostika",
+      "anchor": "#praktická-diagnostika"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/0-obsah-predmetu-esw.md",
@@ -14551,24 +14800,45 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#základy-automatické-správy-paměti",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#proč-existuje-automatic-memory-management",
       "type": "heading",
-      "label": "Základy automatické správy paměti",
-      "anchor": "#základy-automatické-správy-paměti"
+      "label": "Proč existuje automatic memory management",
+      "anchor": "#proč-existuje-automatic-memory-management"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#generational-hypothesis-a-heap-organizace",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#tracing-gc-gc-roots-a-reachability",
       "type": "heading",
-      "label": "Generational hypothesis a heap organizace",
-      "anchor": "#generational-hypothesis-a-heap-organizace"
+      "label": "Tracing GC, GC roots a reachability",
+      "anchor": "#tracing-gc-gc-roots-a-reachability"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#design-dimensions-gc",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#stop-the-world-safepoints-a-concurrent-práce",
       "type": "heading",
-      "label": "Design dimensions GC",
-      "anchor": "#design-dimensions-gc"
+      "label": "Stop-the-world, safepoints a concurrent práce",
+      "anchor": "#stop-the-world-safepoints-a-concurrent-práce"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#generational-hypothesis-a-organizace-heapu",
+      "type": "heading",
+      "label": "Generational hypothesis a organizace heapu",
+      "anchor": "#generational-hypothesis-a-organizace-heapu"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#základní-algoritmy-gc",
+      "type": "heading",
+      "label": "Základní algoritmy GC",
+      "anchor": "#základní-algoritmy-gc"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#barriers-card-table-a-remembered-sets",
+      "type": "heading",
+      "label": "Barriers, card table a remembered sets",
+      "anchor": "#barriers-card-table-a-remembered-sets"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
@@ -14585,39 +14855,95 @@
       "anchor": "#garbage-first-g1-collector"
     },
     {
-      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#historie-a-motivace-virtualizace",
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#low-latency-collectory-zgc-a-shenandoah",
       "type": "heading",
-      "label": "Historie a motivace virtualizace",
-      "anchor": "#historie-a-motivace-virtualizace"
+      "label": "Low-latency collectory: ZGC a Shenandoah",
+      "anchor": "#low-latency-collectory-zgc-a-shenandoah"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#reference-counting-vs-tracing-gc",
+      "type": "heading",
+      "label": "Reference counting vs tracing GC",
+      "anchor": "#reference-counting-vs-tracing-gc"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#praktické-dopady-logy-a-tuning",
+      "type": "heading",
+      "label": "Praktické dopady, logy a tuning",
+      "anchor": "#praktické-dopady-logy-a-tuning"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#základy-virtualizace-vmm-a-hypervisor",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#proč-virtualizace-patří-do-performance-témat",
       "type": "heading",
-      "label": "Základy virtualizace: VMM a hypervisor",
-      "anchor": "#základy-virtualizace-vmm-a-hypervisor"
+      "label": "Proč virtualizace patří do performance témat",
+      "anchor": "#proč-virtualizace-patří-do-performance-témat"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#hardware-asistovaná-virtualizace",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#bare-metal-vm-a-container",
       "type": "heading",
-      "label": "Hardware-asistovaná virtualizace",
-      "anchor": "#hardware-asistovaná-virtualizace"
+      "label": "Bare metal, VM a container",
+      "anchor": "#bare-metal-vm-a-container"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#io-virtualizace",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#hypervisor-a-cpu-virtualizace",
       "type": "heading",
-      "label": "I/O virtualizace",
-      "anchor": "#io-virtualizace"
+      "label": "Hypervisor a CPU virtualizace",
+      "anchor": "#hypervisor-a-cpu-virtualizace"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#efektivní-inter-vm-networking",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#memory-virtualizace",
       "type": "heading",
-      "label": "Efektivní inter-VM networking",
-      "anchor": "#efektivní-inter-vm-networking"
+      "label": "Memory virtualizace",
+      "anchor": "#memory-virtualizace"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#io-a-network-virtualizace",
+      "type": "heading",
+      "label": "I/O a network virtualizace",
+      "anchor": "#io-a-network-virtualizace"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-namespaces-a-cgroups",
+      "type": "heading",
+      "label": "Kontejnery: namespaces a cgroups",
+      "anchor": "#kontejnery-namespaces-a-cgroups"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#cpu-a-memory-limity-v-kontejnerech",
+      "type": "heading",
+      "label": "CPU a memory limity v kontejnerech",
+      "anchor": "#cpu-a-memory-limity-v-kontejnerech"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#jvm-v-containeru",
+      "type": "heading",
+      "label": "JVM v containeru",
+      "anchor": "#jvm-v-containeru"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-problémy-v-izolovaném-prostředí",
+      "type": "heading",
+      "label": "Performance problémy v izolovaném prostředí",
+      "anchor": "#performance-problémy-v-izolovaném-prostředí"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#praktická-diagnostika",
+      "type": "heading",
+      "label": "Praktická diagnostika",
+      "anchor": "#praktická-diagnostika"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/15-shrnuti-pro-statnice.md",
@@ -20216,19 +20542,37 @@
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#základy-automatické-správy-paměti",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#proč-existuje-automatic-memory-management",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#generational-hypothesis-a-heap-organizace",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#tracing-gc-gc-roots-a-reachability",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#design-dimensions-gc",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#stop-the-world-safepoints-a-concurrent-práce",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#generational-hypothesis-a-organizace-heapu",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#základní-algoritmy-gc",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#barriers-card-table-a-remembered-sets",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
@@ -20245,32 +20589,80 @@
       "label": "obsahuje nadpis"
     },
     {
-      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#historie-a-motivace-virtualizace",
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#low-latency-collectory-zgc-a-shenandoah",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#reference-counting-vs-tracing-gc",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/13-garbage-collectors-v-jvm.md#praktické-dopady-logy-a-tuning",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#základy-virtualizace-vmm-a-hypervisor",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#proč-virtualizace-patří-do-performance-témat",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#hardware-asistovaná-virtualizace",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#bare-metal-vm-a-container",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#io-virtualizace",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#hypervisor-a-cpu-virtualizace",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
     {
       "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
-      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#efektivní-inter-vm-networking",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#memory-virtualizace",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#io-a-network-virtualizace",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#kontejnery-namespaces-a-cgroups",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#cpu-a-memory-limity-v-kontejnerech",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#jvm-v-containeru",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#performance-problémy-v-izolovaném-prostředí",
+      "type": "contains",
+      "label": "obsahuje nadpis"
+    },
+    {
+      "source": "doc:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md",
+      "target": "heading:softwarove-inzenyrstvi/efektivni-software/14-virtualizace.md#praktická-diagnostika",
       "type": "contains",
       "label": "obsahuje nadpis"
     },
@@ -21579,8 +21971,8 @@
   ],
   "stats": {
     "documents": 136,
-    "headings": 540,
+    "headings": 551,
     "missing": 0,
-    "links": 1730
+    "links": 1764
   }
 }
