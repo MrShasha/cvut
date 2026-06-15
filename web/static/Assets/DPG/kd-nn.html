@@ -1,0 +1,472 @@
+<!DOCTYPE html>vault backup: {{date}}
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>KD-Tree Search Algorithms (Point vs Leaf Stored)</title>
+    <style>
+        body {
+            font-family: monospace; background-color: #1e1e1e; color: #d4d4d4;
+            margin: 0; padding: 20px; display: flex; flex-direction: column;
+            height: 100vh; box-sizing: border-box;
+        }
+        .container { display: flex; gap: 20px; flex: 1; min-height: 400px; }
+        .panel { background-color: #252526; border: 1px solid #3c3c3c; position: relative; }
+        #left-panel, #right-panel { flex: 1; display: flex; align-items: center; justify-content: center; }
+        canvas { background-color: #1e1e1e; cursor: crosshair; }
+        .controls { margin: 15px 0; display: flex; gap: 15px; align-items: center; flex-wrap: wrap; }
+        button, select {
+            background-color: #0e639c; color: white; border: none;
+            padding: 8px 16px; font-family: monospace; cursor: pointer; font-size: 14px;
+        }
+        select { background-color: #333; border: 1px solid #555; }
+        button:hover { background-color: #1177bb; }
+        button:disabled { background-color: #4d4d4d; cursor: not-allowed; }
+        #log-panel {
+            height: 220px; background-color: #1e1e1e; border: 1px solid #3c3c3c;
+            overflow-y: auto; padding: 10px; font-size: 13px; line-height: 1.4;
+        }
+        .log-entry { margin-bottom: 5px; border-bottom: 1px dashed #333; padding-bottom: 5px; }
+        .highlight { color: #569cd6; font-weight: bold; }
+        .warn { color: #ce9178; }
+        .success { color: #b5cea8; }
+        .info { color: #c586c0; }
+        .stat-box { background: #333; padding: 4px 8px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <select id="algo-select">
+            <option value="dfs">1. Standardní DFS (Point-stored)</option>
+            <option value="bbf">2. Best-Bin First (Point-stored PQ)</option>
+            <option value="knn">3. k-NN Search (Point-stored k=3)</option>
+            <option value="leaf_dfs">4. Leaf-based DFS (Explicitní roviny, body v listech)</option>
+        </select>
+        <button id="btn-next" disabled>Další krok</button>
+        <button id="btn-reset">Reset</button>
+        <span id="status">Vyberte algoritmus a klikněte na mapu.</span>
+        
+        <div style="margin-left: auto; display:flex; gap: 10px;">
+            <span class="stat-box">Práh prořezání (dist²): <span id="ui-threshold" class="warn">N/A</span></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="left-panel" class="panel"><canvas id="mapCanvas" width="500" height="500"></canvas></div>
+        <div id="right-panel" class="panel"><canvas id="treeCanvas" width="500" height="500"></canvas></div>
+    </div>
+
+    <div id="log-panel"></div>
+
+<script>
+const points = [ [1,2], [3,7], [5,4], [7,1], [8,6], [2,9], [6,3], [4,8], [9,2], [1,6] ];
+const colors = ['#f44336', '#2196f3', '#4caf50', '#ffeb3b', '#9c27b0', '#00bcd4'];
+
+let pointRoot = null, leafRoot = null, query = null, searchGen = null, currentState = null;
+let best_dist2 = Infinity;
+let best_points = []; 
+let k_target = 3;
+
+const pointNodes = [];
+const leafNodes = [];
+
+// 1. Konstrukce Point-stored KD-Tree
+function buildPointKDTree(pts, depth = 0, bbMin = [0,0], bbMax = [10,10]) {
+    if (pts.length === 0) return null;
+    const axis = depth % 2;
+    pts.sort((a, b) => a[axis] - b[axis]);
+    const medianIdx = Math.floor(pts.length / 2);
+    const p = pts[medianIdx];
+    
+    const node = {
+        id: pointNodes.length, pt: p, axis: axis, depth: depth, isLeaf: false,
+        bbMin: [...bbMin], bbMax: [...bbMax], left: null, right: null, treeX: 0, treeY: 0
+    };
+    pointNodes.push(node);
+
+    const leftBBMax = [...bbMax]; leftBBMax[axis] = p[axis];
+    const rightBBMin = [...bbMin]; rightBBMin[axis] = p[axis];
+
+    node.left = buildPointKDTree(pts.slice(0, medianIdx), depth + 1, bbMin, leftBBMax);
+    node.right = buildPointKDTree(pts.slice(medianIdx + 1), depth + 1, rightBBMin, bbMax);
+    return node;
+}
+
+// 2. Konstrukce Leaf-stored KD-Tree (body jsou striktně v listech)
+function buildLeafKDTree(pts, depth = 0, bbMin = [0,0], bbMax = [10,10]) {
+    const axis = depth % 2;
+    // Pokud zbývá pouze jeden bod, vytvoříme listový uzel
+    if (pts.length <= 1) {
+        const node = {
+            id: 'L' + leafNodes.length, isLeaf: true, pts: pts, depth: depth,
+            bbMin: [...bbMin], bbMax: [...bbMax], treeX: 0, treeY: 0
+        };
+        leafNodes.push(node);
+        return node;
+    }
+
+    pts.sort((a, b) => a[axis] - b[axis]);
+    const medianIdx = Math.floor(pts.length / 2);
+    const splitVal = pts[medianIdx][axis];
+
+    const node = {
+        id: 'I' + leafNodes.length, isLeaf: false, axis: axis, splitVal: splitVal, depth: depth,
+        bbMin: [...bbMin], bbMax: [...bbMax], left: null, right: null, treeX: 0, treeY: 0
+    };
+    leafNodes.push(node);
+
+    const leftBBMax = [...bbMax]; leftBBMax[axis] = splitVal;
+    const rightBBMin = [...bbMin]; rightBBMin[axis] = splitVal;
+
+    node.left = buildLeafKDTree(pts.slice(0, medianIdx), depth + 1, bbMin, leftBBMax);
+    node.right = buildLeafKDTree(pts.slice(medianIdx), depth + 1, rightBBMin, bbMax);
+    return node;
+}
+
+// Inicializace a layout obou stromů
+pointRoot = buildPointKDTree(points.map(p => [...p]));
+let inorderIdx = 0;
+function layoutPointTree(node) {
+    if (!node) return;
+    layoutPointTree(node.left);
+    node.treeX = 20 + inorderIdx * 45; node.treeY = 30 + node.depth * 60; inorderIdx++;
+    layoutPointTree(node.right);
+}
+layoutPointTree(pointRoot);
+
+leafRoot = buildLeafKDTree(points.map(p => [...p]));
+inorderIdx = 0;
+function layoutLeafTree(node) {
+    if (!node) return;
+    if (node.isLeaf) {
+        node.treeX = 20 + inorderIdx * 45; node.treeY = 30 + node.depth * 60; inorderIdx++;
+        return;
+    }
+    layoutLeafTree(node.left);
+    node.treeX = 20 + inorderIdx * 45; node.treeY = 30 + node.depth * 60; inorderIdx++;
+    layoutLeafTree(node.right);
+}
+layoutLeafTree(leafRoot);
+
+const mapCtx = document.getElementById('mapCanvas').getContext('2d');
+const treeCtx = document.getElementById('treeCanvas').getContext('2d');
+const SCL = 50;
+const logPanel = document.getElementById('log-panel');
+
+function log(msg) {
+    const div = document.createElement('div'); div.className = 'log-entry'; div.innerHTML = msg;
+    logPanel.appendChild(div); logPanel.scrollTop = logPanel.scrollHeight;
+}
+
+function getCurrentAlgo() { return document.getElementById('algo-select').value; }
+
+// ---------------------------------------------------------
+// TRAVERSACE PRO LEAF-STORED KD-TREE
+// ---------------------------------------------------------
+function* genLeafDFS(node, q, rd, offset) {
+    if (!node) return;
+
+    if (node.isLeaf) {
+        let updated = false;
+        if (node.pts.length > 0) {
+            const pt = node.pts[0];
+            const d2 = Math.pow(q[0] - pt[0], 2) + Math.pow(q[1] - pt[1], 2);
+            if (d2 < best_dist2) {
+                best_dist2 = d2;
+                best_points = [{pt: pt, d2: d2}];
+                updated = true;
+            }
+            yield {
+                node, msg: `[Leaf-DFS] Dosažen list <span class="highlight">(${pt[0]},${pt[1]})</span>. d² k bodu = ${d2.toFixed(2)}. ` +
+                     (updated ? `<span class="success">Nové minimum nalezeno!</span>` : `Žádné zlepšení.`)
+            };
+        } else {
+            yield { node, msg: `[Leaf-DFS] Dosažen prázdný list.` };
+        }
+        return;
+    }
+
+    yield {
+        node, msg: `[Leaf-DFS] Vnitřní uzel. Dělicí rovina: ${node.axis === 0 ? 'X' : 'Y'} = ${node.splitVal}. Aktuální rd ke kvádru = ${rd.toFixed(2)}.`
+    };
+
+    const axis = node.axis;
+    const diff = q[axis] - node.splitVal;
+    const near = diff <= 0 ? node.left : node.right;
+    const far = diff <= 0 ? node.right : node.left;
+
+    if (near) yield* genLeafDFS(near, q, rd, [...offset]);
+
+    if (far) {
+        const new_rd = rd - Math.pow(offset[axis], 2) + Math.pow(diff, 2);
+        const next_offset = [...offset]; next_offset[axis] = diff;
+        const willVisit = new_rd < best_dist2;
+
+        yield {
+            node, msg: `[Leaf-DFS] Kontrola Far větve pro vnitřní rovinu (${node.axis===0?'X':'Y'}=${node.splitVal}).<br>
+                  Výpočet: new_rd = ${new_rd.toFixed(2)}. Podmínka prořezání: new_rd < best_dist2 (${best_dist2.toFixed(2)}) &rarr; 
+                  ${willVisit ? '<span class="success">NAVŠTÍVIT</span>' : '<span class="warn">PRUNING</span>'}`
+        };
+        if (willVisit) yield* genLeafDFS(far, q, new_rd, next_offset);
+    }
+}
+
+// (Původní generátory z předchozího kroku zůstávají beze změny)
+function* genDFS(node, q, rd, offset) {
+    if (!node) return;
+    const d2 = Math.pow(q[0] - node.pt[0], 2) + Math.pow(q[1] - node.pt[1], 2);
+    if (d2 < best_dist2) { best_dist2 = d2; best_points = [{pt: node.pt, d2}]; }
+    yield { node, msg: `[DFS] Zpracování uzlu <span class="highlight">(${node.pt[0]},${node.pt[1]})</span>. d² = ${d2.toFixed(2)}.` };
+    const axis = node.axis; const diff = q[axis] - node.pt[axis];
+    const near = diff <= 0 ? node.left : node.right; const far = diff <= 0 ? node.right : node.left;
+    if (near) yield* genDFS(near, q, rd, [...offset]);
+    if (far) {
+        const new_rd = rd - Math.pow(offset[axis], 2) + Math.pow(diff, 2);
+        const next_offset = [...offset]; next_offset[axis] = diff;
+        const willVisit = new_rd < best_dist2;
+        yield { node, msg: `[DFS] Kontrola Far potomka z (${node.pt[0]},${node.pt[1]}). new_rd = ${new_rd.toFixed(2)}. &rarr; ${willVisit ? '<span class="success">NAVŠTÍVIT</span>' : '<span class="warn">PRUNING</span>'}` };
+        if (willVisit) yield* genDFS(far, q, new_rd, next_offset);
+    }
+}
+
+function* genBBF(rootNode, q, initialRd, initialOffset) {
+    let pq = [{node: rootNode, rd: initialRd, offset: initialOffset}];
+    while (pq.length > 0) {
+        pq.sort((a, b) => a.rd - b.rd);
+        let currItem = pq.shift();
+        yield { node: currItem.node, msg: `[PQ] Extrahován uzel z fronty <span class="highlight">(${currItem.node.pt[0]},${currItem.node.pt[1]})</span> s rd = ${currItem.rd.toFixed(2)}.` };
+        if (currItem.rd >= best_dist2) { yield { msg: `<span class="warn">[PQ] Konec vyhledávání (rd >= best_dist2).</span>` }; break; }
+        let u = currItem.node; let rd = currItem.rd; let off = currItem.offset;
+        while (u) {
+            const d2 = Math.pow(q[0] - u.pt[0], 2) + Math.pow(q[1] - u.pt[1], 2);
+            if (d2 < best_dist2) { best_dist2 = d2; best_points = [{pt: u.pt, d2}]; }
+            yield { node: u, msg: `[PQ] Sestup: Zpracování <span class="highlight">(${u.pt[0]},${u.pt[1]})</span>. d² = ${d2.toFixed(2)}.` };
+            const axis = u.axis; const diff = q[axis] - u.pt[axis];
+            const near = diff <= 0 ? u.left : u.right; const far = diff <= 0 ? u.right : u.left;
+            if (far) {
+                const new_rd = rd - Math.pow(off[axis], 2) + Math.pow(diff, 2);
+                const next_off = [...off]; next_off[axis] = diff;
+                pq.push({node: far, rd: new_rd, offset: next_off});
+            }
+            u = near;
+        }
+    }
+}
+
+function* genKNN(rootNode, q, initialRd, initialOffset) {
+    let pq = [{node: rootNode, rd: initialRd, offset: initialOffset}];
+    while (pq.length > 0) {
+        pq.sort((a, b) => a.rd - b.rd);
+        let currItem = pq.shift();
+        yield { node: currItem.node, msg: `[k-NN] Extrakce z fronty: <span class="highlight">(${currItem.node.pt[0]},${currItem.node.pt[1]})</span> s rd = ${currItem.rd.toFixed(2)}.` };
+        if (currItem.rd >= best_dist2) break;
+        let u = currItem.node; let rd = currItem.rd; let off = currItem.offset;
+        while (u) {
+            const d2 = Math.pow(q[0] - u.pt[0], 2) + Math.pow(q[1] - u.pt[1], 2);
+            best_points.push({pt: u.pt, d2: d2}); best_points.sort((a, b) => a.d2 - b.d2);
+            if (best_points.length > k_target) best_points.pop();
+            if (best_points.length === k_target) best_dist2 = best_points[k_target - 1].d2;
+            yield { node: u, msg: `[k-NN] Uzel <span class="highlight">(${u.pt[0]},${u.pt[1]})</span>, d² = ${d2.toFixed(2)}.<br>Buffer d²: [${best_points.map(p=>p.d2.toFixed(1)).join(', ')}]` };
+            const axis = u.axis; const diff = q[axis] - u.pt[axis];
+            const near = diff <= 0 ? u.left : u.right; const far = diff <= 0 ? u.right : u.left;
+            if (far) {
+                const new_rd = rd - Math.pow(off[axis], 2) + Math.pow(diff, 2);
+                if (new_rd < best_dist2) pq.push({node: far, rd: new_rd, offset: [...off].map((v,i)=>i===axis?diff:v)});
+            }
+            u = near;
+        }
+    }
+}
+
+// ---------------------------------------------------------
+// VYKRESLOVÁNÍ (Rozlišuje point-stored a leaf-stored)
+// ---------------------------------------------------------
+function drawMap() {
+    mapCtx.clearRect(0, 0, 500, 500);
+    const mode = getCurrentAlgo();
+    const activeRoot = (mode === 'leaf_dfs') ? leafRoot : pointRoot;
+
+    function drawLines(node, minX, maxX, minY, maxY) {
+        if (!node || node.isLeaf) return;
+        mapCtx.beginPath();
+        mapCtx.strokeStyle = colors[node.depth % colors.length];
+        mapCtx.lineWidth = 2;
+        
+        // Získání souřadnice dělící čáry (buď z bodu, nebo z explicitní hodnoty splitVal)
+        const mid = (mode === 'leaf_dfs') ? node.splitVal : node.pt[node.axis];
+
+        if (node.axis === 0) {
+            mapCtx.moveTo(mid * SCL, minY * SCL); mapCtx.lineTo(mid * SCL, maxY * SCL); mapCtx.stroke();
+            drawLines(node.left, minX, mid, minY, maxY); drawLines(node.right, mid, maxX, minY, maxY);
+        } else {
+            mapCtx.moveTo(minX * SCL, mid * SCL); mapCtx.lineTo(maxX * SCL, mid * SCL); mapCtx.stroke();
+            drawLines(node.left, minX, maxX, minY, mid); drawLines(node.right, minX, maxX, mid, maxY);
+        }
+    }
+    drawLines(activeRoot, 0, 10, 0, 10);
+
+    // Bounding Box
+    if (currentState && currentState.node) {
+        const n = currentState.node;
+        mapCtx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        mapCtx.fillRect(n.bbMin[0]*SCL, n.bbMin[1]*SCL, (n.bbMax[0]-n.bbMin[0])*SCL, (n.bbMax[1]-n.bbMin[1])*SCL);
+    }
+
+    // Kruh omezujícího poloměru (Pruning radius)
+    if (query && best_dist2 !== Infinity) {
+        mapCtx.beginPath(); mapCtx.arc(query[0]*SCL, query[1]*SCL, Math.sqrt(best_dist2)*SCL, 0, Math.PI*2);
+        mapCtx.strokeStyle = 'rgba(255, 255, 255, 0.15)'; mapCtx.lineWidth = 1; mapCtx.stroke();
+    }
+
+    // Kreslení surových datových bodů na mapě
+    points.forEach(p => {
+        mapCtx.beginPath(); mapCtx.arc(p[0]*SCL, p[1]*SCL, 5, 0, Math.PI*2);
+        let isActiveLeafPoint = false;
+        if (mode === 'leaf_dfs' && currentState && currentState.node && currentState.node.isLeaf) {
+            isActiveLeafPoint = currentState.node.pts.some(lp => lp[0] === p[0] && lp[1] === p[1]);
+        }
+        let isActiveInternalPoint = (mode !== 'leaf_dfs' && currentState && currentState.node && currentState.node.pt[0] === p[0] && currentState.node.pt[1] === p[1]);
+        
+        mapCtx.fillStyle = (isActiveLeafPoint || isActiveInternalPoint) ? '#ffffff' : '#666';
+        mapCtx.fill();
+    });
+
+    if (query) {
+        mapCtx.beginPath(); mapCtx.arc(query[0]*SCL, query[1]*SCL, 6, 0, Math.PI*2);
+        mapCtx.fillStyle = 'red'; mapCtx.fill();
+    }
+
+    best_points.forEach(bp => {
+        mapCtx.beginPath(); mapCtx.arc(bp.pt[0]*SCL, bp.pt[1]*SCL, 8, 0, Math.PI*2);
+        mapCtx.strokeStyle = '#ffeb3b'; mapCtx.lineWidth = 2; mapCtx.stroke();
+    });
+}
+
+function drawTree() {
+    treeCtx.clearRect(0, 0, 500, 500);
+    const mode = getCurrentAlgo();
+    const activeRoot = (mode === 'leaf_dfs') ? leafRoot : pointRoot;
+
+    function drawEdges(node) {
+        if (!node || node.isLeaf) return;
+        treeCtx.strokeStyle = '#444'; treeCtx.lineWidth = 1;
+        if (node.left) {
+            treeCtx.beginPath(); treeCtx.moveTo(node.treeX, node.treeY); treeCtx.lineTo(node.left.treeX, node.left.treeY); treeCtx.stroke();
+            drawEdges(node.left);
+        }
+        if (node.right) {
+            treeCtx.beginPath(); treeCtx.moveTo(node.treeX, node.treeY); treeCtx.lineTo(node.right.treeX, node.right.treeY); treeCtx.stroke();
+            drawEdges(node.right);
+        }
+    }
+    drawEdges(activeRoot);
+
+    function drawNodes(node) {
+        if (!node) return;
+        treeCtx.beginPath();
+        
+        const isCurrent = (currentState && currentState.node === node);
+        
+        if (node.isLeaf) {
+            // Listy vykreslíme jako obdélníky
+            treeCtx.rect(node.treeX - 18, node.treeY - 10, 36, 20);
+            treeCtx.fillStyle = isCurrent ? '#ffffff' : '#222';
+            treeCtx.fill();
+            treeCtx.strokeStyle = '#888';
+            treeCtx.stroke();
+            treeCtx.fillStyle = isCurrent ? '#000' : '#bbb';
+            treeCtx.font = "9px monospace";
+            const txt = node.pts.length > 0 ? `${node.pts[0][0]},${node.pts[0][1]}` : 'ø';
+            treeCtx.fillText(txt, node.treeX, node.treeY);
+        } else {
+            // Vnitřní uzly jako kružnice
+            treeCtx.arc(node.treeX, node.treeY, 15, 0, Math.PI*2);
+            treeCtx.fillStyle = isCurrent ? '#ffffff' : '#333';
+            treeCtx.fill();
+            treeCtx.strokeStyle = colors[node.depth % colors.length];
+            treeCtx.lineWidth = 2;
+            treeCtx.stroke();
+            treeCtx.fillStyle = isCurrent ? '#000' : '#ddd';
+            treeCtx.font = "9px monospace";
+            
+            const txt = (mode === 'leaf_dfs') ? `${node.axis===0?'X':'Y'}=${node.splitVal}` : `${node.pt[0]},${node.pt[1]}`;
+            treeCtx.fillText(txt, node.treeX, node.treeY);
+        }
+        
+        if (!node.isLeaf) {
+            drawNodes(node.left);
+            drawNodes(node.right);
+        }
+    }
+    treeCtx.textAlign = "center"; treeCtx.textBaseline = "middle";
+    drawNodes(activeRoot);
+}
+
+// ---------------------------------------------------------
+// REAKCE NA UI UDÁLOSTI
+// ---------------------------------------------------------
+document.getElementById('mapCanvas').addEventListener('mousedown', (e) => {
+    const rect = e.target.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / SCL;
+    const y = (e.clientY - rect.top) / SCL;
+    
+    query = [x, y];
+    best_dist2 = Infinity;
+    best_points = [];
+    currentState = null;
+    logPanel.innerHTML = '';
+    
+    const algo = getCurrentAlgo();
+    log(`Zvolen modus: ${algo.toUpperCase()}. Dotaz nastaven na <span class="warn">Q(${x.toFixed(2)}, ${y.toFixed(2)})</span>`);
+    
+    let initOffset = [0, 0];
+    if (x < 0) initOffset[0] = x; else if (x > 10) initOffset[0] = x - 10;
+    if (y < 0) initOffset[1] = y; else if (y > 10) initOffset[1] = y - 10;
+    const initRd = initOffset[0]*initOffset[0] + initOffset[1]*initOffset[1];
+
+    if (algo === 'dfs') searchGen = genDFS(pointRoot, query, initRd, initOffset);
+    else if (algo === 'bbf') searchGen = genBBF(pointRoot, query, initRd, initOffset);
+    else if (algo === 'knn') searchGen = genKNN(pointRoot, query, initRd, initOffset);
+    else if (algo === 'leaf_dfs') searchGen = genLeafDFS(leafRoot, query, initRd, initOffset);
+    
+    document.getElementById('btn-next').disabled = false;
+    document.getElementById('ui-threshold').innerText = 'Infinity';
+    document.getElementById('status').innerText = 'Algoritmus inicializován. Krokujte...';
+    
+    drawMap(); drawTree();
+});
+
+document.getElementById('btn-next').addEventListener('click', () => {
+    if (!searchGen) return;
+    const res = searchGen.next();
+    
+    if (res.done) {
+        document.getElementById('status').innerText = 'Vyhledávání dokončeno.';
+        log(`Hledání ukončeno. Nalezený nejbližší stav: ` + best_points.map(p => `(${p.pt[0]},${p.pt[1]})`).join(', '));
+        document.getElementById('btn-next').disabled = true;
+        currentState = null;
+    } else {
+        currentState = res.value;
+        if (currentState.msg) log(currentState.msg);
+        document.getElementById('ui-threshold').innerText = best_dist2 === Infinity ? 'Infinity' : best_dist2.toFixed(2);
+    }
+    drawMap(); drawTree();
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+    query = null; best_points = []; best_dist2 = Infinity; searchGen = null; currentState = null;
+    logPanel.innerHTML = '';
+    document.getElementById('btn-next').disabled = true;
+    document.getElementById('ui-threshold').innerText = 'N/A';
+    document.getElementById('status').innerText = 'Vyberte algoritmus a klikněte na mapu.';
+    drawMap(); drawTree();
+});
+
+document.getElementById('algo-select').addEventListener('change', () => {
+    document.getElementById('btn-reset').click();
+});
+
+drawMap(); drawTree();
+</script>
+</body>
+</html>
