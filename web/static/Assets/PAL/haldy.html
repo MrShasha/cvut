@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Haldy — stručný přehled</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #131b31;
+      --panel-2: #192440;
+      --line: #405273;
+      --text: #eef4ff;
+      --muted: #a9b8d4;
+      --blue: #66a3ff;
+      --cyan: #52e0c4;
+      --yellow: #ffd166;
+      --red: #ff7b86;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 15% 0%, #16274a 0, transparent 32rem),
+        var(--bg);
+      color: var(--text);
+      font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    .wrap { max-width: 1120px; margin: auto; padding: 24px; }
+    header { display: flex; justify-content: space-between; gap: 20px; align-items: end; margin-bottom: 18px; }
+    h1 { margin: 0 0 5px; font-size: clamp(25px, 4vw, 38px); letter-spacing: -.04em; }
+    h2 { margin: 0 0 6px; font-size: 18px; }
+    p { margin: 0; }
+    .muted { color: var(--muted); }
+    .rule {
+      flex: 0 0 auto;
+      padding: 9px 13px;
+      border: 1px solid #436089;
+      border-radius: 10px;
+      background: #0f1830;
+      color: var(--cyan);
+      font: 700 15px ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+    .tabs, .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+    button {
+      border: 1px solid #3c4d6b;
+      border-radius: 9px;
+      padding: 8px 12px;
+      background: var(--panel-2);
+      color: var(--text);
+      font: inherit;
+      cursor: pointer;
+    }
+    button:hover, button.active { border-color: var(--blue); background: #21345d; }
+    .demo {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(250px, .8fr);
+      gap: 14px;
+      margin: 12px 0 16px;
+    }
+    .stage, .info, .table-card, .amort {
+      border: 1px solid #283956;
+      border-radius: 15px;
+      background: rgba(19, 27, 49, .92);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, .18);
+    }
+    .stage { padding: 12px; min-height: 330px; }
+    .stage-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 2px 4px 9px; }
+    svg { width: 100%; height: 260px; display: block; border-radius: 10px; background: #0d1528; }
+    .info { padding: 18px; }
+    .info ul { margin: 12px 0 15px; padding-left: 20px; }
+    .info li { margin: 7px 0; }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 999px; background: #0d1528; color: var(--yellow); font-size: 12px; }
+    .table-card { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 680px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid #293a58; text-align: center; }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+    td strong { color: var(--cyan); }
+    .amort { margin-top: 14px; padding: 15px 17px; display: grid; grid-template-columns: auto 1fr; gap: 13px; align-items: center; }
+    .sigma { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 12px; background: #26385f; color: var(--yellow); font: 800 25px Georgia, serif; }
+    .foot { margin-top: 8px; font-size: 12px; color: var(--muted); }
+    .edge { stroke: var(--line); stroke-width: 3; stroke-linecap: round; }
+    .node circle { fill: #21345d; stroke: var(--blue); stroke-width: 3; }
+    .node text { fill: white; text-anchor: middle; dominant-baseline: middle; font-weight: 750; font-size: 16px; }
+    .node.new circle { stroke: var(--yellow); fill: #51431d; }
+    .node.min circle { stroke: var(--cyan); fill: #17473f; }
+    .ghost { opacity: .24; }
+    .label { fill: var(--muted); font-size: 13px; text-anchor: middle; }
+    .arrow { fill: var(--yellow); font-size: 25px; font-weight: 800; text-anchor: middle; }
+    #scene { animation: appear .28s ease-out; }
+    @keyframes appear { from { opacity: .1; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    @media (max-width: 760px) {
+      .wrap { padding: 15px; }
+      header { display: block; }
+      .rule { display: inline-block; margin-top: 12px; }
+      .demo { grid-template-columns: 1fr; }
+      .stage { min-height: 310px; }
+      svg { height: 240px; }
+    }
+    @media (prefers-reduced-motion: reduce) { #scene { animation: none; } }
+  </style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <div>
+      <h1>Haldy: co říct u státnice</h1>
+      <p class="muted">Prioritní fronta, reprezentace, operace a amortizace.</p>
+    </div>
+    <div class="rule">min-halda: key(rodič) ≤ key(dítě)</div>
+  </header>
+
+  <nav class="tabs" aria-label="Typ haldy">
+    <button class="active" data-kind="binary">Binární</button>
+    <button data-kind="binomial">Binomiální</button>
+    <button data-kind="fibonacci">Fibonacciho</button>
+  </nav>
+
+  <section class="demo">
+    <div class="stage">
+      <div class="stage-head">
+        <strong id="stepTitle">Insert(3): vložení na konec</strong>
+        <div class="controls">
+          <button id="prev" aria-label="Předchozí krok">←</button>
+          <button id="play">Přehrát</button>
+          <button id="next" aria-label="Další krok">→</button>
+        </div>
+      </div>
+      <svg id="heapSvg" viewBox="0 0 700 260" role="img" aria-label="Animovaný diagram haldy"></svg>
+    </div>
+    <aside class="info">
+      <span class="tag" id="reprTag">úplný strom v poli</span>
+      <h2 id="heapName">Binární halda</h2>
+      <ul id="facts"></ul>
+      <p class="muted" id="useCase"></p>
+    </aside>
+  </section>
+
+  <section class="table-card" aria-label="Porovnání složitostí">
+    <table>
+      <thead><tr><th>Operace</th><th>Binární</th><th>Binomiální</th><th>Fibonacciho (amort.)</th></tr></thead>
+      <tbody>
+        <tr><td>AccessMin</td><td><strong>O(1)</strong></td><td>O(log n)*</td><td><strong>O(1)</strong></td></tr>
+        <tr><td>Insert</td><td>O(log n)</td><td>O(log n)</td><td><strong>O(1)</strong></td></tr>
+        <tr><td>Merge</td><td>Θ(n₁+n₂)</td><td><strong>O(log n)</strong></td><td><strong>O(1)</strong></td></tr>
+        <tr><td>DeleteMin</td><td>O(log n)</td><td>O(log n)</td><td>O(log n)</td></tr>
+        <tr><td>DecreaseKey</td><td>O(log n)</td><td>O(log n)</td><td><strong>O(1)</strong></td></tr>
+      </tbody>
+    </table>
+  </section>
+  <p class="foot">* Binomiální halda má O(log n) kořenů; s udržovaným ukazatelem na minimum lze AccessMin zrychlit na O(1).</p>
+
+  <section class="amort">
+    <div class="sigma">Σ</div>
+    <p><strong>Amortizovaná složitost</strong> je průměrná cena operace v celé posloupnosti, nikoli pravděpodobnostní průměr. Fibonacciho halda odkládá práci: Insert a Merge jsou levné, konsolidace proběhne hlavně při DeleteMin. Jedna operace může být drahá, dlouhá posloupnost má ale zaručenou mez.</p>
+  </section>
+</main>
+
+<script>
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById("heapSvg");
+  const title = document.getElementById("stepTitle");
+  let kind = "binary", frame = 0, timer = null;
+
+  const meta = {
+    binary: {
+      name: "Binární halda", tag: "úplný strom v poli",
+      facts: ["Indexy od 1: rodič ⌊i/2⌋, děti 2i a 2i+1.", "Insert: na konec + probublání nahoru.", "DeleteMin: poslední prvek do kořene + dolů."],
+      use: "Jednoduchá a praktická; BuildHeap je Θ(n), merge dvou hald Θ(n₁+n₂)."
+    },
+    binomial: {
+      name: "Binomiální halda", tag: "les binomiálních stromů",
+      facts: ["Nejvýše jeden strom každého stupně.", "Strom Bₖ má 2ᵏ uzlů a výšku k.", "Merge připomíná binární sčítání."],
+      use: "Volba, když potřebujeme často spojovat celé prioritní fronty."
+    },
+    fibonacci: {
+      name: "Fibonacciho halda", tag: "líný les + ukazatel na minimum",
+      facts: ["Insert a Merge pouze připojí nový kořen.", "DeleteMin konsoliduje stejné stupně.", "DecreaseKey používá řezy a značky."],
+      use: "Teoreticky výhodná pro Dijkstru/Prima; nevhodná pro real-time kvůli drahému jednotlivému kroku."
+    }
+  };
+
+  const scenes = {
+    binary: [
+      {title: "Insert(3): vložení na konec", values: [2,5,4,9,8,7,3], fresh: 6},
+      {title: "3 < 4: výměna s rodičem", values: [2,5,3,9,8,7,4], fresh: 2},
+      {title: "Hotovo: 2 ≤ 3", values: [2,5,3,9,8,7,4], fresh: -1}
+    ],
+    binomial: [
+      {title: "Dva stromy B₁ stejného stupně", phase: 0},
+      {title: "Menší kořen zůstane nahoře", phase: 1},
+      {title: "Vznikl jeden strom B₂", phase: 2}
+    ],
+    fibonacci: [
+      {title: "Minimum je kořen 2", phase: 0},
+      {title: "DeleteMin: děti přejdou mezi kořeny", phase: 1},
+      {title: "Konsolidace stromů stejného stupně", phase: 2}
+    ]
+  };
+
+  function el(name, attrs = {}, text = "") {
+    const node = document.createElementNS(NS, name);
+    Object.entries(attrs).forEach(([k,v]) => node.setAttribute(k, v));
+    if (text !== "") node.textContent = text;
+    return node;
+  }
+  function line(x1,y1,x2,y2, cls="edge") { svg.appendChild(el("line", {x1,y1,x2,y2,class:cls})); }
+  function node(x,y,value, cls="") {
+    const g = el("g", {class:`node ${cls}`});
+    g.append(el("circle", {cx:x,cy:y,r:23}), el("text", {x,y:y+1}, value));
+    svg.appendChild(g);
+  }
+  function label(x,y,text, cls="label") { svg.appendChild(el("text", {x,y,class:cls}, text)); }
+
+  function drawBinary(scene) {
+    const pos = [[350,38],[235,112],[465,112],[175,202],[295,202],[405,202],[525,202]];
+    for (let i=1; i<scene.values.length; i++) {
+      const p = Math.floor((i-1)/2); line(pos[p][0],pos[p][1]+23,pos[i][0],pos[i][1]-23);
+    }
+    scene.values.forEach((v,i) => node(pos[i][0],pos[i][1],v, i===scene.fresh ? "new" : i===0 ? "min" : ""));
+    label(350,245,"pole: [ " + scene.values.join("  ·  ") + " ]");
+  }
+
+  function drawBinomial(scene) {
+    if (scene.phase < 2) {
+      line(165,86,165,155); node(165,62,2,"min"); node(165,178,7);
+      line(425,86,425,155); node(425,62,4); node(425,178,9);
+      label(295,125, scene.phase ? "→ připojit B₁" : "+", "arrow");
+      if (scene.phase === 1) {
+        line(188,72,400,72,"edge ghost"); label(295,42,"2 < 4");
+      }
+      label(165,225,"B₁"); label(425,225,"B₁");
+    } else {
+      line(350,77,260,142); line(350,77,440,142); line(440,183,440,207);
+      node(350,54,2,"min"); node(260,165,7); node(440,165,4); node(440,230,9);
+      label(350,255,"B₂ = 4 uzly");
+    }
+  }
+
+  function drawFibonacci(scene) {
+    if (scene.phase === 0) {
+      line(155,85,155,168); node(155,62,2,"min"); node(155,191,8);
+      line(350,85,350,168); node(350,62,5); node(350,191,9);
+      node(545,62,7); label(350,235,"seznam kořenů");
+    } else if (scene.phase === 1) {
+      node(155,72,8,"new"); line(350,95,350,178); node(350,72,5,"min"); node(350,201,9); node(545,72,7);
+      label(350,245,"stupně: 0, 1, 0");
+    } else {
+      line(310,88,235,153); line(310,88,410,153); line(410,194,410,218);
+      node(310,65,5,"min"); node(235,176,9); node(410,176,8); node(410,241,7);
+      label(560,135,"nové minimum = 5");
+    }
+  }
+
+  function render() {
+    svg.innerHTML = "";
+    svg.removeAttribute("id"); void svg.getBoundingClientRect(); svg.setAttribute("id", "scene");
+    const scene = scenes[kind][frame]; title.textContent = scene.title;
+    if (kind === "binary") drawBinary(scene);
+    if (kind === "binomial") drawBinomial(scene);
+    if (kind === "fibonacci") drawFibonacci(scene);
+  }
+
+  function select(nextKind) {
+    kind = nextKind; frame = 0; stop();
+    document.querySelectorAll("[data-kind]").forEach(b => b.classList.toggle("active", b.dataset.kind === kind));
+    const m = meta[kind];
+    document.getElementById("heapName").textContent = m.name;
+    document.getElementById("reprTag").textContent = m.tag;
+    document.getElementById("facts").innerHTML = m.facts.map(x => `<li>${x}</li>`).join("");
+    document.getElementById("useCase").textContent = m.use;
+    render();
+  }
+  function stop() { if (timer) clearInterval(timer); timer = null; document.getElementById("play").textContent = "Přehrát"; }
+  document.querySelectorAll("[data-kind]").forEach(b => b.onclick = () => select(b.dataset.kind));
+  document.getElementById("next").onclick = () => { frame = Math.min(2, frame+1); render(); };
+  document.getElementById("prev").onclick = () => { frame = Math.max(0, frame-1); render(); };
+  document.getElementById("play").onclick = () => {
+    if (timer) return stop();
+    if (frame === 2) frame = 0;
+    document.getElementById("play").textContent = "Zastavit"; render();
+    timer = setInterval(() => { if (frame === 2) return stop(); frame++; render(); }, 950);
+  };
+  select("binary");
+</script>
+</body>
+</html>
